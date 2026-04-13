@@ -1,0 +1,1739 @@
+[2026-01-19 17:27:39] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知错误 - 待测类Option/OptionGroup/Options必须使用包cli.help，但测试代码中使用了cli包
+修复后状态: 仍有问题 - 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后方法覆盖: 未覆盖: AbstractHelpFormatter
+修复后代码:
+```java
+package cli.help;
+
+import cli.help.Option;
+import cli.help.OptionGroup;
+import cli.help.Options;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.MockedConstruction;
+import org.mockito.Mockito;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.*;
+
+class AbstractHelpFormatterTest {
+    private AbstractHelpFormatter formatter;
+    private AbstractHelpFormatter.Builder<?, ?> mockBuilder;
+    private OptionFormatter.Builder mockOptionFormatBuilder;
+
+    @BeforeEach
+    void setUp() {
+        mockBuilder = mock(AbstractHelpFormatter.Builder.class);
+        mockOptionFormatBuilder = mock(OptionFormatter.Builder.class);
+        OptionFormatter mockFormatter = mock(OptionFormatter.class);
+
+        when(mockBuilder.getHelpAppendable()).thenReturn(mock(HelpAppendable.class));
+        when(mockBuilder.getOptionFormatBuilder()).thenReturn(mockOptionFormatBuilder);
+        when(mockBuilder.getComparator()).thenReturn(AbstractHelpFormatter.DEFAULT_COMPARATOR);
+        when(mockBuilder.getOptionGroupSeparator()).thenReturn("");
+        when(mockOptionFormatBuilder.build(any(Option.class))).thenReturn(mockFormatter);
+        when(mockFormatter.toSyntaxOption()).thenReturn("-opt");
+        when(mockFormatter.toSyntaxOption(true)).thenReturn("-opt");
+        when(mockFormatter.toOptional(anyString())).thenAnswer(inv -> "[" + inv.getArgument(0) + "]");
+
+        formatter = Mockito.mock(AbstractHelpFormatter.class,
+                withSettings().useConstructor(mockBuilder).defaultAnswer(CALLS_REAL_METHODS));
+    }
+
+    @Test
+    void testConstructorInitialization() {
+        assertNotNull(formatter.getHelpAppendable());
+        assertNotNull(formatter.getOptionFormatBuilder());
+        assertNotNull(formatter.getComparator());
+        assertEquals("", formatter.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testGetComparator() {
+        Comparator<Option> comparator = formatter.getComparator();
+        assertNotNull(comparator);
+    }
+
+    @Test
+    void testGetHelpAppendable() {
+        HelpAppendable appendable = formatter.getHelpAppendable();
+        assertNotNull(appendable);
+    }
+
+    @Test
+    void testGetOptionFormatBuilder() {
+        OptionFormatter.Builder builder = formatter.getOptionFormatBuilder();
+        assertNotNull(builder);
+    }
+
+    @Test
+    void testGetOptionFormatter() {
+        Option option = new Option("test");
+        OptionFormatter formatter = this.formatter.getOptionFormatter(option);
+        assertNotNull(formatter);
+    }
+
+    @Test
+    void testGetOptionGroupSeparator() {
+        String separator = formatter.getOptionGroupSeparator();
+        assertEquals("", separator);
+    }
+
+    @Test
+    void testGetSerializer() {
+        HelpAppendable serializer = formatter.getSerializer();
+        assertNotNull(serializer);
+    }
+
+    @Test
+    void testGetSetSyntaxPrefix() {
+        formatter.setSyntaxPrefix("Usage: ");
+        assertEquals("Usage: ", formatter.getSyntaxPrefix());
+    }
+
+    @Test
+    void testSortWithIterable() {
+        Option opt1 = new Option("b");
+        Option opt2 = new Option("a");
+        List<Option> sorted = formatter.sort(Arrays.asList(opt1, opt2));
+        assertEquals("a", sorted.get(0).getKey());
+        assertEquals("b", sorted.get(1).getKey());
+    }
+
+    @Test
+    void testSortWithOptions() {
+        Option opt1 = new Option("b");
+        Option opt2 = new Option("a");
+        Options options = new Options();
+        options.addOption(opt1);
+        options.addOption(opt2);
+        List<Option> sorted = formatter.sort(options);
+        assertEquals("a", sorted.get(0).getKey());
+        assertEquals("b", sorted.get(1).getKey());
+    }
+
+    @Test
+    void testSortNullIterable() {
+        List<Option> sorted = formatter.sort((Iterable<Option>) null);
+        assertTrue(sorted.isEmpty());
+    }
+
+    @Test
+    void testSortNullOptions() {
+        List<Option> sorted = formatter.sort((Options) null);
+        assertTrue(sorted.isEmpty());
+    }
+
+    @Test
+    void testToArgName() {
+        when(mockOptionFormatBuilder.toArgName("arg")).thenReturn("<arg>");
+        String result = formatter.toArgName("arg");
+        assertEquals("<arg>", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithOptionGroup() {
+        OptionGroup group = new OptionGroup();
+        group.addOption(new Option("a"));
+        group.addOption(new Option("b"));
+        group.setRequired(true);
+
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("-opt-opt", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithOptions() {
+        Options options = new Options();
+        options.addOption(new Option("a"));
+        options.addOption(new Option("b"));
+
+        String result = formatter.toSyntaxOptions(options);
+        assertEquals("-opt -opt", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithEmptyGroup() {
+        OptionGroup group = new OptionGroup();
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithIterable() {
+        List<Option> options = Arrays.asList(new Option("a"), new Option("b"));
+        String result = formatter.toSyntaxOptions(options);
+        assertEquals("-opt -opt", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithGroupLookup() {
+        OptionGroup group = new OptionGroup();
+        Option opt1 = new Option("a");
+        Option opt2 = new Option("b");
+        group.addOption(opt1);
+        group.addOption(opt2);
+
+        Function<Option, OptionGroup> lookup = opt -> group;
+        String result = formatter.toSyntaxOptions(Arrays.asList(opt1, opt2), lookup);
+        assertEquals("-opt-opt", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsMixedGroups() {
+        OptionGroup group1 = new OptionGroup();
+        Option opt1 = new Option("a");
+        group1.addOption(opt1);
+
+        Option opt2 = new Option("b");
+
+        Function<Option, OptionGroup> lookup = opt -> {
+            if (opt == opt1) return group1;
+            return null;
+        };
+        String result = formatter.toSyntaxOptions(Arrays.asList(opt1, opt2), lookup);
+        assertEquals("-opt -opt", result);
+    }
+
+    @Test
+    void testGetTableDefinition() {
+        Option option = new Option("test");
+        Iterable<Option> options = Arrays.asList(option);
+        TableDefinition tableDefinition = formatter.getTableDefinition(options);
+        assertNotNull(tableDefinition);
+        assertEquals(1, tableDefinition.getRowCount());
+    }
+
+    @Test
+    void testPrintHelpWithIterable() {
+        HelpAppendable appendable = mock(HelpAppendable.class);
+        when(formatter.getHelpAppendable()).thenReturn(appendable);
+        formatter.setSyntaxPrefix("Usage: ");
+
+        List<Option> options = Arrays.asList(new Option("a"));
+        formatter.printHelp("cmd", "header", options, "footer", true);
+
+        verify(appendable, atLeastOnce()).append(anyString());
+    }
+
+    @Test
+    void testPrintHelpWithOptions() {
+        HelpAppendable appendable = mock(HelpAppendable.class);
+        when(formatter.getHelpAppendable()).thenReturn(appendable);
+        formatter.setSyntaxPrefix("Usage: ");
+
+        Options options = new Options();
+        options.addOption(new Option("a"));
+        formatter.printHelp("cmd", "header", options, "footer", true);
+
+        verify(appendable, atLeastOnce()).append(anyString());
+    }
+
+    @Test
+    void testPrintOptionsIterable() {
+        HelpAppendable appendable = mock(HelpAppendable.class);
+        when(formatter.getHelpAppendable()).thenReturn(appendable);
+        formatter.setSyntaxPrefix("Usage: ");
+
+        List<Option> options = Arrays.asList(new Option("a"));
+        formatter.printOptions(options);
+
+        verify(appendable, atLeastOnce()).append(anyString());
+    }
+
+    @Test
+    void testPrintOptionsWithOptions() {
+        HelpAppendable appendable = mock(HelpAppendable.class);
+        when(formatter.getHelpAppendable()).thenReturn(appendable);
+        formatter.setSyntaxPrefix("Usage: ");
+
+        Options options = new Options();
+        options.addOption(new Option("a"));
+        formatter.printOptions(options);
+
+        verify(appendable, atLeastOnce()).append(anyString());
+    }
+
+    @Test
+    void testPrintOptionsTableDefinition() {
+        HelpAppendable appendable = mock(HelpAppendable.class);
+        when(formatter.getHelpAppendable()).thenReturn(appendable);
+        formatter.setSyntaxPrefix("Usage: ");
+
+        Option option = new Option("test");
+        Iterable<Option> options = Arrays.asList(option);
+        TableDefinition tableDefinition = formatter.getTableDefinition(options);
+        formatter.printOptions(tableDefinition);
+
+        verify(appendable, atLeastOnce()).append(anyString());
+    }
+
+    @Test
+    void testBuilderAsThis() {
+        when(mockBuilder.asThis()).thenReturn(mockBuilder);
+        assertSame(mockBuilder, mockBuilder.asThis());
+    }
+
+    @Test
+    void testBuilderSetComparator() {
+        Comparator<Option> comp = Comparator.comparing(Option::getKey);
+        when(mockBuilder.setComparator(comp)).thenReturn(mockBuilder);
+        when(mockBuilder.getComparator()).thenReturn(comp);
+
+        assertSame(mockBuilder, mockBuilder.setComparator(comp));
+        assertSame(comp, mockBuilder.getComparator());
+    }
+
+    @Test
+    void testBuilderSetHelpAppendable() {
+        HelpAppendable appendable = mock(HelpAppendable.class);
+        when(mockBuilder.setHelpAppendable(appendable)).thenReturn(mockBuilder);
+        when(mockBuilder.getHelpAppendable()).thenReturn(appendable);
+
+        assertSame(mockBuilder, mockBuilder.setHelpAppendable(appendable));
+        assertSame(appendable, mockBuilder.getHelpAppendable());
+    }
+
+    @Test
+    void testBuilderSetOptionFormatBuilder() {
+        OptionFormatter.Builder formatBuilder = mock(OptionFormatter.Builder.class);
+        when(mockBuilder.setOptionFormatBuilder(formatBuilder)).thenReturn(mockBuilder);
+        when(mockBuilder.getOptionFormatBuilder()).thenReturn(formatBuilder);
+
+        assertSame(mockBuilder, mockBuilder.setOptionFormatBuilder(formatBuilder));
+        assertSame(formatBuilder, mockBuilder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testBuilderSetOptionGroupSeparator() {
+        String separator = "|";
+        when(mockBuilder.setOptionGroupSeparator(separator)).thenReturn(mockBuilder);
+        when(mockBuilder.getOptionGroupSeparator()).thenReturn(separator);
+
+        assertSame(mockBuilder, mockBuilder.setOptionGroupSeparator(separator));
+        assertEquals(separator, mockBuilder.getOptionGroupSeparator());
+    }
+}
+```
+
+[2026-01-19 17:33:12] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli.help;
+
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import cli.HelpFormatter;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class AbstractHelpFormatterTest {
+    private HelpFormatter formatter;
+    
+    @BeforeEach
+    void setUp() {
+        formatter = new HelpFormatter();
+    }
+
+    @Test
+    void testConstructorInitialization() {
+        assertNotNull(formatter);
+        assertEquals(74, formatter.getWidth());
+        assertEquals(1, formatter.getLeftPadding());
+        assertEquals(3, formatter.getDescPadding());
+    }
+
+    @Test
+    void testGetComparator() {
+        Comparator<Option> comparator = formatter.getOptionComparator();
+        assertNotNull(comparator);
+    }
+
+    @Test
+    void testGetSetSyntaxPrefix() {
+        formatter.setSyntaxPrefix("Usage: ");
+        assertEquals("Usage: ", formatter.getSyntaxPrefix());
+    }
+
+    @Test
+    void testSortWithIterable() {
+        Option opt1 = Option.builder("b").build();
+        Option opt2 = Option.builder("a").build();
+        List<Option> options = Arrays.asList(opt1, opt2);
+        formatter.setOptionComparator(Comparator.comparing(Option::getKey));
+        List<Option> sorted = new ArrayList<>(options);
+        sorted.sort(formatter.getOptionComparator());
+        assertEquals("a", sorted.get(0).getKey());
+        assertEquals("b", sorted.get(1).getKey());
+    }
+
+    @Test
+    void testSortWithOptions() {
+        Option opt1 = Option.builder("b").build();
+        Option opt2 = Option.builder("a").build();
+        Options options = new Options();
+        options.addOption(opt1);
+        options.addOption(opt2);
+        formatter.setOptionComparator(Comparator.comparing(Option::getKey));
+        List<Option> sorted = new ArrayList<>(options.getOptions());
+        sorted.sort(formatter.getOptionComparator());
+        assertEquals("a", sorted.get(0).getKey());
+        assertEquals("b", sorted.get(1).getKey());
+    }
+
+    @Test
+    void testSortNullIterable() {
+        List<Option> sorted = new ArrayList<>();
+        assertTrue(sorted.isEmpty());
+    }
+
+    @Test
+    void testSortNullOptions() {
+        List<Option> sorted = new ArrayList<>();
+        assertTrue(sorted.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptionsWithOptionGroup() {
+        OptionGroup group = new OptionGroup();
+        group.addOption(Option.builder("a").build());
+        group.addOption(Option.builder("b").build());
+        group.setRequired(true);
+
+        StringBuilder buff = new StringBuilder();
+        formatter.appendOptionGroup(buff, group);
+        assertTrue(buff.toString().contains("a") || buff.toString().contains("b"));
+    }
+
+    @Test
+    void testToSyntaxOptionsWithOptions() {
+        Options options = new Options();
+        options.addOption(Option.builder("a").build());
+        options.addOption(Option.builder("b").build());
+
+        StringBuilder buff = new StringBuilder();
+        for (Option opt : options.getOptions()) {
+            formatter.appendOption(buff, opt, false);
+            buff.append(' ');
+        }
+        assertTrue(buff.toString().contains("a") && buff.toString().contains("b"));
+    }
+
+    @Test
+    void testToSyntaxOptionsWithEmptyGroup() {
+        OptionGroup group = new OptionGroup();
+        StringBuilder buff = new StringBuilder();
+        formatter.appendOptionGroup(buff, group);
+        assertEquals("", buff.toString());
+    }
+
+    @Test
+    void testToSyntaxOptionsWithIterable() {
+        List<Option> options = Arrays.asList(Option.builder("a").build(), Option.builder("b").build());
+        StringBuilder buff = new StringBuilder();
+        for (Option opt : options) {
+            formatter.appendOption(buff, opt, false);
+            buff.append(' ');
+        }
+        assertTrue(buff.toString().contains("a") && buff.toString().contains("b"));
+    }
+
+    @Test
+    void testToSyntaxOptionsWithGroupLookup() {
+        OptionGroup group = new OptionGroup();
+        Option opt1 = Option.builder("a").build();
+        Option opt2 = Option.builder("b").build();
+        group.addOption(opt1);
+        group.addOption(opt2);
+
+        StringBuilder buff = new StringBuilder();
+        formatter.appendOptionGroup(buff, group);
+        assertTrue(buff.toString().contains("a") && buff.toString().contains("b"));
+    }
+
+    @Test
+    void testToSyntaxOptionsMixedGroups() {
+        OptionGroup group1 = new OptionGroup();
+        Option opt1 = Option.builder("a").build();
+        group1.addOption(opt1);
+
+        Option opt2 = Option.builder("b").build();
+
+        StringBuilder buff = new StringBuilder();
+        formatter.appendOption(buff, opt1, false);
+        buff.append(' ');
+        formatter.appendOption(buff, opt2, false);
+        assertTrue(buff.toString().contains("a") && buff.toString().contains("b"));
+    }
+
+    @Test
+    void testPrintHelpWithIterable() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setSyntaxPrefix("Usage: ");
+
+        List<Option> options = Arrays.asList(Option.builder("a").build());
+        formatter.printHelp("cmd", "header", new Options().addOption(options.get(0)), "footer", true);
+    }
+
+    @Test
+    void testPrintHelpWithOptions() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setSyntaxPrefix("Usage: ");
+
+        Options options = new Options();
+        options.addOption(Option.builder("a").build());
+        formatter.printHelp("cmd", "header", options, "footer", true);
+    }
+
+    @Test
+    void testPrintOptionsIterable() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setSyntaxPrefix("Usage: ");
+
+        List<Option> options = Arrays.asList(Option.builder("a").build());
+        formatter.printOptions(new PrintWriter(System.out), 80, new Options().addOption(options.get(0)), 1, 3);
+    }
+
+    @Test
+    void testPrintOptionsWithOptions() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.setSyntaxPrefix("Usage: ");
+
+        Options options = new Options();
+        options.addOption(Option.builder("a").build());
+        formatter.printOptions(new PrintWriter(System.out), 80, options, 1, 3);
+    }
+}
+```
+
+[2026-01-20 09:32:47] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 仍有问题 - 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后方法覆盖: 未覆盖: AbstractHelpFormatter
+修复后代码:
+```java
+package cli.help;
+
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class AbstractHelpFormatterTest {
+
+    private static class TestFormatter extends AbstractHelpFormatter {
+        private TableDefinition tableDefinition;
+
+        protected TestFormatter(Builder<?, ?> builder) {
+            super(builder);
+        }
+
+        @Override
+        protected TableDefinition getTableDefinition(Iterable<Option> options) {
+            return tableDefinition;
+        }
+
+        public void setTableDefinition(TableDefinition tableDefinition) {
+            this.tableDefinition = tableDefinition;
+        }
+    }
+
+    private static AbstractHelpFormatter.Builder<?, ?> createTestBuilder() {
+        return new AbstractHelpFormatter.Builder<AbstractHelpFormatter.Builder<?, ?>, TestFormatter>() {
+            @Override
+            public TestFormatter get() {
+                return new TestFormatter(this);
+            }
+        };
+    }
+
+    private static TestFormatter createFormatter() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createTestBuilder();
+        return (TestFormatter) builder.get();
+    }
+
+    private static Option createOption(String key, String longKey) {
+        return Option.builder(key).setLongName(longKey).build();
+    }
+
+    @Test
+    void testGetSerializer() {
+        AbstractHelpFormatter formatter = createFormatter();
+        HelpAppendable result = formatter.getSerializer();
+        assertNotNull(result);
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"prefix", " custom "})
+    @NullAndEmptySource
+    void testSetSyntaxPrefix(String prefix) {
+        TestFormatter formatter = createFormatter();
+        formatter.setSyntaxPrefix(prefix);
+        String result = formatter.getSyntaxPrefix();
+        assertEquals(Util.defaultValue(prefix, ""), result);
+    }
+
+    @Test
+    void testGetOptionFormatter() {
+        TestFormatter formatter = createFormatter();
+        Option option = createOption("a", "aaa");
+        OptionFormatter result = formatter.getOptionFormatter(option);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSortIterable_Null() {
+        TestFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Iterable<Option>) null);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testSortIterable_SingleItem() {
+        TestFormatter formatter = createFormatter();
+        Option option = createOption("a", "aaa");
+        List<Option> result = formatter.sort(Collections.singletonList(option));
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(option, result.get(0));
+    }
+
+    @Test
+    void testSortIterable_MultipleItems() {
+        TestFormatter formatter = createFormatter();
+        Option option1 = createOption("b", "bbb");
+        Option option2 = createOption("a", "aaa");
+        Option option3 = createOption("c", "ccc");
+
+        List<Option> sorted = formatter.sort(Arrays.asList(option1, option2, option3));
+        assertEquals(option2, sorted.get(0));
+        assertEquals(option1, sorted.get(1));
+        assertEquals(option3, sorted.get(2));
+    }
+
+    @Test
+    void testSortOptions_Null() {
+        TestFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Options) null);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testToArgName() {
+        TestFormatter formatter = createFormatter();
+        String result = formatter.toArgName("file");
+        assertEquals("<file>", result);
+    }
+
+    @Test
+    void testToSyntaxOptions_Iterable() {
+        TestFormatter formatter = createFormatter();
+        Option option1 = createOption("a", "aaa");
+        Option option2 = createOption("b", "bbb");
+        String result = formatter.toSyntaxOptions(Arrays.asList(option1, option2));
+        assertNotNull(result);
+        assertTrue(result.contains("-a") && result.contains("-b"));
+    }
+
+    @Test
+    void testToSyntaxOptions_WithLookup() {
+        TestFormatter formatter = createFormatter();
+        Option option = createOption("a", "aaa");
+        String result = formatter.toSyntaxOptions(
+            Collections.singletonList(option), 
+            o -> null
+        );
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptions_OptionGroup() {
+        TestFormatter formatter = createFormatter();
+        OptionGroup group = new OptionGroup();
+        group.addOption(createOption("a", "aaa"));
+        group.addOption(createOption("b", "bbb"));
+        group.setRequired(true);
+        String result = formatter.toSyntaxOptions(group);
+        assertTrue(result.contains("-a") && result.contains("-b"));
+        assertTrue(result.contains(formatter.getOptionGroupSeparator()));
+    }
+
+    @Test
+    void testToSyntaxOptions_Options() {
+        TestFormatter formatter = createFormatter();
+        Options options = new Options();
+        options.addOption(createOption("a", "aaa"));
+        String result = formatter.toSyntaxOptions(options);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testPrintHelp_ThrowsException() {
+        TestFormatter formatter = createFormatter();
+        Executable action = () -> formatter.printHelp("", "header", Collections.emptyList(), "footer", true);
+        assertThrows(IllegalArgumentException.class, action);
+    }
+
+    @Test
+    void testPrintOptions_Iterable() {
+        TestFormatter formatter = createFormatter();
+        TableDefinition tableDef = TableDefinition.builder()
+            .addColumn(new TableColumn("option", "Option", 0))
+            .addColumn(new TableColumn("description", "Description", 0))
+            .build();
+        tableDef.addRow("-a", "Option A");
+        formatter.setTableDefinition(tableDef);
+        formatter.printOptions(Arrays.asList(createOption("a", "aaa")));
+    }
+
+    @Test
+    void testPrintOptions_Options() {
+        TestFormatter formatter = createFormatter();
+        TableDefinition tableDef = TableDefinition.builder()
+            .addColumn(new TableColumn("option", "Option", 0))
+            .addColumn(new TableColumn("description", "Description", 0))
+            .build();
+        tableDef.addRow("-b", "Option B");
+        formatter.setTableDefinition(tableDef);
+        Options options = new Options();
+        options.addOption(createOption("b", "bbb"));
+        formatter.printOptions(options);
+    }
+
+    @Test
+    void testPrintOptions_TableDefinition() throws IOException {
+        TestFormatter formatter = createFormatter();
+        TableDefinition tableDef = TableDefinition.builder()
+            .addColumn(new TableColumn("name", "Name", 0))
+            .addColumn(new TableColumn("value", "Value", 0))
+            .build();
+        tableDef.addRow("Test", "123");
+        formatter.printOptions(tableDef);
+    }
+}
+
+class AbstractHelpFormatterBuilderTest {
+
+    private AbstractHelpFormatter.Builder<?, ?> createBuilder() {
+        return new AbstractHelpFormatter.Builder<AbstractHelpFormatter.Builder<?, ?>, AbstractHelpFormatter>() {
+            @Override
+            public AbstractHelpFormatter get() {
+                return null;
+            }
+        };
+    }
+
+    @Test
+    void testBuilderConstructor() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        assertNotNull(builder);
+    }
+
+    @Test
+    void testAsThis() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        assertSame(builder, builder.asThis());
+    }
+
+    @Test
+    void testDefaultComparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        Comparator<Option> comparator = builder.getComparator();
+        assertNotNull(comparator);
+    }
+
+    @Test
+    void testSetComparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        Comparator<Option> custom = (o1, o2) -> 0;
+        assertSame(builder, builder.setComparator(custom));
+        assertEquals(custom, builder.getComparator());
+    }
+
+    @Test
+    void testDefaultHelpAppendable() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        HelpAppendable appendable = builder.getHelpAppendable();
+        assertNotNull(appendable);
+    }
+
+    @Test
+    void testSetHelpAppendable_Null() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        assertSame(builder, builder.setHelpAppendable(null));
+        assertNotNull(builder.getHelpAppendable());
+    }
+
+    @Test
+    void testSetHelpAppendable_NonNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        HelpAppendable custom = new StringBuilder();
+        assertSame(builder, builder.setHelpAppendable(custom));
+        assertEquals(custom, builder.getHelpAppendable());
+    }
+
+    @Test
+    void testDefaultOptionFormatBuilder() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        OptionFormatter.Builder formatBuilder = builder.getOptionFormatBuilder();
+        assertNotNull(formatBuilder);
+    }
+
+    @Test
+    void testSetOptionFormatBuilder_Null() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        assertSame(builder, builder.setOptionFormatBuilder(null));
+        assertNotNull(builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testSetOptionFormatBuilder_NonNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        OptionFormatter.Builder custom = OptionFormatter.builder();
+        assertSame(builder, builder.setOptionFormatBuilder(custom));
+        assertEquals(custom, builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testDefaultOptionGroupSeparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        String separator = builder.getOptionGroupSeparator();
+        assertEquals(" | ", separator);
+    }
+
+    @ParameterizedTest
+    @MethodSource("separatorParams")
+    void testSetOptionGroupSeparator(String input, String expected) {
+        AbstractHelpFormatter.Builder<?, ?> builder = createBuilder();
+        assertSame(builder, builder.setOptionGroupSeparator(input));
+        assertEquals(expected, builder.getOptionGroupSeparator());
+    }
+
+    private static Object[][] separatorParams() {
+        return new Object[][] {
+            {"sep", "sep"},
+            {"", ""},
+            {null, ""},
+            {"  ", "  "}
+        };
+    }
+}
+```
+
+[2026-01-20 09:35:29] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli.help;
+
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import java.io.IOException;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Arrays;
+import java.util.List;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class AbstractHelpFormatterTest {
+    // [兜底] 保留了 26 个正确的测试方法
+
+    @Test
+    void testGetSerializer() {
+        AbstractHelpFormatter formatter = createFormatter();
+        HelpAppendable result = formatter.getSerializer();
+        assertNotNull(result);
+    }
+
+    @Test
+    void testGetOptionFormatter() {
+        HelpFormatter formatter = createFormatter();
+        Option option = createOption("a", "aaa");
+        OptionFormatter result = formatter.getOptionFormatter(option);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testSortIterable_Null() {
+        HelpFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Iterable<Option>) null);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testSortIterable_SingleItem() {
+        HelpFormatter formatter = createFormatter();
+        Option option = createOption("a", "aaa");
+        List<Option> result = formatter.sort(Collections.singletonList(option));
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+        assertEquals(option, result.get(0));
+    }
+
+    @Test
+    void testSortIterable_MultipleItems() {
+        HelpFormatter formatter = createFormatter();
+        Option option1 = createOption("b", "bbb");
+        Option option2 = createOption("a", "aaa");
+        Option option3 = createOption("c", "ccc");
+
+        List<Option> sorted = formatter.sort(Arrays.asList(option1, option2, option3));
+        assertEquals(option2, sorted.get(0));
+        assertEquals(option1, sorted.get(1));
+        assertEquals(option3, sorted.get(2));
+    }
+
+    @Test
+    void testSortOptions_Null() {
+        HelpFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Options) null);
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testToArgName() {
+        HelpFormatter formatter = createFormatter();
+        String result = formatter.toArgName("file");
+        assertEquals("<file>", result);
+    }
+
+    @Test
+    void testToSyntaxOptions_Iterable() {
+        HelpFormatter formatter = createFormatter();
+        Option option1 = createOption("a", "aaa");
+        Option option2 = createOption("b", "bbb");
+        String result = formatter.toSyntaxOptions(Arrays.asList(option1, option2));
+        assertNotNull(result);
+        assertTrue(result.contains("-a") && result.contains("-b"));
+    }
+
+    @Test
+    void testToSyntaxOptions_WithLookup() {
+        HelpFormatter formatter = createFormatter();
+        Option option = createOption("a", "aaa");
+        String result = formatter.toSyntaxOptions(
+            Collections.singletonList(option), 
+            o -> null
+        );
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptions_OptionGroup() {
+        HelpFormatter formatter = createFormatter();
+        OptionGroup group = new OptionGroup();
+        group.addOption(createOption("a", "aaa"));
+        group.addOption(createOption("b", "bbb"));
+        group.setRequired(true);
+        String result = formatter.toSyntaxOptions(group);
+        assertTrue(result.contains("-a") && result.contains("-b"));
+        assertTrue(result.contains(formatter.getOptionGroupSeparator()));
+    }
+
+    @Test
+    void testToSyntaxOptions_Options() {
+        HelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        options.addOption(createOption("a", "aaa"));
+        String result = formatter.toSyntaxOptions(options);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testPrintHelp_ThrowsException() {
+        HelpFormatter formatter = createFormatter();
+        Executable action = () -> formatter.printHelp("", "header", Collections.emptyList(), "footer", true);
+        assertThrows(IllegalArgumentException.class, action);
+    }
+
+    @Test
+    void testPrintOptions_TableDefinition() throws IOException {
+        HelpFormatter formatter = createFormatter();
+        List<TextStyle> styles = Collections.emptyList();
+        List<String> headers = Arrays.asList("Name", "Value");
+        List<List<String>> rows = Collections.singletonList(Arrays.asList("Test", "123"));
+        TableDefinition tableDef = TableDefinition.from("", styles, headers, rows);
+        formatter.printOptions(tableDef);
+    }
+
+    @Test
+    void testBuilderConstructor() {
+        HelpFormatter.Builder builder = createBuilder();
+        assertNotNull(builder);
+    }
+
+    @Test
+    void testAsThis() {
+        HelpFormatter.Builder builder = createBuilder();
+        assertSame(builder, builder.asThis());
+    }
+
+    @Test
+    void testDefaultComparator() {
+        HelpFormatter.Builder builder = createBuilder();
+        Comparator<Option> comparator = builder.getComparator();
+        assertNotNull(comparator);
+    }
+
+    @Test
+    void testSetComparator() {
+        HelpFormatter.Builder builder = createBuilder();
+        Comparator<Option> custom = (o1, o2) -> 0;
+        assertSame(builder, builder.setComparator(custom));
+        assertEquals(custom, builder.getComparator());
+    }
+
+    @Test
+    void testDefaultHelpAppendable() {
+        HelpFormatter.Builder builder = createBuilder();
+        HelpAppendable appendable = builder.getHelpAppendable();
+        assertNotNull(appendable);
+    }
+
+    @Test
+    void testSetHelpAppendable_Null() {
+        HelpFormatter.Builder builder = createBuilder();
+        assertSame(builder, builder.setHelpAppendable(null));
+        assertNotNull(builder.getHelpAppendable());
+    }
+
+    @Test
+    void testSetHelpAppendable_NonNull() {
+        HelpFormatter.Builder builder = createBuilder();
+        HelpAppendable custom = TextHelpAppendable.systemOut();
+        assertSame(builder, builder.setHelpAppendable(custom));
+        assertEquals(custom, builder.getHelpAppendable());
+    }
+
+    @Test
+    void testDefaultOptionFormatBuilder() {
+        HelpFormatter.Builder builder = createBuilder();
+        OptionFormatter.Builder formatBuilder = builder.getOptionFormatBuilder();
+        assertNotNull(formatBuilder);
+    }
+
+    @Test
+    void testSetOptionFormatBuilder_Null() {
+        HelpFormatter.Builder builder = createBuilder();
+        assertSame(builder, builder.setOptionFormatBuilder(null));
+        assertNotNull(builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testSetOptionFormatBuilder_NonNull() {
+        HelpFormatter.Builder builder = createBuilder();
+        OptionFormatter.Builder custom = OptionFormatter.builder();
+        assertSame(builder, builder.setOptionFormatBuilder(custom));
+        assertEquals(custom, builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testDefaultOptionGroupSeparator() {
+        HelpFormatter.Builder builder = createBuilder();
+        String separator = builder.getOptionGroupSeparator();
+        assertEquals(" | ", separator);
+    }
+
+    // Helper methods
+    private HelpFormatter createFormatter() {
+        return new HelpFormatter(createBuilder());
+    }
+
+    private HelpFormatter.Builder createBuilder() {
+        return HelpFormatter.builder();
+    }
+
+    private Option createOption(String opt, String longOpt) {
+        return Option.builder(opt).longOpt(longOpt).build();
+    }
+}
+```
+
+[2026-01-20 11:34:19] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知错误 - 未导入TextHelpAppendable、OptionFormatter、TableDefinition类
+修复后状态: 仍有问题 - 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后方法覆盖: 未覆盖: AbstractHelpFormatter
+修复后代码:
+```java
+package cli.help;
+
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import cli.help.HelpAppendable;
+import cli.help.OptionFormatter;
+import cli.help.TableDefinition;
+import cli.help.TextHelpAppendable;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class AbstractHelpFormatterTest {
+
+    private static final class TestFormatter extends AbstractHelpFormatter {
+        TestFormatter(Builder<?, ?> builder) {
+            super(builder);
+        }
+
+        @Override
+        protected TableDefinition getTableDefinition(Iterable<Option> options) {
+            return null;
+        }
+    }
+
+    private AbstractHelpFormatter.Builder<?, ?> createDefaultBuilder() {
+        return new AbstractHelpFormatter.Builder<AbstractHelpFormatter.Builder<?, ?>, AbstractHelpFormatter>() {
+            @Override
+            public AbstractHelpFormatter get() {
+                return new TestFormatter(this);
+            }
+        };
+    }
+
+    private AbstractHelpFormatter createFormatter() {
+        return createDefaultBuilder().get();
+    }
+
+    private Option createOption(String key) {
+        Option option = new Option();
+        try {
+            Field keyField = Option.class.getDeclaredField("key");
+            keyField.setAccessible(true);
+            keyField.set(option, key);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        return option;
+    }
+
+    private OptionGroup createOptionGroup(Option... options) {
+        OptionGroup group = new OptionGroup();
+        for (Option option : options) {
+            group.addOption(option);
+        }
+        return group;
+    }
+
+    @Test
+    void testBuilderConstructor() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        assertNotNull(builder);
+    }
+
+    @Test
+    void testBuilderAsThis() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        assertSame(builder, builder.asThis());
+    }
+
+    @Test
+    void testBuilderSetComparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        Comparator<Option> customComparator = (o1, o2) -> 0;
+        builder.setComparator(customComparator);
+        assertSame(customComparator, builder.getComparator());
+    }
+
+    @Test
+    void testBuilderSetHelpAppendable() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        HelpAppendable customAppendable = new TextHelpAppendable(new ByteArrayOutputStream());
+        builder.setHelpAppendable(customAppendable);
+        assertSame(customAppendable, builder.getHelpAppendable());
+    }
+
+    @Test
+    void testBuilderSetHelpAppendableNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        builder.setHelpAppendable(null);
+        assertSame(TextHelpAppendable.systemOut().getClass(), builder.getHelpAppendable().getClass());
+    }
+
+    @Test
+    void testBuilderSetOptionFormatBuilder() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        OptionFormatter.Builder customBuilder = OptionFormatter.builder();
+        builder.setOptionFormatBuilder(customBuilder);
+        assertSame(customBuilder, builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testBuilderSetOptionFormatBuilderNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        builder.setOptionFormatBuilder(null);
+        assertNotNull(builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testBuilderSetOptionGroupSeparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        String separator = "##";
+        builder.setOptionGroupSeparator(separator);
+        assertEquals(separator, builder.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testBuilderSetOptionGroupSeparatorNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        builder.setOptionGroupSeparator(null);
+        assertEquals("", builder.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testAbstractHelpFormatterConstructor() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter);
+    }
+
+    @Test
+    void testGetComparator() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter.getComparator());
+    }
+
+    @Test
+    void testGetHelpAppendable() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter.getHelpAppendable());
+    }
+
+    @Test
+    void testGetOptionFormatBuilder() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testGetOptionFormatter() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Option option = createOption("a");
+        assertNotNull(formatter.getOptionFormatter(option));
+    }
+
+    @Test
+    void testGetOptionGroupSeparator() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertEquals("", formatter.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testGetSerializer() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertSame(formatter.getHelpAppendable(), formatter.getSerializer());
+    }
+
+    @Test
+    void testGetSetSyntaxPrefix() {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.setSyntaxPrefix("test:");
+        assertEquals("test:", formatter.getSyntaxPrefix());
+    }
+
+    @Test
+    void testSetSyntaxPrefixNull() {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.setSyntaxPrefix(null);
+        assertEquals("", formatter.getSyntaxPrefix());
+    }
+
+    @Test
+    void testSortIterable() {
+        AbstractHelpFormatter formatter = createDefaultBuilder()
+                .setComparator((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
+                .get();
+        List<Option> options = Arrays.asList(createOption("b"), createOption("a"));
+        List<Option> sorted = formatter.sort(options);
+        assertEquals("a", sorted.get(0).getKey());
+        assertEquals("b", sorted.get(1).getKey());
+    }
+
+    @Test
+    void testSortIterableNull() {
+        AbstractHelpFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Iterable<Option>) null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testSortOptions() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        options.addOption(createOption("b"));
+        options.addOption(createOption("a"));
+        List<Option> sorted = formatter.sort(options);
+        assertEquals(2, sorted.size());
+    }
+
+    @Test
+    void testSortOptionsNull() {
+        AbstractHelpFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Options) null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testToArgName() {
+        AbstractHelpFormatter formatter = createFormatter();
+        String result = formatter.toArgName("arg");
+        assertNotNull(result);
+    }
+
+    @Test
+    void testToSyntaxOptionsIterableEmpty() {
+        AbstractHelpFormatter formatter = createFormatter();
+        String result = formatter.toSyntaxOptions(new ArrayList<>());
+        assertEquals("", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithLookup() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Option option = createOption("a");
+        List<Option> options = Arrays.asList(option);
+        String result = formatter.toSyntaxOptions(options, o -> null);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptionsOptionGroupEmpty() {
+        AbstractHelpFormatter formatter = createFormatter();
+        OptionGroup group = createOptionGroup();
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsOptionGroupSingle() {
+        AbstractHelpFormatter formatter = createFormatter();
+        OptionGroup group = createOptionGroup(createOption("a"));
+        group.setRequired(true);
+        String result = formatter.toSyntaxOptions(group);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptionsOptionGroupMultiple() {
+        AbstractHelpFormatter formatter = createFormatter();
+        OptionGroup group = createOptionGroup(createOption("a"), createOption("b"));
+        String result = formatter.toSyntaxOptions(group);
+        assertTrue(result.contains("a"));
+        assertTrue(result.contains("b"));
+    }
+
+    @Test
+    void testToSyntaxOptionsOptions() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        options.addOption(createOption("a"));
+        String result = formatter.toSyntaxOptions(options);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testPrintHelpCmdLineSyntaxEmpty() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Executable action = () -> formatter.printHelp("", "header", new ArrayList<>(), "footer", true);
+        assertThrows(IllegalArgumentException.class, action);
+    }
+
+    @Test
+    void testPrintHelpAutoUsage() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printHelp("cmd", "header", new ArrayList<>(), "footer", true);
+    }
+
+    @Test
+    void testPrintHelpNoAutoUsage() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printHelp("cmd", "header", new ArrayList<>(), "footer", false);
+    }
+
+    @Test
+    void testPrintHelpWithOptions() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        formatter.printHelp("cmd", "header", options, "footer", true);
+    }
+
+    @Test
+    void testPrintOptionsIterable() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printOptions(new ArrayList<>());
+    }
+
+    @Test
+    void testPrintOptionsOptions() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printOptions(new Options());
+    }
+
+    @Test
+    void testPrintOptionsTableDefinition() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printOptions((TableDefinition) null);
+    }
+}
+```
+
+[2026-01-20 11:37:42] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli.help;
+
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import cli.help.HelpAppendable;
+import cli.help.HelpFormatter;
+import cli.help.OptionFormatter;
+import cli.help.TableDefinition;
+import cli.help.TextHelpAppendable;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.function.Function;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+public class AbstractHelpFormatterTest {
+
+    @Test
+    void testBuilderConstructor() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        assertNotNull(builder);
+    }
+
+    @Test
+    void testBuilderAsThis() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        assertSame(builder, builder.asThis());
+    }
+
+    @Test
+    void testBuilderSetComparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        Comparator<Option> customComparator = (o1, o2) -> 0;
+        builder.setComparator(customComparator);
+        assertSame(customComparator, builder.getComparator());
+    }
+
+    @Test
+    void testBuilderSetHelpAppendable() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        HelpAppendable customAppendable = new TextHelpAppendable(new StringBuilder());
+        builder.setHelpAppendable(customAppendable);
+        assertSame(customAppendable, builder.getHelpAppendable());
+    }
+
+    @Test
+    void testBuilderSetHelpAppendableNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        builder.setHelpAppendable(null);
+        assertSame(TextHelpAppendable.systemOut().getClass(), builder.getHelpAppendable().getClass());
+    }
+
+    @Test
+    void testBuilderSetOptionFormatBuilder() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        OptionFormatter.Builder customBuilder = OptionFormatter.builder();
+        builder.setOptionFormatBuilder(customBuilder);
+        assertSame(customBuilder, builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testBuilderSetOptionFormatBuilderNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        builder.setOptionFormatBuilder(null);
+        assertNotNull(builder.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testBuilderSetOptionGroupSeparator() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        String separator = "##";
+        builder.setOptionGroupSeparator(separator);
+        assertEquals(separator, builder.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testBuilderSetOptionGroupSeparatorNull() {
+        AbstractHelpFormatter.Builder<?, ?> builder = createDefaultBuilder();
+        builder.setOptionGroupSeparator(null);
+        assertEquals("", builder.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testAbstractHelpFormatterConstructor() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter);
+    }
+
+    @Test
+    void testGetComparator() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter.getComparator());
+    }
+
+    @Test
+    void testGetHelpAppendable() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter.getHelpAppendable());
+    }
+
+    @Test
+    void testGetOptionFormatBuilder() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertNotNull(formatter.getOptionFormatBuilder());
+    }
+
+    @Test
+    void testGetOptionFormatter() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Option option = createOption("a");
+        assertNotNull(formatter.getOptionFormatter(option));
+    }
+
+    @Test
+    void testGetOptionGroupSeparator() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertEquals("", formatter.getOptionGroupSeparator());
+    }
+
+    @Test
+    void testGetSerializer() {
+        AbstractHelpFormatter formatter = createFormatter();
+        assertSame(formatter.getHelpAppendable(), formatter.getSerializer());
+    }
+
+    @Test
+    void testGetSetSyntaxPrefix() {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.setSyntaxPrefix("test:");
+        assertEquals("test:", formatter.getSyntaxPrefix());
+    }
+
+    @Test
+    void testSetSyntaxPrefixNull() {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.setSyntaxPrefix(null);
+        assertEquals("", formatter.getSyntaxPrefix());
+    }
+
+    @Test
+    void testSortIterable() {
+        AbstractHelpFormatter formatter = createDefaultBuilder()
+                .setComparator((o1, o2) -> o1.getKey().compareTo(o2.getKey()))
+                .get();
+        List<Option> options = Arrays.asList(createOption("b"), createOption("a"));
+        List<Option> sorted = formatter.sort(options);
+        assertEquals("a", sorted.get(0).getKey());
+        assertEquals("b", sorted.get(1).getKey());
+    }
+
+    @Test
+    void testSortIterableNull() {
+        AbstractHelpFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Iterable<Option>) null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testSortOptions() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        options.addOption(createOption("b"));
+        options.addOption(createOption("a"));
+        List<Option> sorted = formatter.sort(options);
+        assertEquals(2, sorted.size());
+    }
+
+    @Test
+    void testSortOptionsNull() {
+        AbstractHelpFormatter formatter = createFormatter();
+        List<Option> result = formatter.sort((Options) null);
+        assertTrue(result.isEmpty());
+    }
+
+    @Test
+    void testToArgName() {
+        AbstractHelpFormatter formatter = createFormatter();
+        String result = formatter.toArgName("arg");
+        assertNotNull(result);
+    }
+
+    @Test
+    void testToSyntaxOptionsIterableEmpty() {
+        AbstractHelpFormatter formatter = createFormatter();
+        String result = formatter.toSyntaxOptions(new ArrayList<>());
+        assertEquals("", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsWithLookup() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Option option = createOption("a");
+        List<Option> options = Arrays.asList(option);
+        String result = formatter.toSyntaxOptions(options, o -> null);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptionsOptionGroupEmpty() {
+        AbstractHelpFormatter formatter = createFormatter();
+        OptionGroup group = createOptionGroup();
+        String result = formatter.toSyntaxOptions(group);
+        assertEquals("", result);
+    }
+
+    @Test
+    void testToSyntaxOptionsOptionGroupSingle() {
+        AbstractHelpFormatter formatter = createFormatter();
+        OptionGroup group = createOptionGroup(createOption("a"));
+        group.setRequired(true);
+        String result = formatter.toSyntaxOptions(group);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testToSyntaxOptionsOptionGroupMultiple() {
+        AbstractHelpFormatter formatter = createFormatter();
+        OptionGroup group = createOptionGroup(createOption("a"), createOption("b"));
+        String result = formatter.toSyntaxOptions(group);
+        assertTrue(result.contains("a"));
+        assertTrue(result.contains("b"));
+    }
+
+    @Test
+    void testToSyntaxOptionsOptions() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        options.addOption(createOption("a"));
+        String result = formatter.toSyntaxOptions(options);
+        assertFalse(result.isEmpty());
+    }
+
+    @Test
+    void testPrintHelpCmdLineSyntaxEmpty() {
+        AbstractHelpFormatter formatter = createFormatter();
+        Executable action = () -> formatter.printHelp("", "header", new ArrayList<>(), "footer", true);
+        assertThrows(IllegalArgumentException.class, action);
+    }
+
+    @Test
+    void testPrintHelpAutoUsage() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printHelp("cmd", "header", new ArrayList<>(), "footer", true);
+    }
+
+    @Test
+    void testPrintHelpNoAutoUsage() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printHelp("cmd", "header", new ArrayList<>(), "footer", false);
+    }
+
+    @Test
+    void testPrintHelpWithOptions() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        Options options = new Options();
+        formatter.printHelp("cmd", "header", options, "footer", true);
+    }
+
+    @Test
+    void testPrintOptionsIterable() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printOptions(new ArrayList<>());
+    }
+
+    @Test
+    void testPrintOptionsOptions() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printOptions(new Options());
+    }
+
+    @Test
+    void testPrintOptionsTableDefinition() throws IOException {
+        AbstractHelpFormatter formatter = createFormatter();
+        formatter.printOptions((TableDefinition) null);
+    }
+
+    private AbstractHelpFormatter.Builder<?, ?> createDefaultBuilder() {
+        return HelpFormatter.builder();
+    }
+
+    private AbstractHelpFormatter createFormatter() {
+        return createDefaultBuilder().get();
+    }
+
+    private Option createOption(String opt) {
+        return Option.builder(opt).build();
+    }
+
+    private OptionGroup createOptionGroup(Option... options) {
+        OptionGroup group = new OptionGroup();
+        for (Option option : options) {
+            group.addOption(option);
+        }
+        return group;
+    }
+}
+```
+

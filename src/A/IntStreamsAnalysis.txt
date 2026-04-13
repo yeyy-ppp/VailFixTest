@@ -1,0 +1,23 @@
+```
+包路径：lang3.stream
+类名：IntStreams
+父类：无
+依赖类：无
+---
+序号：1
+方法名：of(int... values)
+返回类型：IntStream
+功能描述：根据输入的值数组创建IntStream，若数组为null则返回空流
+序号：2
+方法名：range(int endExclusive)
+返回类型：IntStream
+功能描述：创建从0到指定结束值（不含）的IntStream范围
+序号：3
+方法名：rangeClosed(int endInclusive)
+返回类型：IntStream
+功能描述：创建从0到指定结束值（含）的IntStream闭合范围
+序号：4
+方法名：IntStreams()
+返回类型：无
+功能描述：构造IntStreams实例（已弃用）
+```

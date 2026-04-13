@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LineNumberCriterion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.slicing</a> &gt; <span class="el_source">LineNumberCriterion.java</span></div><h1>LineNumberCriterion.java</h1><pre class="source lang-java linenums">package slicing.slicing;
+
+import com.github.javaparser.Position;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import slicing.arcs.pdg.StructuralArc;
+import slicing.graphs.sdg.SDG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.ObjectTree;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/** A criterion that locates nodes by line. It may only be used in single-declaration graphs. */
+public class LineNumberCriterion implements SlicingCriterion {
+<span class="nc" id="L21">    protected static final Position DEFAULT_POSITION = new Position(0, 0);</span>
+
+    protected final int lineNumber;
+    protected String variable;
+
+<span class="nc" id="L26">    public LineNumberCriterion(int lineNumber, String variable) {</span>
+<span class="nc" id="L27">        this.variable = variable;</span>
+<span class="nc" id="L28">        this.lineNumber = lineNumber;</span>
+<span class="nc" id="L29">    }</span>
+
+    @Override
+    public Set&lt;GraphNode&lt;?&gt;&gt; findNode(SDG graph) {
+<span class="nc" id="L33">        Optional&lt;CompilationUnit&gt; optCu = findCompilationUnit(graph.getCompilationUnits());</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        if (!optCu.isPresent())</span>
+<span class="nc" id="L35">            throw new NoSuchElementException();</span>
+
+<span class="nc" id="L37">        Set&lt;GraphNode&lt;?&gt;&gt; set = optCu.get().findAll(Node.class, this::matchesLine).stream()</span>
+<span class="nc" id="L38">                .map(graph::findNodeByASTNode)</span>
+<span class="nc" id="L39">                .filter(Optional::isPresent)</span>
+<span class="nc" id="L40">                .map(Optional::get)</span>
+<span class="nc" id="L41">                .flatMap(node -&gt; locateVariableNodes(node, graph))</span>
+<span class="nc" id="L42">                .collect(Collectors.toSet());</span>
+<span class="nc bnc" id="L43" title="All 4 branches missed.">        if (set.isEmpty() &amp;&amp; !variable.startsWith(&quot;this&quot;)) {</span>
+<span class="nc" id="L44">            variable = &quot;this.&quot; + variable;</span>
+<span class="nc" id="L45">            return findNode(graph);</span>
+        } else {
+<span class="nc" id="L47">            return set;</span>
+        }
+    }
+
+    /** Locates the compilation unit that corresponds to this criterion's file. */
+    protected Optional&lt;CompilationUnit&gt; findCompilationUnit(NodeList&lt;CompilationUnit&gt; cus) {
+<span class="nc" id="L53">        return cus.getFirst();</span>
+    }
+
+    /** Check if a node matches the criterion's line. */
+    protected boolean matchesLine(Node node) {
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        return node.getBegin().orElse(DEFAULT_POSITION).line == lineNumber;</span>
+    }
+
+    protected Stream&lt;GraphNode&lt;?&gt;&gt; locateVariableNodes(GraphNode&lt;?&gt; graphNode, SDG graph) {
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        if (variable == null)</span>
+<span class="nc" id="L63">            return locateAllNodes(graphNode, graph);</span>
+<span class="nc" id="L64">        return locateAllNodes(graphNode, graph)</span>
+<span class="nc" id="L65">                .map(GraphNode::getVariableActions).flatMap(List::stream)</span>
+<span class="nc" id="L66">                .flatMap(variableAction -&gt; {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                    if (variableAction.getName().equals(variable)) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                        if (variableAction.hasObjectTree())</span>
+<span class="nc" id="L69">                            return Stream.of(variableAction.getObjectTree().getMemberNode());</span>
+                        else
+<span class="nc" id="L71">                            return Stream.of(variableAction.getGraphNode());</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">                    } else if (variable.contains(&quot;.&quot;) &amp;&amp; variableAction.getName().equals(ObjectTree.removeFields(variable))) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">                        if (variableAction.hasPolyTreeMember(variable))</span>
+<span class="nc" id="L74">                            return variableAction.getObjectTree().getNodesForPoly(variable).stream();</span>
+                        else
+<span class="nc" id="L76">                            return Stream.empty();</span>
+                    } else {
+<span class="nc" id="L78">                        return Stream.empty();</span>
+                    }
+                });
+    }
+
+    protected Stream&lt;GraphNode&lt;?&gt;&gt; locateAllNodes(GraphNode&lt;?&gt; graphNode, SDG graph) {
+<span class="nc" id="L84">        Stream&lt;GraphNode&lt;?&gt;&gt; result = graph.outgoingEdgesOf(graphNode).stream()</span>
+<span class="nc" id="L85">                .filter(StructuralArc.class::isInstance)</span>
+<span class="nc" id="L86">                .map(graph::getEdgeTarget)</span>
+<span class="nc" id="L87">                .flatMap(node -&gt; locateAllNodes(node, graph));</span>
+<span class="nc" id="L88">        return Stream.concat(Stream.of(graphNode), result);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L93">        return String.format(&quot;(%s, %s)&quot;, lineNumber, variable);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,568 @@
+[2026-01-19 18:22:43] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli.help;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import java.io.IOException;
+import java.io.StringWriter;
+import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+class TextHelpAppendableTest {
+    @Test
+    void systemOut_createsInstanceWithSystemOut() {
+        TextHelpAppendable instance = TextHelpAppendable.systemOut();
+        assertEquals(System.out, instance.getOutput());
+    }
+
+    @Test
+    void constructor_initializesWithAppendable() {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        assertEquals(74, instance.getMaxWidth());
+        assertEquals(1, instance.getLeftPad());
+        assertEquals(3, instance.getIndent());
+    }
+
+    @Test
+    void indexOfWrap_throwsForInvalidWidth() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            TextHelpAppendable.indexOfWrap("text", 0, 0));
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {"a\tb", "a\nb", "a\fb", "a\rb", "a\u2028b", "a\u2029b"})
+    void indexOfWrap_returnsBreakCharPosition(String text) {
+        int pos = TextHelpAppendable.indexOfWrap(text, 10, 0);
+        assertEquals(1, pos);
+    }
+
+    @Test
+    void indexOfWrap_returnsEndWhenWithinWidth() {
+        int pos = TextHelpAppendable.indexOfWrap("abc", 3, 0);
+        assertEquals(3, pos);
+    }
+
+    @Test
+    void indexOfWrap_returnsLastSpacePosition() {
+        int pos = TextHelpAppendable.indexOfWrap("a b c", 2, 0);
+        assertEquals(1, pos);
+    }
+
+    @Test
+    void indexOfWrap_returnsLimitMinusOneWhenNoBreak() {
+        int pos = TextHelpAppendable.indexOfWrap("abcdef", 3, 0);
+        assertEquals(2, pos);
+    }
+
+    @Test
+    void adjustTableFormat_adjustsColumnWidths() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        List<TextStyle> styles = Collections.singletonList(TextStyle.builder().get());
+        TableDefinition table = TableDefinition.from("", styles, Collections.singletonList("header"),
+                Collections.singletonList(Collections.singletonList("longcell")));
+        
+        TableDefinition adjusted = instance.adjustTableFormat(table);
+        assertEquals(8, adjusted.columnTextStyles().get(0).getMaxWidth());
+    }
+
+    @Test
+    void adjustTableFormat_scalesScalableColumns() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setMaxWidth(10);
+        TextStyle style = TextStyle.builder().setScalable(true).setMaxWidth(8).get();
+        List<TextStyle> styles = Arrays.asList(style, style);
+        List<String> headers = Arrays.asList("h1", "h2");
+        List<List<String>> rows = Collections.singletonList(Arrays.asList("c1", "c2"));
+        TableDefinition table = TableDefinition.from("", styles, headers, rows);
+        
+        TableDefinition adjusted = instance.adjustTableFormat(table);
+        assertTrue(adjusted.columnTextStyles().get(0).getMaxWidth() < 8);
+    }
+
+    @Test
+    void appendHeader_throwsForInvalidLevel() throws IOException {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        assertThrows(IllegalArgumentException.class, () -> 
+            instance.appendHeader(0, "title"));
+    }
+
+    @Test
+    void appendHeader_outputsHeader() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.appendHeader(1, "Title");
+        assertTrue(output.toString().contains("Title"));
+        assertTrue(output.toString().contains("====="));
+    }
+
+    @Test
+    void appendList_outputsOrderedList() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.appendList(true, Arrays.asList("item1", "item2"));
+        assertTrue(output.toString().contains("1. item1"));
+        assertTrue(output.toString().contains("2. item2"));
+    }
+
+    @Test
+    void appendList_outputsUnorderedList() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.appendList(false, Arrays.asList("item1", "item2"));
+        assertTrue(output.toString().contains("* item1"));
+        assertTrue(output.toString().contains("* item2"));
+    }
+
+    @Test
+    void appendParagraph_outputsText() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.appendParagraph("paragraph text");
+        assertTrue(output.toString().contains("paragraph text"));
+    }
+
+    @Test
+    void appendTable_formatsTable() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        List<TextStyle> styles = Collections.singletonList(TextStyle.builder().get());
+        TableDefinition table = TableDefinition.from("Caption", styles, 
+                Collections.singletonList("Header"), 
+                Collections.singletonList(Collections.singletonList("Cell")));
+        instance.appendTable(table);
+        String result = output.toString();
+        assertTrue(result.contains("Caption"));
+        assertTrue(result.contains("Header"));
+        assertTrue(result.contains("Cell"));
+    }
+
+    @Test
+    void appendTitle_outputsTitle() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.appendTitle("Document Title");
+        assertTrue(output.toString().contains("Document Title"));
+        assertTrue(output.toString().contains("#############"));
+    }
+
+    @Test
+    void getIndent_returnsValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setIndent(5);
+        assertEquals(5, instance.getIndent());
+    }
+
+    @Test
+    void getLeftPad_returnsValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setLeftPad(2);
+        assertEquals(2, instance.getLeftPad());
+    }
+
+    @Test
+    void getMaxWidth_returnsValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setMaxWidth(80);
+        assertEquals(80, instance.getMaxWidth());
+    }
+
+    @Test
+    void makeColumnQueue_createsWrappedQueue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        TextStyle style = TextStyle.builder().setMaxWidth(5).get();
+        Queue<String> queue = instance.makeColumnQueue("long text", style);
+        assertEquals(2, queue.size());
+    }
+
+    @Test
+    void makeColumnQueues_createsMultipleQueues() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        List<String> data = Arrays.asList("col1", "col2");
+        List<TextStyle> styles = Arrays.asList(TextStyle.builder().get(), TextStyle.builder().get());
+        List<Queue<String>> queues = instance.makeColumnQueues(data, styles);
+        assertEquals(2, queues.size());
+    }
+
+    @Test
+    void printWrapped_outputsWithDefaultStyle() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.printWrapped("wrapped text");
+        assertTrue(output.toString().contains("wrapped text"));
+    }
+
+    @Test
+    void printWrapped_outputsWithCustomStyle() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        instance.printWrapped("text", TextStyle.builder().get());
+        assertTrue(output.toString().contains("text"));
+    }
+
+    @Test
+    void resize_adjustsIntegerValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        int result = instance.resize(100, 0.5);
+        assertEquals(50, result);
+    }
+
+    @Test
+    void resize_adjustsTextStyleBuilder() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        TextStyle.Builder builder = TextStyle.builder().setMaxWidth(100).setIndent(10);
+        TextStyle.Builder result = instance.resize(builder, 0.5);
+        assertTrue(result.getMaxWidth() < 100);
+        assertTrue(result.getIndent() < 10);
+    }
+
+    @Test
+    void setIndent_updatesValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setIndent(10);
+        assertEquals(10, instance.getTextStyleBuilder().getIndent());
+    }
+
+    @Test
+    void setLeftPad_updatesValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setLeftPad(4);
+        assertEquals(4, instance.getTextStyleBuilder().getLeftPad());
+    }
+
+    @Test
+    void setMaxWidth_updatesValue() {
+        TextHelpAppendable instance = new TextHelpAppendable(new StringWriter());
+        instance.setMaxWidth(100);
+        assertEquals(100, instance.getTextStyleBuilder().getMaxWidth());
+    }
+
+    @Test
+    void writeColumnQueues_outputsColumns() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        Queue<String> q1 = new ArrayDeque<>(Collections.singletonList("col1"));
+        Queue<String> q2 = new ArrayDeque<>(Collections.singletonList("col2"));
+        List<Queue<String>> queues = Arrays.asList(q1, q2);
+        List<TextStyle> styles = Arrays.asList(TextStyle.builder().get(), TextStyle.builder().get());
+        instance.writeColumnQueues(queues, styles);
+        assertTrue(output.toString().contains("col1"));
+        assertTrue(output.toString().contains("col2"));
+    }
+
+    @Test
+    void printQueue_outputsEachElementInQueue() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        Queue<String> queue = new ArrayDeque<>(Arrays.asList("first", "second"));
+        instance.printQueue(queue);
+        String expected = "first" + System.lineSeparator() + "second" + System.lineSeparator();
+        assertEquals(expected, output.toString());
+    }
+
+    @Test
+    void printQueue_emptyQueueOutputsNothing() throws IOException {
+        StringWriter output = new StringWriter();
+        TextHelpAppendable instance = new TextHelpAppendable(output);
+        Queue<String> queue = new ArrayDeque<>();
+        instance.printQueue(queue);
+        assertEquals("", output.toString());
+    }
+}
+```
+
+[2026-01-20 12:12:13] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli.help;
+
+import java.io.IOException;
+import java.util.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import static org.junit.jupiter.api.Assertions.*;
+import java.io.ByteArrayOutputStream;
+import java.lang.reflect.Method;
+
+class TextHelpAppendableTest {
+    private TextHelpAppendable appendable;
+    private ByteArrayOutputStream outputStream;
+
+    @BeforeEach
+    void setup() {
+        outputStream = new ByteArrayOutputStream();
+        appendable = new TextHelpAppendable(outputStream);
+    }
+
+    @Test
+    void testIndexOfWrap_WidthLessThan1() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            TextHelpAppendable.indexOfWrap("text", 0, 0);
+        });
+    }
+
+    @Test
+    void testIndexOfWrap_FindsBreakChar() {
+        CharSequence text = "a\nb";
+        int result = TextHelpAppendable.indexOfWrap(text, 10, 0);
+        assertEquals(1, result);
+    }
+
+    @Test
+    void testIndexOfWrap_ExceedsLength() {
+        CharSequence text = "abc";
+        int result = TextHelpAppendable.indexOfWrap(text, 5, 0);
+        assertEquals(3, result);
+    }
+
+    @Test
+    void testIndexOfWrap_FindsWhitespace() {
+        CharSequence text = "abc def";
+        int result = TextHelpAppendable.indexOfWrap(text, 4, 0);
+        assertEquals(3, result);
+    }
+
+    @Test
+    void testIndexOfWrap_NoBreakOrSpace() {
+        CharSequence text = "abcdef";
+        int result = TextHelpAppendable.indexOfWrap(text, 3, 0);
+        assertEquals(2, result);
+    }
+
+    @Test
+    void testSystemOut() {
+        TextHelpAppendable instance = TextHelpAppendable.systemOut();
+        assertNotNull(instance);
+    }
+
+    @Test
+    void testConstructor() {
+        assertNotNull(appendable);
+    }
+
+    @Test
+    void testAdjustTableFormat_ColumnWidths() {
+        List<TextStyle> styles = Arrays.asList(
+            TextStyle.builder().setMaxWidth(10).build(),
+            TextStyle.builder().setMaxWidth(TextStyle.UNSET_MAX_WIDTH).build()
+        );
+        List<String> headers = Arrays.asList("header1", "longheader");
+        List<List<String>> rows = Arrays.asList(
+            Arrays.asList("cell", "longcellcontent")
+        );
+        TableDefinition table = new TableDefinition("caption", styles, headers, rows);
+
+        TableDefinition result = appendable.adjustTableFormat(table);
+        assertEquals(8, result.columnTextStyles().get(0).getMaxWidth());
+        assertEquals(13, result.columnTextStyles().get(1).getMaxWidth());
+    }
+
+    @Test
+    void testAdjustTableFormat_ScalableColumns() {
+        List<TextStyle> styles = Arrays.asList(
+            TextStyle.builder().setMaxWidth(20).setScalable(true).build(),
+            TextStyle.builder().setMaxWidth(20).setScalable(true).build()
+        );
+        List<String> headers = Arrays.asList("h1", "h2");
+        List<List<String>> rows = Arrays.asList(
+            Arrays.asList("cell1", "cell2")
+        );
+        TableDefinition table = new TableDefinition("caption", styles, headers, rows);
+        appendable.setMaxWidth(30);
+
+        TableDefinition result = appendable.adjustTableFormat(table);
+        assertTrue(result.columnTextStyles().get(0).getMaxWidth() < 20);
+    }
+
+    @Test
+    void testAppendHeader_Level1() throws IOException {
+        appendable.appendHeader(1, "Title");
+        String output = outputStream.toString();
+        assertTrue(output.contains("Title"));
+        assertTrue(output.contains("====="));
+    }
+
+    @Test
+    void testAppendHeader_InvalidLevel() {
+        assertThrows(IllegalArgumentException.class, () -> {
+            appendable.appendHeader(0, "Title");
+        });
+    }
+
+    @Test
+    void testAppendList_Ordered() throws IOException {
+        List<CharSequence> list = Arrays.asList("Item1", "Item2");
+        appendable.appendList(true, list);
+        String output = outputStream.toString();
+        assertTrue(output.contains("1. Item1"));
+        assertTrue(output.contains("2. Item2"));
+    }
+
+    @Test
+    void testAppendList_Unordered() throws IOException {
+        List<CharSequence> list = Arrays.asList("Item1", "Item2");
+        appendable.appendList(false, list);
+        String output = outputStream.toString();
+        assertTrue(output.contains("* Item1"));
+        assertTrue(output.contains("* Item2"));
+    }
+
+    @Test
+    void testAppendParagraph() throws IOException {
+        appendable.appendParagraph("Test paragraph");
+        String output = outputStream.toString();
+        assertTrue(output.contains("Test paragraph"));
+    }
+
+    @Test
+    void testAppendTable() throws IOException {
+        List<TextStyle> styles = Arrays.asList(
+            TextStyle.builder().setMaxWidth(10).build(),
+            TextStyle.builder().setMaxWidth(10).build()
+        );
+        List<String> headers = Arrays.asList("H1", "H2");
+        List<List<String>> rows = Arrays.asList(
+            Arrays.asList("R1C1", "R1C2")
+        );
+        TableDefinition table = new TableDefinition("Caption", styles, headers, rows);
+        
+        appendable.appendTable(table);
+        String output = outputStream.toString();
+        assertTrue(output.contains("H1"));
+        assertTrue(output.contains("R1C1"));
+    }
+
+    @Test
+    void testAppendTitle() throws IOException {
+        appendable.appendTitle("Document Title");
+        String output = outputStream.toString();
+        assertTrue(output.contains("Document Title"));
+        assertTrue(output.contains("#############"));
+    }
+
+    @Test
+    void testGetSetIndent() {
+        appendable.setIndent(5);
+        assertEquals(5, appendable.getIndent());
+    }
+
+    @Test
+    void testGetSetLeftPad() {
+        appendable.setLeftPad(2);
+        assertEquals(2, appendable.getLeftPad());
+    }
+
+    @Test
+    void testGetSetMaxWidth() {
+        appendable.setMaxWidth(80);
+        assertEquals(80, appendable.getMaxWidth());
+    }
+
+    @Test
+    void testMakeColumnQueue_SingleLine() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("makeColumnQueue", CharSequence.class, TextStyle.class);
+        method.setAccessible(true);
+        Queue<String> queue = (Queue<String>) method.invoke(appendable, "Short text", TextStyle.DEFAULT);
+        assertEquals(1, queue.size());
+    }
+
+    @Test
+    void testMakeColumnQueue_MultiLine() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("makeColumnQueue", CharSequence.class, TextStyle.class);
+        method.setAccessible(true);
+        String longText = "This is a very long text that should wrap multiple times when printed";
+        appendable.setMaxWidth(20);
+        Queue<String> queue = (Queue<String>) method.invoke(appendable, longText, appendable.getTextStyleBuilder().get());
+        assertTrue(queue.size() > 1);
+    }
+
+    @Test
+    void testMakeColumnQueues() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("makeColumnQueues", List.class, List.class);
+        method.setAccessible(true);
+        List<String> data = Arrays.asList("Col1", "Col2");
+        List<TextStyle> styles = Arrays.asList(TextStyle.DEFAULT, TextStyle.DEFAULT);
+        List<Queue<String>> queues = (List<Queue<String>>) method.invoke(appendable, data, styles);
+        assertEquals(2, queues.size());
+    }
+
+    @Test
+    void testPrintQueue() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("printQueue", Queue.class);
+        method.setAccessible(true);
+        Queue<String> queue = new LinkedList<>(Arrays.asList("First line", "Second line"));
+        method.invoke(appendable, queue);
+        String output = outputStream.toString();
+        assertTrue(output.contains("First line"));
+        assertTrue(output.contains("Second line"));
+    }
+
+    @Test
+    void testPrintWrapped_DefaultStyle() throws IOException {
+        appendable.printWrapped("Wrapped text");
+        String output = outputStream.toString();
+        assertTrue(output.contains("Wrapped text"));
+    }
+
+    @Test
+    void testPrintWrapped_CustomStyle() throws IOException {
+        TextStyle style = TextStyle.builder().setLeftPad(3).build();
+        appendable.printWrapped("Wrapped text", style);
+        String output = outputStream.toString();
+        assertTrue(output.contains("   Wrapped text"));
+    }
+
+    @Test
+    void testResize_Int() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("resize", int.class, double.class);
+        method.setAccessible(true);
+        int result = (int) method.invoke(appendable, 100, 0.5);
+        assertEquals(50, result);
+    }
+
+    @Test
+    void testResize_Builder() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("resize", TextStyle.Builder.class, double.class);
+        method.setAccessible(true);
+        TextStyle.Builder builder = TextStyle.builder().setMaxWidth(100).setIndent(10);
+        builder = (TextStyle.Builder) method.invoke(appendable, builder, 0.5);
+        assertEquals(50, builder.getMaxWidth());
+        assertTrue(builder.getIndent() < 10);
+    }
+
+    @Test
+    void testWriteColumnQueues() throws Exception {
+        Method method = TextHelpAppendable.class.getDeclaredMethod("writeColumnQueues", List.class, List.class);
+        method.setAccessible(true);
+        Queue<String> q1 = new LinkedList<>(Arrays.asList("Line1", "Line2"));
+        Queue<String> q2 = new LinkedList<>(Collections.singletonList("Col2"));
+        List<Queue<String>> queues = Arrays.asList(q1, q2);
+        List<TextStyle> styles = Arrays.asList(TextStyle.DEFAULT, TextStyle.DEFAULT);
+        
+        method.invoke(appendable, queues, styles);
+        String output = outputStream.toString();
+        assertTrue(output.contains("Line1"));
+        assertTrue(output.contains("Line2"));
+        assertTrue(output.contains("Col2"));
+    }
+}
+```
+

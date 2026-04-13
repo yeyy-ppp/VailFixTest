@@ -1,0 +1,362 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeExtractor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util</a> &gt; <span class="el_source">CodeExtractor.java</span></div><h1>CodeExtractor.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.type.ClassOrInterfaceType;
+import zju.cst.aces.runner.solution_runner.AbstractRunner;
+
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class CodeExtractor {
+    private boolean hasCode;
+    private boolean hasSyntacticError;
+    private String extractedCode;
+
+<span class="nc" id="L18">    public CodeExtractor(String text) {</span>
+<span class="nc" id="L19">        extractedCode = extractText(text);</span>
+<span class="nc" id="L20">    }</span>
+
+    public String extractText(String text) {
+<span class="nc bnc" id="L23" title="All 2 branches missed.">        if (text.contains(&quot;&lt;INFO&gt;&quot;)) {</span>
+<span class="nc" id="L24">            List&lt;String&gt; infoList = Arrays.asList(text.split(&quot;&lt;INFO&gt;&quot;));</span>
+
+<span class="nc" id="L26">            String importsInfo = infoList.get(1);</span>
+<span class="nc" id="L27">            Pattern pattern = Pattern.compile(&quot;```[java]*([\\s\\S]*?)```&quot;);</span>
+<span class="nc" id="L28">            Matcher matcher = pattern.matcher(importsInfo);</span>
+<span class="nc" id="L29">            List&lt;String&gt; importList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">            while (matcher.find()) {</span>
+<span class="nc" id="L31">                importList.addAll(Arrays.asList(matcher.group(1).trim().split(&quot;\n&quot;)));</span>
+                break;
+            }
+
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            for (int i = infoList.size() - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L36">                String info = infoList.get(i);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">                if (info.contains(&quot;```&quot;)) {</span>
+<span class="nc" id="L38">                    text = AbstractRunner.repairImports(extract(info), importList);</span>
+<span class="nc" id="L39">                    return text;</span>
+                }
+            }
+        }
+<span class="nc" id="L43">        return extract(text);</span>
+    }
+
+    /**
+     * Extract the code in response and auto-repair the syntax errors.
+     * @param text
+     * @return
+     */
+    public String extract(String text) {
+<span class="nc" id="L52">        String ec = &quot;&quot;;</span>
+
+
+        // If the string is valid code, return true
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (isSyntacticCorrect(text)) {</span>
+<span class="nc" id="L57">            hasCode = true;</span>
+<span class="nc" id="L58">            ec = text;</span>
+<span class="nc" id="L59">            hasSyntacticError = false;</span>
+        } else {
+<span class="nc" id="L61">            hasCode = false;</span>
+<span class="nc" id="L62">            hasSyntacticError = false;</span>
+
+            // Define regex pattern to match the code blocks
+<span class="nc" id="L65">            Pattern pattern = Pattern.compile(&quot;```[java]*([\\s\\S]*?)```&quot;);</span>
+<span class="nc" id="L66">            Matcher matcher = pattern.matcher(text);</span>
+
+            // Find all matches in the text
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            while (matcher.find()) {</span>
+<span class="nc" id="L70">                String match = matcher.group(1).trim();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">                if (isTest(match)) {</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">                    if (match.contains(&quot;class&quot;) &amp;&amp; match.contains(&quot;import&quot;)) { // class</span>
+<span class="nc" id="L73">                        ec= syntacticCheck(match);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                        hasSyntacticError = !match.equals(ec);</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                        if (!ec.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L76">                            hasCode = true;</span>
+<span class="nc" id="L77">                            break;</span>
+                        }
+<span class="nc bnc" id="L79" title="All 2 branches missed.">                    } else if (isTestMethod(match)) { // method</span>
+<span class="nc" id="L80">                        ec = syntacticCheck(match);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                        hasSyntacticError = !match.equals(ec);</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                        if (!ec.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L83">                            hasCode = true;</span>
+<span class="nc" id="L84">                            break;</span>
+                        }
+                    }
+                }
+<span class="nc" id="L88">            }</span>
+
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            if (!hasCode) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                if (text.contains(&quot;```java&quot;)) {</span>
+<span class="nc" id="L92">                    String separateString = text.split(&quot;```java&quot;)[1];</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                    if (isTest(separateString)) {</span>
+<span class="nc" id="L94">                        ec = syntacticCheck(separateString);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                        hasSyntacticError = !separateString.equals(ec);</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                        if (!ec.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L97">                            hasCode = true;</span>
+                        }
+                    }
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                } else if (text.contains(&quot;```&quot;)) {</span>
+<span class="nc" id="L101">                    String[] separateStrings = text.split(&quot;```&quot;);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                    for (String separateString : separateStrings) {</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                        if (isTest(separateString)) {</span>
+<span class="nc" id="L104">                            ec = syntacticCheck(separateString);</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">                            hasSyntacticError = !separateString.equals(ec);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                            if (!ec.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L107">                                hasCode = true;</span>
+<span class="nc" id="L108">                                break;</span>
+                            }
+                        }
+                    }
+<span class="nc" id="L112">                } else {</span>
+                    // Define boundary
+<span class="nc" id="L114">                    String[] allowed = {&quot;import&quot;, &quot;packages&quot;, &quot;&quot;, &quot;@&quot;};</span>
+<span class="nc" id="L115">                    String[] codeLines = text.split(&quot;\\n&quot;);</span>
+<span class="nc" id="L116">                    int start = -1, anchor = -1, end = -1;</span>
+<span class="nc" id="L117">                    boolean[] allowedLines = new boolean[codeLines.length];</span>
+<span class="nc" id="L118">                    Map&lt;Integer, Integer&gt; leftBrace = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L119">                    Map&lt;Integer, Integer&gt; rightBrace = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                    for (int i = 0; i &lt; codeLines.length; i++) {</span>
+<span class="nc" id="L122">                        leftBrace.put(i, codeLines[i].length() - codeLines[i].replace(&quot;{&quot;, &quot;&quot;).length());</span>
+<span class="nc" id="L123">                        rightBrace.put(i, codeLines[i].length() - codeLines[i].replace(&quot;}&quot;, &quot;&quot;).length());</span>
+
+<span class="nc" id="L125">                        String stripedLine = codeLines[i].trim();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">                        for (String allowStart : allowed) {</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                            if (stripedLine.startsWith(allowStart)) {</span>
+<span class="nc" id="L128">                                allowedLines[i] = true;</span>
+<span class="nc" id="L129">                                break;</span>
+                            }
+                        }
+
+<span class="nc bnc" id="L133" title="All 4 branches missed.">                        if (codeLines[i].matches(&quot;.*public class .*Test.*&quot;) &amp;&amp; anchor == -1) {</span>
+<span class="nc" id="L134">                            anchor = i;</span>
+                        }
+                    }
+
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                    if (anchor != -1) {</span>
+<span class="nc" id="L139">                        start = anchor;</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                        while (start &gt; 0) {</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">                            if (allowedLines[start]) {</span>
+<span class="nc" id="L142">                                start -= 1;</span>
+                            } else {
+                                break;
+                            }
+                        }
+
+<span class="nc" id="L148">                        end = anchor;</span>
+<span class="nc" id="L149">                        int leftSum = 0, rightSum = 0;</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                        while (end &lt; codeLines.length) {</span>
+<span class="nc" id="L151">                            leftSum += leftBrace.get(end);</span>
+<span class="nc" id="L152">                            rightSum += rightBrace.get(end);</span>
+<span class="nc bnc" id="L153" title="All 6 branches missed.">                            if (leftSum == rightSum &amp;&amp; leftSum &gt;= 1 &amp;&amp; rightSum &gt;= 1) {</span>
+<span class="nc" id="L154">                                break;</span>
+                            }
+<span class="nc" id="L156">                            end += 1;</span>
+                        }
+
+<span class="nc" id="L159">                        String tempCode = String.join(&quot;\n&quot;, Arrays.copyOfRange(codeLines, start, end + 1));</span>
+<span class="nc" id="L160">                        ec = syntacticCheck(tempCode);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                        hasSyntacticError = !tempCode.equals(ec);</span>
+<span class="nc bnc" id="L162" title="All 2 branches missed.">                        if (!ec.equals(&quot;&quot;)) {</span>
+<span class="nc" id="L163">                            hasCode = true;</span>
+                        }
+                    }
+                }
+            }
+        }
+
+<span class="nc" id="L170">        ec = ec.trim();</span>
+//        System.out.println(&quot;Has Code: &quot; + hasCode);
+//        System.out.println(&quot;Extracted Code:\n&quot; + ec);
+//        System.out.println(&quot;Has Syntactic Error: &quot; + hasSyntacticError);
+<span class="nc" id="L174">        return ec;</span>
+    }
+
+    private static boolean isSyntacticCorrect(String code) {
+<span class="nc bnc" id="L178" title="All 6 branches missed.">        return checkFileCorrect(code) || checkClassCorrect(code) || checkMethodCorrect(code);</span>
+    }
+
+    private static boolean checkMethodCorrect(String code) {
+        try {
+<span class="nc" id="L183">            MethodDeclaration md = StaticJavaParser.parseMethodDeclaration(code);</span>
+<span class="nc" id="L184">            return true;</span>
+<span class="nc" id="L185">        } catch (Exception e) {</span>
+<span class="nc" id="L186">            return false;</span>
+        }
+    }
+
+    private static boolean checkClassCorrect(String code) {
+        try {
+<span class="nc" id="L192">            ClassOrInterfaceType cd = StaticJavaParser.parseClassOrInterfaceType(code);</span>
+<span class="nc" id="L193">            return true;</span>
+<span class="nc" id="L194">        } catch (Exception e) {</span>
+<span class="nc" id="L195">            return false;</span>
+        }
+    }
+
+    private static boolean checkFileCorrect(String code) {
+        try {
+<span class="nc" id="L201">            CompilationUnit cu = StaticJavaParser.parse(code);</span>
+<span class="nc" id="L202">            return true;</span>
+<span class="nc" id="L203">        } catch (Exception e) {</span>
+<span class="nc" id="L204">            return false;</span>
+        }
+    }
+
+    public static boolean isTest(String code) {
+<span class="nc bnc" id="L209" title="All 4 branches missed.">        if ((code.contains(&quot;@Test&quot;) || code.contains(&quot;@ParameterizedTest&quot;))) {</span>
+<span class="nc" id="L210">            return true;</span>
+        } else {
+<span class="nc" id="L212">            return false;</span>
+        }
+    }
+
+    public static boolean isTestMethod(String code) {
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (isTest(code)) {</span>
+<span class="nc" id="L218">            return checkMethodCorrect(code);</span>
+        } else {
+<span class="nc" id="L220">            return false;</span>
+        }
+    }
+
+    /**
+     * Check and fix the syntax.
+     * TODO: match @ParameterizedTest anotation
+     */
+    public String syntacticCheck(String code) {
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (isSyntacticCorrect(code)) {</span>
+<span class="nc" id="L230">            return code;</span>
+        } else {
+<span class="nc" id="L232">            String[] stopPoints = {&quot;;&quot;, &quot;}&quot;, &quot;{&quot;, &quot; &quot;}; // Stop point</span>
+<span class="nc bnc" id="L233" title="All 2 branches missed.">            for (int idx = code.length() - 1; idx &gt;= 0; idx--) {</span>
+<span class="nc bnc" id="L234" title="All 2 branches missed.">                if (contains(stopPoints, code.charAt(idx))) {</span>
+<span class="nc" id="L235">                    code = code.substring(0, idx + 1);</span>
+<span class="nc" id="L236">                    break;</span>
+                }
+            }
+<span class="nc" id="L239">            int leftBracket = countOccurrences(code, &quot;{&quot;);</span>
+<span class="nc" id="L240">            int rightBracket = countOccurrences(code, &quot;}&quot;);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">            for (int idx = leftBracket - rightBracket; idx &gt; 0; idx--) {</span>
+<span class="nc" id="L242">                code += &quot;}\n&quot;;</span>
+            }
+
+<span class="nc bnc" id="L245" title="All 2 branches missed.">            if (isSyntacticCorrect(code)) {</span>
+<span class="nc" id="L246">                return code;</span>
+            }
+
+<span class="nc" id="L249">            Pattern pattern = Pattern.compile(&quot;(?&lt;=\\})[^\\}]+(?=@)&quot;);</span>
+<span class="nc" id="L250">            Matcher matcher = pattern.matcher(code);</span>
+<span class="nc" id="L251">            List&lt;String&gt; matches = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">            while (matcher.find()) {</span>
+<span class="nc" id="L253">                matches.add(matcher.group());</span>
+            }
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            if (!matches.isEmpty()) {</span>
+<span class="nc" id="L256">                String lastMatch = matches.get(matches.size() - 1);</span>
+<span class="nc" id="L257">                int endIdx = code.lastIndexOf(lastMatch) + lastMatch.length();</span>
+<span class="nc" id="L258">                code = code.substring(0, endIdx).trim();</span>
+<span class="nc" id="L259">                int leftCount = countOccurrences(code, &quot;{&quot;);</span>
+<span class="nc" id="L260">                int rightCount = countOccurrences(code, &quot;}&quot;);</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                for (int i = leftCount - rightCount; i &gt; 0; i--) {</span>
+<span class="nc" id="L262">                    code += &quot;\n}&quot;;</span>
+                }
+            }
+<span class="nc bnc" id="L265" title="All 2 branches missed.">            if (isSyntacticCorrect(code)) {</span>
+<span class="nc" id="L266">                return code;</span>
+            } else {
+<span class="nc" id="L268">                return &quot;&quot;;</span>
+            }
+        }
+    }
+
+    private boolean contains(String[] arr, char target) {
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        for (String c : arr) {</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">            if (c.charAt(0) == target) {</span>
+<span class="nc" id="L276">                return true;</span>
+            }
+        }
+<span class="nc" id="L279">        return false;</span>
+    }
+
+    private int countOccurrences(String str, String target) {
+<span class="nc" id="L283">        int count = 0;</span>
+<span class="nc" id="L284">        int idx = 0;</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">        while ((idx = str.indexOf(target, idx)) != -1) {</span>
+<span class="nc" id="L286">            count++;</span>
+<span class="nc" id="L287">            idx += target.length();</span>
+        }
+<span class="nc" id="L289">        return count;</span>
+    }
+
+    public boolean getHasCode() {
+<span class="nc" id="L293">        return hasCode;</span>
+    }
+
+    public boolean getHasSyntacticError() {
+<span class="nc" id="L297">        return hasSyntacticError;</span>
+    }
+
+    public String getExtractedCode() {
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        if (extractedCode == null) {</span>
+<span class="nc" id="L302">            System.out.println(&quot;=^^^^^^^^^^^^^^^^^^^^^^\n    Extracted code is null!&quot;);</span>
+<span class="nc" id="L303">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L305">        return extractedCode;</span>
+    }
+
+    public static void main(String[] args) {
+<span class="nc" id="L309">        String content=&quot;```java\n&quot; +</span>
+                &quot;//import sentence...\n&quot; +
+                &quot;\n&quot; +
+                &quot;public class MethodTest {\n&quot; +
+                &quot;\n&quot; +
+                &quot;    @Test\n&quot; +
+                &quot;    public void methodTest1(){//cover the path when:randomBoolean &amp;&amp; isTrue(a)\n&quot; +
+                &quot;        TeplaB teplaB = Mockito.mock(TeplaB.class);\n&quot; +
+                &quot;        when(teplaB.init()).thenReturn(5);\n&quot; +
+                &quot;        when(teplaB.getA()).thenReturn(1);\n&quot; +
+                &quot;        when(teplaB.res(5)).thenReturn(true);\n&quot; +
+                &quot;        when(teplaB.isTrue(1)).thenReturn(true);\n&quot; +
+                &quot;\n&quot; +
+                &quot;        TeplaA teplaA = Mockito.mock(TeplaA.class);\n&quot; +
+                &quot;        Tepla tepla = Mockito.mock(Tepla.class);\n&quot; +
+                &quot;\n&quot; +
+                &quot;        teplaB.teplaB();\n&quot; +
+                &quot;\n&quot; +
+                &quot;        verify(teplaA, times(1)).teplaA();\n&quot; +
+                &quot;        verify(tepla, times(0)).calculate();\n&quot; +
+                &quot;        verify(teplaB, times(1)).init();\n&quot; +
+                &quot;        verify(teplaB, times(1)).getA();\n&quot; +
+                &quot;        verify(teplaB, times(1)).res(5);\n&quot; +
+                &quot;        verify(teplaB, times(1)).isTrue(1);\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;\n&quot; +
+                &quot;    @Test\n&quot; +
+                &quot;    public void methodTest2(){//cover the path when:not (randomBoolean &amp;&amp; isTrue(a)\n&quot; +
+                &quot;        TeplaB teplaB = Mockito.mock(TeplaB.class);\n&quot; +
+                &quot;        when(teplaB.init()).thenReturn(3);\n&quot; +
+                &quot;        when(teplaB.getA()).thenReturn(2);\n&quot; +
+                &quot;        when(teplaB.res(3)).thenReturn(false);\n&quot; +
+                &quot;        when(teplaB.isTrue(2)).thenReturn(false);\n&quot; +
+                &quot;\n&quot; +
+                &quot;        TeplaA teplaA = Mockito.mock(TeplaA.class);\n&quot; +
+                &quot;        Tepla tepla = Mockito.mock(Tepla.class);\n&quot; +
+                &quot;\n&quot; +
+                &quot;        teplaB.teplaB();\n&quot; +
+                &quot;\n&quot; +
+                &quot;        verify(teplaA, times(0)).teplaA();\n&quot; +
+                &quot;        verify(tepla, times(1)).calculate();\n&quot; +
+                &quot;        verify(teplaB, times(1)).init();\n&quot; +
+                &quot;        verify(teplaB, times(1)).getA();\n&quot; +
+                &quot;        verify(teplaB, times(1)).res(3);\n&quot; +
+                &quot;        verify(teplaB, times(1)).isTrue(2);\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;\n&quot; +
+                &quot;}\n&quot; +
+                &quot;```&quot;;
+<span class="nc" id="L358">        String extractedCode1 = new CodeExtractor(content).getExtractedCode();</span>
+<span class="nc" id="L359">        System.out.println(extractedCode1);</span>
+<span class="nc" id="L360">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

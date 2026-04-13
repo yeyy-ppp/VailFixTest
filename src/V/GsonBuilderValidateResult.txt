@@ -1,0 +1,12 @@
+[2026-01-23 19:11:41] 验证结果
+错误类型: 未知错误, 错误行: 192, 错误原因: 未定义的类型（如 DateFormat, ToNumberPolicy, TypeAdapters）；该测试代码在验证运行时可能失败，错误位置：274-288，错误原因：反射访问Gson内部字段可能抛出NoSuchFieldException/IllegalAccessException, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: GsonBuilder, GsonBuilder, setVersion, excludeFieldsWithModifiers, generateNonExecutableJson, excludeFieldsWithoutExposeAnnotation, serializeNulls, enableComplexMapKeySerialization, disableInnerClassSerialization, setLongSerializationPolicy, setFieldNamingPolicy, setFieldNamingStrategy, setObjectToNumberStrategy, setNumberToNumberStrategy, setExclusionStrategies, addSerializationExclusionStrategy, addDeserializationExclusionStrategy, setPrettyPrinting, setFormattingStyle, setStrictness, disableHtmlEscaping, setDateFormat, setDateFormat, setDateFormat, registerTypeAdapter, registerTypeAdapterFactory, registerTypeHierarchyAdapter, serializeSpecialFloatingPointValues, disableJdkUnsafe, addReflectionAccessFilter, create, addTypeAdaptersForDate
+  未覆盖: setLenient, checkDateFormatStyle, hasNonOverridableAdapter
+
+[2026-01-23 19:22:39] 修复后验证结果
+错误类型: 编译错误, 错误行: 161, 错误原因: FieldAttributes类型未定义, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: GsonBuilder, GsonBuilder, setVersion, excludeFieldsWithModifiers, generateNonExecutableJson, excludeFieldsWithoutExposeAnnotation, serializeNulls, enableComplexMapKeySerialization, disableInnerClassSerialization, setLongSerializationPolicy, setFieldNamingPolicy, setFieldNamingStrategy, setObjectToNumberStrategy, setNumberToNumberStrategy, setExclusionStrategies, addSerializationExclusionStrategy, addDeserializationExclusionStrategy, setPrettyPrinting, setFormattingStyle, setLenient, setStrictness, disableHtmlEscaping, setDateFormat, setDateFormat, setDateFormat, registerTypeAdapter, registerTypeAdapterFactory, registerTypeHierarchyAdapter, serializeSpecialFloatingPointValues, disableJdkUnsafe, addReflectionAccessFilter, create, addTypeAdaptersForDate
+  未覆盖: checkDateFormatStyle, hasNonOverridableAdapter
+

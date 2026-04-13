@@ -1,0 +1,13 @@
+[2026-01-13 18:49:14] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: wrap, ParseException, ParseException
+  未覆盖: 全部覆盖
+优化建议: 建议增加对null输入的测试（如wrap(null)和构造方法传入null）; 建议验证wrap()方法新建异常时的消息内容完整性
+
+[2026-01-15 11:54:29] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: wrap, ParseException, ParseException
+  未覆盖: 全部覆盖
+

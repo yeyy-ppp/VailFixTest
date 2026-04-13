@@ -1,0 +1,131 @@
+```
+包路径：lang3.function
+类名：Failable
+父类：无
+依赖类：FailableBiConsumer,FailableConsumer,FailableDoubleConsumer,FailableIntConsumer,FailableLongConsumer,FailableBiFunction,FailableFunction,FailableDoubleBinaryOperator,FailableCallable,FailableSupplier,FailableBooleanSupplier,FailableDoubleSupplier,FailableRunnable,FailableBiPredicate,FailablePredicate,Streams
+---
+序号：1
+方法名：accept(FailableBiConsumer<T, U, E> consumer, T object1, U object2)
+返回类型：void
+功能描述：执行FailableBiConsumer的accept方法并处理异常
+序号：2
+方法名：accept(FailableConsumer<T, E> consumer, T object)
+返回类型：void
+功能描述：执行FailableConsumer的accept方法并处理异常
+序号：3
+方法名：accept(FailableDoubleConsumer<E> consumer, double value)
+返回类型：void
+功能描述：执行FailableDoubleConsumer的accept方法并处理异常
+序号：4
+方法名：accept(FailableIntConsumer<E> consumer, int value)
+返回类型：void
+功能描述：执行FailableIntConsumer的accept方法并处理异常
+序号：5
+方法名：accept(FailableLongConsumer<E> consumer, long value)
+返回类型：void
+功能描述：执行FailableLongConsumer的accept方法并处理异常
+序号：6
+方法名：apply(FailableBiFunction<T, U, R, E> function, T input1, U input2)
+返回类型：R
+功能描述：执行FailableBiFunction的apply方法并处理异常
+序号：7
+方法名：apply(FailableFunction<T, R, E> function, T input)
+返回类型：R
+功能描述：执行FailableFunction的apply方法并处理异常
+序号：8
+方法名：applyAsDouble(FailableDoubleBinaryOperator<E> function, double left, double right)
+返回类型：double
+功能描述：执行FailableDoubleBinaryOperator的applyAsDouble方法并处理异常
+序号：9
+方法名：applyNonNull(T value, FailableFunction<? super T, ? extends R, E> mapper)
+返回类型：R
+功能描述：当value非空时应用mapper函数
+序号：10
+方法名：applyNonNull(T value1, FailableFunction<? super T, ? extends U, E1> mapper1, FailableFunction<? super U, ? extends R, E2> mapper2)
+返回类型：R
+功能描述：链式应用两个mapper函数（当value1非空时）
+序号：11
+方法名：applyNonNull(T value1, FailableFunction<? super T, ? extends U, E1> mapper1, FailableFunction<? super U, ? extends V, E2> mapper2, FailableFunction<? super V, ? extends R, E3> mapper3)
+返回类型：R
+功能描述：链式应用三个mapper函数（当value1非空时）
+序号：12
+方法名：asBiConsumer(FailableBiConsumer<T, U, ?> consumer)
+返回类型：BiConsumer<T, U>
+功能描述：将FailableBiConsumer转换为标准BiConsumer
+序号：13
+方法名：asBiFunction(FailableBiFunction<T, U, R, ?> function)
+返回类型：BiFunction<T, U, R>
+功能描述：将FailableBiFunction转换为标准BiFunction
+序号：14
+方法名：asBiPredicate(FailableBiPredicate<T, U, ?> predicate)
+返回类型：BiPredicate<T, U>
+功能描述：将FailableBiPredicate转换为标准BiPredicate
+序号：15
+方法名：asCallable(FailableCallable<V, ?> callable)
+返回类型：Callable<V>
+功能描述：将FailableCallable转换为标准Callable
+序号：16
+方法名：asConsumer(FailableConsumer<T, ?> consumer)
+返回类型：Consumer<T>
+功能描述：将FailableConsumer转换为标准Consumer
+序号：17
+方法名：asFunction(FailableFunction<T, R, ?> function)
+返回类型：Function<T, R>
+功能描述：将FailableFunction转换为标准Function
+序号：18
+方法名：asPredicate(FailablePredicate<T, ?> predicate)
+返回类型：Predicate<T>
+功能描述：将FailablePredicate转换为标准Predicate
+序号：19
+方法名：asRunnable(FailableRunnable<?> runnable)
+返回类型：Runnable
+功能描述：将FailableRunnable转换为标准Runnable
+序号：20
+方法名：asSupplier(FailableSupplier<T, ?> supplier)
+返回类型：Supplier<T>
+功能描述：将FailableSupplier转换为标准Supplier
+序号：21
+方法名：call(FailableCallable<V, E> callable)
+返回类型：V
+功能描述：执行FailableCallable的call方法并处理异常
+序号：22
+方法名：get(FailableSupplier<T, E> supplier)
+返回类型：T
+功能描述：执行FailableSupplier的get方法并处理异常
+序号：23
+方法名：getAsBoolean(FailableBooleanSupplier<E> supplier)
+返回类型：boolean
+功能描述：执行FailableBooleanSupplier的getAsBoolean方法并处理异常
+序号：24
+方法名：getAsDouble(FailableDoubleSupplier<E> supplier)
+返回类型：double
+功能描述：执行FailableDoubleSupplier的getAsDouble方法并处理异常
+序号：25
+方法名：rethrow(Throwable throwable)
+返回类型：RuntimeException
+功能描述：将受检异常包装为非受检异常
+序号：26
+方法名：run(FailableRunnable<E> runnable)
+返回类型：void
+功能描述：执行FailableRunnable的run方法并处理异常
+序号：27
+方法名：run(Object test, FailableRunnable<E> runnable)
+返回类型：void
+功能描述：当test和runnable非空时执行runnable
+序号：28
+方法名：stream(Stream<T> stream)
+返回类型：Streams.FailableStream<T>
+功能描述：将标准Stream包装为FailableStream
+序号：29
+方法名：test(FailableBiPredicate<T, U, E> predicate, T object1, U object2)
+返回类型：boolean
+功能描述：执行FailableBiPredicate的test方法并处理异常
+序号：30
+方法名：test(FailablePredicate<T, E> predicate, T object)
+返回类型：boolean
+功能描述：执行FailablePredicate的test方法并处理异常
+序号：31
+方法名：Failable()
+返回类型：void
+功能描述：私有构造方法防止实例化
+```

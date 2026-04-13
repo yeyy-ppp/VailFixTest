@@ -1,0 +1,797 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PromptTemplate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.prompt.template</a> &gt; <span class="el_source">PromptTemplate.java</span></div><h1>PromptTemplate.java</h1><pre class="source lang-java linenums">
+package zju.cst.aces.prompt.template;
+
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import freemarker.template.Configuration;
+import freemarker.template.Template;
+import freemarker.template.TemplateException;
+import lombok.Data;
+import zju.cst.aces.api.Task;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.parser.ProjectParser;
+import zju.cst.aces.runner.solution_runner.AbstractRunner;
+import zju.cst.aces.util.testpilot.JavadocCodeExampleCheck;
+import zju.cst.aces.util.testpilot.SnippetAnalyzer;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+@Data
+public class PromptTemplate {
+
+<span class="nc" id="L35">    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+    public static final String CONFIG_FILE = &quot;config.properties&quot;;
+<span class="nc" id="L37">    public String TEMPLATE_INIT = &quot;&quot;;</span>
+<span class="nc" id="L38">    public String TEMPLATE_INIT_SYSTEM  = &quot;&quot;;</span>
+<span class="nc" id="L39">    public String TEMPLATE_EXTRA_SYSTEM  = &quot;&quot;;</span>
+<span class="nc" id="L40">    public String TEMPLATE_EXTRA = &quot;&quot;;</span>
+<span class="nc" id="L41">    public String TEMPLATE_REPAIR = &quot;&quot;;</span>
+
+<span class="nc" id="L43">    public Map&lt;String, Object&gt; dataModel = new HashMap&lt;&gt;();</span>
+    public Properties properties;
+    public Path promptPath;
+    public int maxPromptTokens;
+    public Config config;
+
+<span class="nc" id="L49">    public PromptTemplate(Config config, Properties properties, Path promptPath, int maxPromptTokens) {</span>
+<span class="nc" id="L50">        this.config = config;</span>
+<span class="nc" id="L51">        this.properties = properties;</span>
+<span class="nc" id="L52">        this.promptPath = promptPath;</span>
+<span class="nc" id="L53">        this.maxPromptTokens = maxPromptTokens;</span>
+<span class="nc" id="L54">        TEMPLATE_INIT = properties.getProperty(&quot;PROMPT_TEMPLATE_INIT&quot;);</span>
+<span class="nc" id="L55">        TEMPLATE_INIT_SYSTEM = properties.getProperty(&quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;);</span>
+<span class="nc" id="L56">        TEMPLATE_EXTRA = properties.getProperty(&quot;PROMPT_TEMPLATE_EXTRA&quot;);</span>
+<span class="nc" id="L57">        TEMPLATE_EXTRA_SYSTEM = properties.getProperty(&quot;PROMPT_TEMPLATE_EXTRA&quot;);</span>
+<span class="nc" id="L58">        TEMPLATE_REPAIR = properties.getProperty(&quot;PROMPT_TEMPLATE_REPAIR&quot;);</span>
+<span class="nc" id="L59">    }</span>
+    //渲染
+    public String renderTemplate(String templateFileName) throws IOException, TemplateException{
+<span class="nc" id="L62">        Configuration configuration = new Configuration(Configuration.VERSION_2_3_30);</span>
+
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (this.promptPath == null) {</span>
+<span class="nc" id="L65">            configuration.setClassForTemplateLoading(PromptTemplate.class, &quot;/prompt&quot;);</span>
+        } else {
+<span class="nc" id="L67">            configuration.setDirectoryForTemplateLoading(this.promptPath.toFile());</span>
+        }
+<span class="nc" id="L69">        configuration.setDefaultEncoding(&quot;utf-8&quot;);</span>
+<span class="nc" id="L70">        Template template = configuration.getTemplate(templateFileName);</span>
+
+<span class="nc" id="L72">        Pattern pattern = Pattern.compile(&quot;\\$\\{([a-zA-Z_][\\w]*)\\}&quot;);</span>
+<span class="nc" id="L73">        Matcher matcher = pattern.matcher(template.toString());</span>
+<span class="nc" id="L74">        List&lt;String&gt; matches = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L76">            String e = matcher.group(1);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (!matches.contains(e)) {</span>
+<span class="nc" id="L78">                matches.add(e);</span>
+            }
+<span class="nc" id="L80">        }</span>
+
+        String generatedText;
+        // adaptive foal context
+        do {
+<span class="nc" id="L85">            StringWriter writer = new StringWriter();</span>
+<span class="nc" id="L86">            template.process(dataModel, writer);</span>
+<span class="nc" id="L87">            generatedText = writer.toString();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (matches.size() &gt; 0) {</span>
+<span class="nc" id="L89">                String key = matches.get(matches.size()-1);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                if (dataModel.containsKey(key)) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                    if(dataModel.get(key)==null) break;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                    if (dataModel.get(key) instanceof String) {</span>
+<span class="nc" id="L93">                        dataModel.put(key, &quot;&quot;);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    } else if (dataModel.get(key) instanceof List) {</span>
+<span class="nc" id="L95">                        dataModel.put(key, new ArrayList&lt;String&gt;());</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">                    } else if (dataModel.get(key) instanceof Map) {</span>
+<span class="nc" id="L97">                        dataModel.put(key, new HashMap&lt;String, String&gt;());</span>
+                    } else {
+                        break;
+                    }
+                }
+<span class="nc" id="L102">                matches.remove(matches.size()-1);</span>
+            }
+<span class="nc bnc" id="L104" title="All 4 branches missed.">        } while (AbstractRunner.isExceedMaxTokens(this.maxPromptTokens, generatedText) &amp;&amp; matches.size()&gt;0);</span>
+<span class="nc" id="L105">        return generatedText;</span>
+    }
+
+    public void buildDataModel(Config config, PromptInfo promptInfo) throws IOException {
+<span class="nc" id="L109">        Map&lt;String, String&gt; cdep_temp = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L110">        Map&lt;String, String&gt; mdep_temp = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L112">        this.dataModel.put(&quot;unit_test&quot;, promptInfo.getUnitTest());</span>
+        // Map&lt;String, String&gt;, key: dependent class names
+<span class="nc" id="L114">        this.dataModel.put(&quot;dep_packages&quot;, getDepPackages(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L115">        this.dataModel.put(&quot;dep_imports&quot;, getDepImports(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L116">        this.dataModel.put(&quot;dep_class_sigs&quot;, getDepClassSigs(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L117">        this.dataModel.put(&quot;dep_class_bodies&quot;, getDepClassBodies(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L118">        this.dataModel.put(&quot;dep_m_sigs&quot;, getDepBrief(promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L119">        this.dataModel.put(&quot;dep_m_bodies&quot;, getDepBodies(promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L120">        this.dataModel.put(&quot;dep_c_sigs&quot;, getDepConstructorSigs(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L121">        this.dataModel.put(&quot;dep_c_bodies&quot;, getDepConstructorBodies(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L122">        this.dataModel.put(&quot;dep_fields&quot;, getDepFields(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L123">        this.dataModel.put(&quot;dep_gs_sigs&quot;, getDepGSSigs(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L124">        this.dataModel.put(&quot;dep_gs_bodies&quot;, getDepGSBodies(promptInfo.getClassInfo(), promptInfo.getMethodInfo()));</span>
+<span class="nc" id="L125">        this.dataModel.put(&quot;dep_m_sigs_ano_com&quot;,getDepBriefWithAnoAndCom(promptInfo.getClassInfo(),promptInfo.getMethodInfo()));</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if(isTokenExceed(promptInfo.getMethodInfo().full_method_info,</span>
+<span class="nc" id="L127">                getDepClassSigs(promptInfo.getClassInfo(), promptInfo.getMethodInfo()),</span>
+<span class="nc" id="L128">                getDepBriefWithAnoAndCom(promptInfo.getClassInfo(),promptInfo.getMethodInfo()))){</span>
+<span class="nc" id="L129">            this.dataModel.put(&quot;dep_m_sigs_ano_com&quot;,getDepBriefWithAno(promptInfo.getClassInfo(),promptInfo.getMethodInfo()));</span>
+        }
+<span class="nc" id="L131">        this.dataModel.put(&quot;project_full_code&quot;, getFullProjectCode(promptInfo.getClassName(), config));</span>
+<span class="nc" id="L132">        this.dataModel.put(&quot;method_name&quot;, promptInfo.getMethodName());</span>
+<span class="nc" id="L133">        this.dataModel.put(&quot;full_class_name&quot;,promptInfo.getFullClassName());</span>
+<span class="nc" id="L134">        this.dataModel.put(&quot;method_sig&quot;, promptInfo.getMethodSignature());</span>
+<span class="nc" id="L135">        this.dataModel.put(&quot;method_body&quot;, promptInfo.getMethodInfo().sourceCode);</span>
+<span class="nc" id="L136">        this.dataModel.put(&quot;class_name&quot;, promptInfo.getClassName());</span>
+<span class="nc" id="L137">        this.dataModel.put(&quot;class_sig&quot;, promptInfo.getClassInfo().classSignature);</span>
+<span class="nc" id="L138">        this.dataModel.put(&quot;package&quot;, promptInfo.getClassInfo().packageName);</span>
+<span class="nc" id="L139">        this.dataModel.put(&quot;class_body&quot;, promptInfo.getClassInfo().classDeclarationCode);</span>
+<span class="nc" id="L140">        this.dataModel.put(&quot;file_content&quot;, promptInfo.getClassInfo().compilationUnitCode);</span>
+<span class="nc" id="L141">        this.dataModel.put(&quot;imports&quot;, AbstractRunner.joinLines(promptInfo.getClassInfo().imports));</span>
+<span class="nc" id="L142">        this.dataModel.put(&quot;fields&quot;, AbstractRunner.joinLines(promptInfo.getClassInfo().fields));</span>
+<span class="nc" id="L143">        this.dataModel.put(&quot;full_method_info&quot;,promptInfo.getMethodInfo().full_method_info);</span>
+<span class="nc" id="L144">        this.dataModel.put(&quot;subClasses&quot;,promptInfo.getClassInfo().subClasses);</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (!promptInfo.getClassInfo().constructorSigs.isEmpty()) {</span>
+<span class="nc" id="L146">            this.dataModel.put(&quot;constructor_sigs&quot;, AbstractRunner.joinLines(promptInfo.getClassInfo().constructorBrief));</span>
+<span class="nc" id="L147">            this.dataModel.put(&quot;constructor_bodies&quot;, AbstractRunner.getBodies(config, promptInfo.getClassInfo(), promptInfo.getClassInfo().constructorSigs));</span>
+        } else {
+<span class="nc" id="L149">            this.dataModel.put(&quot;constructor_sigs&quot;, null);</span>
+<span class="nc" id="L150">            this.dataModel.put(&quot;constructor_bodies&quot;, null);</span>
+        }
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (!promptInfo.getClassInfo().getterSetterSigs.isEmpty()) {</span>
+<span class="nc" id="L153">            this.dataModel.put(&quot;getter_setter_sigs&quot;, AbstractRunner.joinLines(promptInfo.getClassInfo().getterSetterBrief));</span>
+<span class="nc" id="L154">            this.dataModel.put(&quot;getter_setter_bodies&quot;, AbstractRunner.getBodies(config, promptInfo.getClassInfo(), promptInfo.getClassInfo().getterSetterSigs));</span>
+        } else {
+<span class="nc" id="L156">            this.dataModel.put(&quot;getter_setter_sigs&quot;, null);</span>
+<span class="nc" id="L157">            this.dataModel.put(&quot;getter_setter_bodies&quot;, null);</span>
+        }
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        if (!promptInfo.getOtherMethodBrief().trim().isEmpty()) {</span>
+<span class="nc" id="L160">            this.dataModel.put(&quot;other_method_sigs&quot;, promptInfo.getOtherMethodBrief());</span>
+<span class="nc" id="L161">            this.dataModel.put(&quot;other_method_bodies&quot;, promptInfo.getOtherMethodBodies());</span>
+        } else {
+<span class="nc" id="L163">            this.dataModel.put(&quot;other_method_sigs&quot;, null);</span>
+<span class="nc" id="L164">            this.dataModel.put(&quot;other_method_bodies&quot;, null);</span>
+        }
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (config.getExamplePath() != null) {</span>
+<span class="nc" id="L167">            ExampleUsage exampleUsage = new ExampleUsage(config.getExamplePath(), promptInfo.className);</span>
+<span class="nc" id="L168">            this.dataModel.put(&quot;example_usage&quot;, exampleUsage.getShortestUsage(promptInfo.getMethodInfo().methodSignature));</span>
+        }
+        //add javaDocs
+<span class="nc" id="L171">        String javadocs=promptInfo.getMethodInfo().getMethod_comment();</span>
+<span class="nc" id="L172">        this.dataModel.put(&quot;java_doc&quot;,javadocs);</span>
+<span class="nc" id="L173">        this.dataModel.put(&quot;java_doc_code&quot;,getJavaDocCodeExample(javadocs));</span>
+<span class="nc" id="L174">        this.dataModel.put(&quot;doc_infos&quot;,getSnippetCode(promptInfo.getMethodInfo().getMethodName(),config));</span>
+        //add hits
+<span class="nc bnc" id="L176" title="All 2 branches missed.">        if (promptInfo.getSliceStep() != null) {</span>
+<span class="nc" id="L177">            this.dataModel.put(&quot;step_desp&quot;, promptInfo.getSliceStep().getDesp());</span>
+<span class="nc" id="L178">            this.dataModel.put(&quot;step_code&quot;, promptInfo.getSliceStep().getCode());</span>
+        } else {
+<span class="nc" id="L180">            this.dataModel.put(&quot;step_desp&quot;, &quot;&quot;);</span>
+<span class="nc" id="L181">            this.dataModel.put(&quot;step_code&quot;, &quot;&quot;);</span>
+        }
+        //add target method invocation example in the project
+<span class="nc" id="L184">        Map&lt;String, List&lt;String&gt;&gt; invocationCodeMap = get_method_invocation_code(Paths.get(config.tmpOutput.toString(),</span>
+<span class="nc" id="L185">                &quot;methodExampleCode.json&quot;).toString(), promptInfo.getFullClassName(), promptInfo.getMethodSignature());</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">        if(invocationCodeMap!=null){</span>
+<span class="nc" id="L187">            this.dataModel.put(&quot;method_invocation_codes_innerclass&quot;, invocationCodeMap.get(&quot;inner_class_code&quot;));</span>
+<span class="nc" id="L188">            this.dataModel.put(&quot;method_invocation_codes_outerclass&quot;, invocationCodeMap.get(&quot;outer_class_code&quot;));</span>
+        }
+
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        for (Map.Entry&lt;String, String&gt; entry : promptInfo.getConstructorDeps().entrySet()) {</span>
+<span class="nc" id="L192">            cdep_temp.put(entry.getKey(), entry.getValue());</span>
+<span class="nc" id="L193">        }</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        for (Map.Entry&lt;String, String&gt; entry : promptInfo.getMethodDeps().entrySet()) {</span>
+<span class="nc" id="L195">            mdep_temp.put(entry.getKey(), entry.getValue());</span>
+<span class="nc" id="L196">        }</span>
+<span class="nc" id="L197">        this.dataModel.put(&quot;c_deps&quot;, cdep_temp);</span>
+<span class="nc" id="L198">        this.dataModel.put(&quot;m_deps&quot;, mdep_temp);</span>
+<span class="nc" id="L199">        this.dataModel.put(&quot;full_fm&quot;, promptInfo.getContext());</span>
+
+
+<span class="nc" id="L202">    }</span>
+
+    public static void main(String[] args) {
+        //add object creator example in the project
+<span class="nc" id="L206">        List&lt;String&gt; invocation_codes=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L207">        Path tmpOutput = Paths.get(&quot;D:\\tmp\\chatunitest-info\\commons-cli&quot;);</span>
+<span class="nc" id="L208">        PromptInfo promptInfo = new PromptInfo();</span>
+   //     promptInfo.setFullClassName(&quot;org.apache.commons.cli.CommandLine&quot;);
+<span class="nc" id="L210">        promptInfo.setMethodSignature(&quot;addOption(Option)&quot;);</span>
+        //遍历方法中的依赖类
+<span class="nc" id="L212">        System.out.println(get_method_invocation_code(Paths.get(tmpOutput.toString(), &quot;methodExampleCode.json&quot;).toString(), promptInfo.getFullClassName(), promptInfo.getMethodSignature()));</span>
+<span class="nc" id="L213">    }</span>
+
+    public static Map&lt;String,List&lt;String&gt;&gt; get_method_invocation_code(String staticCreationRecordPath,String fqcn_target_method,String methodName_target_method){
+<span class="nc bnc" id="L216" title="All 2 branches missed.">        if(!Files.exists(Paths.get(staticCreationRecordPath))){</span>
+<span class="nc" id="L217">            return null;</span>
+        }
+<span class="nc" id="L219">        List&lt;String&gt; invocation_codes_outerclass=new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L220">        List&lt;String&gt; invocation_codes_targetclass = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L221">        Map&lt;String, Object&gt; existing_creation_code = (Map&lt;String, Object&gt;) readJsonFile(staticCreationRecordPath);</span>
+<span class="nc" id="L222">        String full_method_name=fqcn_target_method+&quot;.&quot;+methodName_target_method;</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        if(existing_creation_code.get(full_method_name)==null){</span>
+<span class="nc" id="L224">            return null;</span>
+        }
+<span class="nc" id="L226">        List&lt;Map&lt;String,Object&gt;&gt; static_code_list=((List&lt;Map&lt;String,Object&gt;&gt;)existing_creation_code.get(full_method_name));</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        for (Map&lt;String, Object&gt; map : static_code_list) {</span>
+<span class="nc" id="L228">            String code = map.get(&quot;code&quot;).toString();</span>
+<span class="nc bnc" id="L229" title="All 2 branches missed.">            if(map.get(&quot;className&quot;).equals(fqcn_target_method)){</span>
+<span class="nc" id="L230">                invocation_codes_targetclass.add(code);</span>
+            }
+            else {
+<span class="nc" id="L233">                invocation_codes_outerclass.add(code);</span>
+            }
+<span class="nc" id="L235">        }</span>
+<span class="nc" id="L236">        HashMap&lt;String, List&lt;String&gt;&gt; resultMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L237">        resultMap.put(&quot;inner_class_code&quot;,invocation_codes_targetclass);</span>
+<span class="nc" id="L238">        resultMap.put(&quot;outer_class_code&quot;,invocation_codes_outerclass);</span>
+<span class="nc" id="L239">        return resultMap;</span>
+    }
+
+    //util for reading constructor.json
+    public static Object readJsonFile(String filepath) {
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (filepath == null) {</span>
+<span class="nc" id="L245">            return null;</span>
+        }
+        try {
+<span class="nc" id="L248">            Path path = Paths.get(filepath);</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">            if (!Files.exists(path)) {</span>
+<span class="nc" id="L250">                return null;</span>
+            }
+<span class="nc" id="L252">            Reader reader = Files.newBufferedReader(path);</span>
+<span class="nc" id="L253">            Map&lt;String, Object&gt; map = new Gson().fromJson(reader, new TypeToken&lt;Map&lt;String, Object&gt;&gt;() {</span>
+<span class="nc" id="L254">            }.getType());</span>
+<span class="nc" id="L255">            reader.close();</span>
+<span class="nc" id="L256">            return map;</span>
+<span class="nc" id="L257">        } catch (Exception e) {</span>
+<span class="nc" id="L258">            System.err.println(&quot;Error reading JSON file: &quot; + filepath);</span>
+<span class="nc" id="L259">            e.printStackTrace();</span>
+<span class="nc" id="L260">            return null;</span>
+        }
+    }
+    public Map&lt;String, String&gt; getDepBrief(MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L264">        Map&lt;String, String&gt; depBrief = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L266">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L267">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L268">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L270">                return depBrief;</span>
+            }
+<span class="nc" id="L272">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L274">                continue;</span>
+            }
+<span class="nc" id="L276">            String info = &quot;&quot;;</span>
+<span class="nc bnc" id="L277" title="All 2 branches missed.">            for (String depMethodSig : entry.getValue()) {</span>
+<span class="nc" id="L278">                MethodInfo depMethodInfo = AbstractRunner.getMethodInfo(config, depClassInfo, depMethodSig);</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">                if (depMethodInfo == null) {</span>
+<span class="nc" id="L280">                    continue;</span>
+                }
+<span class="nc" id="L282">                info += depMethodInfo.brief + &quot;\n&quot;;</span>
+<span class="nc" id="L283">            }</span>
+<span class="nc" id="L284">            depBrief.put(depClassName, info.trim());</span>
+<span class="nc" id="L285">        }</span>
+<span class="nc" id="L286">        return depBrief;</span>
+    }
+
+
+
+    public Map&lt;String, String&gt; getDepBriefWithAnoAndCom(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L292">        Map&lt;String, String&gt; depBrief = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        for (Map.Entry&lt;String, ClassInfo&gt; entry : getDepClassInfos(classInfo,methodInfo).entrySet()) {</span>
+<span class="nc" id="L294">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L295">            ClassInfo depClassInfo=entry.getValue();</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L297">                continue;</span>
+            }
+<span class="nc" id="L299">            Map&lt;String, String&gt; methodSigs = depClassInfo.getMethodSigs();</span>
+<span class="nc" id="L300">            Set&lt;String&gt; msigs = methodSigs.keySet();</span>
+<span class="nc" id="L301">            String info=&quot;&quot;;</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">            for (String msig : msigs) {</span>
+<span class="nc" id="L303">                MethodInfo mInfo = AbstractRunner.getMethodInfo(config, depClassInfo, msig);</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">                if(mInfo==null){</span>
+<span class="nc" id="L305">                    continue;</span>
+                }
+<span class="nc" id="L307">                info+=&quot;-&quot;+mInfo.method_comment+mInfo.brief.replace(&quot;{}&quot;,&quot;&quot;).replace(&quot;\r&quot;,&quot;&quot;) + &quot;\n&quot;;</span>
+<span class="nc" id="L308">            }</span>
+<span class="nc" id="L309">            depBrief.put(depClassName, info.trim());</span>
+<span class="nc" id="L310">        }</span>
+<span class="nc" id="L311">        return depBrief;</span>
+    }
+
+
+
+    public boolean isTokenExceed(String full_method_info,Map&lt;String,String&gt; dep_class_sigs,Map&lt;String,String&gt; dep_m_sigs_ano_com ){
+<span class="nc" id="L317">        String prompt=full_method_info;</span>
+<span class="nc bnc" id="L318" title="All 2 branches missed.">        for (String dep_class_sig : dep_class_sigs.keySet()) {</span>
+<span class="nc" id="L319">            prompt+=dep_class_sig;</span>
+<span class="nc" id="L320">            prompt+=dep_m_sigs_ano_com.get(dep_class_sig);</span>
+<span class="nc" id="L321">        }</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">        if(AbstractRunner.isExceedMaxTokens(config.maxPromptTokens,prompt)){</span>
+<span class="nc" id="L323">            return true;</span>
+        }
+<span class="nc" id="L325">        return false;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepBriefWithAno(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L329">        Map&lt;String, String&gt; depBrief = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L330" title="All 2 branches missed.">        for (Map.Entry&lt;String, ClassInfo&gt; entry : getDepClassInfos(classInfo,methodInfo).entrySet()) {</span>
+<span class="nc" id="L331">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L332">            ClassInfo depClassInfo=entry.getValue();</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L334">                continue;</span>
+            }
+<span class="nc" id="L336">            Map&lt;String, String&gt; methodSigs = depClassInfo.getMethodSigs();</span>
+<span class="nc" id="L337">            Set&lt;String&gt; msigs = methodSigs.keySet();</span>
+<span class="nc" id="L338">            String info=&quot;&quot;;</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">            for (String msig : msigs) {</span>
+<span class="nc" id="L340">                MethodInfo mInfo = AbstractRunner.getMethodInfo(config, depClassInfo, msig);</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">                if(mInfo==null){</span>
+<span class="nc" id="L342">                    continue;</span>
+                }
+<span class="nc" id="L344">                info+=&quot;-&quot;+mInfo.brief.replace(&quot;{}&quot;,&quot;&quot;) + &quot;\n&quot;;</span>
+<span class="nc" id="L345">            }</span>
+<span class="nc" id="L346">            depBrief.put(depClassName, info.trim());</span>
+<span class="nc" id="L347">        }</span>
+<span class="nc" id="L348">        return depBrief;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepBodies(MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L352">        Map&lt;String, String&gt; depBodies = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L354">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L355">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L356">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L357" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L358">                return depBodies;</span>
+            }
+<span class="nc" id="L360">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L361" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L362">                continue;</span>
+            }
+<span class="nc" id="L364">            String info = &quot;&quot;;</span>
+<span class="nc bnc" id="L365" title="All 2 branches missed.">            for (String depMethodSig : entry.getValue()) {</span>
+<span class="nc" id="L366">                MethodInfo depMethodInfo = AbstractRunner.getMethodInfo(config, depClassInfo, depMethodSig);</span>
+<span class="nc bnc" id="L367" title="All 2 branches missed.">                if (depMethodInfo == null) {</span>
+<span class="nc" id="L368">                    continue;</span>
+                }
+<span class="nc" id="L370">                info += depMethodInfo.sourceCode + &quot;\n&quot;;</span>
+<span class="nc" id="L371">            }</span>
+<span class="nc" id="L372">            depBodies.put(depClassName, info.trim());</span>
+<span class="nc" id="L373">        }</span>
+<span class="nc" id="L374">        return depBodies;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepFields(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L378">        Map&lt;String, String&gt; depFields = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L380">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L381">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L382">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L383" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L384">                return depFields;</span>
+            }
+<span class="nc" id="L386">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L388">                continue;</span>
+            }
+<span class="nc" id="L390">            depFields.put(depClassName, AbstractRunner.joinLines(depClassInfo.fields));</span>
+<span class="nc" id="L391">        }</span>
+
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L394">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L395" title="All 2 branches missed.">            if (depFields.containsKey(depClassName)) {</span>
+<span class="nc" id="L396">                continue;</span>
+            }
+<span class="nc" id="L398">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L399">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L400" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L401">                return depFields;</span>
+            }
+<span class="nc" id="L403">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L404" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L405">                continue;</span>
+            }
+<span class="nc" id="L407">            depFields.put(depClassName, AbstractRunner.joinLines(depClassInfo.fields));</span>
+<span class="nc" id="L408">        }</span>
+<span class="nc" id="L409">        return depFields;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepConstructorSigs(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L413">        Map&lt;String, String&gt; depConstructorSigs = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L414" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L415">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L416">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L417">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L418" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L419">                return depConstructorSigs;</span>
+            }
+<span class="nc" id="L421">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L422" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L423">                continue;</span>
+            }
+<span class="nc" id="L425">            depConstructorSigs.put(depClassName, AbstractRunner.joinLines(depClassInfo.constructorBrief));</span>
+<span class="nc" id="L426">        }</span>
+
+<span class="nc bnc" id="L428" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L429">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">            if (depConstructorSigs.containsKey(depClassName)) {</span>
+<span class="nc" id="L431">                continue;</span>
+            }
+<span class="nc" id="L433">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L434">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L435" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L436">                return depConstructorSigs;</span>
+            }
+<span class="nc" id="L438">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L439" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L440">                continue;</span>
+            }
+<span class="nc" id="L442">            depConstructorSigs.put(depClassName, AbstractRunner.joinLines(depClassInfo.constructorBrief));</span>
+<span class="nc" id="L443">        }</span>
+<span class="nc" id="L444">        return depConstructorSigs;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepConstructorBodies(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L448">        Map&lt;String, String&gt; depConstructorBodies = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L449" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L450">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L451">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L452">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L454">                return depConstructorBodies;</span>
+            }
+<span class="nc" id="L456">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L457" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L458">                continue;</span>
+            }
+
+<span class="nc" id="L461">            String info = &quot;&quot;;</span>
+<span class="nc bnc" id="L462" title="All 2 branches missed.">            for (String sig : depClassInfo.constructorSigs) {</span>
+<span class="nc" id="L463">                MethodInfo depConstructorInfo = AbstractRunner.getMethodInfo(config, depClassInfo, sig);</span>
+<span class="nc bnc" id="L464" title="All 2 branches missed.">                if (depConstructorInfo == null) {</span>
+<span class="nc" id="L465">                    continue;</span>
+                }
+<span class="nc" id="L467">                info += depConstructorInfo.sourceCode + &quot;\n&quot;;</span>
+<span class="nc" id="L468">            }</span>
+<span class="nc" id="L469">            depConstructorBodies.put(depClassName, info.trim());</span>
+<span class="nc" id="L470">        }</span>
+
+<span class="nc bnc" id="L472" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L473">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">            if (depConstructorBodies.containsKey(depClassName)) {</span>
+<span class="nc" id="L475">                continue;</span>
+            }
+<span class="nc" id="L477">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L478">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L480">                return depConstructorBodies;</span>
+            }
+<span class="nc" id="L482">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L484">                continue;</span>
+            }
+
+<span class="nc" id="L487">            String info = &quot;&quot;;</span>
+<span class="nc bnc" id="L488" title="All 2 branches missed.">            for (String sig : depClassInfo.constructorSigs) {</span>
+<span class="nc" id="L489">                MethodInfo depConstructorInfo = AbstractRunner.getMethodInfo(config, depClassInfo, sig);</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">                if (depConstructorInfo == null) {</span>
+<span class="nc" id="L491">                    continue;</span>
+                }
+<span class="nc" id="L493">                info += depConstructorInfo.sourceCode + &quot;\n&quot;;</span>
+<span class="nc" id="L494">            }</span>
+<span class="nc" id="L495">            depConstructorBodies.put(depClassName, info.trim());</span>
+<span class="nc" id="L496">        }</span>
+<span class="nc" id="L497">        return depConstructorBodies;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepClassSigs(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L501">        Map&lt;String, String&gt; depClassSigs = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L502" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L503">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L504">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L505">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L506" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+//                return depClassSigs;
+<span class="nc" id="L508">                continue;</span>
+            }
+<span class="nc" id="L510">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L511" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L512">                continue;</span>
+            }
+<span class="nc" id="L514">            depClassSigs.put(depClassName, depClassInfo.classSignature);</span>
+<span class="nc" id="L515">        }</span>
+
+<span class="nc bnc" id="L517" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L518">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">            if (depClassSigs.containsKey(depClassName)) {</span>
+<span class="nc" id="L520">                continue;</span>
+            }
+<span class="nc" id="L522">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L523">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L524" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+//                return depClassSigs;
+<span class="nc" id="L526">                continue;</span>
+            }
+<span class="nc" id="L528">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L529" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L530">                continue;</span>
+            }
+<span class="nc" id="L532">            depClassSigs.put(depClassName, depClassInfo.classSignature);</span>
+<span class="nc" id="L533">        }</span>
+<span class="nc" id="L534">        return depClassSigs;</span>
+    }
+
+    public Map&lt;String, ClassInfo&gt; getDepClassInfos(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L538">        Map&lt;String, ClassInfo&gt; depClassSigs = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L540">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L541">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L542">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L544">                return depClassSigs;</span>
+            }
+<span class="nc" id="L546">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L547" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L548">                continue;</span>
+            }
+<span class="nc" id="L550">            depClassSigs.put(depClassName, depClassInfo);</span>
+<span class="nc" id="L551">        }</span>
+
+<span class="nc bnc" id="L553" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L554">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">            if (depClassSigs.containsKey(depClassName)) {</span>
+<span class="nc" id="L556">                continue;</span>
+            }
+<span class="nc" id="L558">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L559">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L560" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L561">                continue;</span>
+            }
+<span class="nc" id="L563">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L564" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L565">                continue;</span>
+            }
+<span class="nc" id="L567">            depClassSigs.put(depClassName, depClassInfo);</span>
+<span class="nc" id="L568">        }</span>
+<span class="nc" id="L569">        return depClassSigs;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepClassBodies(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L573">        Map&lt;String, String&gt; depClassBodies = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L574" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L575">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L576">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L577">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L578" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L579">                return depClassBodies;</span>
+            }
+<span class="nc" id="L581">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L582" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L583">                continue;</span>
+            }
+<span class="nc" id="L585">            depClassBodies.put(depClassName, depClassInfo.classDeclarationCode);</span>
+<span class="nc" id="L586">        }</span>
+
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L589">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L590" title="All 2 branches missed.">            if (depClassBodies.containsKey(depClassName)) {</span>
+<span class="nc" id="L591">                continue;</span>
+            }
+<span class="nc" id="L593">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L594">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L595" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L596">                return depClassBodies;</span>
+            }
+<span class="nc" id="L598">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L599" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L600">                continue;</span>
+            }
+<span class="nc" id="L602">            depClassBodies.put(depClassName, depClassInfo.classDeclarationCode);</span>
+<span class="nc" id="L603">        }</span>
+<span class="nc" id="L604">        return depClassBodies;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepPackages(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L608">        Map&lt;String, String&gt; depPackages = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L609" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L610">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L611">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L612">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L613" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L614">                return depPackages;</span>
+            }
+<span class="nc" id="L616">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L617" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L618">                continue;</span>
+            }
+<span class="nc" id="L620">            depPackages.put(depClassName, depClassInfo.packageName);</span>
+<span class="nc" id="L621">        }</span>
+
+<span class="nc bnc" id="L623" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L624">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L625" title="All 2 branches missed.">            if (depPackages.containsKey(depClassName)) {</span>
+<span class="nc" id="L626">                continue;</span>
+            }
+<span class="nc" id="L628">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L629">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L630" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L631">                return depPackages;</span>
+            }
+<span class="nc" id="L633">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L634" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L635">                continue;</span>
+            }
+<span class="nc" id="L637">            depPackages.put(depClassName, depClassInfo.packageName);</span>
+<span class="nc" id="L638">        }</span>
+<span class="nc" id="L639">        return depPackages;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepImports(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L643">        Map&lt;String, String&gt; depImports = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L644" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L645">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L646">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L647">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L648" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L649">                return depImports;</span>
+            }
+<span class="nc" id="L651">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L652" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L653">                continue;</span>
+            }
+<span class="nc" id="L655">            depImports.put(depClassName, AbstractRunner.joinLines(depClassInfo.imports));</span>
+<span class="nc" id="L656">        }</span>
+
+<span class="nc bnc" id="L658" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L659">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">            if (depImports.containsKey(depClassName)) {</span>
+<span class="nc" id="L661">                continue;</span>
+            }
+<span class="nc" id="L663">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L664">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L665" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L666">                return depImports;</span>
+            }
+<span class="nc" id="L668">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L669" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L670">                continue;</span>
+            }
+<span class="nc" id="L672">            depImports.put(depClassName, AbstractRunner.joinLines(depClassInfo.imports));</span>
+<span class="nc" id="L673">        }</span>
+<span class="nc" id="L674">        return depImports;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepGSSigs(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L678">        Map&lt;String, String&gt; depGSSigs = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L679" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L680">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L681">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L682">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L683" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L684">                return depGSSigs;</span>
+            }
+<span class="nc" id="L686">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L687" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L688">                continue;</span>
+            }
+<span class="nc" id="L690">            depGSSigs.put(depClassName, AbstractRunner.joinLines(depClassInfo.getterSetterSigs));</span>
+<span class="nc" id="L691">        }</span>
+
+<span class="nc bnc" id="L693" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L694">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L695" title="All 2 branches missed.">            if (depGSSigs.containsKey(depClassName)) {</span>
+<span class="nc" id="L696">                continue;</span>
+            }
+<span class="nc" id="L698">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L699">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L700" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L701">                return depGSSigs;</span>
+            }
+<span class="nc" id="L703">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L704" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L705">                continue;</span>
+            }
+<span class="nc" id="L707">            depGSSigs.put(depClassName, AbstractRunner.joinLines(depClassInfo.getterSetterSigs));</span>
+<span class="nc" id="L708">        }</span>
+<span class="nc" id="L709">        return depGSSigs;</span>
+    }
+
+    public Map&lt;String, String&gt; getDepGSBodies(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L713">        Map&lt;String, String&gt; depGSBodies = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L714" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L715">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L716">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L717">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L718" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L719">                return depGSBodies;</span>
+            }
+<span class="nc" id="L721">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L722" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L723">                continue;</span>
+            }
+
+<span class="nc" id="L726">            String info = &quot;&quot;;</span>
+<span class="nc bnc" id="L727" title="All 2 branches missed.">            for (String sig : depClassInfo.getterSetterSigs) {</span>
+<span class="nc" id="L728">                MethodInfo depConstructorInfo = AbstractRunner.getMethodInfo(config, depClassInfo, sig);</span>
+<span class="nc bnc" id="L729" title="All 2 branches missed.">                if (depConstructorInfo == null) {</span>
+<span class="nc" id="L730">                    continue;</span>
+                }
+<span class="nc" id="L732">                info += depConstructorInfo.sourceCode + &quot;\n&quot;;</span>
+<span class="nc" id="L733">            }</span>
+<span class="nc" id="L734">            depGSBodies.put(depClassName, info.trim());</span>
+<span class="nc" id="L735">        }</span>
+
+<span class="nc bnc" id="L737" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L738">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L739" title="All 2 branches missed.">            if (depGSBodies.containsKey(depClassName)) {</span>
+<span class="nc" id="L740">                continue;</span>
+            }
+<span class="nc" id="L742">            String fullDepClassName = Task.getFullClassName(config, depClassName);</span>
+<span class="nc" id="L743">            Path depClassInfoPath = config.getParseOutput().resolve(fullDepClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L744" title="All 2 branches missed.">            if (!depClassInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L745">                return depGSBodies;</span>
+            }
+<span class="nc" id="L747">            ClassInfo depClassInfo = GSON.fromJson(new String(Files.readAllBytes(depClassInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc bnc" id="L748" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L749">                continue;</span>
+            }
+
+<span class="nc" id="L752">            String info = &quot;&quot;;</span>
+<span class="nc bnc" id="L753" title="All 2 branches missed.">            for (String sig : depClassInfo.getterSetterSigs) {</span>
+<span class="nc" id="L754">                MethodInfo depConstructorInfo = AbstractRunner.getMethodInfo(config, depClassInfo, sig);</span>
+<span class="nc bnc" id="L755" title="All 2 branches missed.">                if (depConstructorInfo == null) {</span>
+<span class="nc" id="L756">                    continue;</span>
+                }
+<span class="nc" id="L758">                info += depConstructorInfo.sourceCode + &quot;\n&quot;;</span>
+<span class="nc" id="L759">            }</span>
+<span class="nc" id="L760">            depGSBodies.put(depClassName, info.trim());</span>
+<span class="nc" id="L761">        }</span>
+<span class="nc" id="L762">        return depGSBodies;</span>
+    }
+
+    public String getFullProjectCode(String className, Config config) {
+<span class="nc" id="L766">        String fullProjectCode = &quot;&quot;;</span>
+<span class="nc" id="L767">        List&lt;String&gt; classPaths = ProjectParser.scanSourceDirectory(config.project);</span>
+        // read the file content of each path and append to fullProjectCode
+<span class="nc bnc" id="L769" title="All 2 branches missed.">        for (String path : classPaths) {</span>
+<span class="nc" id="L770">            String cn = path.substring(path.lastIndexOf(File.separator) + 1, path.lastIndexOf(&quot;.&quot;));</span>
+<span class="nc bnc" id="L771" title="All 2 branches missed.">            if (cn.equals(className)) {</span>
+<span class="nc" id="L772">                continue;</span>
+            }
+            try {
+<span class="nc" id="L775">                fullProjectCode += new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.UTF_8) + &quot;\n&quot;;</span>
+<span class="nc" id="L776">            } catch (IOException e) {</span>
+<span class="nc" id="L777">                config.getLogger().warn(&quot;Failed to append class code for &quot; + className);</span>
+<span class="nc" id="L778">            }</span>
+<span class="nc" id="L779">        }</span>
+<span class="nc" id="L780">        return fullProjectCode;</span>
+    }
+    public String getJavaDocCodeExample(String javadocs) {
+<span class="nc" id="L783">        List&lt;String&gt; lines = Arrays.asList(javadocs.split(&quot;\r\n&quot;));</span>
+<span class="nc" id="L784">        JavadocCodeExampleCheck javadocCodeExampleCheck=new JavadocCodeExampleCheck();</span>
+<span class="nc" id="L785">        List&lt;String&gt; javaDocCodeExample = javadocCodeExampleCheck.getJavaDocCodeExample(lines);</span>
+<span class="nc" id="L786">        return  String.join(&quot;\r\n&quot;, javaDocCodeExample);</span>
+    }
+    public List&lt;String&gt; getSnippetCode(String methodName, Config config) {
+<span class="nc" id="L789">        String absolutePath = config.getProject().getBasedir().getAbsolutePath();</span>
+<span class="nc" id="L790">        SnippetAnalyzer snippetAnalyzer=new SnippetAnalyzer();</span>
+<span class="nc" id="L791">        List&lt;String&gt; docSnippets = snippetAnalyzer.getDocSnippets(absolutePath, methodName);</span>
+<span class="nc" id="L792">        return docSnippets;</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

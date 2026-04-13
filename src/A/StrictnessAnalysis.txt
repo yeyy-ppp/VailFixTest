@@ -1,0 +1,65 @@
+包路径：gson
+类名：Strictness
+父类：Enum
+依赖类：无
+---
+序号：1
+方法名：values()
+返回类型：Strictness[]
+功能描述：返回此枚举类型的所有常量数组。
+序号：2
+方法名：valueOf(String name)
+返回类型：Strictness
+功能描述：根据名称返回枚举常量。
+序号：3
+方法名：name()
+返回类型：String
+功能描述：返回此枚举常量的名称。
+序号：4
+方法名：ordinal()
+返回类型：int
+功能描述：返回此枚举常量的序数位置。
+序号：5
+方法名：toString()
+返回类型：String
+功能描述：返回枚举常量的名称表示。
+序号：6
+方法名：equals(Object obj)
+返回类型：boolean
+功能描述：检查是否同一个枚举常量实例。
+序号：7
+方法名：hashCode()
+返回类型：int
+功能描述：返回枚举常量的哈希码。
+序号：8
+方法名：compareTo(Strictness o)
+返回类型：int
+功能描述：比较此常量与另一个的顺序。
+序号：9
+方法名：getDeclaringClass()
+返回类型：Class<Strictness>
+功能描述：返回此枚举的Class对象。
+序号：10
+方法名：getClass()
+返回类型：Class<?>
+功能描述：返回此对象的运行时类。
+序号：11
+方法名：wait()
+返回类型：void
+功能描述：导致当前线程等待，直到另一个线程调用notify()或notifyAll()。
+序号：12
+方法名：wait(long timeout)
+返回类型：void
+功能描述：导致当前线程等待指定毫秒数，或直到被唤醒。
+序号：13
+方法名：wait(long timeout, int nanos)
+返回类型：void
+功能描述：导致当前线程等待指定毫秒加纳秒数，或直到被唤醒。
+序号：14
+方法名：notify()
+返回类型：void
+功能描述：唤醒一个在此对象上等待的线程。
+序号：15
+方法名：notifyAll()
+返回类型：void
+功能描述：唤醒所有在此对象上等待的线程。

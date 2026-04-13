@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ISO8601Utils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind.util</a> &gt; <span class="el_source">ISO8601Utils.java</span></div><h1>ISO8601Utils.java</h1><pre class="source lang-java linenums">package gson.internal.bind.util;
+import java.text.ParseException;
+import java.text.ParsePosition;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.Locale;
+import java.util.TimeZone;
+@SuppressWarnings(&quot;MemberName&quot;)
+public class ISO8601Utils {
+  private ISO8601Utils() {}
+  private static final String UTC_ID = &quot;UTC&quot;;
+<span class="fc" id="L13">  private static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone(UTC_ID);</span>
+  public static String format(Date date) {
+<span class="fc" id="L15">    return format(date, false, TIMEZONE_UTC);</span>
+  }
+  public static String format(Date date, boolean millis) {
+<span class="fc" id="L18">    return format(date, millis, TIMEZONE_UTC);</span>
+  }
+  public static String format(Date date, boolean millis, TimeZone tz) {
+<span class="fc" id="L21">    Calendar calendar = new GregorianCalendar(tz, Locale.US);</span>
+<span class="fc" id="L22">    calendar.setTime(date);</span>
+<span class="fc" id="L23">    int capacity = &quot;yyyy-MM-ddThh:mm:ss&quot;.length();</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">    capacity += millis ? &quot;.sss&quot;.length() : 0;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">    capacity += tz.getRawOffset() == 0 ? &quot;Z&quot;.length() : &quot;+hh:mm&quot;.length();</span>
+<span class="fc" id="L26">    StringBuilder formatted = new StringBuilder(capacity);</span>
+<span class="fc" id="L27">    padInt(formatted, calendar.get(Calendar.YEAR), &quot;yyyy&quot;.length());</span>
+<span class="fc" id="L28">    formatted.append('-');</span>
+<span class="fc" id="L29">    padInt(formatted, calendar.get(Calendar.MONTH) + 1, &quot;MM&quot;.length());</span>
+<span class="fc" id="L30">    formatted.append('-');</span>
+<span class="fc" id="L31">    padInt(formatted, calendar.get(Calendar.DAY_OF_MONTH), &quot;dd&quot;.length());</span>
+<span class="fc" id="L32">    formatted.append('T');</span>
+<span class="fc" id="L33">    padInt(formatted, calendar.get(Calendar.HOUR_OF_DAY), &quot;hh&quot;.length());</span>
+<span class="fc" id="L34">    formatted.append(':');</span>
+<span class="fc" id="L35">    padInt(formatted, calendar.get(Calendar.MINUTE), &quot;mm&quot;.length());</span>
+<span class="fc" id="L36">    formatted.append(':');</span>
+<span class="fc" id="L37">    padInt(formatted, calendar.get(Calendar.SECOND), &quot;ss&quot;.length());</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    if (millis) {</span>
+<span class="fc" id="L39">      formatted.append('.');</span>
+<span class="fc" id="L40">      padInt(formatted, calendar.get(Calendar.MILLISECOND), &quot;sss&quot;.length());</span>
+    }
+<span class="fc" id="L42">    int offset = tz.getOffset(calendar.getTimeInMillis());</span>
+<span class="fc bfc" id="L43" title="All 2 branches covered.">    if (offset != 0) {</span>
+<span class="fc" id="L44">      int hours = Math.abs((offset / (60 * 1000)) / 60);</span>
+<span class="fc" id="L45">      int minutes = Math.abs((offset / (60 * 1000)) % 60);</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">      formatted.append(offset &lt; 0 ? '-' : '+');</span>
+<span class="fc" id="L47">      padInt(formatted, hours, &quot;hh&quot;.length());</span>
+<span class="fc" id="L48">      formatted.append(':');</span>
+<span class="fc" id="L49">      padInt(formatted, minutes, &quot;mm&quot;.length());</span>
+<span class="fc" id="L50">    } else {</span>
+<span class="fc" id="L51">      formatted.append('Z');</span>
+    }
+<span class="fc" id="L53">    return formatted.toString();</span>
+  }
+  public static Date parse(String date, ParsePosition pos) throws ParseException {
+<span class="fc" id="L56">    Exception fail = null;</span>
+    try {
+<span class="fc" id="L58">      int offset = pos.getIndex();</span>
+<span class="fc" id="L59">      int year = parseInt(date, offset, offset += 4);</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">      if (checkOffset(date, offset, '-')) {</span>
+<span class="fc" id="L61">        offset += 1;</span>
+      }
+<span class="fc" id="L63">      int month = parseInt(date, offset, offset += 2);</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">      if (checkOffset(date, offset, '-')) {</span>
+<span class="fc" id="L65">        offset += 1;</span>
+      }
+<span class="fc" id="L67">      int day = parseInt(date, offset, offset += 2);</span>
+<span class="fc" id="L68">      int hour = 0;</span>
+<span class="fc" id="L69">      int minutes = 0;</span>
+<span class="fc" id="L70">      int seconds = 0;</span>
+<span class="fc" id="L71">      int milliseconds = 0;</span>
+<span class="fc" id="L72">      boolean hasT = checkOffset(date, offset, 'T');</span>
+<span class="fc bfc" id="L73" title="All 4 branches covered.">      if (!hasT &amp;&amp; (date.length() &lt;= offset)) {</span>
+<span class="fc" id="L74">        Calendar calendar = new GregorianCalendar(year, month - 1, day);</span>
+<span class="fc" id="L75">        calendar.setLenient(false);</span>
+<span class="fc" id="L76">        pos.setIndex(offset);</span>
+<span class="fc" id="L77">        return calendar.getTime();</span>
+      }
+<span class="fc bfc" id="L79" title="All 2 branches covered.">      if (hasT) {</span>
+<span class="fc" id="L80">        hour = parseInt(date, offset += 1, offset += 2);</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">        if (checkOffset(date, offset, ':')) {</span>
+<span class="fc" id="L82">          offset += 1;</span>
+        }
+<span class="fc" id="L84">        minutes = parseInt(date, offset, offset += 2);</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">        if (checkOffset(date, offset, ':')) {</span>
+<span class="fc" id="L86">          offset += 1;</span>
+        }
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">        if (date.length() &gt; offset) {</span>
+<span class="fc" id="L89">          char c = date.charAt(offset);</span>
+<span class="pc bpc" id="L90" title="3 of 6 branches missed.">          if (c != 'Z' &amp;&amp; c != '+' &amp;&amp; c != '-') {</span>
+<span class="fc" id="L91">            seconds = parseInt(date, offset, offset += 2);</span>
+<span class="pc bpc" id="L92" title="1 of 4 branches missed.">            if (seconds &gt; 59 &amp;&amp; seconds &lt; 63) {</span>
+<span class="fc" id="L93">              seconds = 59;</span>
+            }
+<span class="fc bfc" id="L95" title="All 2 branches covered.">            if (checkOffset(date, offset, '.')) {</span>
+<span class="fc" id="L96">              offset += 1;</span>
+<span class="fc" id="L97">              int endOffset = indexOfNonDigit(date, offset + 1);</span>
+<span class="fc" id="L98">              int parseEndOffset = Math.min(endOffset, offset + 3);</span>
+<span class="fc" id="L99">              int fraction = parseInt(date, offset, parseEndOffset);</span>
+<span class="fc bfc" id="L100" title="All 3 branches covered.">              switch (parseEndOffset - offset) {</span>
+                case 2:
+<span class="fc" id="L102">                  milliseconds = fraction * 10;</span>
+<span class="fc" id="L103">                  break;</span>
+                case 1:
+<span class="fc" id="L105">                  milliseconds = fraction * 100;</span>
+<span class="fc" id="L106">                  break;</span>
+                default:
+<span class="fc" id="L108">                  milliseconds = fraction;</span>
+              }
+<span class="fc" id="L110">              offset = endOffset;</span>
+            }
+          }
+        }
+      }
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">      if (date.length() &lt;= offset) {</span>
+<span class="nc" id="L116">        throw new IllegalArgumentException(&quot;No time zone indicator&quot;);</span>
+      }
+<span class="fc" id="L118">      TimeZone timezone = null;</span>
+<span class="fc" id="L119">      char timezoneIndicator = date.charAt(offset);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">      if (timezoneIndicator == 'Z') {</span>
+<span class="fc" id="L121">        timezone = TIMEZONE_UTC;</span>
+<span class="fc" id="L122">        offset += 1;</span>
+<span class="pc bpc" id="L123" title="1 of 4 branches missed.">      } else if (timezoneIndicator == '+' || timezoneIndicator == '-') {</span>
+<span class="fc" id="L124">        String timezoneOffset = date.substring(offset);</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">        timezoneOffset = timezoneOffset.length() &gt;= 5 ? timezoneOffset : timezoneOffset + &quot;00&quot;;</span>
+<span class="fc" id="L126">        offset += timezoneOffset.length();</span>
+<span class="pc bpc" id="L127" title="1 of 4 branches missed.">        if (timezoneOffset.equals(&quot;+0000&quot;) || timezoneOffset.equals(&quot;+00:00&quot;)) {</span>
+<span class="fc" id="L128">          timezone = TIMEZONE_UTC;</span>
+        } else {
+<span class="fc" id="L130">          String timezoneId = &quot;GMT&quot; + timezoneOffset;</span>
+<span class="fc" id="L131">          timezone = TimeZone.getTimeZone(timezoneId);</span>
+<span class="fc" id="L132">          String act = timezone.getID();</span>
+<span class="pc bpc" id="L133" title="1 of 2 branches missed.">          if (!act.equals(timezoneId)) {</span>
+<span class="nc" id="L134">            String cleaned = act.replace(&quot;:&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (!cleaned.equals(timezoneId)) {</span>
+<span class="nc" id="L136">              throw new IndexOutOfBoundsException(</span>
+                  &quot;Mismatching time zone indicator: &quot;
+                      + timezoneId
+                      + &quot; given, resolves to &quot;
+<span class="nc" id="L140">                      + timezone.getID());</span>
+            }
+          }
+        }
+<span class="fc" id="L144">      } else {</span>
+<span class="fc" id="L145">        throw new IndexOutOfBoundsException(</span>
+            &quot;Invalid time zone indicator '&quot; + timezoneIndicator + &quot;'&quot;);
+      }
+<span class="fc" id="L148">      Calendar calendar = new GregorianCalendar(timezone);</span>
+<span class="fc" id="L149">      calendar.setLenient(false);</span>
+<span class="fc" id="L150">      calendar.set(Calendar.YEAR, year);</span>
+<span class="fc" id="L151">      calendar.set(Calendar.MONTH, month - 1);</span>
+<span class="fc" id="L152">      calendar.set(Calendar.DAY_OF_MONTH, day);</span>
+<span class="fc" id="L153">      calendar.set(Calendar.HOUR_OF_DAY, hour);</span>
+<span class="fc" id="L154">      calendar.set(Calendar.MINUTE, minutes);</span>
+<span class="fc" id="L155">      calendar.set(Calendar.SECOND, seconds);</span>
+<span class="fc" id="L156">      calendar.set(Calendar.MILLISECOND, milliseconds);</span>
+<span class="fc" id="L157">      pos.setIndex(offset);</span>
+<span class="fc" id="L158">      return calendar.getTime();</span>
+<span class="fc" id="L159">    } catch (IndexOutOfBoundsException | IllegalArgumentException e) {</span>
+<span class="fc" id="L160">      fail = e;</span>
+    }
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">    String input = (date == null) ? null : ('&quot;' + date + '&quot;');</span>
+<span class="fc" id="L163">    String msg = fail.getMessage();</span>
+<span class="pc bpc" id="L164" title="2 of 4 branches missed.">    if (msg == null || msg.isEmpty()) {</span>
+<span class="nc" id="L165">      msg = &quot;(&quot; + fail.getClass().getName() + &quot;)&quot;;</span>
+    }
+<span class="fc" id="L167">    ParseException ex =</span>
+<span class="fc" id="L168">        new ParseException(&quot;Failed to parse date [&quot; + input + &quot;]: &quot; + msg, pos.getIndex());</span>
+<span class="fc" id="L169">    ex.initCause(fail);</span>
+<span class="fc" id="L170">    throw ex;</span>
+  }
+  private static boolean checkOffset(String value, int offset, char expected) {
+<span class="fc bfc" id="L173" title="All 4 branches covered.">    return (offset &lt; value.length()) &amp;&amp; (value.charAt(offset) == expected);</span>
+  }
+  private static int parseInt(String value, int beginIndex, int endIndex)
+      throws NumberFormatException {
+<span class="pc bpc" id="L177" title="2 of 6 branches missed.">    if (beginIndex &lt; 0 || endIndex &gt; value.length() || beginIndex &gt; endIndex) {</span>
+<span class="fc" id="L178">      throw new NumberFormatException(value);</span>
+    }
+<span class="fc" id="L180">    int i = beginIndex;</span>
+<span class="fc" id="L181">    int result = 0;</span>
+    int digit;
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">    if (i &lt; endIndex) {</span>
+<span class="fc" id="L184">      digit = Character.digit(value.charAt(i++), 10);</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">      if (digit &lt; 0) {</span>
+<span class="fc" id="L186">        throw new NumberFormatException(&quot;Invalid number: &quot; + value.substring(beginIndex, endIndex));</span>
+      }
+<span class="fc" id="L188">      result = -digit;</span>
+    }
+<span class="fc bfc" id="L190" title="All 2 branches covered.">    while (i &lt; endIndex) {</span>
+<span class="fc" id="L191">      digit = Character.digit(value.charAt(i++), 10);</span>
+<span class="fc bfc" id="L192" title="All 2 branches covered.">      if (digit &lt; 0) {</span>
+<span class="fc" id="L193">        throw new NumberFormatException(&quot;Invalid number: &quot; + value.substring(beginIndex, endIndex));</span>
+      }
+<span class="fc" id="L195">      result *= 10;</span>
+<span class="fc" id="L196">      result -= digit;</span>
+    }
+<span class="fc" id="L198">    return -result;</span>
+  }
+  private static void padInt(StringBuilder buffer, int value, int length) {
+<span class="fc" id="L201">    String strValue = Integer.toString(value);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">    for (int i = length - strValue.length(); i &gt; 0; i--) {</span>
+<span class="fc" id="L203">      buffer.append('0');</span>
+    }
+<span class="fc" id="L205">    buffer.append(strValue);</span>
+<span class="fc" id="L206">  }</span>
+  private static int indexOfNonDigit(String string, int offset) {
+<span class="fc bfc" id="L208" title="All 2 branches covered.">    for (int i = offset; i &lt; string.length(); i++) {</span>
+<span class="fc" id="L209">      char c = string.charAt(i);</span>
+<span class="fc bfc" id="L210" title="All 4 branches covered.">      if (c &lt; '0' || c &gt; '9') {</span>
+<span class="fc" id="L211">        return i;</span>
+      }
+    }
+<span class="fc" id="L214">    return string.length();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

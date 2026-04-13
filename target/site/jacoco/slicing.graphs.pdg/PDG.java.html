@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PDG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.pdg</a> &gt; <span class="el_source">PDG.java</span></div><h1>PDG.java</h1><pre class="source lang-java linenums">package slicing.graphs.pdg;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import lombok.var;
+import slicing.arcs.Arc;
+import slicing.arcs.pdg.ControlDependencyArc;
+import slicing.arcs.pdg.DataDependencyArc;
+import slicing.graphs.GraphWithRootNode;
+import slicing.graphs.cfg.CFG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.CallNode;
+
+import java.util.*;
+
+/**
+ * The &lt;b&gt;Program Dependence Graph&lt;/b&gt; represents the statements of a method in
+ * a graph, connecting statements according to their {@link ControlDependencyArc control}
+ * and {@link DataDependencyArc data} relationships. You can build one manually or use
+ * the {@link Builder PDGBuilder}.
+ * The variations of the PDG are represented as child types.
+ */
+public class PDG extends GraphWithRootNode&lt;CallableDeclaration&lt;?&gt;&gt; {
+    protected final CFG cfg;
+
+    public PDG() {
+<span class="nc" id="L28">        this(new CFG());</span>
+<span class="nc" id="L29">    }</span>
+
+<span class="nc" id="L31">    public PDG(CFG cfg) {</span>
+<span class="nc" id="L32">        this.cfg = cfg;</span>
+<span class="nc" id="L33">    }</span>
+
+    public void addControlDependencyArc(GraphNode&lt;?&gt; from, GraphNode&lt;?&gt; to) {
+<span class="nc" id="L36">        this.addEdge(from, to, new ControlDependencyArc());</span>
+<span class="nc" id="L37">    }</span>
+
+    public void addDataDependencyArc(VariableAction src, VariableAction tgt) {
+<span class="nc" id="L40">        addEdge(src.getGraphNode(), tgt.getGraphNode(), new DataDependencyArc(src, tgt));</span>
+<span class="nc" id="L41">    }</span>
+
+    public CFG getCfg() {
+<span class="nc" id="L44">        return cfg;</span>
+    }
+
+    @Override
+    public void build(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L49">        createBuilder().build(declaration);</span>
+<span class="nc" id="L50">        built = true;</span>
+<span class="nc" id="L51">    }</span>
+
+    /** Create a new PDG builder. Child classes that wish to alter the creation of the graph
+     * should create a new PDG builder and override this method. */
+    protected Builder createBuilder() {
+<span class="nc" id="L56">        return new Builder();</span>
+    }
+
+    /**
+     * Populates a PDG, given an empty PDG, an AST declaration and, optionally, a complete {@link CFG}.
+     * It can only accept a single {@link CallableDeclaration}, and can't be re-used. &lt;br/&gt;
+     * Entry-point: {@link #build(CallableDeclaration)}
+     */
+<span class="nc" id="L64">    public class Builder {</span>
+<span class="nc" id="L65">        protected Builder() {</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            assert PDG.this.getCfg() != null;</span>
+<span class="nc" id="L67">        }</span>
+
+        /**
+         * Populates the PDG with the correct control and data dependencies.
+         * If {@link VariableAction.Movable movable variable actions} are present,
+         * they will be processed and moved to their real nodes. The CFG of the PDG object
+         * will be built as a side-effect, if it hasn't been already.
+         */
+        public void build(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L76">            buildAndCopyCFG(declaration); // 4.1</span>
+<span class="nc" id="L77">            buildControlDependency();     // 4.2</span>
+<span class="nc" id="L78">            buildDataDependency();        // 4.2</span>
+<span class="nc" id="L79">            expandCalls();                // 4.3</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            assert incomingEdgesOf(cfg.getExitNode()).stream().noneMatch(Arc::isDataDependencyArc);</span>
+<span class="nc" id="L81">            removeVertex(cfg.getExitNode());</span>
+<span class="nc" id="L82">        }</span>
+
+        /** Builds the CFG, if necessary, and copies all elements to the PDG. */
+        protected void buildAndCopyCFG(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc bnc" id="L86" title="All 2 branches missed.">            if (!cfg.isBuilt())</span>
+<span class="nc" id="L87">                cfg.build(declaration);</span>
+<span class="nc" id="L88">            cfg.vertexSet().forEach(PDG.this::addVertex);</span>
+<span class="nc" id="L89">            PDG.this.setRootNode(cfg.getRootNode());</span>
+<span class="nc" id="L90">        }</span>
+
+        /** Computes all the control dependencies between nodes of this graph. */
+        protected void buildControlDependency() {
+<span class="nc" id="L94">            new ControlDependencyBuilder(cfg, PDG.this).build();</span>
+<span class="nc" id="L95">        }</span>
+
+        /** Computes all the data dependencies between {@link VariableAction variable actions} of this graph. */
+        protected void buildDataDependency() {
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; node : vertexSet())</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">                for (VariableAction varAct : node.getVariableActions())</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">                    if (varAct.isUsage())</span>
+<span class="nc" id="L102">                        cfg.findLastDefinitionsFrom(varAct).forEach(def -&gt; addDataDependencyArc(def, varAct));</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">                    else if (varAct.isDefinition() &amp;&amp; !varAct.isSynthetic())</span>
+<span class="nc" id="L104">                        cfg.findDeclarationFor(varAct).ifPresent(dec -&gt; addDataDependencyArc(dec, varAct));</span>
+<span class="nc" id="L105">        }</span>
+
+        /**
+         * Creates nodes for connectable calls, and moves all {@link VariableAction.Movable movable
+         * variable actions} to their proper destinations, adding them to the graph and connecting
+         * them via control dependency to the node they were located at.
+         */
+        protected void expandCalls() {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; graphNode : new HashSet&lt;&gt;(vertexSet())) {</span>
+<span class="nc" id="L114">                Deque&lt;CallNode&gt; callNodeStack = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                for (VariableAction action : new ArrayList&lt;&gt;(graphNode.getVariableActions())) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">                    if (action instanceof VariableAction.CallMarker) {</span>
+                        // Compute the call node, if entering the marker. Additionally, it places the node
+                        // in the graph and makes it control-dependent on its container.
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                        if (!((VariableAction.CallMarker) action).isEnter()) {</span>
+<span class="nc" id="L120">                            callNodeStack.pop();</span>
+                        } else {
+<span class="nc" id="L122">                            CallNode callNode = CallNode.create(((VariableAction.CallMarker) action).getCall());</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                            if (graphNode.isImplicitInstruction())</span>
+<span class="nc" id="L124">                                callNode.markAsImplicit();</span>
+<span class="nc" id="L125">                            addVertex(callNode);</span>
+<span class="nc" id="L126">                            addControlDependencyArc(graphNode, callNode);</span>
+<span class="nc" id="L127">                            callNodeStack.push(callNode);</span>
+<span class="nc" id="L128">                        }</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">                    } else if (action instanceof VariableAction.Movable) {</span>
+                        // Move the variable to its own node, add that node to the graph and connect it.
+<span class="nc" id="L131">                        var movable = (VariableAction.Movable) action;</span>
+<span class="nc" id="L132">                        movable.move(PDG.this);</span>
+<span class="nc" id="L133">                        connectRealNode(graphNode, callNodeStack.peek(), movable.getRealNode());</span>
+                    }
+<span class="nc" id="L135">                }</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">                assert callNodeStack.isEmpty();</span>
+<span class="nc" id="L137">            }</span>
+<span class="nc" id="L138">        }</span>
+
+        /** Connects the real node to the proper parent, control-dependent-wise. */
+        protected void connectRealNode(GraphNode&lt;?&gt; graphNode, CallNode callNode, GraphNode&lt;?&gt; realNode) {
+<span class="nc bnc" id="L142" title="All 4 branches missed.">            if (realNode instanceof ActualIONode || realNode instanceof CallNode.Return) {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                assert callNode != null;</span>
+<span class="nc" id="L144">                addControlDependencyArc(callNode, realNode);</span>
+            } else {
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                addControlDependencyArc(graphNode == cfg.getExitNode() ? rootNode : graphNode, realNode);</span>
+            }
+<span class="nc" id="L148">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

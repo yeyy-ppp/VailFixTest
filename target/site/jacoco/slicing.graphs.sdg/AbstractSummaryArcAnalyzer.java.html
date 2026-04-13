@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractSummaryArcAnalyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.sdg</a> &gt; <span class="el_source">AbstractSummaryArcAnalyzer.java</span></div><h1>AbstractSummaryArcAnalyzer.java</h1><pre class="source lang-java linenums">package slicing.graphs.sdg;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import lombok.var;
+import slicing.graphs.BackwardDataFlowAnalysis;
+import slicing.graphs.CallGraph;
+import slicing.nodes.SyntheticNode;
+import slicing.nodes.exceptionsensitive.ExitNode;
+import slicing.nodes.io.FormalIONode;
+import slicing.nodes.io.OutputNode;
+
+import java.util.*;
+import java.util.stream.Stream;
+
+/**
+ * Base class for generating and placing in an SDG the summary arcs.
+ * @param &lt;ActualIn&gt; The type of node for actual-in nodes.
+ * @param &lt;FormalOut&gt; The type of node for formal-out nodes.
+ * @param &lt;FormalIn&gt; The type of node for formal-in nodes.
+ */
+public abstract class AbstractSummaryArcAnalyzer&lt;ActualIn extends SyntheticNode&lt;?&gt;, FormalOut extends SyntheticNode&lt;?&gt;, FormalIn extends SyntheticNode&lt;?&gt;&gt;
+        extends BackwardDataFlowAnalysis&lt;CallGraph.Vertex, CallGraph.Edge&lt;?&gt;, Map&lt;FormalOut, Set&lt;FormalIn&gt;&gt;&gt; {
+    protected final SDG sdg;
+    
+    protected AbstractSummaryArcAnalyzer(SDG sdg, CallGraph graph) {
+<span class="nc" id="L26">        super(graph);</span>
+<span class="nc" id="L27">        this.sdg = sdg;</span>
+<span class="nc" id="L28">    }</span>
+
+    @Override
+    protected Map&lt;FormalOut, Set&lt;FormalIn&gt;&gt; compute(CallGraph.Vertex vertex, Set&lt;CallGraph.Vertex&gt; predecessors) {
+<span class="nc" id="L32">        saveDeclaration(vertex);</span>
+<span class="nc" id="L33">        return initialValue(vertex);</span>
+    }
+
+    @Override
+    protected Map&lt;FormalOut, Set&lt;FormalIn&gt;&gt; initialValue(CallGraph.Vertex vertex) {
+        Map&lt;FormalOut, Set&lt;FormalIn&gt;&gt; value;
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (vertexDataMap.containsKey(vertex)) {</span>
+<span class="nc" id="L40">            value = vertexDataMap.get(vertex);</span>
+        } else {
+<span class="nc" id="L42">            value = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">            for (var formalOut : getFormalOutNodes(vertex.getDeclaration()))</span>
+<span class="nc" id="L44">                value.put(formalOut, new HashSet&lt;&gt;());</span>
+        }
+<span class="nc" id="L46">        value.replaceAll((key, oldValue) -&gt; computeFormalIn(key));</span>
+<span class="nc" id="L47">        return value;</span>
+    }
+
+    /** Obtain all nodes that represent the output of a method declaration. These include formal-out,
+     *  return nodes and normal/exception exit nodes (for exception handling). */
+    protected Set&lt;FormalOut&gt; getFormalOutNodes(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L53">        Set&lt;FormalOut&gt; set = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L54">        Stream.concat(</span>
+<span class="nc" id="L55">                Stream.concat(</span>
+<span class="nc" id="L56">                        sdg.vertexSet().stream() // formal-out nodes</span>
+<span class="nc" id="L57">                                .filter(FormalIONode.class::isInstance)</span>
+<span class="nc" id="L58">                                .map(FormalIONode.class::cast)</span>
+<span class="nc" id="L59">                                .filter(FormalIONode::isOutput),</span>
+<span class="nc" id="L60">                        sdg.vertexSet().stream() // output nodes (the value returned)</span>
+<span class="nc" id="L61">                                .filter(OutputNode.class::isInstance)</span>
+<span class="nc" id="L62">                                .map(OutputNode.class::cast)),</span>
+<span class="nc" id="L63">                sdg.vertexSet().stream() // normal/exception exit nodes (for exception handling)</span>
+<span class="nc" id="L64">                        .filter(ExitNode.class::isInstance)</span>
+<span class="nc" id="L65">                        .map(ExitNode.class::cast))</span>
+                // Only nodes that match the current declaration
+<span class="nc bnc" id="L67" title="All 2 branches missed.">                .filter(node -&gt; node.getAstNode() == declaration)</span>
+<span class="nc" id="L68">                .forEach(e -&gt; set.add((FormalOut) e));</span>
+<span class="nc" id="L69">        return set;</span>
+    }
+
+    /** Given an output or formal-out node, locate the formal-in nodes it depends on.
+     *  This search should be performed intra-procedurally, the parent class will take
+     *  care of the rest of cases by adding summary arcs computed for other declarations. */
+    protected abstract Set&lt;FormalIn&gt; computeFormalIn(FormalOut formalOut);
+
+    /** Generate all summary arcs for a given call. Arc generation should be idempotent:
+     *  if this method is called repeatedly it should not create duplicate summary arcs. */
+    protected void saveDeclaration(CallGraph.Vertex vertex) {
+<span class="nc" id="L80">        var result = vertexDataMap.get(vertex);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        for (CallGraph.Edge&lt;?&gt; edge : graph.incomingEdgesOf(vertex)) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            for (var entry : result.entrySet()) {</span>
+<span class="nc" id="L83">                Collection&lt;? extends SyntheticNode&lt;?&gt;&gt; actualOuts = findOutputNode(edge, entry.getKey());</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                if (actualOuts.isEmpty())</span>
+<span class="nc" id="L85">                    continue;</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">                for (FormalIn formalIn : entry.getValue()) {</span>
+<span class="nc" id="L87">                    Collection&lt;? extends ActualIn&gt; actualIns = findActualIn(edge, formalIn);</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">                    if (actualIns.isEmpty())</span>
+<span class="nc" id="L89">                        continue;</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                    for (SyntheticNode&lt;?&gt; actualOut : actualOuts)</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                        for (ActualIn actualIn : actualIns)</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                            if (!sdg.containsEdge(actualIn, actualOut))</span>
+<span class="nc" id="L93">                                sdg.addSummaryArc(actualIn, actualOut);</span>
+<span class="nc" id="L94">                }</span>
+<span class="nc" id="L95">            }</span>
+<span class="nc" id="L96">        }</span>
+<span class="nc" id="L97">    }</span>
+
+    /** Find the actual-in that represents the given formal-in in the given call.
+     *  There may not be one. In that case, the dependency between formal-in/out should
+     *  not result in a summary arc. */
+    protected abstract Collection&lt;? extends ActualIn&gt; findActualIn(CallGraph.Edge&lt;?&gt; edge, FormalIn formalIn);
+
+    /** Find the actual-out, return or exception/normal return node that represents the given
+     *  formal-out, output or exception/normal exit node in the given call. There may not be one.
+     *  In that case, the dependency between formal-in/out should not result in a summary arc. */
+    protected abstract Collection&lt;? extends SyntheticNode&lt;?&gt;&gt; findOutputNode(CallGraph.Edge&lt;?&gt; edge, FormalOut formalOut);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

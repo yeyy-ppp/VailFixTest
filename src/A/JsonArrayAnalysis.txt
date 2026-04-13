@@ -1,0 +1,139 @@
+```
+包路径：gson
+类名：JsonArray
+父类：JsonElement
+依赖类：CanIgnoreReturnValue,NonNullElementWrapperList,JsonNull,JsonPrimitive
+---
+序号：1
+方法名：JsonArray()
+返回类型：void
+功能描述：创建初始容量为默认值的空JsonArray
+序号：2
+方法名：JsonArray(int capacity)
+返回类型：void
+功能描述：创建指定初始容量的空JsonArray
+序号：3
+方法名：deepCopy()
+返回类型：JsonArray
+功能描述：创建当前JsonArray的深拷贝副本
+序号：4
+方法名：add(Boolean bool)
+返回类型：void
+功能描述：添加布尔值元素（null转为JsonNull）
+序号：5
+方法名：add(Character character)
+返回类型：void
+功能描述：添加字符元素（null转为JsonNull）
+序号：6
+方法名：add(Number number)
+返回类型：void
+功能描述：添加数值元素（null转为JsonNull）
+序号：7
+方法名：add(String string)
+返回类型：void
+功能描述：添加字符串元素（null转为JsonNull）
+序号：8
+方法名：add(JsonElement element)
+返回类型：void
+功能描述：添加JsonElement元素（null转为JsonNull）
+序号：9
+方法名：addAll(JsonArray array)
+返回类型：void
+功能描述：添加另一个JsonArray的所有元素
+序号：10
+方法名：set(int index, JsonElement element)
+返回类型：JsonElement
+功能描述：设置指定位置的元素（null转为JsonNull），返回原元素
+序号：11
+方法名：remove(JsonElement element)
+返回类型：boolean
+功能描述：移除指定元素，返回是否成功
+序号：12
+方法名：remove(int index)
+返回类型：JsonElement
+功能描述：移除指定位置的元素，返回被移除元素
+序号：13
+方法名：contains(JsonElement element)
+返回类型：boolean
+功能描述：检查是否包含指定元素
+序号：14
+方法名：size()
+返回类型：int
+功能描述：返回元素数量
+序号：15
+方法名：isEmpty()
+返回类型：boolean
+功能描述：检查数组是否为空
+序号：16
+方法名：iterator()
+返回类型：Iterator<JsonElement>
+功能描述：返回元素迭代器
+序号：17
+方法名：get(int i)
+返回类型：JsonElement
+功能描述：获取指定位置的元素
+序号：18
+方法名：getAsSingleElement()
+返回类型：JsonElement
+功能描述：当数组只有一个元素时返回该元素，否则抛异常
+序号：19
+方法名：getAsNumber()
+返回类型：Number
+功能描述：当数组只有一个元素时返回其数值形式
+序号：20
+方法名：getAsString()
+返回类型：String
+功能描述：当数组只有一个元素时返回其字符串形式
+序号：21
+方法名：getAsDouble()
+返回类型：double
+功能描述：当数组只有一个元素时返回其double值
+序号：22
+方法名：getAsBigDecimal()
+返回类型：BigDecimal
+功能描述：当数组只有一个元素时返回其BigDecimal值
+序号：23
+方法名：getAsBigInteger()
+返回类型：BigInteger
+功能描述：当数组只有一个元素时返回其BigInteger值
+序号：24
+方法名：getAsFloat()
+返回类型：float
+功能描述：当数组只有一个元素时返回其float值
+序号：25
+方法名：getAsLong()
+返回类型：long
+功能描述：当数组只有一个元素时返回其long值
+序号：26
+方法名：getAsInt()
+返回类型：int
+功能描述：当数组只有一个元素时返回其int值
+序号：27
+方法名：getAsByte()
+返回类型：byte
+功能描述：当数组只有一个元素时返回其byte值
+序号：28
+方法名：getAsCharacter()
+返回类型：char
+功能描述：当数组只有一个元素时返回其char值
+序号：29
+方法名：getAsShort()
+返回类型：short
+功能描述：当数组只有一个元素时返回其short值
+序号：30
+方法名：getAsBoolean()
+返回类型：boolean
+功能描述：当数组只有一个元素时返回其boolean值
+序号：31
+方法名：asList()
+返回类型：List<JsonElement>
+功能描述：返回不可包含null的元素包装列表
+序号：32
+方法名：equals(Object o)
+返回类型：boolean
+功能描述：比较两个JsonArray是否相等
+序号：33
+方法名：hashCode()
+返回类型：int
+功能描述：返回数组的哈希码值
+```

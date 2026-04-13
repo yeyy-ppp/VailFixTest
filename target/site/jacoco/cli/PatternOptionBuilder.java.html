@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PatternOptionBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">PatternOptionBuilder.java</span></div><h1>PatternOptionBuilder.java</h1><pre class="source lang-java linenums">package cli;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
+import java.util.Date;
+import java.util.Map;
+public class PatternOptionBuilder {
+    @Deprecated
+<span class="fc" id="L9">    public PatternOptionBuilder() {</span>
+<span class="fc" id="L10">    }</span>
+<span class="fc" id="L11">    public static final Class&lt;String&gt; STRING_VALUE = String.class;</span>
+<span class="fc" id="L12">    public static final Class&lt;Object&gt; OBJECT_VALUE = Object.class;</span>
+<span class="fc" id="L13">    public static final Class&lt;Number&gt; NUMBER_VALUE = Number.class;</span>
+<span class="fc" id="L14">    public static final Class&lt;Date&gt; DATE_VALUE = Date.class;</span>
+<span class="fc" id="L15">    public static final Class&lt;?&gt; CLASS_VALUE = Class.class;</span>
+<span class="fc" id="L16">    public static final Class&lt;FileInputStream&gt; EXISTING_FILE_VALUE = FileInputStream.class;</span>
+<span class="fc" id="L17">    public static final Class&lt;File&gt; FILE_VALUE = File.class;</span>
+<span class="fc" id="L18">    public static final Class&lt;File[]&gt; FILES_VALUE = File[].class;</span>
+<span class="fc" id="L19">    public static final Class&lt;URL&gt; URL_VALUE = URL.class;</span>
+<span class="fc" id="L20">    private static final Converter&lt;?, UnsupportedOperationException&gt; UNSUPPORTED =</span>
+            s -&gt; {
+<span class="fc" id="L22">                throw new UnsupportedOperationException(&quot;Not yet implemented&quot;);</span>
+            };
+    @Deprecated
+    public static Object getValueClass(final char ch) {
+<span class="fc" id="L26">        return getValueType(ch);</span>
+    }
+    public static Class&lt;?&gt; getValueType(final char ch) {
+<span class="fc bfc" id="L29" title="All 10 branches covered.">        switch (ch) {</span>
+            case '@':
+<span class="fc" id="L31">                return OBJECT_VALUE;</span>
+            case ':':
+<span class="fc" id="L33">                return STRING_VALUE;</span>
+            case '%':
+<span class="fc" id="L35">                return NUMBER_VALUE;</span>
+            case '+':
+<span class="fc" id="L37">                return CLASS_VALUE;</span>
+            case '#':
+<span class="fc" id="L39">                return DATE_VALUE;</span>
+            case '&lt;':
+<span class="fc" id="L41">                return EXISTING_FILE_VALUE;</span>
+            case '&gt;':
+<span class="fc" id="L43">                return FILE_VALUE;</span>
+            case '*':
+<span class="fc" id="L45">                return FILES_VALUE;</span>
+            case '/':
+<span class="fc" id="L47">                return URL_VALUE;</span>
+        }
+<span class="fc" id="L49">        return null;</span>
+    }
+    public static boolean isValueCode(final char ch) {
+<span class="fc bfc" id="L52" title="All 20 branches covered.">        return ch == '@' || ch == ':' || ch == '%' || ch == '+' || ch == '#' || ch == '&lt;' || ch == '&gt;'</span>
+                || ch == '*' || ch == '/' || ch == '!';
+    }
+    public static Options parsePattern(final String pattern) {
+<span class="fc" id="L56">        char opt = Char.SP;</span>
+<span class="fc" id="L57">        boolean required = false;</span>
+<span class="fc" id="L58">        Class&lt;?&gt; type = null;</span>
+<span class="fc" id="L59">        Converter&lt;?, ?&gt; converter = Converter.DEFAULT;</span>
+<span class="fc" id="L60">        final Options options = new Options();</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">        for (int i = 0; i &lt; pattern.length(); i++) {</span>
+<span class="fc" id="L62">            final char ch = pattern.charAt(i);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">            if (!isValueCode(ch)) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">                if (opt != Char.SP) {</span>
+<span class="fc" id="L65">                    final Option option =</span>
+<span class="fc bfc" id="L66" title="All 2 branches covered.">                            Option.builder(String.valueOf(opt))</span>
+<span class="fc" id="L67">                                    .hasArg(type != null)</span>
+<span class="fc" id="L68">                                    .required(required)</span>
+<span class="fc" id="L69">                                    .type(type)</span>
+<span class="fc" id="L70">                                    .converter(converter)</span>
+<span class="fc" id="L71">                                    .build();</span>
+<span class="fc" id="L72">                    options.addOption(option);</span>
+<span class="fc" id="L73">                    required = false;</span>
+<span class="fc" id="L74">                    type = null;</span>
+<span class="fc" id="L75">                    converter = Converter.DEFAULT;</span>
+                }
+<span class="fc" id="L77">                opt = ch;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">            } else if (ch == '!') {</span>
+<span class="fc" id="L79">                required = true;</span>
+            } else {
+<span class="fc" id="L81">                type = getValueType(ch);</span>
+<span class="fc" id="L82">                final Map&lt;Class&lt;?&gt;, Converter&lt;?, ? extends Throwable&gt;&gt; map = TypeHandler.createDefaultMap();</span>
+<span class="fc" id="L83">                map.put(FILES_VALUE, unsupported());</span>
+<span class="fc" id="L84">                converter = new TypeHandler(map).getConverter(getValueType(ch));</span>
+            }
+        }
+<span class="fc bfc" id="L87" title="All 2 branches covered.">        if (opt != Char.SP) {</span>
+<span class="fc" id="L88">            final Option option =</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">                    Option.builder(String.valueOf(opt))</span>
+<span class="fc" id="L90">                            .hasArg(type != null)</span>
+<span class="fc" id="L91">                            .required(required)</span>
+<span class="fc" id="L92">                            .type(type)</span>
+<span class="fc" id="L93">                            .build();</span>
+<span class="fc" id="L94">            options.addOption(option);</span>
+        }
+<span class="fc" id="L96">        return options;</span>
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+    static &lt;T&gt; T unsupported() {
+<span class="fc" id="L100">        return (T) UNSUPPORTED;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

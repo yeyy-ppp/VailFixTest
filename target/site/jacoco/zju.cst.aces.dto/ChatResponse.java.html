@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatResponse.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.dto</a> &gt; <span class="el_source">ChatResponse.java</span></div><h1>ChatResponse.java</h1><pre class="source lang-java linenums">package zju.cst.aces.dto;
+import lombok.Data;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Data
+public class ChatResponse {
+    private String id;
+    private String model;
+    private Long created;
+    private String object;
+    private ChatUsage usage;
+    private List&lt;ChatChoice&gt; choices;
+
+    public List&lt;ChatMessage&gt; getMessages() {
+<span class="nc bnc" id="L18" title="All 4 branches missed.">        if (this.choices == null || this.choices.isEmpty()) return Collections.emptyList();</span>
+<span class="nc" id="L19">        return this.choices.stream().map(ChatChoice::getMessage).collect(Collectors.toList());</span>
+    }
+
+    /**
+     * get reply text from messages' content
+     *
+     * @return reply text
+     */
+    public String getContent() {
+<span class="nc bnc" id="L28" title="All 4 branches missed.">        if (this.choices == null || this.choices.isEmpty()) return &quot;&quot;;</span>
+<span class="nc" id="L29">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        for (ChatChoice choice : choices) {</span>
+<span class="nc" id="L31">            ChatMessage chatMessage = choice.getMessage();</span>
+<span class="nc bnc" id="L32" title="All 4 branches missed.">            if (chatMessage != null &amp;&amp; chatMessage.getContent() != null) {</span>
+<span class="nc" id="L33">                sb.append(chatMessage.getContent());</span>
+            }
+<span class="nc" id="L35">        }</span>
+<span class="nc" id="L36">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

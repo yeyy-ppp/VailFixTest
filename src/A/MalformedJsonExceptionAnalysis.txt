@@ -1,0 +1,19 @@
+```
+包路径：gson.stream
+类名：MalformedJsonException
+父类：IOException
+依赖类：无
+---
+序号：1
+方法名：MalformedJsonException(String msg)
+返回类型：无
+功能描述：使用指定错误消息构造异常对象
+序号：2
+方法名：MalformedJsonException(String msg, Throwable throwable)
+返回类型：无
+功能描述：使用错误消息和原因构造异常对象
+序号：3
+方法名：MalformedJsonException(Throwable throwable)
+返回类型：无
+功能描述：使用指定原因构造异常对象
+```

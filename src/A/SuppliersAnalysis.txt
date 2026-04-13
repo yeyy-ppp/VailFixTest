@@ -1,0 +1,17 @@
+包路径：lang3.function
+类名：Suppliers
+父类：无
+依赖类：无
+---
+序号：1
+方法名：get(Supplier<T> supplier)
+返回类型：T
+功能描述：如果supplier不为null，则调用其get方法返回结果，否则返回null
+序号：2
+方法名：nul()
+返回类型：Supplier<T>
+功能描述：返回一个总是返回null的Supplier实例
+序号：3
+方法名：Suppliers()
+返回类型：Suppliers
+功能描述：弃用的构造方法，无操作

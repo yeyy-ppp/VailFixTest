@@ -1,0 +1,165 @@
+```
+包路径：lang3
+类名：ArrayUtils
+父类：无
+依赖类：ArrayFill,ArraySorter,BooleanUtils,CharUtils,ClassUtils,EqualsBuilder,FailableFunction,HashCodeBuilder,IntStreams,MutableInt,ObjectUtils,Streams,ToStringBuilder,ToStringStyle
+---
+序号：1
+方法名：add(boolean[] array, boolean element)
+返回类型：boolean[]
+功能描述：向布尔数组末尾添加元素
+序号：2
+方法名：add(boolean[] array, int index, boolean element)
+返回类型：boolean[]
+功能描述：在布尔数组指定索引处插入元素（已废弃）
+序号：3
+方法名：add(byte[] array, byte element)
+返回类型：byte[]
+功能描述：向字节数组末尾添加元素
+序号：4
+方法名：add(byte[] array, int index, byte element)
+返回类型：byte[]
+功能描述：在字节数组指定索引处插入元素（已废弃）
+序号：5
+方法名：add(char[] array, char element)
+返回类型：char[]
+功能描述：向字符数组末尾添加元素
+序号：6
+方法名：add(char[] array, int index, char element)
+返回类型：char[]
+功能描述：在字符数组指定索引处插入元素（已废弃）
+序号：7
+方法名：add(double[] array, double element)
+返回类型：double[]
+功能描述：向双精度数组末尾添加元素
+序号：8
+方法名：add(double[] array, int index, double element)
+返回类型：double[]
+功能描述：在双精度数组指定索引处插入元素（已废弃）
+序号：9
+方法名：add(float[] array, float element)
+返回类型：float[]
+功能描述：向浮点数组末尾添加元素
+序号：10
+方法名：add(float[] array, int index, float element)
+返回类型：float[]
+功能描述：在浮点数组指定索引处插入元素（已废弃）
+序号：11
+方法名：add(int[] array, int element)
+返回类型：int[]
+功能描述：向整型数组末尾添加元素
+序号：12
+方法名：add(int[] array, int index, int element)
+返回类型：int[]
+功能描述：在整型数组指定索引处插入元素（已废弃）
+序号：13
+方法名：add(long[] array, int index, long element)
+返回类型：long[]
+功能描述：在长整型数组指定索引处插入元素（已废弃）
+序号：14
+方法名：add(long[] array, long element)
+返回类型：long[]
+功能描述：向长整型数组末尾添加元素
+序号：15
+方法名：add(Object array, int index, Object element, Class<?> clazz)
+返回类型：Object
+功能描述：向指定类型数组的索引位置插入元素
+序号：16
+方法名：add(short[] array, int index, short element)
+返回类型：short[]
+功能描述：在短整型数组指定索引处插入元素（已废弃）
+序号：17
+方法名：add(short[] array, short element)
+返回类型：short[]
+功能描述：向短整型数组末尾添加元素
+序号：18
+方法名：add(T[] array, int index, T element)
+返回类型：T[]
+功能描述：在对象数组指定索引处插入元素（已废弃）
+序号：19
+方法名：add(T[] array, T element)
+返回类型：T[]
+功能描述：向对象数组末尾添加元素
+序号：20
+方法名：addAll(boolean[] array1, boolean... array2)
+返回类型：boolean[]
+功能描述：合并两个布尔数组
+序号：21
+方法名：addAll(byte[] array1, byte... array2)
+返回类型：byte[]
+功能描述：合并两个字节数组
+序号：22
+方法名：addAll(char[] array1, char... array2)
+返回类型：char[]
+功能描述：合并两个字符数组
+序号：23
+方法名：addAll(double[] array1, double... array2)
+返回类型：double[]
+功能描述：合并两个双精度数组
+序号：24
+方法名：addAll(float[] array1, float... array2)
+返回类型：float[]
+功能描述：合并两个浮点数组
+序号：25
+方法名：addAll(int[] array1, int... array2)
+返回类型：int[]
+功能描述：合并两个整型数组
+序号：26
+方法名：addAll(long[] array1, long... array2)
+返回类型：long[]
+功能描述：合并两个长整型数组
+序号：27
+方法名：addAll(short[] array1, short... array2)
+返回类型：short[]
+功能描述：合并两个短整型数组
+序号：28
+方法名：addAll(T[] array1, T... array2)
+返回类型：T[]
+功能描述：合并两个对象数组
+序号：29
+方法名：addFirst(boolean[] array, boolean element)
+返回类型：boolean[]
+功能描述：在布尔数组开头添加元素
+序号：30
+方法名：addFirst(byte[] array, byte element)
+返回类型：byte[]
+功能描述：在字节数组开头添加元素
+序号：31
+方法名：addFirst(char[] array, char element)
+返回类型：char[]
+功能描述：在字符数组开头添加元素
+序号：32
+方法名：addFirst(double[] array, double element)
+返回类型：double[]
+功能描述：在双精度数组开头添加元素
+序号：33
+方法名：addFirst(float[] array, float element)
+返回类型：float[]
+功能描述：在浮点数组开头添加元素
+序号：34
+方法名：addFirst(int[] array, int element)
+返回类型：int[]
+功能描述：在整型数组开头添加元素
+序号：35
+方法名：addFirst(long[] array, long element)
+返回类型：long[]
+功能描述：在长整型数组开头添加元素
+序号：36
+方法名：addFirst(short[] array, short element)
+返回类型：short[]
+功能描述：在短整型数组开头添加元素
+序号：37
+方法名：addFirst(T[] array, T element)
+返回类型：T[]
+功能描述：在对象数组开头添加元素
+序号：38
+方法名：arraycopy(T source, int sourcePos, int destPos, int length, Function<Integer, T> allocator)
+返回类型：T
+功能描述：复制数组到新分配数组
+序号：39
+方法名：arraycopy(T source, int sourcePos, int destPos, int length, Supplier<T> allocator)
+返回类型：T
+功能描述：复制数组到新分配数组（Supplier版本）
+序号：40
+方法名：arraycopy(T source, int sourcePos, T dest, int destPos, int length)
+返回

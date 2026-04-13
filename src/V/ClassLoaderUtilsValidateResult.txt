@@ -1,0 +1,12 @@
+[2026-01-23 16:19:09] 验证结果
+错误类型: 编译错误, 错误行: 77, 错误原因: [未导入java.util.Arrays导致编译错误], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: getSystemURLs, getThreadURLs, getURLs, toString, toString
+  未覆盖: ClassLoaderUtils
+
+[2026-01-23 16:23:36] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: getSystemURLs, getThreadURLs, getURLs, toString, toString
+  未覆盖: ClassLoaderUtils
+

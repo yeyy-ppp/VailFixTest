@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionSourceSearcher.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.exceptionsensitive</a> &gt; <span class="el_source">ExceptionSourceSearcher.java</span></div><h1>ExceptionSourceSearcher.java</h1><pre class="source lang-java linenums">package slicing.graphs.exceptionsensitive;
+
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import com.github.javaparser.ast.stmt.ThrowStmt;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
+import slicing.graphs.GraphNodeContentVisitor;
+import slicing.nodes.GraphNode;
+
+import java.util.Collection;
+import java.util.Collections;
+
+/** A visitor that finds the first exception source in a given node.
+ * @see #search(GraphNode) */
+<span class="nc" id="L18">public class ExceptionSourceSearcher extends GraphNodeContentVisitor&lt;Void&gt; {</span>
+    /** Find the first exception source in a given graph node. */
+    public Collection&lt;ResolvedType&gt; search(GraphNode&lt;?&gt; node) {
+        try {
+<span class="nc" id="L22">            node.getAstNode().accept(this, null);</span>
+<span class="nc" id="L23">        } catch (FoundException e) {</span>
+<span class="nc" id="L24">            return e.types;</span>
+<span class="nc" id="L25">        }</span>
+<span class="nc" id="L26">        return Collections.emptySet();</span>
+    }
+
+    @Override
+    public void visit(ThrowStmt n, Void arg) {
+<span class="nc" id="L31">        throw new FoundException(n.getExpression().calculateResolvedType());</span>
+    }
+
+    @Override
+    public void visit(MethodCallExpr n, Void arg) {
+<span class="nc" id="L36">        visitCall(n);</span>
+<span class="nc" id="L37">        super.visit(n, arg);</span>
+<span class="nc" id="L38">    }</span>
+
+    @Override
+    public void visit(ObjectCreationExpr n, Void arg) {
+<span class="nc" id="L42">        visitCall(n);</span>
+<span class="nc" id="L43">        super.visit(n, arg);</span>
+<span class="nc" id="L44">    }</span>
+
+    @Override
+    public void visit(ExplicitConstructorInvocationStmt n, Void arg) {
+<span class="nc" id="L48">        visitCall(n);</span>
+<span class="nc" id="L49">        super.visit(n, arg);</span>
+<span class="nc" id="L50">    }</span>
+
+    /** Check whether a call may throw exceptions or not. */
+    public void visitCall(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L54">        ResolvedMethodLikeDeclaration declaration = call.resolve();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (declaration.getNumberOfSpecifiedExceptions() &gt; 0)</span>
+<span class="nc" id="L56">            throw new FoundException(declaration.getSpecifiedExceptions());</span>
+<span class="nc" id="L57">    }</span>
+
+    /** An exception to skip the call stack when the value is found. */
+    static class FoundException extends RuntimeException {
+        protected final Collection&lt;ResolvedType&gt; types;
+
+        public FoundException(ResolvedType type) {
+<span class="nc" id="L64">            this(Collections.singleton(type));</span>
+<span class="nc" id="L65">        }</span>
+
+<span class="nc" id="L67">        public FoundException(Collection&lt;ResolvedType&gt; types) {</span>
+<span class="nc" id="L68">            this.types = types;</span>
+<span class="nc" id="L69">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

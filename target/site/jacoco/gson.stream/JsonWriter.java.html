@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonWriter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.stream</a> &gt; <span class="el_source">JsonWriter.java</span></div><h1>JsonWriter.java</h1><pre class="source lang-java linenums">package gson.stream;
+import static gson.stream.JsonScope.DANGLING_NAME;
+import static gson.stream.JsonScope.EMPTY_ARRAY;
+import static gson.stream.JsonScope.EMPTY_DOCUMENT;
+import static gson.stream.JsonScope.EMPTY_OBJECT;
+import static gson.stream.JsonScope.NONEMPTY_ARRAY;
+import static gson.stream.JsonScope.NONEMPTY_DOCUMENT;
+import static gson.stream.JsonScope.NONEMPTY_OBJECT;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import gson.FormattingStyle;
+import gson.Strictness;
+import java.io.Closeable;
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.Writer;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.regex.Pattern;
+public class JsonWriter implements Closeable, Flushable {
+<span class="fc" id="L24">  private static final Pattern VALID_JSON_NUMBER_PATTERN =</span>
+<span class="fc" id="L25">      Pattern.compile(&quot;-?(?:0|[1-9][0-9]*)(?:\\.[0-9]+)?(?:[eE][-+]?[0-9]+)?&quot;);</span>
+  private static final String[] REPLACEMENT_CHARS;
+  private static final String[] HTML_SAFE_REPLACEMENT_CHARS;
+  static {
+<span class="fc" id="L29">    REPLACEMENT_CHARS = new String[128];</span>
+<span class="fc bfc" id="L30" title="All 2 branches covered.">    for (int i = 0; i &lt;= 0x1f; i++) {</span>
+<span class="fc" id="L31">      REPLACEMENT_CHARS[i] = String.format(&quot;\\u%04x&quot;, i);</span>
+    }
+<span class="fc" id="L33">    REPLACEMENT_CHARS['&quot;'] = &quot;\\\&quot;&quot;;</span>
+<span class="fc" id="L34">    REPLACEMENT_CHARS['\\'] = &quot;\\\\&quot;;</span>
+<span class="fc" id="L35">    REPLACEMENT_CHARS['\t'] = &quot;\\t&quot;;</span>
+<span class="fc" id="L36">    REPLACEMENT_CHARS['\b'] = &quot;\\b&quot;;</span>
+<span class="fc" id="L37">    REPLACEMENT_CHARS['\n'] = &quot;\\n&quot;;</span>
+<span class="fc" id="L38">    REPLACEMENT_CHARS['\r'] = &quot;\\r&quot;;</span>
+<span class="fc" id="L39">    REPLACEMENT_CHARS['\f'] = &quot;\\f&quot;;</span>
+<span class="fc" id="L40">    HTML_SAFE_REPLACEMENT_CHARS = REPLACEMENT_CHARS.clone();</span>
+<span class="fc" id="L41">    HTML_SAFE_REPLACEMENT_CHARS['&lt;'] = &quot;\\u003c&quot;;</span>
+<span class="fc" id="L42">    HTML_SAFE_REPLACEMENT_CHARS['&gt;'] = &quot;\\u003e&quot;;</span>
+<span class="fc" id="L43">    HTML_SAFE_REPLACEMENT_CHARS['&amp;'] = &quot;\\u0026&quot;;</span>
+<span class="fc" id="L44">    HTML_SAFE_REPLACEMENT_CHARS['='] = &quot;\\u003d&quot;;</span>
+<span class="fc" id="L45">    HTML_SAFE_REPLACEMENT_CHARS['\''] = &quot;\\u0027&quot;;</span>
+<span class="fc" id="L46">  }</span>
+  private final Writer out;
+<span class="fc" id="L48">  private int[] stack = new int[32];</span>
+<span class="fc" id="L49">  private int stackSize = 0;</span>
+  {
+<span class="fc" id="L51">    push(EMPTY_DOCUMENT);</span>
+  }
+  private FormattingStyle formattingStyle;
+  private String formattedColon;
+  private String formattedComma;
+  private boolean usesEmptyNewlineAndIndent;
+<span class="fc" id="L57">  private Strictness strictness = Strictness.LEGACY_STRICT;</span>
+  private boolean htmlSafe;
+  private String deferredName;
+<span class="fc" id="L60">  private boolean serializeNulls = true;</span>
+<span class="fc" id="L61">  public JsonWriter(Writer out) {</span>
+<span class="fc" id="L62">    this.out = Objects.requireNonNull(out, &quot;out == null&quot;);</span>
+<span class="fc" id="L63">    setFormattingStyle(FormattingStyle.COMPACT);</span>
+<span class="fc" id="L64">  }</span>
+  public final void setIndent(String indent) {
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">    if (indent.isEmpty()) {</span>
+<span class="nc" id="L67">      setFormattingStyle(FormattingStyle.COMPACT);</span>
+    } else {
+<span class="fc" id="L69">      setFormattingStyle(FormattingStyle.PRETTY.withIndent(indent));</span>
+    }
+<span class="fc" id="L71">  }</span>
+  public final void setFormattingStyle(FormattingStyle formattingStyle) {
+<span class="fc" id="L73">    this.formattingStyle = Objects.requireNonNull(formattingStyle);</span>
+<span class="fc" id="L74">    this.formattedComma = &quot;,&quot;;</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">    if (this.formattingStyle.usesSpaceAfterSeparators()) {</span>
+<span class="fc" id="L76">      this.formattedColon = &quot;: &quot;;</span>
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">      if (this.formattingStyle.getNewline().isEmpty()) {</span>
+<span class="nc" id="L78">        this.formattedComma = &quot;, &quot;;</span>
+      }
+    } else {
+<span class="fc" id="L81">      this.formattedColon = &quot;:&quot;;</span>
+    }
+<span class="fc" id="L83">    this.usesEmptyNewlineAndIndent =</span>
+<span class="pc bpc" id="L84" title="1 of 4 branches missed.">        this.formattingStyle.getNewline().isEmpty() &amp;&amp; this.formattingStyle.getIndent().isEmpty();</span>
+<span class="fc" id="L85">  }</span>
+  public final FormattingStyle getFormattingStyle() {
+<span class="fc" id="L87">    return formattingStyle;</span>
+  }
+  @Deprecated
+  @SuppressWarnings(&quot;InlineMeSuggester&quot;)
+  public final void setLenient(boolean lenient) {
+<span class="fc bfc" id="L92" title="All 2 branches covered.">    setStrictness(lenient ? Strictness.LENIENT : Strictness.LEGACY_STRICT);</span>
+<span class="fc" id="L93">  }</span>
+  public boolean isLenient() {
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    return strictness == Strictness.LENIENT;</span>
+  }
+  public final void setStrictness(Strictness strictness) {
+<span class="fc" id="L98">    this.strictness = Objects.requireNonNull(strictness);</span>
+<span class="fc" id="L99">  }</span>
+  public final Strictness getStrictness() {
+<span class="fc" id="L101">    return strictness;</span>
+  }
+  public final void setHtmlSafe(boolean htmlSafe) {
+<span class="fc" id="L104">    this.htmlSafe = htmlSafe;</span>
+<span class="fc" id="L105">  }</span>
+  public final boolean isHtmlSafe() {
+<span class="fc" id="L107">    return htmlSafe;</span>
+  }
+  public final void setSerializeNulls(boolean serializeNulls) {
+<span class="fc" id="L110">    this.serializeNulls = serializeNulls;</span>
+<span class="fc" id="L111">  }</span>
+  public final boolean getSerializeNulls() {
+<span class="fc" id="L113">    return serializeNulls;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter beginArray() throws IOException {
+<span class="fc" id="L117">    writeDeferredName();</span>
+<span class="fc" id="L118">    return openScope(EMPTY_ARRAY, '[');</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter endArray() throws IOException {
+<span class="fc" id="L122">    return closeScope(EMPTY_ARRAY, NONEMPTY_ARRAY, ']');</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter beginObject() throws IOException {
+<span class="fc" id="L126">    writeDeferredName();</span>
+<span class="fc" id="L127">    return openScope(EMPTY_OBJECT, '{');</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter endObject() throws IOException {
+<span class="fc" id="L131">    return closeScope(EMPTY_OBJECT, NONEMPTY_OBJECT, '}');</span>
+  }
+  @CanIgnoreReturnValue
+  private JsonWriter openScope(int empty, char openBracket) throws IOException {
+<span class="fc" id="L135">    beforeValue();</span>
+<span class="fc" id="L136">    push(empty);</span>
+<span class="fc" id="L137">    out.write(openBracket);</span>
+<span class="fc" id="L138">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  private JsonWriter closeScope(int empty, int nonempty, char closeBracket) throws IOException {
+<span class="fc" id="L142">    int context = peek();</span>
+<span class="pc bpc" id="L143" title="1 of 4 branches missed.">    if (context != nonempty &amp;&amp; context != empty) {</span>
+<span class="nc" id="L144">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">    if (deferredName != null) {</span>
+<span class="nc" id="L147">      throw new IllegalStateException(&quot;Dangling name: &quot; + deferredName);</span>
+    }
+<span class="fc" id="L149">    stackSize--;</span>
+<span class="fc bfc" id="L150" title="All 2 branches covered.">    if (context == nonempty) {</span>
+<span class="fc" id="L151">      newline();</span>
+    }
+<span class="fc" id="L153">    out.write(closeBracket);</span>
+<span class="fc" id="L154">    return this;</span>
+  }
+  private void push(int newTop) {
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">    if (stackSize == stack.length) {</span>
+<span class="nc" id="L158">      stack = Arrays.copyOf(stack, stackSize * 2);</span>
+    }
+<span class="fc" id="L160">    stack[stackSize++] = newTop;</span>
+<span class="fc" id="L161">  }</span>
+  private int peek() {
+<span class="fc bfc" id="L163" title="All 2 branches covered.">    if (stackSize == 0) {</span>
+<span class="fc" id="L164">      throw new IllegalStateException(&quot;JsonWriter is closed.&quot;);</span>
+    }
+<span class="fc" id="L166">    return stack[stackSize - 1];</span>
+  }
+  private void replaceTop(int topOfStack) {
+<span class="fc" id="L169">    stack[stackSize - 1] = topOfStack;</span>
+<span class="fc" id="L170">  }</span>
+  @CanIgnoreReturnValue
+  public JsonWriter name(String name) throws IOException {
+<span class="fc" id="L173">    Objects.requireNonNull(name, &quot;name == null&quot;);</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">    if (deferredName != null) {</span>
+<span class="nc" id="L175">      throw new IllegalStateException(&quot;Already wrote a name, expecting a value.&quot;);</span>
+    }
+<span class="fc" id="L177">    int context = peek();</span>
+<span class="pc bpc" id="L178" title="1 of 4 branches missed.">    if (context != EMPTY_OBJECT &amp;&amp; context != NONEMPTY_OBJECT) {</span>
+<span class="nc" id="L179">      throw new IllegalStateException(&quot;Please begin an object before writing a name.&quot;);</span>
+    }
+<span class="fc" id="L181">    deferredName = name;</span>
+<span class="fc" id="L182">    return this;</span>
+  }
+  private void writeDeferredName() throws IOException {
+<span class="fc bfc" id="L185" title="All 2 branches covered.">    if (deferredName != null) {</span>
+<span class="fc" id="L186">      beforeName();</span>
+<span class="fc" id="L187">      string(deferredName);</span>
+<span class="fc" id="L188">      deferredName = null;</span>
+    }
+<span class="fc" id="L190">  }</span>
+  @CanIgnoreReturnValue
+  public JsonWriter value(String value) throws IOException {
+<span class="fc bfc" id="L193" title="All 2 branches covered.">    if (value == null) {</span>
+<span class="fc" id="L194">      return nullValue();</span>
+    }
+<span class="fc" id="L196">    writeDeferredName();</span>
+<span class="fc" id="L197">    beforeValue();</span>
+<span class="fc" id="L198">    string(value);</span>
+<span class="fc" id="L199">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter value(boolean value) throws IOException {
+<span class="fc" id="L203">    writeDeferredName();</span>
+<span class="fc" id="L204">    beforeValue();</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">    out.write(value ? &quot;true&quot; : &quot;false&quot;);</span>
+<span class="fc" id="L206">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter value(Boolean value) throws IOException {
+<span class="pc bpc" id="L210" title="1 of 2 branches missed.">    if (value == null) {</span>
+<span class="nc" id="L211">      return nullValue();</span>
+    }
+<span class="fc" id="L213">    writeDeferredName();</span>
+<span class="fc" id="L214">    beforeValue();</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">    out.write(value ? &quot;true&quot; : &quot;false&quot;);</span>
+<span class="fc" id="L216">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter value(float value) throws IOException {
+<span class="fc" id="L220">    writeDeferredName();</span>
+<span class="pc bpc" id="L221" title="3 of 6 branches missed.">    if (strictness != Strictness.LENIENT &amp;&amp; (Float.isNaN(value) || Float.isInfinite(value))) {</span>
+<span class="nc" id="L222">      throw new IllegalArgumentException(&quot;Numeric values must be finite, but was &quot; + value);</span>
+    }
+<span class="fc" id="L224">    beforeValue();</span>
+<span class="fc" id="L225">    out.append(Float.toString(value));</span>
+<span class="fc" id="L226">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter value(double value) throws IOException {
+<span class="fc" id="L230">    writeDeferredName();</span>
+<span class="pc bpc" id="L231" title="2 of 6 branches missed.">    if (strictness != Strictness.LENIENT &amp;&amp; (Double.isNaN(value) || Double.isInfinite(value))) {</span>
+<span class="nc" id="L232">      throw new IllegalArgumentException(&quot;Numeric values must be finite, but was &quot; + value);</span>
+    }
+<span class="fc" id="L234">    beforeValue();</span>
+<span class="fc" id="L235">    out.append(Double.toString(value));</span>
+<span class="fc" id="L236">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter value(long value) throws IOException {
+<span class="fc" id="L240">    writeDeferredName();</span>
+<span class="fc" id="L241">    beforeValue();</span>
+<span class="fc" id="L242">    out.write(Long.toString(value));</span>
+<span class="fc" id="L243">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter value(Number value) throws IOException {
+<span class="fc bfc" id="L247" title="All 2 branches covered.">    if (value == null) {</span>
+<span class="fc" id="L248">      return nullValue();</span>
+    }
+<span class="fc" id="L250">    writeDeferredName();</span>
+<span class="fc" id="L251">    String string = value.toString();</span>
+<span class="fc" id="L252">    Class&lt;? extends Number&gt; numberClass = value.getClass();</span>
+<span class="fc bfc" id="L253" title="All 2 branches covered.">    if (!alwaysCreatesValidJsonNumber(numberClass)) {</span>
+<span class="pc bpc" id="L254" title="3 of 6 branches missed.">      if (string.equals(&quot;-Infinity&quot;) || string.equals(&quot;Infinity&quot;) || string.equals(&quot;NaN&quot;)) {</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">        if (strictness != Strictness.LENIENT) {</span>
+<span class="nc" id="L256">          throw new IllegalArgumentException(&quot;Numeric values must be finite, but was &quot; + string);</span>
+        }
+<span class="pc bpc" id="L258" title="2 of 4 branches missed.">      } else if (numberClass != Float.class</span>
+          &amp;&amp; numberClass != Double.class
+<span class="nc bnc" id="L260" title="All 2 branches missed.">          &amp;&amp; !VALID_JSON_NUMBER_PATTERN.matcher(string).matches()) {</span>
+<span class="nc" id="L261">        throw new IllegalArgumentException(</span>
+            &quot;String created by &quot; + numberClass + &quot; is not a valid JSON number: &quot; + string);
+      }
+    }
+<span class="fc" id="L265">    beforeValue();</span>
+<span class="fc" id="L266">    out.append(string);</span>
+<span class="fc" id="L267">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter nullValue() throws IOException {
+<span class="fc bfc" id="L271" title="All 2 branches covered.">    if (deferredName != null) {</span>
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">      if (serializeNulls) {</span>
+<span class="fc" id="L273">        writeDeferredName();</span>
+      } else {
+<span class="nc" id="L275">        deferredName = null;</span>
+<span class="nc" id="L276">        return this;</span>
+      }
+    }
+<span class="fc" id="L279">    beforeValue();</span>
+<span class="fc" id="L280">    out.write(&quot;null&quot;);</span>
+<span class="fc" id="L281">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public JsonWriter jsonValue(String value) throws IOException {
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">    if (value == null) {</span>
+<span class="nc" id="L286">      return nullValue();</span>
+    }
+<span class="fc" id="L288">    writeDeferredName();</span>
+<span class="fc" id="L289">    beforeValue();</span>
+<span class="fc" id="L290">    out.append(value);</span>
+<span class="fc" id="L291">    return this;</span>
+  }
+  @Override
+  public void flush() throws IOException {
+<span class="pc bpc" id="L295" title="1 of 2 branches missed.">    if (stackSize == 0) {</span>
+<span class="nc" id="L296">      throw new IllegalStateException(&quot;JsonWriter is closed.&quot;);</span>
+    }
+<span class="fc" id="L298">    out.flush();</span>
+<span class="fc" id="L299">  }</span>
+  @Override
+  public void close() throws IOException {
+<span class="fc" id="L302">    out.close();</span>
+<span class="fc" id="L303">    int size = stackSize;</span>
+<span class="pc bpc" id="L304" title="3 of 6 branches missed.">    if (size &gt; 1 || (size == 1 &amp;&amp; stack[size - 1] != NONEMPTY_DOCUMENT)) {</span>
+<span class="nc" id="L305">      throw new IOException(&quot;Incomplete document&quot;);</span>
+    }
+<span class="fc" id="L307">    stackSize = 0;</span>
+<span class="fc" id="L308">  }</span>
+  private static boolean alwaysCreatesValidJsonNumber(Class&lt;? extends Number&gt; c) {
+<span class="pc bpc" id="L310" title="6 of 16 branches missed.">    return c == Integer.class</span>
+        || c == Long.class
+        || c == Byte.class
+        || c == Short.class
+        || c == BigDecimal.class
+        || c == BigInteger.class
+        || c == AtomicInteger.class
+        || c == AtomicLong.class;
+  }
+  private void string(String value) throws IOException {
+<span class="fc bfc" id="L320" title="All 2 branches covered.">    String[] replacements = htmlSafe ? HTML_SAFE_REPLACEMENT_CHARS : REPLACEMENT_CHARS;</span>
+<span class="fc" id="L321">    out.write('\&quot;');</span>
+<span class="fc" id="L322">    int last = 0;</span>
+<span class="fc" id="L323">    int length = value.length();</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">    for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc" id="L325">      char c = value.charAt(i);</span>
+      String replacement;
+<span class="pc bpc" id="L327" title="1 of 2 branches missed.">      if (c &lt; 128) {</span>
+<span class="fc" id="L328">        replacement = replacements[c];</span>
+<span class="pc bpc" id="L329" title="1 of 2 branches missed.">        if (replacement == null) {</span>
+<span class="fc" id="L330">          continue;</span>
+        }
+<span class="nc bnc" id="L332" title="All 2 branches missed.">      } else if (c == '\u2028') {</span>
+<span class="nc" id="L333">        replacement = &quot;\\u2028&quot;;</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">      } else if (c == '\u2029') {</span>
+<span class="nc" id="L335">        replacement = &quot;\\u2029&quot;;</span>
+      } else {
+        continue;
+      }
+<span class="nc bnc" id="L339" title="All 2 branches missed.">      if (last &lt; i) {</span>
+<span class="nc" id="L340">        out.write(value, last, i - last);</span>
+      }
+<span class="nc" id="L342">      out.write(replacement);</span>
+<span class="nc" id="L343">      last = i + 1;</span>
+    }
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">    if (last &lt; length) {</span>
+<span class="fc" id="L346">      out.write(value, last, length - last);</span>
+    }
+<span class="fc" id="L348">    out.write('\&quot;');</span>
+<span class="fc" id="L349">  }</span>
+  private void newline() throws IOException {
+<span class="fc bfc" id="L351" title="All 2 branches covered.">    if (usesEmptyNewlineAndIndent) {</span>
+<span class="fc" id="L352">      return;</span>
+    }
+<span class="fc" id="L354">    out.write(formattingStyle.getNewline());</span>
+<span class="fc bfc" id="L355" title="All 2 branches covered.">    for (int i = 1, size = stackSize; i &lt; size; i++) {</span>
+<span class="fc" id="L356">      out.write(formattingStyle.getIndent());</span>
+    }
+<span class="fc" id="L358">  }</span>
+  private void beforeName() throws IOException {
+<span class="fc" id="L360">    int context = peek();</span>
+<span class="fc bfc" id="L361" title="All 2 branches covered.">    if (context == NONEMPTY_OBJECT) {</span>
+<span class="fc" id="L362">      out.write(formattedComma);</span>
+<span class="pc bpc" id="L363" title="1 of 2 branches missed.">    } else if (context != EMPTY_OBJECT) {</span>
+<span class="nc" id="L364">      throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="fc" id="L366">    newline();</span>
+<span class="fc" id="L367">    replaceTop(DANGLING_NAME);</span>
+<span class="fc" id="L368">  }</span>
+  @SuppressWarnings(&quot;fallthrough&quot;)
+  private void beforeValue() throws IOException {
+<span class="pc bpc" id="L371" title="2 of 6 branches missed.">    switch (peek()) {</span>
+      case NONEMPTY_DOCUMENT:
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        if (strictness != Strictness.LENIENT) {</span>
+<span class="nc" id="L374">          throw new IllegalStateException(&quot;JSON must have only one top-level value.&quot;);</span>
+        }
+      case EMPTY_DOCUMENT:
+<span class="fc" id="L377">        replaceTop(NONEMPTY_DOCUMENT);</span>
+<span class="fc" id="L378">        break;</span>
+      case EMPTY_ARRAY:
+<span class="fc" id="L380">        replaceTop(NONEMPTY_ARRAY);</span>
+<span class="fc" id="L381">        newline();</span>
+<span class="fc" id="L382">        break;</span>
+      case NONEMPTY_ARRAY:
+<span class="fc" id="L384">        out.append(formattedComma);</span>
+<span class="fc" id="L385">        newline();</span>
+<span class="fc" id="L386">        break;</span>
+      case DANGLING_NAME:
+<span class="fc" id="L388">        out.append(formattedColon);</span>
+<span class="fc" id="L389">        replaceTop(NONEMPTY_OBJECT);</span>
+<span class="fc" id="L390">        break;</span>
+      default:
+<span class="nc" id="L392">        throw new IllegalStateException(&quot;Nesting problem.&quot;);</span>
+    }
+<span class="fc" id="L394">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

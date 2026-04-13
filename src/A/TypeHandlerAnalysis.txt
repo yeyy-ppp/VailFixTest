@@ -1,0 +1,75 @@
+```
+包路径：cli
+类名：TypeHandler
+父类：无
+依赖类：ParseException,Converter
+---
+序号：1
+方法名：createClass(String className)
+返回类型：Class<?>
+功能描述：根据类名字符串创建Class对象
+序号：2
+方法名：createDate(String string)
+返回类型：Date
+功能描述：将字符串转换为Date对象
+序号：3
+方法名：createDefaultMap()
+返回类型：Map<Class<?>, Converter<?, ? extends Throwable>>
+功能描述：创建并填充默认的类型转换器映射
+序号：4
+方法名：createFile(String string)
+返回类型：File
+功能描述：根据字符串路径创建File对象
+序号：5
+方法名：createFiles(String string)
+返回类型：File[]
+功能描述：未实现（标记为弃用）
+序号：6
+方法名：createNumber(String string)
+返回类型：Number
+功能描述：将字符串转换为Number对象（已弃用）
+序号：7
+方法名：createObject(String className)
+返回类型：Object
+功能描述：根据类名字符串创建对象实例（已弃用）
+序号：8
+方法名：createURL(String string)
+返回类型：URL
+功能描述：根据字符串创建URL对象
+序号：9
+方法名：createValue(String string, Class<T> clazz)
+返回类型：<T> T
+功能描述：将字符串转换为指定类型的对象
+序号：10
+方法名：createValue(String string, Object obj)
+返回类型：Object
+功能描述：将字符串转换为指定类型的对象（已弃用）
+序号：11
+方法名：createValueUnchecked(String string, Class<T> clazz)
+返回类型：<T> T
+功能描述：转换字符串到指定类型，不检查ParseException异常
+序号：12
+方法名：getDefault()
+返回类型：TypeHandler
+功能描述：获取默认TypeHandler实例
+序号：13
+方法名：openFile(String string)
+返回类型：FileInputStream
+功能描述：根据路径打开文件输入流（已弃用）
+序号：14
+方法名：putDefaultMap(Map<Class<?>, Converter<?, ? extends Throwable>> map)
+返回类型：Map<Class<?>, Converter<?, ? extends Throwable>>
+功能描述：向映射中添加默认类型转换器
+序号：15
+方法名：TypeHandler()
+返回类型：无
+功能描述：使用默认转换器映射构造TypeHandler
+序号：16
+方法名：TypeHandler(Map<Class<?>, Converter<?, ? extends Throwable>> converterMap)
+返回类型：无
+功能描述：使用指定转换器映射构造TypeHandler
+序号：17
+方法名：getConverter(Class<T> clazz)
+返回类型：<T> Converter<T, ?>
+功能描述：获取指定类型的转换器
+```

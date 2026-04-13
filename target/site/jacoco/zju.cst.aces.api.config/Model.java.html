@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Model.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.config</a> &gt; <span class="el_source">Model.java</span></div><h1>Model.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.config;
+
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
+<span class="nc" id="L6">public enum Model {</span>
+<span class="nc" id="L7">    GPT_4O_MINI(&quot;gpt-4o-mini&quot;, new ModelConfig.Builder()</span>
+            //sk-o7C539636d3cb6ec90bc084880c104d25926fd8af0bilWd8
+<span class="nc" id="L9">            .withModelName(&quot;gpt-4o-mini&quot;)</span>
+<span class="nc" id="L10">            .withUrl(&quot;https://api.gptsapi.net/v1/chat/completions&quot;)</span>
+<span class="nc" id="L11">            .withContextLength(122880) //120k</span>
+<span class="nc" id="L12">            .withTemperature(0.5)</span>
+<span class="nc" id="L13">            .withFrequencyPenalty(0)</span>
+<span class="nc" id="L14">            .withPresencePenalty(0)</span>
+<span class="nc" id="L15">            .build());</span>
+
+    private final String modelName;
+    private final ModelConfig defaultConfig;
+
+<span class="nc" id="L20">    Model(String modelName, ModelConfig defaultConfig) {</span>
+<span class="nc" id="L21">        this.modelName = modelName;</span>
+<span class="nc" id="L22">        this.defaultConfig = defaultConfig;</span>
+<span class="nc" id="L23">    }</span>
+
+    public String getModelName() {
+<span class="nc" id="L26">        return modelName;</span>
+    }
+
+    public ModelConfig getDefaultConfig() {
+<span class="nc" id="L30">        return defaultConfig;</span>
+    }
+
+    public static Model fromString(String modelName) {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        for (Model model : Model.values()) {</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">            if (model.getModelName().equalsIgnoreCase(modelName)) {</span>
+<span class="nc" id="L36">                return model;</span>
+            }
+        }
+<span class="nc" id="L39">        throw new IllegalArgumentException(&quot;No Model with name &quot; + modelName +</span>
+<span class="nc" id="L40">                &quot;\nSupport models: &quot; + Arrays.stream(Model.values()).map(Model::getModelName).collect(Collectors.joining(&quot;, &quot;)));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,25 @@
+[2026-01-13 18:20:59] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: HelpFormatter, appendOption, appendOptionGroup, appendOptions, appendWrappedText, createPadding, determineMaxSinceLength, findWrapPos, getArgName, getDescPadding, getLeftPadding, getLongOptPrefix, getLongOptSeparator, getNewLine, getOptionComparator, getOptPrefix, getSyntaxPrefix, getWidth, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printOptions, printUsage, printUsage, printWrapped, printWrapped, renderOptions, renderWrappedText, renderWrappedTextBlock, rtrim, setArgName, setDescPadding, setLeftPadding, setLongOptPrefix, setLongOptSeparator, setNewLine, setOptionComparator, setOptPrefix, setSyntaxPrefix, setWidth, Builder, get, setPrintWriter, setShowDeprecated, setShowDeprecated, setShowSince, compare
+  未覆盖: 全部覆盖
+优化建议: 增加边界值测试（如零长度、负数）; 增加对选项组只有一个选项的测试; 增加对输出内容的详细断言
+
+[2026-01-15 10:46:41] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: appendOption, appendOptionGroup, appendWrappedText, createPadding, findWrapPos, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printUsage, printUsage, renderWrappedText, renderWrappedTextBlock, rtrim, Builder, get, setPrintWriter, setShowDeprecated, setShowDeprecated, setShowSince, compare
+  未覆盖: HelpFormatter, appendOptions, determineMaxSinceLength, getArgName, getDescPadding, getLeftPadding, getLongOptPrefix, getLongOptSeparator, getNewLine, getOptionComparator, getOptPrefix, getSyntaxPrefix, getWidth, printOptions, printWrapped, printWrapped, renderOptions, setArgName, setDescPadding, setLeftPadding, setLongOptPrefix, setLongOptSeparator, setNewLine, setOptionComparator, setOptPrefix, setSyntaxPrefix, setWidth
+
+[2026-01-15 10:50:48] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: appendOption, appendOptionGroup, appendOptions, appendWrappedText, createPadding, determineMaxSinceLength, findWrapPos, getArgName, getDescPadding, getLeftPadding, getLongOptPrefix, getLongOptSeparator, getNewLine, getOptionComparator, getOptPrefix, getSyntaxPrefix, getWidth, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printOptions, printUsage, printUsage, printWrapped, printWrapped, renderOptions, renderWrappedText, renderWrappedTextBlock, rtrim, setArgName, setDescPadding, setLeftPadding, setLongOptPrefix, setLongOptSeparator, setNewLine, setOptionComparator, setOptPrefix, setSyntaxPrefix, setWidth, Builder, get, setPrintWriter, setShowDeprecated, setShowDeprecated, setShowSince, compare
+  未覆盖: HelpFormatter
+
+[2026-01-19 15:13:47] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: HelpFormatter, appendOption, appendOptionGroup, appendOptions, appendWrappedText, createPadding, determineMaxSinceLength, findWrapPos, getArgName, getDescPadding, getLeftPadding, getLongOptPrefix, getLongOptSeparator, getNewLine, getOptionComparator, getOptPrefix, getSyntaxPrefix, getWidth, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printHelp, printOptions, printUsage, printUsage, printWrapped, printWrapped, renderOptions, renderWrappedText, renderWrappedTextBlock, rtrim, setArgName, setDescPadding, setLeftPadding, setLongOptPrefix, setLongOptSeparator, setNewLine, setOptionComparator, setOptPrefix, setSyntaxPrefix, setWidth, Builder, get, setPrintWriter, setShowDeprecated, setShowDeprecated, setShowSince, compare
+  未覆盖: 全部覆盖
+

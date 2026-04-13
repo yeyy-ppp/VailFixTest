@@ -1,0 +1,1109 @@
+{
+  "AbstractHelpFormatter": {
+    "Builder": {
+      "complexity": 0,
+      "lineCount": 3,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "asThis": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getComparator": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getHelpAppendable": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getOptionFormatBuilder": {
+      "complexity": 0,
+      "lineCount": 3,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getOptionGroupSeparator": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setComparator": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setHelpAppendable": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setOptionFormatBuilder": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setOptionGroupSeparator": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "AbstractHelpFormatter": {
+      "complexity": 0,
+      "lineCount": 8,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getOptionFormatter": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getSerializer": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getSyntaxPrefix": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "printHelp": {
+      "complexity": 0,
+      "lineCount": 10,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "if": {
+      "complexity": 2,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "printOptions": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setSyntaxPrefix": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "sort": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "toArgName": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "toSyntaxOptions": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "for": {
+      "complexity": 12,
+      "lineCount": 15,
+      "nestingDepth": 2,
+      "loopCount": 1,
+      "branchCount": 2,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    }
+  },
+  "FilterHelpAppendable": {
+    "FilterHelpAppendable": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "append": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    }
+  },
+  "HelpAppendable": {
+    "appendFormat": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "appendParagraphFormat": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    }
+  },
+  "HelpFormatter": {
+    "Builder": {
+      "complexity": 0,
+      "lineCount": 3,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "get": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setShowSince": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "builder": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "HelpFormatter": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getTableDefinition": {
+      "complexity": 16,
+      "lineCount": 41,
+      "nestingDepth": 2,
+      "loopCount": 1,
+      "branchCount": 3,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    },
+    "if": {
+      "complexity": 2,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "for": {
+      "complexity": 9,
+      "lineCount": 16,
+      "nestingDepth": 1,
+      "loopCount": 1,
+      "branchCount": 2,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    }
+  },
+  "OptionFormatter": {
+    "Builder": {
+      "complexity": 0,
+      "lineCount": 11,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "build": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "get": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setArgumentNameDelimiters": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setDefaultArgName": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setDeprecatedFormatFunction": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setLongOptPrefix": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setOptArgSeparator": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setOptionalDelimiters": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setOptPrefix": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setOptSeparator": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setSyntaxFormatFunction": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "toArgName": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "builder": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "from": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "OptionFormatter": {
+      "complexity": 8,
+      "lineCount": 25,
+      "nestingDepth": 2,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "getArgName": {
+      "complexity": 0,
+      "lineCount": 8,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getBothOpt": {
+      "complexity": 5,
+      "lineCount": 9,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "getDescription": {
+      "complexity": 0,
+      "lineCount": 6,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getLongOpt": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getOpt": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getSince": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "isRequired": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "toOptional": {
+      "complexity": 5,
+      "lineCount": 7,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "toSyntaxOption": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    }
+  },
+  "TableDefinition": {
+    "from": {
+      "complexity": 6,
+      "lineCount": 25,
+      "nestingDepth": 2,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "TableDefinition": {
+      "complexity": 3,
+      "lineCount": 19,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "caption": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "columnTextStyles": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "headers": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "rows": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    }
+  },
+  "TextHelpAppendable": {
+    "indexOfWrap": {
+      "complexity": 18,
+      "lineCount": 22,
+      "nestingDepth": 2,
+      "loopCount": 2,
+      "branchCount": 4,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    },
+    "if": {
+      "complexity": 2,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "for": {
+      "complexity": 2,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 1,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "systemOut": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "TextHelpAppendable": {
+      "complexity": 0,
+      "lineCount": 9,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "adjustTableFormat": {
+      "complexity": 33,
+      "lineCount": 47,
+      "nestingDepth": 3,
+      "loopCount": 5,
+      "branchCount": 6,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    },
+    "appendHeader": {
+      "complexity": 10,
+      "lineCount": 17,
+      "nestingDepth": 2,
+      "loopCount": 0,
+      "branchCount": 2,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "appendList": {
+      "complexity": 10,
+      "lineCount": 20,
+      "nestingDepth": 2,
+      "loopCount": 1,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "appendParagraph": {
+      "complexity": 5,
+      "lineCount": 8,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "appendTable": {
+      "complexity": 7,
+      "lineCount": 15,
+      "nestingDepth": 1,
+      "loopCount": 2,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "appendTitle": {
+      "complexity": 5,
+      "lineCount": 12,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "getIndent": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getLeftPad": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getMaxWidth": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getTextStyleBuilder": {
+      "complexity": 0,
+      "lineCount": 3,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "makeColumnQueue": {
+      "complexity": 5,
+      "lineCount": 18,
+      "nestingDepth": 1,
+      "loopCount": 1,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "makeColumnQueues": {
+      "complexity": 5,
+      "lineCount": 9,
+      "nestingDepth": 1,
+      "loopCount": 1,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "printQueue": {
+      "complexity": 5,
+      "lineCount": 6,
+      "nestingDepth": 1,
+      "loopCount": 1,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "printWrapped": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "resize": {
+      "complexity": 5,
+      "lineCount": 11,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "setIndent": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setLeftPad": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setMaxWidth": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "writeColumnQueues": {
+      "complexity": 20,
+      "lineCount": 26,
+      "nestingDepth": 4,
+      "loopCount": 2,
+      "branchCount": 2,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    },
+    "while": {
+      "complexity": 17,
+      "lineCount": 21,
+      "nestingDepth": 3,
+      "loopCount": 2,
+      "branchCount": 2,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    }
+  },
+  "TextStyle": {
+    "Builder": {
+      "complexity": 0,
+      "lineCount": 2,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "get": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getIndent": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getLeftPad": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getMaxWidth": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getMinWidth": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "isScalable": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setAlignment": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setIndent": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setLeftPad": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setMaxWidth": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setMinWidth": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setScalable": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "setTextStyle": {
+      "complexity": 0,
+      "lineCount": 10,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "builder": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "TextStyle": {
+      "complexity": 0,
+      "lineCount": 9,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "getAlignment": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "pad": {
+      "complexity": 23,
+      "lineCount": 46,
+      "nestingDepth": 3,
+      "loopCount": 0,
+      "branchCount": 6,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    },
+    "switch": {
+      "complexity": 18,
+      "lineCount": 37,
+      "nestingDepth": 2,
+      "loopCount": 0,
+      "branchCount": 5,
+      "tryCatchCount": 0,
+      "strategy": "detailed"
+    },
+    "if": {
+      "complexity": 2,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "toString": {
+      "complexity": 0,
+      "lineCount": 11,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    }
+  },
+  "Util": {
+    "defaultValue": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "indexOfNonWhitespace": {
+      "complexity": 7,
+      "lineCount": 11,
+      "nestingDepth": 1,
+      "loopCount": 1,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "isEmpty": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "isWhitespace": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "ltrim": {
+      "complexity": 0,
+      "lineCount": 5,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "repeat": {
+      "complexity": 9,
+      "lineCount": 15,
+      "nestingDepth": 1,
+      "loopCount": 0,
+      "branchCount": 3,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "if": {
+      "complexity": 2,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "repeatSpace": {
+      "complexity": 0,
+      "lineCount": 4,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    },
+    "rtrim": {
+      "complexity": 7,
+      "lineCount": 11,
+      "nestingDepth": 1,
+      "loopCount": 1,
+      "branchCount": 1,
+      "tryCatchCount": 0,
+      "strategy": "standard"
+    },
+    "Util": {
+      "complexity": 0,
+      "lineCount": 3,
+      "nestingDepth": 0,
+      "loopCount": 0,
+      "branchCount": 0,
+      "tryCatchCount": 0,
+      "strategy": "simple"
+    }
+  }
+}

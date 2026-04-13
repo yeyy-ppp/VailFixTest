@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Failable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.function</a> &gt; <span class="el_source">Failable.java</span></div><h1>Failable.java</h1><pre class="source lang-java linenums">package lang3.function;
+import java.io.IOException;
+import java.io.UncheckedIOException;
+import java.lang.reflect.UndeclaredThrowableException;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.concurrent.Callable;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.BiPredicate;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Stream;
+
+import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.maven.surefire.shared.lang3.function.*;
+import org.apache.maven.surefire.shared.lang3.stream.Streams;
+
+public class Failable {
+    public static &lt;T, U, E extends Throwable&gt; void accept(final FailableBiConsumer&lt;T, U, E&gt; consumer, final T object1,
+        final U object2) {
+<span class="fc" id="L24">        run(consumer, () -&gt; consumer.accept(object1, object2));</span>
+<span class="fc" id="L25">    }</span>
+    public static &lt;T, E extends Throwable&gt; void accept(final FailableConsumer&lt;T, E&gt; consumer, final T object) {
+<span class="fc" id="L27">        run(consumer, () -&gt; consumer.accept(object));</span>
+<span class="fc" id="L28">    }</span>
+    public static &lt;E extends Throwable&gt; void accept(final FailableDoubleConsumer&lt;E&gt; consumer, final double value) {
+<span class="nc" id="L30">        run(consumer, () -&gt; consumer.accept(value));</span>
+<span class="nc" id="L31">    }</span>
+    public static &lt;E extends Throwable&gt; void accept(final FailableIntConsumer&lt;E&gt; consumer, final int value) {
+<span class="nc" id="L33">        run(consumer, () -&gt; consumer.accept(value));</span>
+<span class="nc" id="L34">    }</span>
+    public static &lt;E extends Throwable&gt; void accept(final FailableLongConsumer&lt;E&gt; consumer, final long value) {
+<span class="nc" id="L36">        run(consumer, () -&gt; consumer.accept(value));</span>
+<span class="nc" id="L37">    }</span>
+    public static &lt;T, U, R, E extends Throwable&gt; R apply(final FailableBiFunction&lt;T, U, R, E&gt; function, final T input1,
+        final U input2) {
+<span class="fc" id="L40">        return get(() -&gt; function.apply(input1, input2));</span>
+    }
+    public static &lt;T, R, E extends Throwable&gt; R apply(final FailableFunction&lt;T, R, E&gt; function, final T input) {
+<span class="fc" id="L43">        return get(() -&gt; function.apply(input));</span>
+    }
+    public static &lt;E extends Throwable&gt; double applyAsDouble(final FailableDoubleBinaryOperator&lt;E&gt; function,
+        final double left, final double right) {
+<span class="nc" id="L47">        return getAsDouble(() -&gt; function.applyAsDouble(left, right));</span>
+    }
+    public static &lt;T, R, E extends Throwable&gt; R applyNonNull(final T value, final FailableFunction&lt;? super T, ? extends R, E&gt; mapper) throws E {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        return value != null ? Objects.requireNonNull(mapper, &quot;mapper&quot;).apply(value) : null;</span>
+    }
+    public static &lt;T, U, R, E1 extends Throwable, E2 extends Throwable&gt; R applyNonNull(final T value1,
+            final FailableFunction&lt;? super T, ? extends U, E1&gt; mapper1, final FailableFunction&lt;? super U, ? extends R, E2&gt; mapper2) throws E1, E2 {
+<span class="fc" id="L54">        return applyNonNull(applyNonNull(value1, mapper1), mapper2);</span>
+    }
+    public static &lt;T, U, V, R, E1 extends Throwable, E2 extends Throwable, E3 extends Throwable&gt; R applyNonNull(final T value1,
+            final FailableFunction&lt;? super T, ? extends U, E1&gt; mapper1, final FailableFunction&lt;? super U, ? extends V, E2&gt; mapper2,
+            final FailableFunction&lt;? super V, ? extends R, E3&gt; mapper3) throws E1, E2, E3 {
+<span class="fc" id="L59">        return applyNonNull(applyNonNull(applyNonNull(value1, mapper1), mapper2), mapper3);</span>
+    }
+    public static &lt;T, U&gt; BiConsumer&lt;T, U&gt; asBiConsumer(final FailableBiConsumer&lt;T, U, ?&gt; consumer) {
+<span class="fc" id="L62">        return (input1, input2) -&gt; accept(consumer, input1, input2);</span>
+    }
+    public static &lt;T, U, R&gt; BiFunction&lt;T, U, R&gt; asBiFunction(final FailableBiFunction&lt;T, U, R, ?&gt; function) {
+<span class="fc" id="L65">        return (input1, input2) -&gt; apply(function, input1, input2);</span>
+    }
+    public static &lt;T, U&gt; BiPredicate&lt;T, U&gt; asBiPredicate(final FailableBiPredicate&lt;T, U, ?&gt; predicate) {
+<span class="fc" id="L68">        return (input1, input2) -&gt; test(predicate, input1, input2);</span>
+    }
+    public static &lt;V&gt; Callable&lt;V&gt; asCallable(final FailableCallable&lt;V, ?&gt; callable) {
+<span class="fc" id="L71">        return () -&gt; call(callable);</span>
+    }
+    public static &lt;T&gt; Consumer&lt;T&gt; asConsumer(final FailableConsumer&lt;T, ?&gt; consumer) {
+<span class="fc" id="L74">        return input -&gt; accept(consumer, input);</span>
+    }
+    public static &lt;T, R&gt; Function&lt;T, R&gt; asFunction(final FailableFunction&lt;T, R, ?&gt; function) {
+<span class="fc" id="L77">        return input -&gt; apply(function, input);</span>
+    }
+    public static &lt;T&gt; Predicate&lt;T&gt; asPredicate(final FailablePredicate&lt;T, ?&gt; predicate) {
+<span class="fc" id="L80">        return input -&gt; test(predicate, input);</span>
+    }
+    public static Runnable asRunnable(final FailableRunnable&lt;?&gt; runnable) {
+<span class="fc" id="L83">        return () -&gt; run(runnable);</span>
+    }
+    public static &lt;T&gt; Supplier&lt;T&gt; asSupplier(final FailableSupplier&lt;T, ?&gt; supplier) {
+<span class="fc" id="L86">        return () -&gt; get(supplier);</span>
+    }
+    public static &lt;V, E extends Throwable&gt; V call(final FailableCallable&lt;V, E&gt; callable) {
+<span class="fc" id="L89">        return get(callable::call);</span>
+    }
+    public static &lt;T, E extends Throwable&gt; T get(final FailableSupplier&lt;T, E&gt; supplier) {
+        try {
+<span class="fc" id="L93">            return supplier.get();</span>
+<span class="fc" id="L94">        } catch (final Throwable t) {</span>
+<span class="nc" id="L95">            throw rethrow(t);</span>
+        }
+    }
+    public static &lt;E extends Throwable&gt; boolean getAsBoolean(final FailableBooleanSupplier&lt;E&gt; supplier) {
+        try {
+<span class="fc" id="L100">            return supplier.getAsBoolean();</span>
+<span class="fc" id="L101">        } catch (final Throwable t) {</span>
+<span class="nc" id="L102">            throw rethrow(t);</span>
+        }
+    }
+    public static &lt;E extends Throwable&gt; double getAsDouble(final FailableDoubleSupplier&lt;E&gt; supplier) {
+        try {
+<span class="nc" id="L107">            return supplier.getAsDouble();</span>
+<span class="nc" id="L108">        } catch (final Throwable t) {</span>
+<span class="nc" id="L109">            throw rethrow(t);</span>
+        }
+    }
+    public static RuntimeException rethrow(final Throwable throwable) {
+<span class="fc" id="L113">        Objects.requireNonNull(throwable, &quot;throwable&quot;);</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (throwable instanceof IOException) {</span>
+<span class="fc" id="L115">            throw new UncheckedIOException((IOException) throwable);</span>
+        }
+<span class="fc" id="L117">        throw new UndeclaredThrowableException(throwable);</span>
+    }
+    public static &lt;E extends Throwable&gt; void run(final FailableRunnable&lt;E&gt; runnable) {
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        if (runnable != null) {</span>
+            try {
+<span class="fc" id="L122">                runnable.run();</span>
+<span class="fc" id="L123">            } catch (final Throwable t) {</span>
+<span class="nc" id="L124">                throw rethrow(t);</span>
+<span class="fc" id="L125">            }</span>
+        }
+<span class="fc" id="L127">    }</span>
+    private static &lt;E extends Throwable&gt; void run(final Object test, final FailableRunnable&lt;E&gt; runnable) {
+<span class="pc bpc" id="L129" title="2 of 4 branches missed.">        if (runnable != null &amp;&amp; test != null) {</span>
+            try {
+<span class="fc" id="L131">                runnable.run();</span>
+<span class="fc" id="L132">            } catch (final Throwable t) {</span>
+<span class="nc" id="L133">                throw rethrow(t);</span>
+<span class="fc" id="L134">            }</span>
+        }
+<span class="fc" id="L136">    }</span>
+    public static &lt;T&gt; Streams.FailableStream&lt;T&gt; stream(final Stream&lt;T&gt; stream) {
+<span class="nc" id="L138">        return new Streams.FailableStream&lt;&gt;(stream);</span>
+    }
+    public static &lt;T, U, E extends Throwable&gt; boolean test(final FailableBiPredicate&lt;T, U, E&gt; predicate,
+        final T object1, final U object2) {
+<span class="fc" id="L142">        return getAsBoolean(() -&gt; predicate.test(object1, object2));</span>
+    }
+    public static &lt;T, E extends Throwable&gt; boolean test(final FailablePredicate&lt;T, E&gt; predicate, final T object) {
+<span class="fc" id="L145">        return getAsBoolean(() -&gt; predicate.test(object));</span>
+    }
+    private Failable() {
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

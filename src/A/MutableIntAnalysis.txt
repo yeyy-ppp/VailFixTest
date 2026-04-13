@@ -1,0 +1,127 @@
+```
+包路径：lang3.mutable
+类名：MutableInt
+父类：Number
+依赖类：Mutable
+---
+序号：1
+方法名：MutableInt()
+返回类型：无
+功能描述：初始化值为0
+序号：2
+方法名：MutableInt(int value)
+返回类型：无
+功能描述：用给定整数初始化
+序号：3
+方法名：MutableInt(Number value)
+返回类型：无
+功能描述：用Number对象的整数值初始化
+序号：4
+方法名：MutableInt(String value)
+返回类型：无
+功能描述：解析字符串为整数并初始化
+序号：5
+方法名：add(int operand)
+返回类型：void
+功能描述：将整数加到当前值
+序号：6
+方法名：add(Number operand)
+返回类型：void
+功能描述：将Number对象的整数值加到当前值
+序号：7
+方法名：addAndGet(int operand)
+返回类型：int
+功能描述：加整数后返回新值
+序号：8
+方法名：addAndGet(Number operand)
+返回类型：int
+功能描述：加Number对象的整数值后返回新值
+序号：9
+方法名：compareTo(MutableInt other)
+返回类型：int
+功能描述：比较两个MutableInt对象的值
+序号：10
+方法名：decrement()
+返回类型：void
+功能描述：当前值减1
+序号：11
+方法名：decrementAndGet()
+返回类型：int
+功能描述：减1后返回新值
+序号：12
+方法名：doubleValue()
+返回类型：double
+功能描述：返回double形式的值
+序号：13
+方法名：equals(Object obj)
+返回类型：boolean
+功能描述：判断对象值是否相等
+序号：14
+方法名：floatValue()
+返回类型：float
+功能描述：返回float形式的值
+序号：15
+方法名：getAndAdd(int operand)
+返回类型：int
+功能描述：返回当前值后加整数
+序号：16
+方法名：getAndAdd(Number operand)
+返回类型：int
+功能描述：返回当前值后加Number对象的整数值
+序号：17
+方法名：getAndDecrement()
+返回类型：int
+功能描述：返回当前值后减1
+序号：18
+方法名：getAndIncrement()
+返回类型：int
+功能描述：返回当前值后加1
+序号：19
+方法名：getValue()
+返回类型：Integer
+功能描述：返回Integer对象形式的值
+序号：20
+方法名：hashCode()
+返回类型：int
+功能描述：返回值的哈希码
+序号：21
+方法名：increment()
+返回类型：void
+功能描述：当前值加1
+序号：22
+方法名：incrementAndGet()
+返回类型：int
+功能描述：加1后返回新值
+序号：23
+方法名：intValue()
+返回类型：int
+功能描述：返回int形式的值
+序号：24
+方法名：longValue()
+返回类型：long
+功能描述：返回long形式的值
+序号：25
+方法名：setValue(int value)
+返回类型：void
+功能描述：设置整数形式的值
+序号：26
+方法名：setValue(Number value)
+返回类型：void
+功能描述：设置Number对象的整数值
+序号：27
+方法名：subtract(int operand)
+返回类型：void
+功能描述：当前值减去整数
+序号：28
+方法名：subtract(Number operand)
+返回类型：void
+功能描述：当前值减去Number对象的整数值
+序号：29
+方法名：toInteger()
+返回类型：Integer
+功能描述：转换为Integer对象
+序号：30
+方法名：toString()
+返回类型：String
+功能描述：返回字符串形式的值
+```

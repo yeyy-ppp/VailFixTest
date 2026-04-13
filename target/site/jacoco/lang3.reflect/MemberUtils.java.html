@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.reflect</a> &gt; <span class="el_source">MemberUtils.java</span></div><h1>MemberUtils.java</h1><pre class="source lang-java linenums">package lang3.reflect;
+import org.apache.maven.surefire.shared.lang3.ClassUtils;
+
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
+final class MemberUtils {
+    private static final class Executable {
+        private static Executable of(final Constructor&lt;?&gt; constructor) {
+<span class="nc" id="L13">            return new Executable(constructor);</span>
+        }
+        private static Executable of(final Method method) {
+<span class="nc" id="L16">            return new Executable(method);</span>
+        }
+        private final Class&lt;?&gt;[] parameterTypes;
+        private final boolean isVarArgs;
+<span class="nc" id="L20">        private Executable(final Constructor&lt;?&gt; constructor) {</span>
+<span class="nc" id="L21">            parameterTypes = constructor.getParameterTypes();</span>
+<span class="nc" id="L22">            isVarArgs = constructor.isVarArgs();</span>
+<span class="nc" id="L23">        }</span>
+<span class="nc" id="L24">        private Executable(final Method method) {</span>
+<span class="nc" id="L25">            parameterTypes = method.getParameterTypes();</span>
+<span class="nc" id="L26">            isVarArgs = method.isVarArgs();</span>
+<span class="nc" id="L27">        }</span>
+        public Class&lt;?&gt;[] getParameterTypes() {
+<span class="nc" id="L29">            return parameterTypes;</span>
+        }
+        public boolean isVarArgs() {
+<span class="nc" id="L32">            return isVarArgs;</span>
+        }
+    }
+    private static final int ACCESS_TEST = Modifier.PUBLIC | Modifier.PROTECTED | Modifier.PRIVATE;
+    private static final Class&lt;?&gt;[] WIDENING_PRIMITIVE_TYPES = {
+            Byte.TYPE,
+            Short.TYPE,
+            Character.TYPE,
+            Integer.TYPE,
+            Long.TYPE,
+            Float.TYPE,
+            Double.TYPE
+    };
+    static int compareConstructorFit(final Constructor&lt;?&gt; left, final Constructor&lt;?&gt; right, final Class&lt;?&gt;[] actual) {
+      return compareParameterTypes(Executable.of(left), Executable.of(right), actual);
+    }
+    static int compareMethodFit(final Method left, final Method right, final Class&lt;?&gt;[] actual) {
+      return compareParameterTypes(Executable.of(left), Executable.of(right), actual);
+    }
+    private static int compareParameterTypes(final Executable left, final Executable right, final Class&lt;?&gt;[] actual) {
+        final float leftCost = getTotalTransformationCost(actual, left);
+        final float rightCost = getTotalTransformationCost(actual, right);
+        return Float.compare(leftCost, rightCost);
+    }
+    private static float getObjectTransformationCost(Class&lt;?&gt; srcClass, final Class&lt;?&gt; destClass) {
+        if (destClass.isPrimitive()) {
+            return getPrimitivePromotionCost(srcClass, destClass);
+        }
+        float cost = 0.0f;
+        while (srcClass != null &amp;&amp; !destClass.equals(srcClass)) {
+            if (destClass.isInterface() &amp;&amp; ClassUtils.isAssignable(srcClass, destClass)) {
+                cost += 0.25f;
+                break;
+            }
+            cost++;
+            srcClass = srcClass.getSuperclass();
+        }
+        if (srcClass == null) {
+            cost += 1.5f;
+        }
+        return cost;
+    }
+    private static float getPrimitivePromotionCost(final Class&lt;?&gt; srcClass, final Class&lt;?&gt; destClass) {
+        if (srcClass == null) {
+            return 1.5f;
+        }
+        float cost = 0.0f;
+        Class&lt;?&gt; cls = srcClass;
+        if (!cls.isPrimitive()) {
+            cost += 0.1f;
+            cls = ClassUtils.wrapperToPrimitive(cls);
+        }
+        for (int i = 0; cls != destClass &amp;&amp; i &lt; WIDENING_PRIMITIVE_TYPES.length; i++) {
+            if (cls == WIDENING_PRIMITIVE_TYPES[i]) {
+                cost += 0.1f;
+                if (i &lt; WIDENING_PRIMITIVE_TYPES.length - 1) {
+                    cls = WIDENING_PRIMITIVE_TYPES[i + 1];
+                }
+            }
+        }
+        return cost;
+    }
+    private static float getTotalTransformationCost(final Class&lt;?&gt;[] srcArgs, final Executable executable) {
+        final Class&lt;?&gt;[] destArgs = executable.getParameterTypes();
+        final boolean isVarArgs = executable.isVarArgs();
+        float totalCost = 0.0f;
+        final long normalArgsLen = isVarArgs ? destArgs.length - 1 : destArgs.length;
+        if (srcArgs.length &lt; normalArgsLen) {
+            return Float.MAX_VALUE;
+        }
+        for (int i = 0; i &lt; normalArgsLen; i++) {
+            totalCost += getObjectTransformationCost(srcArgs[i], destArgs[i]);
+        }
+        if (isVarArgs) {
+            final boolean noVarArgsPassed = srcArgs.length &lt; destArgs.length;
+            final boolean explicitArrayForVarargs = srcArgs.length == destArgs.length &amp;&amp; srcArgs[srcArgs.length - 1] != null
+                    &amp;&amp; srcArgs[srcArgs.length - 1].isArray();
+            final float varArgsCost = 0.001f;
+            final Class&lt;?&gt; destClass = destArgs[destArgs.length - 1].getComponentType();
+            if (noVarArgsPassed) {
+                totalCost += getObjectTransformationCost(destClass, Object.class) + varArgsCost;
+            } else if (explicitArrayForVarargs) {
+                final Class&lt;?&gt; sourceClass = srcArgs[srcArgs.length - 1].getComponentType();
+                totalCost += getObjectTransformationCost(sourceClass, destClass) + varArgsCost;
+            } else {
+                for (int i = destArgs.length - 1; i &lt; srcArgs.length; i++) {
+                    final Class&lt;?&gt; srcClass = srcArgs[i];
+                    totalCost += getObjectTransformationCost(srcClass, destClass) + varArgsCost;
+                }
+            }
+        }
+        return totalCost;
+    }
+    static boolean isAccessible(final Member member) {
+        return isPublic(member) &amp;&amp; !member.isSynthetic();
+    }
+    static boolean isMatchingConstructor(final Constructor&lt;?&gt; method, final Class&lt;?&gt;[] parameterTypes) {
+        return isMatchingExecutable(Executable.of(method), parameterTypes);
+    }
+    private static boolean isMatchingExecutable(final Executable method, final Class&lt;?&gt;[] parameterTypes) {
+        final Class&lt;?&gt;[] methodParameterTypes = method.getParameterTypes();
+        if (ClassUtils.isAssignable(parameterTypes, methodParameterTypes, true)) {
+            return true;
+        }
+        if (method.isVarArgs()) {
+            int i;
+            for (i = 0; i &lt; methodParameterTypes.length - 1 &amp;&amp; i &lt; parameterTypes.length; i++) {
+                if (!ClassUtils.isAssignable(parameterTypes[i], methodParameterTypes[i], true)) {
+                    return false;
+                }
+            }
+            final Class&lt;?&gt; varArgParameterType = methodParameterTypes[methodParameterTypes.length - 1].getComponentType();
+            for (; i &lt; parameterTypes.length; i++) {
+                if (!ClassUtils.isAssignable(parameterTypes[i], varArgParameterType, true)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    static boolean isMatchingMethod(final Method method, final Class&lt;?&gt;[] parameterTypes) {
+      return isMatchingExecutable(Executable.of(method), parameterTypes);
+    }
+    static boolean isPackage(final int modifiers) {
+        return (modifiers &amp; ACCESS_TEST) == 0;
+    }
+    static boolean isPublic(final Member member) {
+        return member != null &amp;&amp; Modifier.isPublic(member.getModifiers());
+    }
+    static boolean isStatic(final Member member) {
+        return member != null &amp;&amp; Modifier.isStatic(member.getModifiers());
+    }
+    static &lt;T extends AccessibleObject&gt; T setAccessibleWorkaround(final T obj) {
+        if (AccessibleObjects.isAccessible(obj)) {
+            return obj;
+        }
+        final Member m = (Member) obj;
+        if (isPublic(m) &amp;&amp; isPackage(m.getDeclaringClass().getModifiers())) {
+            try {
+                obj.setAccessible(true);
+                return obj;
+            } catch (final SecurityException ignored) {
+            }
+        }
+        return obj;
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

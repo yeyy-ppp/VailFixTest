@@ -1,0 +1,97 @@
+{
+  "className": "CommandLine",
+  "packagePath": "",
+  "totalSlices": 8,
+  "slices": [
+    {
+      "sliceIndex": 1,
+      "sliceName": "Slice1",
+      "testClassName": "CommandLineTest_Slice1",
+      "focusDescription": "测试方法 addArg (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "addArg"
+      ]
+    },
+    {
+      "sliceIndex": 2,
+      "sliceName": "Slice2",
+      "testClassName": "CommandLineTest_Slice2",
+      "focusDescription": "测试方法 addOption (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "addOption"
+      ]
+    },
+    {
+      "sliceIndex": 3,
+      "sliceName": "Slice3",
+      "testClassName": "CommandLineTest_Slice3",
+      "focusDescription": "测试方法 getOptionObject (complexity\u003d7)，覆盖2个异常处理",
+      "targetMethods": [
+        "getOptionObject"
+      ]
+    },
+    {
+      "sliceIndex": 4,
+      "sliceName": "Slice4",
+      "testClassName": "CommandLineTest_Slice4",
+      "focusDescription": "测试方法 getOptionProperties (complexity\u003d8)，覆盖1个分支路径",
+      "targetMethods": [
+        "getOptionProperties"
+      ]
+    },
+    {
+      "sliceIndex": 5,
+      "sliceName": "Slice5",
+      "testClassName": "CommandLineTest_Slice5",
+      "focusDescription": "测试方法 handleDeprecated (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "handleDeprecated"
+      ]
+    },
+    {
+      "sliceIndex": 6,
+      "sliceName": "Slice6",
+      "testClassName": "CommandLineTest_Slice6",
+      "focusDescription": "测试方法 processPropertiesFromValues (complexity\u003d5)，测试1个循环边界",
+      "targetMethods": [
+        "processPropertiesFromValues"
+      ]
+    },
+    {
+      "sliceIndex": 7,
+      "sliceName": "Slice7",
+      "testClassName": "CommandLineTest_Slice7",
+      "focusDescription": "测试方法 resolveOption (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "resolveOption"
+      ]
+    },
+    {
+      "sliceIndex": 8,
+      "sliceName": "SliceSimple",
+      "testClassName": "CommandLineTest_SliceSimple",
+      "focusDescription": "测试所有简单复杂度方法（complexity \u003c 5）",
+      "targetMethods": [
+        "Builder",
+        "if",
+        "build",
+        "get",
+        "setDeprecatedHandler",
+        "builder",
+        "CommandLine",
+        "first",
+        "getArgList",
+        "getArgs",
+        "getOptionCount",
+        "getOptions",
+        "getOptionValue",
+        "getOptionValues",
+        "getParsedOptionValue",
+        "getParsedOptionValues",
+        "for",
+        "hasOption",
+        "iterator"
+      ]
+    }
+  ]
+}

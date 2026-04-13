@@ -1,0 +1,927 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ValiFixAgentDemo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">ValiFixAgentDemo.java</span></div><h1>ValiFixAgentDemo.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import okhttp3.*;
+
+import java.io.*;
+import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+public class ValiFixAgentDemo {
+
+    // 验证标准枚举
+<span class="nc" id="L16">    public enum ValidationStandard {</span>
+<span class="nc" id="L17">        STATIC_SYNTAX(</span>
+                &quot;语法规则&quot;,
+                &quot;检查导包完整性、类型匹配一致性、变量/方法命名规范、括号/分号等语法符号完整性&quot;
+        ),
+<span class="nc" id="L21">        DYNAMIC_LOGIC(</span>
+                &quot;执行逻辑&quot;,
+                &quot;检查主流程覆盖完整性、边界条件验证有效性、异常场景处理正确性、状态变更逻辑合理性、方法调用顺序合法性&quot;
+        ),
+<span class="nc" id="L25">        BUILD_AND_RUN(</span>
+                &quot;编译运行&quot;,
+                &quot;检查依赖声明完整性、JDK/框架版本兼容性、构建插件配置正确性、类路径/资源路径有效性、入口方法存在性&quot;
+        ),
+<span class="nc" id="L29">        EXTENSION(</span>
+                &quot;扩展规则&quot;,
+                &quot;用于捕获未预定义的规则或错误类型，可由提示/日志动态补充说明&quot;
+        );
+
+        private final String displayName;
+        private final String description;
+
+<span class="nc" id="L37">        ValidationStandard(String displayName, String description) {</span>
+<span class="nc" id="L38">            this.displayName = displayName;</span>
+<span class="nc" id="L39">            this.description = description;</span>
+<span class="nc" id="L40">        }</span>
+
+        public String getDisplayName() {
+<span class="nc" id="L43">            return displayName;</span>
+        }
+
+        public String getDescription() {
+<span class="nc" id="L47">            return description;</span>
+        }
+    }
+
+    // 验证项内部类
+    public static final class ValidationItem {
+        private final ValidationStandard standard;
+        private final String content;
+
+<span class="nc" id="L56">        public ValidationItem(ValidationStandard standard, String content) {</span>
+<span class="nc" id="L57">            this.standard = standard;</span>
+<span class="nc" id="L58">            this.content = content;</span>
+<span class="nc" id="L59">        }</span>
+
+        public ValidationStandard getStandard() {
+<span class="nc" id="L62">            return standard;</span>
+        }
+
+        public String getContent() {
+<span class="nc" id="L66">            return content;</span>
+        }
+    }
+
+    // 成员变量
+    private OkHttpClient client;
+    private Gson gson;
+<span class="nc" id="L73">    private Map&lt;Integer, Integer&gt; methodErrorHistory = new HashMap&lt;&gt;();</span>
+
+    // 构造方法：初始化Gson和OkHttpClient
+<span class="nc" id="L76">    public ValiFixAgentDemo() {</span>
+<span class="nc" id="L77">        this.gson = new Gson();</span>
+<span class="nc" id="L78">        this.client = new OkHttpClient.Builder()</span>
+<span class="nc" id="L79">                .connectTimeout(300, TimeUnit.SECONDS)</span>
+<span class="nc" id="L80">                .readTimeout(300, TimeUnit.SECONDS)</span>
+<span class="nc" id="L81">                .writeTimeout(300, TimeUnit.SECONDS)</span>
+<span class="nc" id="L82">                .build();</span>
+<span class="nc" id="L83">    }</span>
+
+    // 初始验证计划
+    public static List&lt;ValidationItem&gt; initialValidationPlan() {
+<span class="nc" id="L87">        return Arrays.asList(</span>
+<span class="nc" id="L88">                new ValidationItem(ValidationStandard.STATIC_SYNTAX, ValidationStandard.STATIC_SYNTAX.getDescription()),</span>
+<span class="nc" id="L89">                new ValidationItem(ValidationStandard.DYNAMIC_LOGIC, ValidationStandard.DYNAMIC_LOGIC.getDescription()),</span>
+<span class="nc" id="L90">                new ValidationItem(ValidationStandard.BUILD_AND_RUN, ValidationStandard.BUILD_AND_RUN.getDescription())</span>
+        );
+    }
+
+    // 自适应验证计划（基于失败信息）
+    public static List&lt;ValidationItem&gt; adaptiveValidationPlan(String failureSummary) {
+<span class="nc" id="L96">        String extensionDesc = &quot;根据上轮失败信息进行定向复查：&quot; + failureSummary;</span>
+<span class="nc" id="L97">        return Arrays.asList(</span>
+<span class="nc" id="L98">                new ValidationItem(ValidationStandard.STATIC_SYNTAX, ValidationStandard.STATIC_SYNTAX.getDescription()),</span>
+<span class="nc" id="L99">                new ValidationItem(ValidationStandard.DYNAMIC_LOGIC, ValidationStandard.DYNAMIC_LOGIC.getDescription()),</span>
+<span class="nc" id="L100">                new ValidationItem(ValidationStandard.BUILD_AND_RUN, ValidationStandard.BUILD_AND_RUN.getDescription()),</span>
+                new ValidationItem(ValidationStandard.EXTENSION, extensionDesc)
+        );
+    }
+
+    // 初始验证提示语（静态常量）
+    private static final String INITIAL_VALIDATION_PROMPT;
+
+    static {
+<span class="nc" id="L109">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L110">        sb.append(&quot;你是测试代码审查专家，请严格按照以下完整验证标准检查测试代码：\n&quot;);</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        for (ValidationStandard standard : ValidationStandard.values()) {</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">            if (standard == ValidationStandard.EXTENSION) continue;</span>
+<span class="nc" id="L113">            sb.append(String.format(&quot;1. %s：%s\n&quot;, standard.getDisplayName(), standard.getDescription()));</span>
+        }
+<span class="nc" id="L115">        sb.append(&quot;请逐项审查，并判断是否“通过验证”或“不通过验证”。格式如下：\n&quot;);</span>
+<span class="nc" id="L116">        sb.append(&quot;- 若全部验证通过，请返回：【全部验证通过】。\n&quot;);</span>
+<span class="nc" id="L117">        sb.append(&quot;- 若验证未通过，请使用如下格式反馈问题：\n&quot;);</span>
+<span class="nc" id="L118">        sb.append(&quot;```\n&quot;);</span>
+<span class="nc" id="L119">        sb.append(&quot;该测试代码在验证[验证项]时失败，错误位置：[行号]，错误原因：[详细描述]\n&quot;);</span>
+<span class="nc" id="L120">        sb.append(&quot;```\n&quot;);</span>
+<span class="nc" id="L121">        sb.append(&quot;请严格按照行号注释报告错误位置（示例：错误位置：[11]）。除给定格式外不要返回其他内容。\n&quot;);</span>
+<span class="nc" id="L122">        INITIAL_VALIDATION_PROMPT = sb.toString();</span>
+<span class="nc" id="L123">    }</span>
+
+    // API配置常量
+    private static final String API_URL = &quot;https://openrouter.ai/api/v1/chat/completions&quot;;
+    private static final String MODEL = &quot;deepseek/deepseek-r1&quot;;
+    private static final String apiKey = &quot;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&quot;;
+
+    // 重新创建OkHttpClient（备用）
+    private void recreateClient() {
+<span class="nc" id="L132">        this.client = new OkHttpClient.Builder()</span>
+<span class="nc" id="L133">                .connectTimeout(300, TimeUnit.SECONDS)</span>
+<span class="nc" id="L134">                .readTimeout(300, TimeUnit.SECONDS)</span>
+<span class="nc" id="L135">                .writeTimeout(300, TimeUnit.SECONDS)</span>
+<span class="nc" id="L136">                .build();</span>
+<span class="nc" id="L137">    }</span>
+
+    // 读取源代码文件内容
+    public static String readSourceCode(String sourceCodePath) throws IOException {
+<span class="nc" id="L141">        StringBuilder content = new StringBuilder();</span>
+<span class="nc" id="L142">        try (BufferedReader br = new BufferedReader(new FileReader(sourceCodePath))) {</span>
+            String line;
+<span class="nc bnc" id="L144" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc" id="L145">                content.append(line).append(&quot;\n&quot;);</span>
+            }
+        }
+<span class="nc" id="L148">        return content.toString();</span>
+    }
+
+    // 辅助方法：获取原代码中错误行的内容（用于上下文匹配）
+    private static String getErrorLineContent(String fullCode, int errorLine) {
+<span class="nc" id="L153">        String[] lines = fullCode.split(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L154" title="All 4 branches missed.">        if (errorLine &lt; 1 || errorLine &gt; lines.length) {</span>
+<span class="nc" id="L155">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L157">        return lines[errorLine - 1].trim();</span>
+    }
+
+    // 辅助方法：计算字符串相似度（用于模糊匹配）
+    private double calculateSimilarity(String s1, String s2) {
+<span class="nc bnc" id="L162" title="All 4 branches missed.">        if (s1.isEmpty() || s2.isEmpty()) return 0.0;</span>
+<span class="nc" id="L163">        int maxLen = Math.max(s1.length(), s2.length());</span>
+<span class="nc" id="L164">        int minLen = Math.min(s1.length(), s2.length());</span>
+<span class="nc" id="L165">        int matchCount = 0;</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        for (int i = 0; i &lt; minLen; i++) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">            if (s1.charAt(i) == s2.charAt(i)) {</span>
+<span class="nc" id="L168">                matchCount++;</span>
+            }
+        }
+<span class="nc" id="L171">        return (double) matchCount / maxLen;</span>
+    }
+
+    // 构建API请求体
+    private RequestBody buildRequestBody(String code, String prompt) {
+<span class="nc" id="L176">        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L177">        Map&lt;String, String&gt; message = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L178">        message.put(&quot;role&quot;, &quot;user&quot;);</span>
+<span class="nc" id="L179">        message.put(&quot;content&quot;, prompt + code);</span>
+<span class="nc" id="L180">        messages.add(message);</span>
+
+<span class="nc" id="L182">        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L183">        requestBodyMap.put(&quot;model&quot;, MODEL);</span>
+<span class="nc" id="L184">        requestBodyMap.put(&quot;messages&quot;, messages);</span>
+
+<span class="nc" id="L186">        return RequestBody.create(gson.toJson(requestBodyMap),</span>
+<span class="nc" id="L187">                MediaType.get(&quot;application/json; charset=utf-8&quot;));</span>
+    }
+
+    // 构建API请求
+    private Request buildRequest(RequestBody requestBody) {
+<span class="nc" id="L192">        return new Request.Builder()</span>
+<span class="nc" id="L193">                .url(API_URL)</span>
+<span class="nc" id="L194">                .post(requestBody)</span>
+<span class="nc" id="L195">                .addHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey)</span>
+<span class="nc" id="L196">                .build();</span>
+    }
+
+    // 发送API请求并获取响应
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public String sendRequestAndGetResponse(String code, String prompt) throws IOException {
+<span class="nc" id="L202">        RequestBody requestBody = buildRequestBody(code, prompt);</span>
+<span class="nc" id="L203">        Request request = buildRequest(requestBody);</span>
+<span class="nc" id="L204">        try (Response response = client.newCall(request).execute()) {</span>
+<span class="nc bnc" id="L205" title="All 4 branches missed.">            if (response.isSuccessful() &amp;&amp; response.body() != null) {</span>
+<span class="nc" id="L206">                String responseBody = response.body().string();</span>
+<span class="nc" id="L207">                Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody,</span>
+<span class="nc" id="L208">                        new TypeToken&lt;Map&lt;String, Object&gt;&gt;() {</span>
+<span class="nc" id="L209">                        }.getType());</span>
+<span class="nc" id="L210">                List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);</span>
+<span class="nc bnc" id="L211" title="All 4 branches missed.">                if (choices != null &amp;&amp; !choices.isEmpty()) {</span>
+<span class="nc" id="L212">                    Map&lt;String, Object&gt; firstChoice = choices.get(0);</span>
+<span class="nc" id="L213">                    Map&lt;String, Object&gt; messageObj = (Map&lt;String, Object&gt;) firstChoice.get(&quot;message&quot;);</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">                    if (messageObj != null) {</span>
+<span class="nc" id="L215">                        Object contentObj = messageObj.get(&quot;content&quot;);</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">                        return contentObj != null ? contentObj.toString() : &quot;&quot;;</span>
+                    }
+                }
+<span class="nc" id="L219">                return &quot;无有效内容&quot;;</span>
+            } else {
+<span class="nc" id="L221">                throw new IOException(&quot;请求响应失败！状态码：&quot; + response.code() +</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">                        &quot;, 消息：&quot; + (response.body() != null ? response.body().string() : &quot;无响应体&quot;));</span>
+            }
+<span class="nc bnc" id="L224" title="All 2 branches missed.">        }</span>
+    }
+
+    /**
+     * 优化修复代码提取逻辑：
+     * 1. 增加原错误行内容匹配，解决行号偏移问题
+     * 2. 扩大上下文匹配范围，允许修复代码包含错误行前后的关联代码
+     * 3. 当行号不匹配时，通过内容相似度定位修复位置
+     */
+    public String extractCodeFromResponse(String response, int errorLine, String fullOriginalCode) {
+<span class="nc bnc" id="L234" title="All 4 branches missed.">        if (response == null || response.trim().isEmpty()) {</span>
+<span class="nc" id="L235">            return &quot;&quot;;</span>
+        }
+
+        // 清理响应中的无关文字，提取代码块
+<span class="nc" id="L239">        String processed = response.replaceAll(&quot;修复成功|修复完成|已修复|修改如下|代码如下|【修复成功】|【修复失败】&quot;, &quot;&quot;)</span>
+<span class="nc" id="L240">                .trim();</span>
+<span class="nc" id="L241">        Pattern pattern1 = Pattern.compile(&quot;```java\\s*(.*?)\\s*```&quot;, Pattern.DOTALL);</span>
+<span class="nc" id="L242">        Pattern pattern2 = Pattern.compile(&quot;```Java\\s*(.*?)\\s*```&quot;, Pattern.DOTALL);</span>
+<span class="nc" id="L243">        Pattern pattern3 = Pattern.compile(&quot;```\\s*(.*?)\\s*```&quot;, Pattern.DOTALL);</span>
+<span class="nc" id="L244">        Matcher matcher = pattern1.matcher(processed);</span>
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (matcher.find()) processed = matcher.group(1).trim();</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        else if ((matcher = pattern2.matcher(processed)).find()) processed = matcher.group(1).trim();</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        else if ((matcher = pattern3.matcher(processed)).find()) processed = matcher.group(1).trim();</span>
+
+<span class="nc" id="L249">        String[] originalLines = processed.split(&quot;\n&quot;);</span>
+<span class="nc" id="L250">        String errorLineContent = getErrorLineContent(fullOriginalCode, errorLine);</span>
+
+        // 情况1：修复代码为空，直接返回
+<span class="nc bnc" id="L253" title="All 2 branches missed.">        if (originalLines.length == 0) {</span>
+<span class="nc" id="L254">            return &quot;&quot;;</span>
+        }
+
+        // 情况2：通过内容匹配定位错误行（解决行号偏移）
+<span class="nc" id="L258">        List&lt;Integer&gt; candidateLines = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">        for (int i = 0; i &lt; originalLines.length; i++) {</span>
+<span class="nc" id="L260">            String line = originalLines[i].trim();</span>
+            // 匹配原错误行内容或带行号注释的修复行
+<span class="nc bnc" id="L262" title="All 4 branches missed.">            if (line.equals(errorLineContent) || line.contains(&quot;// 行&quot; + errorLine)) {</span>
+<span class="nc" id="L263">                candidateLines.add(i);</span>
+            }
+        }
+
+        // 情况3：如果找到匹配行，提取该行及前后各2行上下文（确保修复完整性）
+<span class="nc bnc" id="L268" title="All 2 branches missed.">        if (!candidateLines.isEmpty()) {</span>
+<span class="nc" id="L269">            List&lt;String&gt; resultLines = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">            for (int candidate : candidateLines) {</span>
+<span class="nc" id="L271">                int start = Math.max(0, candidate - 2);</span>
+<span class="nc" id="L272">                int end = Math.min(originalLines.length - 1, candidate + 2);</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                for (int i = start; i &lt;= end; i++) {</span>
+<span class="nc" id="L274">                    resultLines.add(originalLines[i]);</span>
+                }
+<span class="nc" id="L276">            }</span>
+<span class="nc" id="L277">            return String.join(&quot;\n&quot;, resultLines).trim();</span>
+        }
+
+        // 情况4：未找到精确匹配，尝试模糊匹配（内容相似度&gt;60%）
+<span class="nc bnc" id="L281" title="All 2 branches missed.">        for (int i = 0; i &lt; originalLines.length; i++) {</span>
+<span class="nc" id="L282">            String line = originalLines[i].trim();</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">            if (calculateSimilarity(line, errorLineContent) &gt; 0.6) {</span>
+<span class="nc" id="L284">                List&lt;String&gt; resultLines = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L285">                int start = Math.max(0, i - 2);</span>
+<span class="nc" id="L286">                int end = Math.min(originalLines.length - 1, i + 2);</span>
+<span class="nc bnc" id="L287" title="All 2 branches missed.">                for (int j = start; j &lt;= end; j++) {</span>
+<span class="nc" id="L288">                    resultLines.add(originalLines[j]);</span>
+                }
+<span class="nc" id="L290">                return String.join(&quot;\n&quot;, resultLines).trim();</span>
+            }
+        }
+
+        // 情况5：所有匹配失败，返回完整修复代码并警告
+<span class="nc" id="L295">        System.err.println(&quot;警告：未找到与错误行（&quot; + errorLine + &quot;）匹配的修复内容，返回全部修复代码&quot;);</span>
+<span class="nc" id="L296">        return processed;</span>
+    }
+
+    /**
+     * 优化修复隔离性校验：
+     * 1. 允许因上下文修复导致的行数微小变化（±3行）
+     * 2. 只校验非错误行的一致性，允许错误行及关联上下文修改
+     */
+    private boolean validateFixIsolation(String originalCode, String fixedCode, int errorLine) {
+<span class="nc" id="L305">        String[] originalLines = originalCode.split(&quot;\n&quot;);</span>
+<span class="nc" id="L306">        String[] fixedLines = fixedCode.split(&quot;\n&quot;);</span>
+
+        // 允许行数变化范围：±3行（应对上下文修复）
+<span class="nc bnc" id="L309" title="All 2 branches missed.">        if (Math.abs(originalLines.length - fixedLines.length) &gt; 3) {</span>
+<span class="nc" id="L310">            return false;</span>
+        }
+
+        // 只校验非错误行的一致性（错误行及前后2行允许修改）
+<span class="nc" id="L314">        int startIgnore = Math.max(0, errorLine - 3);</span>
+<span class="nc" id="L315">        int endIgnore = Math.min(originalLines.length - 1, errorLine + 2);</span>
+
+<span class="nc bnc" id="L317" title="All 4 branches missed.">        for (int i = 0; i &lt; originalLines.length &amp;&amp; i &lt; fixedLines.length; i++) {</span>
+            // 跳过错误行及关联上下文的校验
+<span class="nc bnc" id="L319" title="All 4 branches missed.">            if (i &gt;= startIgnore &amp;&amp; i &lt;= endIgnore) {</span>
+<span class="nc" id="L320">                continue;</span>
+            }
+            // 非相关行必须完全一致
+<span class="nc bnc" id="L323" title="All 2 branches missed.">            if (!originalLines[i].equals(fixedLines[i])) {</span>
+<span class="nc" id="L324">                return false;</span>
+            }
+        }
+<span class="nc" id="L327">        return true;</span>
+    }
+
+    // 验证测试代码（通过文件路径）
+    public String validateTestCode(String testCodePath) throws IOException {
+<span class="nc" id="L332">        String testCode = readSourceCode(testCodePath);</span>
+<span class="nc" id="L333">        return sendRequestAndGetResponse(testCode, INITIAL_VALIDATION_PROMPT);</span>
+    }
+
+    // 直接验证测试代码（传入代码字符串）
+    public String validateTestCodeDirectly(String testCode) throws IOException {
+<span class="nc" id="L338">        return sendRequestAndGetResponse(testCode, INITIAL_VALIDATION_PROMPT);</span>
+    }
+
+    // 修复模式枚举
+<span class="nc" id="L342">    private enum FixMode {LINE, METHOD, CLASS}</span>
+
+    // 代码片段定位类
+    private static class CodeSpot {
+        final String code;
+        final FixMode mode;
+        final int startLine;
+        final int endLine;
+
+<span class="nc" id="L351">        CodeSpot(String code, FixMode mode, int startLine, int endLine) {</span>
+<span class="nc" id="L352">            this.code = code;</span>
+<span class="nc" id="L353">            this.mode = mode;</span>
+<span class="nc" id="L354">            this.startLine = startLine;</span>
+<span class="nc" id="L355">            this.endLine = endLine;</span>
+<span class="nc" id="L356">        }</span>
+    }
+
+    // 验证失败信息类
+    private static class ValidationFailure {
+        private final ValidationStandard validationStandard;
+        private final String validationItem;
+        private final int errorLine;
+        private final String errorReason;
+        private final String fullTestCode;
+
+        public ValidationFailure(ValidationStandard validationStandard, String validationItem,
+<span class="nc" id="L368">                                 int errorLine, String errorReason, String fullTestCode) {</span>
+<span class="nc" id="L369">            this.validationStandard = validationStandard;</span>
+<span class="nc" id="L370">            this.validationItem = validationItem;</span>
+<span class="nc" id="L371">            this.errorLine = errorLine;</span>
+<span class="nc" id="L372">            this.errorReason = errorReason;</span>
+<span class="nc" id="L373">            this.fullTestCode = fullTestCode;</span>
+<span class="nc" id="L374">        }</span>
+
+        public ValidationStandard getValidationStandard() {
+<span class="nc" id="L377">            return validationStandard;</span>
+        }
+
+        public String getValidationItem() {
+<span class="nc" id="L381">            return validationItem;</span>
+        }
+
+        public int getErrorLine() {
+<span class="nc" id="L385">            return errorLine;</span>
+        }
+
+        public String getErrorReason() {
+<span class="nc" id="L389">            return errorReason;</span>
+        }
+
+        public String getFullTestCode() {
+<span class="nc" id="L393">            return fullTestCode;</span>
+        }
+    }
+
+    // 保存错误和修复信息到文件
+    private void saveErrorAndFixInfo(String errorCode, String errorReason, String fixCode, String outputFilePath) {
+<span class="nc" id="L399">        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath, true))) {</span>
+<span class="nc" id="L400">            writer.write(&quot;错误代码：&quot;);</span>
+<span class="nc" id="L401">            String trimmedError = errorCode.trim();</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">            if (trimmedError.contains(&quot;\n&quot;)) {</span>
+<span class="nc" id="L403">                writer.write(&quot;\n&quot; + trimmedError + &quot;\n&quot;);</span>
+            } else {
+<span class="nc" id="L405">                writer.write(trimmedError + &quot;\n&quot;);</span>
+            }
+
+<span class="nc" id="L408">            writer.write(&quot;===错误原因：&quot; + errorReason.trim() + &quot;\n&quot;);</span>
+
+<span class="nc" id="L410">            writer.write(&quot;===修复成功代码：&quot;);</span>
+<span class="nc" id="L411">            String trimmedFix = fixCode.trim();</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">            if (trimmedFix.contains(&quot;\n&quot;)) {</span>
+<span class="nc" id="L413">                writer.write(&quot;\n&quot; + trimmedFix + &quot;\n&quot;);</span>
+            } else {
+<span class="nc" id="L415">                writer.write(trimmedFix + &quot;\n&quot;);</span>
+            }
+
+<span class="nc" id="L418">            writer.write(&quot;====================================\n\n&quot;);</span>
+<span class="nc" id="L419">        } catch (IOException e) {</span>
+<span class="nc" id="L420">            System.err.println(&quot;保存错误和修复信息时发生错误：&quot; + e.getMessage());</span>
+<span class="nc" id="L421">        }</span>
+<span class="nc" id="L422">    }</span>
+
+    // 提取错误代码片段（指定行范围）
+    private String extractErrorCodes(String fullCode, int startLine, int endLine) {
+<span class="nc" id="L426">        String[] lines = fullCode.split(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L427" title="All 6 branches missed.">        if (startLine &lt; 1 || endLine &gt; lines.length || startLine &gt; endLine) {</span>
+<span class="nc" id="L428">            return fullCode;</span>
+        }
+<span class="nc" id="L430">        StringBuilder errorCode = new StringBuilder();</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">        for (int i = startLine - 1; i &lt;= endLine - 1; i++) {</span>
+<span class="nc" id="L432">            errorCode.append(lines[i]).append(&quot;\n&quot;);</span>
+        }
+<span class="nc" id="L434">        return errorCode.toString().trim();</span>
+    }
+
+    // 处理验证失败信息（保存错误和修复内容）
+    private void processFailure(ValidationFailure failure, String fixedCode) {
+<span class="nc" id="L439">        String fullCode = failure.getFullTestCode();</span>
+<span class="nc" id="L440">        int errorLine = failure.getErrorLine();</span>
+<span class="nc" id="L441">        String errorCode = extractErrorCodes(fullCode, errorLine, errorLine);</span>
+<span class="nc" id="L442">        saveErrorAndFixInfo(</span>
+                errorCode,
+<span class="nc" id="L444">                failure.getErrorReason(),</span>
+                fixedCode,
+                &quot;error_and_fix_info.txt&quot;
+        );
+<span class="nc" id="L448">    }</span>
+
+    // 确定验证标准（根据验证项名称匹配）
+    private ValidationStandard determineValidationStandard(String validationItem) {
+<span class="nc bnc" id="L452" title="All 2 branches missed.">        for (ValidationStandard standard : ValidationStandard.values()) {</span>
+<span class="nc bnc" id="L453" title="All 2 branches missed.">            if (standard.getDisplayName().equals(validationItem) ||</span>
+<span class="nc bnc" id="L454" title="All 2 branches missed.">                    standard.getDescription().contains(validationItem)) {</span>
+<span class="nc" id="L455">                return standard;</span>
+            }
+        }
+<span class="nc" id="L458">        return ValidationStandard.EXTENSION;</span>
+    }
+
+    // 解析验证结果，提取失败信息
+    public List&lt;ValidationFailure&gt; parseValidationResult(String validationResult, String fullTestCode) {
+<span class="nc" id="L463">        List&lt;ValidationFailure&gt; failures = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L465" title="All 4 branches missed.">        if (validationResult.contains(&quot;【全部验证通过】&quot;) || validationResult.contains(&quot;全部验证通过&quot;)) {</span>
+<span class="nc" id="L466">            return failures;</span>
+        }
+
+<span class="nc" id="L469">        Pattern pattern = Pattern.compile(</span>
+                &quot;该测试代码在验证\\[([^\\]]+)\\]时失败，错误位置：\\[([\\d,]+)\\]，错误原因：(.*)&quot;,
+                Pattern.MULTILINE | Pattern.DOTALL
+        );
+<span class="nc" id="L473">        Matcher matcher = pattern.matcher(validationResult);</span>
+
+<span class="nc bnc" id="L475" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L476">            String validationItem = matcher.group(1).trim();</span>
+<span class="nc" id="L477">            String lineStr = matcher.group(2).trim();</span>
+<span class="nc" id="L478">            String errorReason = matcher.group(3).trim();</span>
+
+<span class="nc" id="L480">            ValidationStandard standard = determineValidationStandard(validationItem);</span>
+            int errorLine;
+<span class="nc bnc" id="L482" title="All 2 branches missed.">            if (lineStr.contains(&quot;,&quot;)) {</span>
+<span class="nc" id="L483">                String[] lines = lineStr.split(&quot;,&quot;);</span>
+<span class="nc" id="L484">                errorLine = Integer.parseInt(lines[0].trim());</span>
+<span class="nc" id="L485">            } else {</span>
+<span class="nc" id="L486">                errorLine = Integer.parseInt(lineStr);</span>
+            }
+
+<span class="nc" id="L489">            failures.add(new ValidationFailure(standard, validationItem, errorLine, errorReason, fullTestCode));</span>
+<span class="nc" id="L490">        }</span>
+
+        // 兼容非标准格式的失败信息
+<span class="nc bnc" id="L493" title="All 6 branches missed.">        if (failures.isEmpty() &amp;&amp; validationResult.contains(&quot;失败&quot;) &amp;&amp; validationResult.contains(&quot;错误位置&quot;)) {</span>
+            try {
+<span class="nc" id="L495">                Pattern linePattern = Pattern.compile(&quot;错误位置：\\[(\\d+)\\]&quot;);</span>
+<span class="nc" id="L496">                Matcher lineMatcher = linePattern.matcher(validationResult);</span>
+<span class="nc" id="L497">                int lineNumber = 0;</span>
+<span class="nc bnc" id="L498" title="All 2 branches missed.">                if (lineMatcher.find()) {</span>
+<span class="nc" id="L499">                    lineNumber = Integer.parseInt(lineMatcher.group(1));</span>
+                }
+
+<span class="nc" id="L502">                Pattern itemPattern = Pattern.compile(&quot;验证\\[([^\\]]+)\\]时失败&quot;);</span>
+<span class="nc" id="L503">                Matcher itemMatcher = itemPattern.matcher(validationResult);</span>
+<span class="nc" id="L504">                String item = &quot;未知验证项&quot;;</span>
+<span class="nc bnc" id="L505" title="All 2 branches missed.">                if (itemMatcher.find()) {</span>
+<span class="nc" id="L506">                    item = itemMatcher.group(1);</span>
+                }
+
+<span class="nc" id="L509">                Pattern reasonPattern = Pattern.compile(&quot;错误原因：(.*)&quot;);</span>
+<span class="nc" id="L510">                Matcher reasonMatcher = reasonPattern.matcher(validationResult);</span>
+<span class="nc" id="L511">                String reason = &quot;未知错误原因&quot;;</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">                if (reasonMatcher.find()) {</span>
+<span class="nc" id="L513">                    reason = reasonMatcher.group(1).trim();</span>
+                }
+
+<span class="nc" id="L516">                ValidationStandard standard = determineValidationStandard(item);</span>
+
+<span class="nc bnc" id="L518" title="All 2 branches missed.">                if (lineNumber &gt; 0) {</span>
+<span class="nc" id="L519">                    failures.add(new ValidationFailure(standard, item, lineNumber, reason, fullTestCode));</span>
+                }
+<span class="nc" id="L521">            } catch (Exception e) {</span>
+<span class="nc" id="L522">                failures.add(new ValidationFailure(ValidationStandard.EXTENSION, &quot;未知验证项&quot;, 1, &quot;解析错误信息失败: &quot; + validationResult, fullTestCode));</span>
+<span class="nc" id="L523">            }</span>
+        }
+
+<span class="nc" id="L526">        return failures;</span>
+    }
+
+    // 判断错误行是否在方法内
+    private boolean isLineInMethod(String[] lines, int errorLine) {
+<span class="nc" id="L531">        int braceCount = 0;</span>
+<span class="nc bnc" id="L532" title="All 2 branches missed.">        for (int i = 0; i &lt; lines.length; i++) {</span>
+<span class="nc" id="L533">            String line = lines[i];</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">            for (char c : line.toCharArray()) {</span>
+<span class="nc bnc" id="L535" title="All 2 branches missed.">                if (c == '{') braceCount++;</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">                else if (c == '}') braceCount--;</span>
+            }
+<span class="nc bnc" id="L538" title="All 4 branches missed.">            if (i + 1 == errorLine &amp;&amp; braceCount &gt; 0) {</span>
+<span class="nc" id="L539">                return true;</span>
+            }
+        }
+<span class="nc" id="L542">        return false;</span>
+    }
+
+    // 确定修复模式（基于方法错误数）
+    public FixMode determineFixMode(ValidationFailure failure, int methodErrorCount) {
+<span class="nc" id="L547">        String[] lines = failure.getFullTestCode().split(&quot;\n&quot;);</span>
+<span class="nc" id="L548">        int errorLine = failure.getErrorLine();</span>
+
+<span class="nc bnc" id="L550" title="All 4 branches missed.">        if (errorLine &lt; 1 || errorLine &gt; lines.length) {</span>
+<span class="nc" id="L551">            return FixMode.CLASS;</span>
+        }
+
+<span class="nc bnc" id="L554" title="All 2 branches missed.">        if (methodErrorCount &gt;= 2) {</span>
+<span class="nc" id="L555">            return FixMode.METHOD;</span>
+        }
+
+<span class="nc" id="L558">        return FixMode.LINE;</span>
+    }
+
+    // 决定整体修复目标模式（基于错误分布）
+    private FixMode decideTargetMode(List&lt;ValidationFailure&gt; failures) {
+        // 1. 按方法分组统计错误（用方法起始行作为唯一标识）
+<span class="nc" id="L564">        Map&lt;Integer, Integer&gt; methodErrorCount = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L565">        String fullCode = failures.get(0).getFullTestCode();</span>
+<span class="nc" id="L566">        String[] lines = fullCode.split(&quot;\n&quot;);</span>
+
+<span class="nc bnc" id="L568" title="All 2 branches missed.">        for (ValidationFailure f : failures) {</span>
+<span class="nc" id="L569">            int methodStart = findMethodStart(lines, f.getErrorLine() - 1);</span>
+<span class="nc" id="L570">            methodErrorCount.put(methodStart, methodErrorCount.getOrDefault(methodStart, 0) + 1);</span>
+<span class="nc" id="L571">        }</span>
+
+        // 2. 保存到错误历史
+<span class="nc" id="L574">        methodErrorHistory = methodErrorCount;</span>
+
+        // 3. 统计有错误的方法数量
+<span class="nc" id="L577">        int errorMethodCount = methodErrorCount.size();</span>
+
+        // 4. 应用策略判断
+<span class="nc bnc" id="L580" title="All 2 branches missed.">        if (errorMethodCount &gt;= 3) {</span>
+<span class="nc" id="L581">            return FixMode.CLASS;  // 3+方法错误 → 类修复</span>
+        } else {
+            // 检查是否有方法包含≥2个错误
+<span class="nc bnc" id="L584" title="All 2 branches missed.">            for (int count : methodErrorCount.values()) {</span>
+<span class="nc bnc" id="L585" title="All 2 branches missed.">                if (count &gt;= 2) {</span>
+<span class="nc" id="L586">                    return FixMode.METHOD;  // 存在多行错误方法 → 体修复</span>
+                }
+<span class="nc" id="L588">            }</span>
+            // 所有方法都是单行错误，根据方法数量决定：1-2个方法→体修复，否则行修复（兜底）
+<span class="nc bnc" id="L590" title="All 2 branches missed.">            return errorMethodCount &lt;= 2 ? FixMode.METHOD : FixMode.LINE;</span>
+        }
+    }
+
+    // 构建目标代码片段（基于修复模式）
+    private CodeSpot buildTargetCodeSpot(String currentCode, List&lt;ValidationFailure&gt; failures, FixMode targetMode) {
+        // 优先处理包含多行错误的方法
+<span class="nc" id="L597">        String[] lines = currentCode.split(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L598" title="All 2 branches missed.">        for (ValidationFailure f : failures) {</span>
+<span class="nc" id="L599">            int methodStart = findMethodStart(lines, f.getErrorLine() - 1);</span>
+<span class="nc" id="L600">            int errorCount = methodErrorHistory.getOrDefault(methodStart, 0);</span>
+<span class="nc bnc" id="L601" title="All 2 branches missed.">            if (errorCount &gt;= 2) {</span>
+<span class="nc" id="L602">                return extractErrorCode(currentCode, f.getErrorLine(), FixMode.METHOD);</span>
+            }
+<span class="nc" id="L604">        }</span>
+
+        // 没有多行错误方法时，处理第一个错误
+<span class="nc" id="L607">        ValidationFailure chosen = failures.get(0);</span>
+<span class="nc" id="L608">        return extractErrorCode(currentCode, chosen.getErrorLine(), targetMode);</span>
+    }
+
+    // 提取错误代码片段（基于修复模式）
+    private CodeSpot extractErrorCode(String fullCode, int errorLine, FixMode mode) {
+<span class="nc" id="L613">        String[] lines = fullCode.split(&quot;\n&quot;);</span>
+<span class="nc" id="L614">        int totalLines = lines.length;</span>
+
+<span class="nc bnc" id="L616" title="All 4 branches missed.">        if (errorLine &lt; 1 || errorLine &gt; totalLines) {</span>
+<span class="nc" id="L617">            return new CodeSpot(fullCode, FixMode.CLASS, 1, totalLines);</span>
+        }
+
+        int startLine, endLine;
+<span class="nc" id="L621">        StringBuilder codeBuilder = new StringBuilder();</span>
+
+<span class="nc bnc" id="L623" title="All 3 branches missed.">        switch (mode) {</span>
+            case LINE:
+<span class="nc" id="L625">                startLine = errorLine;</span>
+<span class="nc" id="L626">                endLine = errorLine;</span>
+<span class="nc" id="L627">                codeBuilder.append(lines[errorLine - 1]).append(&quot;\n&quot;);</span>
+<span class="nc" id="L628">                break;</span>
+
+            case METHOD:
+<span class="nc" id="L631">                startLine = findMethodStart(lines, errorLine - 1);</span>
+<span class="nc" id="L632">                endLine = findMethodEnd(lines, errorLine - 1);</span>
+<span class="nc bnc" id="L633" title="All 4 branches missed.">                for (int i = startLine; i &lt;= endLine &amp;&amp; i &lt; totalLines; i++) {</span>
+<span class="nc" id="L634">                    codeBuilder.append(lines[i]).append(&quot;\n&quot;);</span>
+                }
+<span class="nc" id="L636">                startLine += 1;</span>
+<span class="nc" id="L637">                endLine += 1;</span>
+<span class="nc" id="L638">                break;</span>
+
+            case CLASS:
+            default:
+<span class="nc" id="L642">                startLine = 1;</span>
+<span class="nc" id="L643">                endLine = totalLines;</span>
+<span class="nc" id="L644">                codeBuilder.append(fullCode);</span>
+                break;
+        }
+
+<span class="nc" id="L648">        return new CodeSpot(codeBuilder.toString(), mode, startLine, endLine);</span>
+    }
+
+    // 查找方法起始行（从错误行向上找）
+    private int findMethodStart(String[] lines, int errorIndex) {
+<span class="nc bnc" id="L653" title="All 2 branches missed.">        for (int i = errorIndex; i &gt;= 0; i--) {</span>
+<span class="nc" id="L654">            String line = lines[i].trim();</span>
+<span class="nc bnc" id="L655" title="All 2 branches missed.">            if (line.contains(&quot;@Test&quot;) ||</span>
+<span class="nc bnc" id="L656" title="All 2 branches missed.">                    (line.matches(&quot;.*(public|private|protected)\\s+.*void\\s+test.*\\(.*\\).*&quot;))) {</span>
+<span class="nc bnc" id="L657" title="All 4 branches missed.">                while (i &gt; 0 &amp;&amp; (lines[i - 1].trim().startsWith(&quot;@&quot;) ||</span>
+<span class="nc bnc" id="L658" title="All 2 branches missed.">                        lines[i - 1].trim().isEmpty() ||</span>
+<span class="nc bnc" id="L659" title="All 2 branches missed.">                        lines[i - 1].trim().startsWith(&quot;//&quot;))) {</span>
+<span class="nc" id="L660">                    i--;</span>
+                }
+<span class="nc" id="L662">                return i;</span>
+            }
+        }
+<span class="nc" id="L665">        return Math.max(0, errorIndex - 10);</span>
+    }
+
+    // 查找方法结束行（从错误行向下找）
+    private int findMethodEnd(String[] lines, int errorIndex) {
+<span class="nc" id="L670">        int braceCount = 0;</span>
+<span class="nc" id="L671">        boolean inMethod = false;</span>
+
+<span class="nc bnc" id="L673" title="All 2 branches missed.">        for (int i = errorIndex; i &lt; lines.length; i++) {</span>
+<span class="nc" id="L674">            String line = lines[i];</span>
+<span class="nc bnc" id="L675" title="All 2 branches missed.">            for (char c : line.toCharArray()) {</span>
+<span class="nc bnc" id="L676" title="All 2 branches missed.">                if (c == '{') {</span>
+<span class="nc" id="L677">                    braceCount++;</span>
+<span class="nc" id="L678">                    inMethod = true;</span>
+<span class="nc bnc" id="L679" title="All 2 branches missed.">                } else if (c == '}') {</span>
+<span class="nc" id="L680">                    braceCount--;</span>
+<span class="nc bnc" id="L681" title="All 4 branches missed.">                    if (inMethod &amp;&amp; braceCount == 0) {</span>
+<span class="nc" id="L682">                        return i;</span>
+                    }
+                }
+            }
+        }
+
+<span class="nc" id="L688">        return Math.min(lines.length - 1, errorIndex + 20);</span>
+    }
+
+    // 构建修复提示语
+    private static final String FIX_PROMPT_TEMPLATE =
+            &quot;你是专业的Java测试代码修复工程师，请使用行-体-类三级修复策略修复以下代码：\n&quot; +
+                    &quot;错误信息：验证项[{validationItem}]，错误位置[{errorLine}]，错误原因[{errorReason}]\n&quot; +
+                    &quot;修复范围：[{scopeDesc}]，仅对该范围内代码进行最小化修改，其他代码保持不变\n&quot; +
+                    &quot;待修复代码：\n{codeFragment}\n&quot; +
+                    &quot;请直接返回修复后的代码，不要添加任何额外说明、注释或标记。&quot;;
+
+    private String buildFixPrompt(ValidationFailure failure, CodeSpot codeSpot) {
+<span class="nc bnc" id="L700" title="All 2 branches missed.">        String scopeDesc = codeSpot.mode == FixMode.LINE ? &quot;仅错误行（严格隔离其他代码）&quot; :</span>
+<span class="nc bnc" id="L701" title="All 2 branches missed.">                (codeSpot.mode == FixMode.METHOD ? &quot;仅错误所在方法体（不修改其他方法）&quot; : &quot;整个测试类&quot;);</span>
+
+<span class="nc" id="L703">        return FIX_PROMPT_TEMPLATE</span>
+<span class="nc" id="L704">                .replace(&quot;{validationItem}&quot;, failure.getValidationItem())</span>
+<span class="nc" id="L705">                .replace(&quot;{errorLine}&quot;, String.valueOf(failure.getErrorLine()))</span>
+<span class="nc" id="L706">                .replace(&quot;{errorReason}&quot;, failure.getErrorReason())</span>
+<span class="nc" id="L707">                .replace(&quot;{scopeDesc}&quot;, scopeDesc)</span>
+<span class="nc" id="L708">                .replace(&quot;{codeFragment}&quot;, codeSpot.code);</span>
+    }
+
+    // 修复代码（核心修复逻辑）
+    public String fixCode(ValidationFailure failure) throws IOException {
+<span class="nc" id="L713">        String originalCode = failure.getFullTestCode();</span>
+<span class="nc" id="L714">        int errorLine = failure.getErrorLine();</span>
+<span class="nc" id="L715">        String[] lines = originalCode.split(&quot;\n&quot;);</span>
+<span class="nc" id="L716">        int methodStart = findMethodStart(lines, errorLine - 1);</span>
+<span class="nc" id="L717">        int methodErrorCount = methodErrorHistory.getOrDefault(methodStart, 1);</span>
+
+        // 根据当前方法错误数获取修复模式
+<span class="nc" id="L720">        FixMode mode = determineFixMode(failure, methodErrorCount);</span>
+<span class="nc" id="L721">        CodeSpot codeSpot = extractErrorCode(originalCode, errorLine, mode);</span>
+<span class="nc" id="L722">        String fixPrompt = buildFixPrompt(failure, codeSpot);</span>
+
+        // 发送修复请求
+<span class="nc" id="L725">        String response = sendRequestAndGetResponse(codeSpot.code, fixPrompt);</span>
+        // 提取修复后的代码（传入原完整代码用于内容匹配）
+<span class="nc" id="L727">        String fixedFragment = extractCodeFromResponse(response, errorLine, originalCode);</span>
+
+        // 验证修复隔离性（仅行修复时校验，放宽限制）
+<span class="nc bnc" id="L730" title="All 4 branches missed.">        if (mode == FixMode.LINE &amp;&amp; !validateFixIsolation(originalCode, fixedFragment, errorLine)) {</span>
+            // 不再直接抛异常，改为警告并返回原代码（或尝试体修复）
+<span class="nc" id="L732">            System.err.println(&quot;行修复越界，自动切换为体修复策略&quot;);</span>
+<span class="nc" id="L733">            codeSpot = extractErrorCode(originalCode, errorLine, FixMode.METHOD);</span>
+<span class="nc" id="L734">            fixPrompt = buildFixPrompt(failure, codeSpot);</span>
+<span class="nc" id="L735">            response = sendRequestAndGetResponse(codeSpot.code, fixPrompt);</span>
+<span class="nc" id="L736">            fixedFragment = extractCodeFromResponse(response, errorLine, originalCode);</span>
+        }
+
+        // 替换修复片段到完整代码
+<span class="nc" id="L740">        return replaceCodeFragment(originalCode, codeSpot, fixedFragment);</span>
+    }
+
+    // 重新生成整个类（类修复策略）
+    private String regenerateClassFromError(ValidationFailure failure, String currentCode) throws IOException {
+<span class="nc" id="L745">        StringBuilder prompt = new StringBuilder();</span>
+<span class="nc" id="L746">        prompt.append(&quot;根据以下错误重新生成完整的Java测试类：\n&quot;)</span>
+<span class="nc" id="L747">                .append(&quot;错误原因：&quot;).append(failure.getErrorReason()).append(&quot;\n&quot;)</span>
+<span class="nc" id="L748">                .append(&quot;原代码参考：\n&quot;).append(currentCode).append(&quot;\n&quot;)</span>
+<span class="nc" id="L749">                .append(&quot;请直接返回完整的可编译代码，不要添加任何额外说明。&quot;);</span>
+
+<span class="nc" id="L751">        String llmResponse = sendRequestAndGetResponse(currentCode, prompt.toString());</span>
+<span class="nc" id="L752">        return extractCodeFromResponse(llmResponse, failure.getErrorLine(), currentCode);</span>
+    }
+
+    // 删除指定行范围的代码
+    private String deleteLines(String fullCode, int startLine, int endLine) {
+<span class="nc" id="L757">        String[] lines = fullCode.split(&quot;\\n&quot;);</span>
+<span class="nc" id="L758">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L759" title="All 2 branches missed.">        for (int i = 0; i &lt; lines.length; i++) {</span>
+<span class="nc" id="L760">            int lineNo = i + 1;</span>
+<span class="nc bnc" id="L761" title="All 4 branches missed.">            if (lineNo &lt; startLine || lineNo &gt; endLine) {</span>
+<span class="nc" id="L762">                sb.append(lines[i]).append(&quot;\n&quot;);</span>
+            }
+        }
+<span class="nc" id="L765">        return sb.toString();</span>
+    }
+
+    // 替换代码片段到完整代码中
+    private String replaceCodeFragment(String fullCode, CodeSpot spot, String fixedFragment) {
+<span class="nc bnc" id="L770" title="All 4 branches missed.">        if (fixedFragment == null || fixedFragment.trim().isEmpty()) {</span>
+<span class="nc" id="L771">            return fullCode;</span>
+        }
+
+<span class="nc" id="L774">        String[] fullLines = fullCode.split(&quot;\n&quot;);</span>
+<span class="nc" id="L775">        List&lt;String&gt; resultLines = new ArrayList&lt;&gt;(Arrays.asList(fullLines));</span>
+        // 删除原有片段
+<span class="nc bnc" id="L777" title="All 2 branches missed.">        for (int i = spot.endLine - 1; i &gt;= spot.startLine - 1; i--) {</span>
+<span class="nc bnc" id="L778" title="All 2 branches missed.">            if (i &lt; resultLines.size()) {</span>
+<span class="nc" id="L779">                resultLines.remove(i);</span>
+            }
+        }
+
+        // 插入修复后的片段
+<span class="nc" id="L784">        String[] fixedLines = fixedFragment.split(&quot;\n&quot;);</span>
+<span class="nc" id="L785">        int insertPos = spot.startLine - 1;</span>
+<span class="nc bnc" id="L786" title="All 2 branches missed.">        for (int i = fixedLines.length - 1; i &gt;= 0; i--) {</span>
+<span class="nc bnc" id="L787" title="All 2 branches missed.">            if (insertPos &lt; 0) insertPos = 0;</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">            if (insertPos &gt; resultLines.size()) {</span>
+<span class="nc" id="L789">                resultLines.add(fixedLines[i]);</span>
+            } else {
+<span class="nc" id="L791">                resultLines.add(insertPos, fixedLines[i]);</span>
+            }
+        }
+
+        // 拼接结果
+<span class="nc" id="L796">        StringBuilder result = new StringBuilder();</span>
+<span class="nc bnc" id="L797" title="All 2 branches missed.">        for (String line : resultLines) {</span>
+<span class="nc" id="L798">            result.append(line).append(&quot;\n&quot;);</span>
+<span class="nc" id="L799">        }</span>
+<span class="nc" id="L800">        return result.toString().trim();</span>
+    }
+
+    // 构建自适应验证提示语（基于上轮失败信息）
+    private String buildAdaptiveValidationPrompt(List&lt;ValidationFailure&gt; failures) {
+<span class="nc bnc" id="L805" title="All 4 branches missed.">        if (failures == null || failures.isEmpty()) {</span>
+<span class="nc" id="L806">            return INITIAL_VALIDATION_PROMPT;</span>
+        }
+<span class="nc" id="L808">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L809">        sb.append(&quot;基于上轮错误进行定向验证：\n&quot;);</span>
+<span class="nc bnc" id="L810" title="All 2 branches missed.">        for (ValidationFailure f : failures) {</span>
+<span class="nc" id="L811">            sb.append(String.format(&quot;重点检查：%s（位置：%d，原因：%s）\n&quot;,</span>
+<span class="nc" id="L812">                    f.getValidationItem(), f.getErrorLine(), f.getErrorReason()));</span>
+<span class="nc" id="L813">        }</span>
+<span class="nc" id="L814">        sb.append(INITIAL_VALIDATION_PROMPT);</span>
+<span class="nc" id="L815">        return sb.toString();</span>
+    }
+
+    // 保存修复后的代码到文件
+    private void saveFixedCodeToFile(String fixedCode, String filePath) {
+<span class="nc" id="L820">        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath))) {</span>
+<span class="nc" id="L821">            writer.write(fixedCode);</span>
+<span class="nc" id="L822">        } catch (IOException e) {</span>
+<span class="nc" id="L823">            System.err.println(&quot;保存修复后的代码到文件时发生错误：&quot; + e.getMessage());</span>
+<span class="nc" id="L824">        }</span>
+<span class="nc" id="L825">    }</span>
+
+    /**
+     * 验证并修复代码的主流程（适配新策略）
+     */
+    public String validateAndFixWithRetries(String testCode, String testCodePath, int maxRounds) throws IOException {
+<span class="nc" id="L831">        String currentCode = testCode;</span>
+<span class="nc" id="L832">        String validationPrompt = INITIAL_VALIDATION_PROMPT;</span>
+<span class="nc" id="L833">        int round = 0;</span>
+
+<span class="nc bnc" id="L835" title="All 2 branches missed.">        while (round &lt; maxRounds) {</span>
+            // 1. 执行验证
+<span class="nc" id="L837">            String validationResult = sendRequestAndGetResponse(currentCode, validationPrompt);</span>
+            // 打印原始验证结果（便于调试）
+<span class="nc" id="L839">            System.out.println(&quot;\n---------- 第&quot; + (round + 1) + &quot;轮验证原始结果 ----------&quot;);</span>
+<span class="nc" id="L840">            System.out.println(validationResult);</span>
+<span class="nc" id="L841">            System.out.println(&quot;----------------------------------------&quot;);</span>
+
+<span class="nc" id="L843">            List&lt;ValidationFailure&gt; failures = parseValidationResult(validationResult, currentCode);</span>
+
+            // 2. 验证通过处理
+<span class="nc bnc" id="L846" title="All 2 branches missed.">            if (failures.isEmpty()) {</span>
+<span class="nc" id="L847">                saveFixedCodeToFile(currentCode, testCodePath);</span>
+<span class="nc" id="L848">                System.out.println(&quot;第&quot; + (round + 1) + &quot;轮验证通过，已保存修复后的代码！&quot;);</span>
+<span class="nc" id="L849">                return currentCode;</span>
+            }
+
+            // 打印解析后的错误详情
+<span class="nc" id="L853">            System.out.println(&quot;第&quot; + (round + 1) + &quot;轮验证失败，检测到&quot; + failures.size() + &quot;个错误，错误详情如下：&quot;);</span>
+<span class="nc bnc" id="L854" title="All 2 branches missed.">            for (int i = 0; i &lt; failures.size(); i++) {</span>
+<span class="nc" id="L855">                ValidationFailure f = failures.get(i);</span>
+<span class="nc" id="L856">                System.out.println((i + 1) + &quot;. 验证项：&quot; + f.getValidationItem() +</span>
+<span class="nc" id="L857">                        &quot; | 错误行：&quot; + f.getErrorLine() +</span>
+<span class="nc" id="L858">                        &quot; | 错误原因：&quot; + f.getErrorReason());</span>
+            }
+<span class="nc" id="L860">            System.out.println(&quot;开始修复...&quot;);</span>
+
+            // 3. 确定修复模式
+<span class="nc" id="L863">            FixMode targetMode = decideTargetMode(failures);</span>
+<span class="nc" id="L864">            ValidationFailure targetFailure = failures.get(0);</span>
+
+            // 4. 执行对应模式修复
+            try {
+<span class="nc bnc" id="L868" title="All 2 branches missed.">                if (targetMode == FixMode.CLASS) {</span>
+<span class="nc" id="L869">                    System.out.println(&quot;采用类修复策略，重新生成整个测试类...&quot;);</span>
+<span class="nc" id="L870">                    currentCode = regenerateClassFromError(targetFailure, currentCode);</span>
+                } else {
+<span class="nc bnc" id="L872" title="All 2 branches missed.">                    System.out.println(&quot;采用&quot; + (targetMode == FixMode.METHOD ? &quot;体修复&quot; : &quot;行修复&quot;) + &quot;策略，修复错误...&quot;);</span>
+<span class="nc" id="L873">                    currentCode = fixCode(targetFailure);</span>
+                }
+                // 保存修复后的错误信息
+<span class="nc" id="L876">                processFailure(targetFailure, currentCode);</span>
+<span class="nc" id="L877">            } catch (IOException e) {</span>
+<span class="nc" id="L878">                System.err.println(&quot;修复失败：&quot; + e.getMessage());</span>
+                // 修复失败时尝试下一轮
+<span class="nc" id="L880">            }</span>
+
+            // 5. 准备下一轮验证
+<span class="nc" id="L883">            validationPrompt = buildAdaptiveValidationPrompt(failures);</span>
+<span class="nc" id="L884">            round++;</span>
+<span class="nc" id="L885">        }</span>
+
+<span class="nc" id="L887">        System.out.println(&quot;达到最大重试轮次&quot; + maxRounds + &quot;，返回当前修复状态的代码&quot;);</span>
+        // 保存最终状态的代码
+<span class="nc" id="L889">        saveFixedCodeToFile(currentCode, testCodePath);</span>
+<span class="nc" id="L890">        return currentCode;</span>
+    }
+
+    // 程序入口main方法
+    public static void main(String[] args) {
+        // 1. 配置参数：修改为你的测试代码路径
+<span class="nc" id="L896">        String testCodePath = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\test\\java\\codeing\\AddExampleTest.java&quot;;</span>
+<span class="nc" id="L897">        int maxRounds = 3; // 最大修复重试轮次</span>
+
+        // 2. 创建实例
+<span class="nc" id="L900">        ValiFixAgentDemo agent = new ValiFixAgentDemo();</span>
+
+        try {
+            // 3. 读取测试代码
+<span class="nc" id="L904">            String testCode = readSourceCode(testCodePath);</span>
+<span class="nc" id="L905">            System.out.println(&quot;成功读取测试代码，开始执行验证和修复流程...&quot;);</span>
+
+            // 4. 执行验证和修复主流程
+<span class="nc" id="L908">            String fixedCode = agent.validateAndFixWithRetries(testCode, testCodePath, maxRounds);</span>
+
+            // 5. 输出结果
+<span class="nc" id="L911">            System.out.println(&quot;\n验证修复流程完成，最终代码如下：&quot;);</span>
+<span class="nc" id="L912">            System.out.println(&quot;----------------------------------------&quot;);</span>
+<span class="nc" id="L913">            System.out.println(fixedCode);</span>
+<span class="nc" id="L914">            System.out.println(&quot;----------------------------------------&quot;);</span>
+
+<span class="nc" id="L916">        } catch (FileNotFoundException e) {</span>
+<span class="nc" id="L917">            System.err.println(&quot;错误：未找到测试代码文件，请检查路径是否正确：&quot; + testCodePath);</span>
+<span class="nc" id="L918">        } catch (IOException e) {</span>
+<span class="nc" id="L919">            System.err.println(&quot;执行过程中发生IO错误：&quot; + e.getMessage());</span>
+<span class="nc" id="L920">            e.printStackTrace();</span>
+<span class="nc" id="L921">        } catch (Exception e) {</span>
+<span class="nc" id="L922">            System.err.println(&quot;执行过程中发生异常：&quot; + e.getMessage());</span>
+<span class="nc" id="L923">            e.printStackTrace();</span>
+<span class="nc" id="L924">        }</span>
+<span class="nc" id="L925">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

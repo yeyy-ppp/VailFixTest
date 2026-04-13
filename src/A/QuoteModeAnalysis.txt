@@ -1,0 +1,15 @@
+```
+包路径：csv
+类名：QuoteMode
+父类：Enum
+依赖类：无
+---
+序号：1
+方法名：values()
+返回类型：QuoteMode[]
+功能描述：返回包含所有枚举常量的数组
+序号：2
+方法名：valueOf(String name)
+返回类型：QuoteMode
+功能描述：根据名称返回对应的枚举常量
+```

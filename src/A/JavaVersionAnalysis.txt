@@ -1,0 +1,40 @@
+```包路径：gson.internal
+类名：JavaVersion
+父类：无
+依赖类：无
+---
+序号：1
+方法名：determineMajorJavaVersion()
+返回类型：int
+功能描述：解析系统java.version属性获取主版本号
+---
+序号：2
+方法名：parseMajorJavaVersion(String javaVersion)
+返回类型：int
+功能描述：通过不同策略解析Java版本字符串获取主版本号
+---
+序号：3
+方法名：parseDotted(String javaVersion)
+返回类型：int
+功能描述：解析点分格式的Java版本字符串获取主版本号
+---
+序号：4
+方法名：extractBeginningInt(String javaVersion)
+返回类型：int
+功能描述：从版本字符串开头提取首段数字作为版本号
+---
+序号：5
+方法名：getMajorJavaVersion()
+返回类型：int
+功能描述：获取已缓存的主Java版本号
+---
+序号：6
+方法名：isJava9OrLater()
+返回类型：boolean
+功能描述：判断当前Java版本是否为9或更高
+---
+序号：7
+方法名：JavaVersion()
+返回类型：void
+功能描述：私有构造方法防止类实例化
+```

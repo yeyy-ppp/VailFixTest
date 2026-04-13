@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TextStyle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">help</a> &gt; <span class="el_source">TextStyle.java</span></div><h1>TextStyle.java</h1><pre class="source lang-java linenums">package help;
+import java.util.function.Supplier;
+public final class TextStyle {
+<span class="nc" id="L4">    public enum Alignment {</span>
+<span class="nc" id="L5">        LEFT,</span>
+<span class="nc" id="L6">        CENTER,</span>
+<span class="nc" id="L7">        RIGHT</span>
+    }
+    public static final class Builder implements Supplier&lt;TextStyle&gt; {
+<span class="nc" id="L10">        private Alignment alignment = Alignment.LEFT;</span>
+        private int leftPad;
+        private int indent;
+<span class="nc" id="L13">        private boolean scalable = true;</span>
+        private int minWidth;
+<span class="nc" id="L15">        private int maxWidth = UNSET_MAX_WIDTH;</span>
+<span class="nc" id="L16">        private Builder() {}</span>
+        @Override
+        public TextStyle get() {
+<span class="nc" id="L19">            return new TextStyle(this);</span>
+        }
+        public int getIndent() {
+<span class="nc" id="L22">            return indent;</span>
+        }
+        public int getLeftPad() {
+<span class="nc" id="L25">            return leftPad;</span>
+        }
+        public int getMaxWidth() {
+<span class="nc" id="L28">            return maxWidth;</span>
+        }
+        public int getMinWidth() {
+<span class="nc" id="L31">            return minWidth;</span>
+        }
+        public boolean isScalable() {
+<span class="nc" id="L34">            return scalable;</span>
+        }
+        public Builder setAlignment(final Alignment alignment) {
+<span class="nc" id="L37">            this.alignment = alignment;</span>
+<span class="nc" id="L38">            return this;</span>
+        }
+        public Builder setIndent(final int indent) {
+<span class="nc" id="L41">            this.indent = indent;</span>
+<span class="nc" id="L42">            return this;</span>
+        }
+        public Builder setLeftPad(final int leftPad) {
+<span class="nc" id="L45">            this.leftPad = leftPad;</span>
+<span class="nc" id="L46">            return this;</span>
+        }
+        public Builder setMaxWidth(final int maxWidth) {
+<span class="nc" id="L49">            this.maxWidth = maxWidth;</span>
+<span class="nc" id="L50">            return this;</span>
+        }
+        public Builder setMinWidth(final int minWidth) {
+<span class="nc" id="L53">            this.minWidth = minWidth;</span>
+<span class="nc" id="L54">            return this;</span>
+        }
+        public Builder setScalable(final boolean scalable) {
+<span class="nc" id="L57">            this.scalable = scalable;</span>
+<span class="nc" id="L58">            return this;</span>
+        }
+        public Builder setTextStyle(final TextStyle style) {
+<span class="nc" id="L61">            this.alignment = style.alignment;</span>
+<span class="nc" id="L62">            this.leftPad = style.leftPad;</span>
+<span class="nc" id="L63">            this.indent = style.indent;</span>
+<span class="nc" id="L64">            this.scalable = style.scalable;</span>
+<span class="nc" id="L65">            this.minWidth = style.minWidth;</span>
+<span class="nc" id="L66">            this.maxWidth = style.maxWidth;</span>
+<span class="nc" id="L67">            return this;</span>
+        }
+    }
+    public static final int UNSET_MAX_WIDTH = Integer.MAX_VALUE;
+<span class="nc" id="L71">    public static final TextStyle DEFAULT = builder().get();</span>
+    public static Builder builder() {
+<span class="nc" id="L73">        return new Builder();</span>
+    }
+    private final Alignment alignment;
+    private final int leftPad;
+    private final int indent;
+    private final boolean scalable;
+    private final int minWidth;
+    private final int maxWidth;
+<span class="nc" id="L81">    TextStyle(final Builder builder) {</span>
+<span class="nc" id="L82">        this.alignment = builder.alignment;</span>
+<span class="nc" id="L83">        this.leftPad = builder.leftPad;</span>
+<span class="nc" id="L84">        this.indent = builder.indent;</span>
+<span class="nc" id="L85">        this.scalable = builder.scalable;</span>
+<span class="nc" id="L86">        this.minWidth = builder.minWidth;</span>
+<span class="nc" id="L87">        this.maxWidth = builder.maxWidth;</span>
+<span class="nc" id="L88">    }</span>
+    public Alignment getAlignment() {
+<span class="nc" id="L90">        return alignment;</span>
+    }
+    public int getIndent() {
+<span class="nc" id="L93">        return indent;</span>
+    }
+    public int getLeftPad() {
+<span class="nc" id="L96">        return leftPad;</span>
+    }
+    public int getMaxWidth() {
+<span class="nc" id="L99">        return maxWidth;</span>
+    }
+    public int getMinWidth() {
+<span class="nc" id="L102">        return minWidth;</span>
+    }
+    public boolean isScalable() {
+<span class="nc" id="L105">        return scalable;</span>
+    }
+    public CharSequence pad(final boolean addIndent, final CharSequence text) {
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (text.length() &gt;= maxWidth) {</span>
+<span class="nc" id="L109">            return text;</span>
+        }
+        String indentPad;
+        String rest;
+<span class="nc" id="L113">        final StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        switch (alignment) {</span>
+            case CENTER:
+                int padLen;
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                if (maxWidth == UNSET_MAX_WIDTH) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                    padLen = addIndent ? indent : 0;</span>
+                } else {
+<span class="nc" id="L120">                    padLen = maxWidth - text.length();</span>
+                }
+<span class="nc" id="L122">                final int left = padLen / 2;</span>
+<span class="nc" id="L123">                indentPad = Util.repeatSpace(left);</span>
+<span class="nc" id="L124">                rest = Util.repeatSpace(padLen - left);</span>
+<span class="nc" id="L125">                sb.append(indentPad).append(text).append(rest);</span>
+<span class="nc" id="L126">                break;</span>
+            case LEFT:
+            case RIGHT:
+            default:
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                if (maxWidth == UNSET_MAX_WIDTH) {</span>
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                    indentPad = addIndent ? Util.repeatSpace(indent) : &quot;&quot;;</span>
+<span class="nc" id="L132">                    rest = &quot;&quot;;</span>
+                } else {
+<span class="nc" id="L134">                    int restLen = maxWidth - text.length();</span>
+<span class="nc bnc" id="L135" title="All 4 branches missed.">                    if (addIndent &amp;&amp; restLen &gt; indent) {</span>
+<span class="nc" id="L136">                        indentPad = Util.repeatSpace(indent);</span>
+<span class="nc" id="L137">                        restLen -= indent;</span>
+                    } else {
+<span class="nc" id="L139">                        indentPad = &quot;&quot;;</span>
+                    }
+<span class="nc" id="L141">                    rest = Util.repeatSpace(restLen);</span>
+                }
+<span class="nc bnc" id="L143" title="All 2 branches missed.">                if (alignment == Alignment.LEFT) {</span>
+<span class="nc" id="L144">                    sb.append(indentPad).append(text).append(rest);</span>
+                } else {
+<span class="nc" id="L146">                    sb.append(indentPad).append(rest).append(text);</span>
+                }
+                break;
+        }
+<span class="nc" id="L150">        return sb.toString();</span>
+    }
+    @Override
+    public String toString() {
+<span class="nc" id="L154">        return String.format(</span>
+                &quot;TextStyle{%s, l:%s, i:%s, %s, min:%s, max:%s}&quot;,
+                alignment,
+<span class="nc" id="L157">                leftPad,</span>
+<span class="nc" id="L158">                indent,</span>
+<span class="nc" id="L159">                scalable,</span>
+<span class="nc" id="L160">                minWidth,</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">                maxWidth == UNSET_MAX_WIDTH ? &quot;unset&quot; : maxWidth);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

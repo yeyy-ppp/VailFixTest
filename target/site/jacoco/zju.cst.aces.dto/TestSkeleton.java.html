@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestSkeleton.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.dto</a> &gt; <span class="el_source">TestSkeleton.java</span></div><h1>TestSkeleton.java</h1><pre class="source lang-java linenums">package zju.cst.aces.dto;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import lombok.Data;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
+
+import static zju.cst.aces.runner.solution_runner.AbstractRunner.repairImports;
+import static zju.cst.aces.runner.solution_runner.AbstractRunner.repairPackage;
+import static zju.cst.aces.runner.solution_runner.AbstractRunner.changeTestName;
+
+@Data
+public class TestSkeleton {
+    private String testName;
+    private String fullTestName;
+    private String packageName;
+    private List&lt;String&gt; imports;
+<span class="nc" id="L23">    private String skeleton = &quot;@ExtendWith(MockitoExtension.class)\npublic class TestClass {\n}&quot;;</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L26">        TestSkeleton testSkeleton = new TestSkeleton(sk);</span>
+<span class="nc" id="L27">        String code = testSkeleton.build(&quot;@Test\npublic void testMethod(){}&quot;);</span>
+<span class="nc" id="L28">        System.out.println(code);</span>
+<span class="nc" id="L29">    }</span>
+
+<span class="nc" id="L31">    public TestSkeleton(String skeleton) {</span>
+<span class="nc" id="L32">        this.skeleton = skeleton;</span>
+<span class="nc" id="L33">        this.packageName = &quot;&quot;;</span>
+
+<span class="nc" id="L35">        CompilationUnit cu = StaticJavaParser.parse(skeleton);</span>
+<span class="nc" id="L36">        cu.getPackageDeclaration().ifPresent(p -&gt; this.packageName = p.getNameAsString());</span>
+<span class="nc" id="L37">        this.testName = cu.findFirst(ClassOrInterfaceDeclaration.class)</span>
+<span class="nc" id="L38">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No ClassOrInterfaceDeclaration found&quot;))</span>
+<span class="nc" id="L39">                .getNameAsString();</span>
+
+<span class="nc" id="L41">        this.fullTestName = packageName + &quot;.&quot; + testName;</span>
+<span class="nc" id="L42">        this.imports = cu.getImports().stream().map(i -&gt; i.toString().trim()).collect(Collectors.toList());</span>
+<span class="nc" id="L43">    }</span>
+
+<span class="nc" id="L45">    public TestSkeleton(PromptInfo promptInfo) {</span>
+<span class="nc" id="L46">        this.fullTestName = promptInfo.getFullTestName();</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">        this.testName = fullTestName.lastIndexOf(&quot;.&quot;) == -1 ? fullTestName : fullTestName.substring(fullTestName.lastIndexOf(&quot;.&quot;) + 1);</span>
+<span class="nc" id="L48">        this.packageName = promptInfo.classInfo.packageName;</span>
+<span class="nc" id="L49">        this.imports = promptInfo.classInfo.imports;</span>
+<span class="nc" id="L50">        this.skeleton = repairPackage(this.skeleton, this.packageName);</span>
+<span class="nc" id="L51">        this.skeleton = repairImports(this.skeleton, this.imports);</span>
+<span class="nc" id="L52">        this.skeleton = changeTestName(this.skeleton, this.testName);</span>
+<span class="nc" id="L53">    }</span>
+
+    public String build(String testMethod) {
+<span class="nc" id="L56">        CompilationUnit cu = StaticJavaParser.parse(skeleton);</span>
+<span class="nc" id="L57">        MethodDeclaration tm = StaticJavaParser.parseMethodDeclaration(testMethod);</span>
+<span class="nc" id="L58">        cu.getClassByName(testName).ifPresent(c -&gt; c.addMember(tm));</span>
+<span class="nc" id="L59">        return cu.toString();</span>
+    }
+<span class="nc" id="L61">    private static String sk = &quot;package com.selimhorri.app.service.impl;\n&quot; +</span>
+            &quot;import java.util.List;\n&quot; +
+            &quot;import java.util.stream.Collectors;\n&quot; +
+            &quot;import javax.transaction.Transactional;\n&quot; +
+            &quot;import org.springframework.stereotype.Service;\n&quot; +
+            &quot;import org.springframework.web.client.RestTemplate;\n&quot; +
+            &quot;import com.selimhorri.app.constant.AppConstant;\n&quot; +
+            &quot;import com.selimhorri.app.domain.id.OrderItemId;\n&quot; +
+            &quot;import com.selimhorri.app.dto.OrderDto;\n&quot; +
+            &quot;import com.selimhorri.app.dto.OrderItemDto;\n&quot; +
+            &quot;import com.selimhorri.app.dto.ProductDto;\n&quot; +
+            &quot;import com.selimhorri.app.exception.wrapper.OrderItemNotFoundException;\n&quot; +
+            &quot;import com.selimhorri.app.helper.OrderItemMappingHelper;\n&quot; +
+            &quot;import com.selimhorri.app.repository.OrderItemRepository;\n&quot; +
+            &quot;import com.selimhorri.app.service.OrderItemService;\n&quot; +
+            &quot;import lombok.RequiredArgsConstructor;\n&quot; +
+            &quot;import lombok.extern.slf4j.Slf4j;\n&quot; +
+            &quot;@Service\n&quot; +
+            &quot;@Transactional\n&quot; +
+            &quot;@Slf4j\n&quot; +
+            &quot;@RequiredArgsConstructor\n&quot; +
+            &quot;public class OrderItemServiceImpl {\n&quot; +
+            &quot;}&quot;;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

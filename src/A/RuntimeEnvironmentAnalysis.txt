@@ -1,0 +1,27 @@
+```
+包路径：lang3
+类名：RuntimeEnvironment
+父类：无
+依赖类：StringUtils,CharUtils
+---
+序号：1
+方法名：fileExists(String path)
+返回类型：boolean
+功能描述：检查指定路径的文件是否存在
+序号：2
+方法名：inContainer()
+返回类型：Boolean
+功能描述：判断当前环境是否在容器中（无参调用）
+序号：3
+方法名：inContainer(String dirPrefix)
+返回类型：boolean
+功能描述：通过环境变量文件或特定文件检测容器环境
+序号：4
+方法名：readFile(String envVarFile, String key)
+返回类型：String
+功能描述：读取文件内容并提取指定键对应的值
+序号：5
+方法名：RuntimeEnvironment()
+返回类型：void
+功能描述：已弃用的空构造方法
+```

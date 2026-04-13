@@ -1,0 +1,365 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GsonBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">GsonBuilder.java</span></div><h1>GsonBuilder.java</h1><pre class="source lang-java linenums">package gson;
+import static gson.Gson.DEFAULT_COMPLEX_MAP_KEYS;
+import static gson.Gson.DEFAULT_DATE_PATTERN;
+import static gson.Gson.DEFAULT_ESCAPE_HTML;
+import static gson.Gson.DEFAULT_FORMATTING_STYLE;
+import static gson.Gson.DEFAULT_JSON_NON_EXECUTABLE;
+import static gson.Gson.DEFAULT_NUMBER_TO_NUMBER_STRATEGY;
+import static gson.Gson.DEFAULT_OBJECT_TO_NUMBER_STRATEGY;
+import static gson.Gson.DEFAULT_SERIALIZE_NULLS;
+import static gson.Gson.DEFAULT_SPECIALIZE_FLOAT_VALUES;
+import static gson.Gson.DEFAULT_STRICTNESS;
+import static gson.Gson.DEFAULT_USE_JDK_UNSAFE;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import com.google.errorprone.annotations.InlineMe;
+import gson.annotations.Since;
+import gson.annotations.Until;
+import gson.internal.Excluder;
+import gson.internal.bind.DefaultDateTypeAdapter;
+import gson.internal.bind.TreeTypeAdapter;
+import gson.internal.bind.TypeAdapters;
+import gson.internal.sql.SqlTypesSupport;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonWriter;
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+public final class GsonBuilder {
+<span class="fc" id="L37">  private Excluder excluder = Excluder.DEFAULT;</span>
+<span class="fc" id="L38">  private LongSerializationPolicy longSerializationPolicy = LongSerializationPolicy.DEFAULT;</span>
+<span class="fc" id="L39">  private FieldNamingStrategy fieldNamingPolicy = FieldNamingPolicy.IDENTITY;</span>
+<span class="fc" id="L40">  private final Map&lt;Type, InstanceCreator&lt;?&gt;&gt; instanceCreators = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L41">  private final List&lt;TypeAdapterFactory&gt; factories = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L42">  private final List&lt;TypeAdapterFactory&gt; hierarchyFactories = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L43">  private boolean serializeNulls = DEFAULT_SERIALIZE_NULLS;</span>
+<span class="fc" id="L44">  private String datePattern = DEFAULT_DATE_PATTERN;</span>
+<span class="fc" id="L45">  private int dateStyle = DateFormat.DEFAULT;</span>
+<span class="fc" id="L46">  private int timeStyle = DateFormat.DEFAULT;</span>
+<span class="fc" id="L47">  private boolean complexMapKeySerialization = DEFAULT_COMPLEX_MAP_KEYS;</span>
+<span class="fc" id="L48">  private boolean serializeSpecialFloatingPointValues = DEFAULT_SPECIALIZE_FLOAT_VALUES;</span>
+<span class="fc" id="L49">  private boolean escapeHtmlChars = DEFAULT_ESCAPE_HTML;</span>
+<span class="fc" id="L50">  private FormattingStyle formattingStyle = DEFAULT_FORMATTING_STYLE;</span>
+<span class="fc" id="L51">  private boolean generateNonExecutableJson = DEFAULT_JSON_NON_EXECUTABLE;</span>
+<span class="fc" id="L52">  private Strictness strictness = DEFAULT_STRICTNESS;</span>
+<span class="fc" id="L53">  private boolean useJdkUnsafe = DEFAULT_USE_JDK_UNSAFE;</span>
+<span class="fc" id="L54">  private ToNumberStrategy objectToNumberStrategy = DEFAULT_OBJECT_TO_NUMBER_STRATEGY;</span>
+<span class="fc" id="L55">  private ToNumberStrategy numberToNumberStrategy = DEFAULT_NUMBER_TO_NUMBER_STRATEGY;</span>
+<span class="fc" id="L56">  private final ArrayDeque&lt;ReflectionAccessFilter&gt; reflectionFilters = new ArrayDeque&lt;&gt;();</span>
+<span class="fc" id="L57">  public GsonBuilder() {}</span>
+<span class="fc" id="L58">  GsonBuilder(Gson gson) {</span>
+<span class="fc" id="L59">    this.excluder = gson.excluder;</span>
+<span class="fc" id="L60">    this.fieldNamingPolicy = gson.fieldNamingStrategy;</span>
+<span class="fc" id="L61">    this.instanceCreators.putAll(gson.instanceCreators);</span>
+<span class="fc" id="L62">    this.serializeNulls = gson.serializeNulls;</span>
+<span class="fc" id="L63">    this.complexMapKeySerialization = gson.complexMapKeySerialization;</span>
+<span class="fc" id="L64">    this.generateNonExecutableJson = gson.generateNonExecutableJson;</span>
+<span class="fc" id="L65">    this.escapeHtmlChars = gson.htmlSafe;</span>
+<span class="fc" id="L66">    this.formattingStyle = gson.formattingStyle;</span>
+<span class="fc" id="L67">    this.strictness = gson.strictness;</span>
+<span class="fc" id="L68">    this.serializeSpecialFloatingPointValues = gson.serializeSpecialFloatingPointValues;</span>
+<span class="fc" id="L69">    this.longSerializationPolicy = gson.longSerializationPolicy;</span>
+<span class="fc" id="L70">    this.datePattern = gson.datePattern;</span>
+<span class="fc" id="L71">    this.dateStyle = gson.dateStyle;</span>
+<span class="fc" id="L72">    this.timeStyle = gson.timeStyle;</span>
+<span class="fc" id="L73">    this.factories.addAll(gson.builderFactories);</span>
+<span class="fc" id="L74">    this.hierarchyFactories.addAll(gson.builderHierarchyFactories);</span>
+<span class="fc" id="L75">    this.useJdkUnsafe = gson.useJdkUnsafe;</span>
+<span class="fc" id="L76">    this.objectToNumberStrategy = gson.objectToNumberStrategy;</span>
+<span class="fc" id="L77">    this.numberToNumberStrategy = gson.numberToNumberStrategy;</span>
+<span class="fc" id="L78">    this.reflectionFilters.addAll(gson.reflectionFilters);</span>
+<span class="fc" id="L79">  }</span>
+  @CanIgnoreReturnValue
+  public GsonBuilder setVersion(double version) {
+<span class="fc bfc" id="L82" title="All 4 branches covered.">    if (Double.isNaN(version) || version &lt; 0.0) {</span>
+<span class="fc" id="L83">      throw new IllegalArgumentException(&quot;Invalid version: &quot; + version);</span>
+    }
+<span class="fc" id="L85">    excluder = excluder.withVersion(version);</span>
+<span class="fc" id="L86">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder excludeFieldsWithModifiers(int... modifiers) {
+<span class="fc" id="L90">    Objects.requireNonNull(modifiers);</span>
+<span class="fc" id="L91">    excluder = excluder.withModifiers(modifiers);</span>
+<span class="fc" id="L92">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder generateNonExecutableJson() {
+<span class="fc" id="L96">    this.generateNonExecutableJson = true;</span>
+<span class="fc" id="L97">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder excludeFieldsWithoutExposeAnnotation() {
+<span class="fc" id="L101">    excluder = excluder.excludeFieldsWithoutExposeAnnotation();</span>
+<span class="fc" id="L102">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder serializeNulls() {
+<span class="fc" id="L106">    this.serializeNulls = true;</span>
+<span class="fc" id="L107">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder enableComplexMapKeySerialization() {
+<span class="fc" id="L111">    complexMapKeySerialization = true;</span>
+<span class="fc" id="L112">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder disableInnerClassSerialization() {
+<span class="fc" id="L116">    excluder = excluder.disableInnerClassSerialization();</span>
+<span class="fc" id="L117">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setLongSerializationPolicy(LongSerializationPolicy serializationPolicy) {
+<span class="nc" id="L121">    this.longSerializationPolicy = Objects.requireNonNull(serializationPolicy);</span>
+<span class="nc" id="L122">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setFieldNamingPolicy(FieldNamingPolicy namingConvention) {
+<span class="fc" id="L126">    return setFieldNamingStrategy(namingConvention);</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setFieldNamingStrategy(FieldNamingStrategy fieldNamingStrategy) {
+<span class="fc" id="L130">    this.fieldNamingPolicy = Objects.requireNonNull(fieldNamingStrategy);</span>
+<span class="fc" id="L131">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setObjectToNumberStrategy(ToNumberStrategy objectToNumberStrategy) {
+<span class="nc" id="L135">    this.objectToNumberStrategy = Objects.requireNonNull(objectToNumberStrategy);</span>
+<span class="nc" id="L136">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setNumberToNumberStrategy(ToNumberStrategy numberToNumberStrategy) {
+<span class="nc" id="L140">    this.numberToNumberStrategy = Objects.requireNonNull(numberToNumberStrategy);</span>
+<span class="nc" id="L141">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setExclusionStrategies(ExclusionStrategy... strategies) {
+<span class="fc" id="L145">    Objects.requireNonNull(strategies);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">    for (ExclusionStrategy strategy : strategies) {</span>
+<span class="fc" id="L147">      excluder = excluder.withExclusionStrategy(strategy, true, true);</span>
+    }
+<span class="fc" id="L149">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder addSerializationExclusionStrategy(ExclusionStrategy strategy) {
+<span class="fc" id="L153">    Objects.requireNonNull(strategy);</span>
+<span class="fc" id="L154">    excluder = excluder.withExclusionStrategy(strategy, true, false);</span>
+<span class="fc" id="L155">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder addDeserializationExclusionStrategy(ExclusionStrategy strategy) {
+<span class="fc" id="L159">    Objects.requireNonNull(strategy);</span>
+<span class="fc" id="L160">    excluder = excluder.withExclusionStrategy(strategy, false, true);</span>
+<span class="fc" id="L161">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setPrettyPrinting() {
+<span class="fc" id="L165">    return setFormattingStyle(FormattingStyle.PRETTY);</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setFormattingStyle(FormattingStyle formattingStyle) {
+<span class="fc" id="L169">    this.formattingStyle = Objects.requireNonNull(formattingStyle);</span>
+<span class="fc" id="L170">    return this;</span>
+  }
+  @Deprecated
+  @InlineMe(
+      replacement = &quot;this.setStrictness(Strictness.LENIENT)&quot;,
+      imports = &quot;gson.Strictness&quot;)
+  @CanIgnoreReturnValue
+  public GsonBuilder setLenient() {
+<span class="fc" id="L178">    return setStrictness(Strictness.LENIENT);</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setStrictness(Strictness strictness) {
+<span class="fc" id="L182">    this.strictness = Objects.requireNonNull(strictness);</span>
+<span class="fc" id="L183">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder disableHtmlEscaping() {
+<span class="fc" id="L187">    this.escapeHtmlChars = false;</span>
+<span class="fc" id="L188">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setDateFormat(String pattern) {
+<span class="pc bpc" id="L192" title="1 of 2 branches missed.">    if (pattern != null) {</span>
+      try {
+<span class="fc" id="L194">        new SimpleDateFormat(pattern);</span>
+<span class="fc" id="L195">      } catch (IllegalArgumentException e) {</span>
+<span class="fc" id="L196">        throw new IllegalArgumentException(&quot;The date pattern '&quot; + pattern + &quot;' is not valid&quot;, e);</span>
+<span class="fc" id="L197">      }</span>
+    }
+<span class="fc" id="L199">    this.datePattern = pattern;</span>
+<span class="fc" id="L200">    return this;</span>
+  }
+  @Deprecated
+  @CanIgnoreReturnValue
+  public GsonBuilder setDateFormat(int dateStyle) {
+<span class="fc" id="L205">    this.dateStyle = checkDateFormatStyle(dateStyle);</span>
+<span class="fc" id="L206">    this.datePattern = null;</span>
+<span class="fc" id="L207">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder setDateFormat(int dateStyle, int timeStyle) {
+<span class="nc" id="L211">    this.dateStyle = checkDateFormatStyle(dateStyle);</span>
+<span class="nc" id="L212">    this.timeStyle = checkDateFormatStyle(timeStyle);</span>
+<span class="nc" id="L213">    this.datePattern = null;</span>
+<span class="nc" id="L214">    return this;</span>
+  }
+  private static int checkDateFormatStyle(int style) {
+<span class="pc bpc" id="L217" title="1 of 4 branches missed.">    if (style &lt; 0 || style &gt; 3) {</span>
+<span class="fc" id="L218">      throw new IllegalArgumentException(&quot;Invalid style: &quot; + style);</span>
+    }
+<span class="fc" id="L220">    return style;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder registerTypeAdapter(Type type, Object typeAdapter) {
+<span class="fc" id="L224">    Objects.requireNonNull(type);</span>
+<span class="fc" id="L225">    Objects.requireNonNull(typeAdapter);</span>
+<span class="pc bpc" id="L226" title="3 of 8 branches missed.">    if (!(typeAdapter instanceof JsonSerializer&lt;?&gt;</span>
+        || typeAdapter instanceof JsonDeserializer&lt;?&gt;
+        || typeAdapter instanceof InstanceCreator&lt;?&gt;
+        || typeAdapter instanceof TypeAdapter&lt;?&gt;)) {
+<span class="fc" id="L230">      throw new IllegalArgumentException(</span>
+          &quot;Class &quot;
+<span class="fc" id="L232">              + typeAdapter.getClass().getName()</span>
+              + &quot; does not implement any supported type adapter class or interface&quot;);
+    }
+<span class="fc bfc" id="L235" title="All 2 branches covered.">    if (hasNonOverridableAdapter(type)) {</span>
+<span class="fc" id="L236">      throw new IllegalArgumentException(&quot;Cannot override built-in adapter for &quot; + type);</span>
+    }
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">    if (typeAdapter instanceof InstanceCreator&lt;?&gt;) {</span>
+<span class="nc" id="L239">      instanceCreators.put(type, (InstanceCreator&lt;?&gt;) typeAdapter);</span>
+    }
+<span class="pc bpc" id="L241" title="3 of 4 branches missed.">    if (typeAdapter instanceof JsonSerializer&lt;?&gt; || typeAdapter instanceof JsonDeserializer&lt;?&gt;) {</span>
+<span class="fc" id="L242">      TypeToken&lt;?&gt; typeToken = TypeToken.get(type);</span>
+<span class="fc" id="L243">      factories.add(TreeTypeAdapter.newFactoryWithMatchRawType(typeToken, typeAdapter));</span>
+    }
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">    if (typeAdapter instanceof TypeAdapter&lt;?&gt;) {</span>
+      @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+<span class="nc" id="L247">      TypeAdapterFactory factory =</span>
+<span class="nc" id="L248">          TypeAdapters.newFactory(TypeToken.get(type), (TypeAdapter) typeAdapter);</span>
+<span class="nc" id="L249">      factories.add(factory);</span>
+    }
+<span class="fc" id="L251">    return this;</span>
+  }
+  private static boolean hasNonOverridableAdapter(Type type) {
+<span class="fc bfc" id="L254" title="All 2 branches covered.">    return type == Object.class;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder registerTypeAdapterFactory(TypeAdapterFactory factory) {
+<span class="fc" id="L258">    Objects.requireNonNull(factory);</span>
+<span class="fc" id="L259">    factories.add(factory);</span>
+<span class="fc" id="L260">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder registerTypeHierarchyAdapter(Class&lt;?&gt; baseType, Object typeAdapter) {
+<span class="fc" id="L264">    Objects.requireNonNull(baseType);</span>
+<span class="fc" id="L265">    Objects.requireNonNull(typeAdapter);</span>
+<span class="pc bpc" id="L266" title="5 of 6 branches missed.">    if (!(typeAdapter instanceof JsonSerializer&lt;?&gt;</span>
+        || typeAdapter instanceof JsonDeserializer&lt;?&gt;
+        || typeAdapter instanceof TypeAdapter&lt;?&gt;)) {
+<span class="nc" id="L269">      throw new IllegalArgumentException(</span>
+          &quot;Class &quot;
+<span class="nc" id="L271">              + typeAdapter.getClass().getName()</span>
+              + &quot; does not implement any supported type adapter class or interface&quot;);
+    }
+<span class="pc bpc" id="L274" title="2 of 4 branches missed.">    if (typeAdapter instanceof JsonDeserializer || typeAdapter instanceof JsonSerializer) {</span>
+<span class="fc" id="L275">      hierarchyFactories.add(TreeTypeAdapter.newTypeHierarchyFactory(baseType, typeAdapter));</span>
+    }
+<span class="pc bpc" id="L277" title="1 of 2 branches missed.">    if (typeAdapter instanceof TypeAdapter&lt;?&gt;) {</span>
+      @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+<span class="nc" id="L279">      TypeAdapterFactory factory =</span>
+<span class="nc" id="L280">          TypeAdapters.newTypeHierarchyFactory(baseType, (TypeAdapter) typeAdapter);</span>
+<span class="nc" id="L281">      factories.add(factory);</span>
+    }
+<span class="fc" id="L283">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder serializeSpecialFloatingPointValues() {
+<span class="fc" id="L287">    this.serializeSpecialFloatingPointValues = true;</span>
+<span class="fc" id="L288">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder disableJdkUnsafe() {
+<span class="fc" id="L292">    this.useJdkUnsafe = false;</span>
+<span class="fc" id="L293">    return this;</span>
+  }
+  @CanIgnoreReturnValue
+  public GsonBuilder addReflectionAccessFilter(ReflectionAccessFilter filter) {
+<span class="fc" id="L297">    Objects.requireNonNull(filter);</span>
+<span class="fc" id="L298">    reflectionFilters.addFirst(filter);</span>
+<span class="fc" id="L299">    return this;</span>
+  }
+  public Gson create() {
+<span class="fc" id="L302">    List&lt;TypeAdapterFactory&gt; factories =</span>
+<span class="fc" id="L303">        new ArrayList&lt;&gt;(this.factories.size() + this.hierarchyFactories.size() + 3);</span>
+<span class="fc" id="L304">    factories.addAll(this.factories);</span>
+<span class="fc" id="L305">    Collections.reverse(factories);</span>
+<span class="fc" id="L306">    List&lt;TypeAdapterFactory&gt; hierarchyFactories = new ArrayList&lt;&gt;(this.hierarchyFactories);</span>
+<span class="fc" id="L307">    Collections.reverse(hierarchyFactories);</span>
+<span class="fc" id="L308">    factories.addAll(hierarchyFactories);</span>
+<span class="fc" id="L309">    addTypeAdaptersForDate(datePattern, dateStyle, timeStyle, factories);</span>
+<span class="fc" id="L310">    return new Gson(</span>
+        excluder,
+        fieldNamingPolicy,
+        new HashMap&lt;&gt;(instanceCreators),
+        serializeNulls,
+        complexMapKeySerialization,
+        generateNonExecutableJson,
+        escapeHtmlChars,
+        formattingStyle,
+        strictness,
+        serializeSpecialFloatingPointValues,
+        useJdkUnsafe,
+        longSerializationPolicy,
+        datePattern,
+        dateStyle,
+        timeStyle,
+        new ArrayList&lt;&gt;(this.factories),
+        new ArrayList&lt;&gt;(this.hierarchyFactories),
+        factories,
+        objectToNumberStrategy,
+        numberToNumberStrategy,
+        new ArrayList&lt;&gt;(reflectionFilters));
+  }
+  private static void addTypeAdaptersForDate(
+      String datePattern, int dateStyle, int timeStyle, List&lt;TypeAdapterFactory&gt; factories) {
+    TypeAdapterFactory dateAdapterFactory;
+<span class="fc" id="L336">    boolean sqlTypesSupported = SqlTypesSupport.SUPPORTS_SQL_TYPES;</span>
+<span class="fc" id="L337">    TypeAdapterFactory sqlTimestampAdapterFactory = null;</span>
+<span class="fc" id="L338">    TypeAdapterFactory sqlDateAdapterFactory = null;</span>
+<span class="pc bpc" id="L339" title="1 of 4 branches missed.">    if (datePattern != null &amp;&amp; !datePattern.trim().isEmpty()) {</span>
+<span class="fc" id="L340">      dateAdapterFactory = DefaultDateTypeAdapter.DateType.DATE.createAdapterFactory(datePattern);</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">      if (sqlTypesSupported) {</span>
+<span class="fc" id="L342">        sqlTimestampAdapterFactory =</span>
+<span class="fc" id="L343">            SqlTypesSupport.TIMESTAMP_DATE_TYPE.createAdapterFactory(datePattern);</span>
+<span class="fc" id="L344">        sqlDateAdapterFactory = SqlTypesSupport.DATE_DATE_TYPE.createAdapterFactory(datePattern);</span>
+      }
+<span class="pc bpc" id="L346" title="2 of 4 branches missed.">    } else if (dateStyle != DateFormat.DEFAULT || timeStyle != DateFormat.DEFAULT) {</span>
+<span class="nc" id="L347">      dateAdapterFactory =</span>
+<span class="nc" id="L348">          DefaultDateTypeAdapter.DateType.DATE.createAdapterFactory(dateStyle, timeStyle);</span>
+<span class="nc bnc" id="L349" title="All 2 branches missed.">      if (sqlTypesSupported) {</span>
+<span class="nc" id="L350">        sqlTimestampAdapterFactory =</span>
+<span class="nc" id="L351">            SqlTypesSupport.TIMESTAMP_DATE_TYPE.createAdapterFactory(dateStyle, timeStyle);</span>
+<span class="nc" id="L352">        sqlDateAdapterFactory =</span>
+<span class="nc" id="L353">            SqlTypesSupport.DATE_DATE_TYPE.createAdapterFactory(dateStyle, timeStyle);</span>
+      }
+    } else {
+<span class="fc" id="L356">      return;</span>
+    }
+<span class="fc" id="L358">    factories.add(dateAdapterFactory);</span>
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">    if (sqlTypesSupported) {</span>
+<span class="fc" id="L360">      factories.add(sqlTimestampAdapterFactory);</span>
+<span class="fc" id="L361">      factories.add(sqlDateAdapterFactory);</span>
+    }
+<span class="fc" id="L363">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

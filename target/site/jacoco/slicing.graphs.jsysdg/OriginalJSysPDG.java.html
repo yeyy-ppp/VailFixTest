@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OriginalJSysPDG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.jsysdg</a> &gt; <span class="el_source">OriginalJSysPDG.java</span></div><h1>OriginalJSysPDG.java</h1><pre class="source lang-java linenums">package slicing.graphs.jsysdg;
+
+import slicing.graphs.pdg.PDG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+
+public class OriginalJSysPDG extends JSysPDG {
+    public OriginalJSysPDG() {
+<span class="nc" id="L9">        this(new JSysCFG());</span>
+<span class="nc" id="L10">    }</span>
+
+    public OriginalJSysPDG(JSysCFG cfg) {
+<span class="nc" id="L13">        super(cfg);</span>
+<span class="nc" id="L14">    }</span>
+
+    @Override
+    protected PDG.Builder createBuilder() {
+<span class="nc" id="L18">        return new Builder();</span>
+    }
+
+    // definicion de raiz --object-flow--&gt; uso de raiz
+    @Override
+    protected void addObjectFlowDependencyArc(VariableAction definition, VariableAction usage) {
+<span class="nc" id="L24">        throw new UnsupportedOperationException();</span>
+    }
+
+    // definicion de miembro --object-flow--&gt; definicion de raiz
+    @Override
+    protected void addObjectFlowDependencyArc(VariableAction nextDefinitionRoot, String[] memberDefined, VariableAction definition) {
+<span class="nc" id="L30">        throw new UnsupportedOperationException();</span>
+    }
+
+    @Override
+    protected void addTotalDefinitionDependencyArc(VariableAction totalDefinition, VariableAction target, String[] member) {
+<span class="nc" id="L35">        throw new UnsupportedOperationException();</span>
+    }
+
+    @Override
+    public void addDataDependencyArc(VariableAction src, VariableAction tgt) {
+<span class="nc" id="L40">        throw new UnsupportedOperationException(&quot;Use flow or object-flow dependency&quot;);</span>
+    }
+
+<span class="nc" id="L43">    protected class Builder extends JSysPDG.Builder {</span>
+
+        @Override
+        protected void buildDataDependency() {
+<span class="nc" id="L47">            addSyntheticNodesToPDG();</span>
+<span class="nc" id="L48">            applyTreeConnections();</span>
+<span class="nc" id="L49">            buildJSysDataDependency();</span>
+<span class="nc" id="L50">            valueDependencyForThrowStatements();</span>
+<span class="nc" id="L51">        }</span>
+
+        /** Compute flow, object flow and total definition dependence. */
+        @Override
+        protected void buildJSysDataDependency() {
+<span class="nc" id="L56">            JSysCFG jSysCFG = (JSysCFG) cfg;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; node : vertexSet()) {</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                for (VariableAction varAct : node.getVariableActions()) {</span>
+                    // Total definition dependence
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                    if (varAct.isUsage())</span>
+<span class="nc" id="L61">                        buildUsageDependencies(jSysCFG, varAct);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">                    else if (varAct.isDefinition())</span>
+<span class="nc" id="L63">                        buildDefinitionDependencies(jSysCFG, varAct);</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">                    else if (varAct.isDeclaration())</span>
+<span class="nc" id="L65">                        buildDeclarationDependencies(jSysCFG, varAct);</span>
+<span class="nc" id="L66">                }</span>
+<span class="nc" id="L67">            }</span>
+<span class="nc" id="L68">        }</span>
+
+        /** Generate dependencies to usages, including flow dependency for primitives,
+         *  object flow for object roots and flow for object members. */
+        private void buildUsageDependencies(JSysCFG jSysCFG, VariableAction varAct) {
+<span class="nc bnc" id="L73" title="All 2 branches missed.">            if (varAct.isPrimitive()) {</span>
+<span class="nc" id="L74">                jSysCFG.findLastDefinitionOfPrimitive(varAct).forEach(def -&gt; addFlowDependencyArc(def, varAct));</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            } else if (varAct.hasObjectTree()) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">                for (String[] member : varAct.getObjectTree().nameAsArrayIterable())</span>
+<span class="nc" id="L77">                    jSysCFG.findLastDefinitionOfObjectMember(varAct, member).forEach(def -&gt; addFlowDependencyArc(def, varAct, member));</span>
+            }
+<span class="nc" id="L79">        }</span>
+
+        /** Generates dec --&gt; def flow and def --&gt; def object flow dependencies. */
+        private void buildDefinitionDependencies(JSysCFG jSysCFG, VariableAction varAct) {
+            // Flow declaration --&gt; definition
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (!varAct.isSynthetic())</span>
+<span class="nc" id="L85">                jSysCFG.findDeclarationFor(varAct).ifPresent(dec -&gt; addFlowDependencyArc(dec, varAct));</span>
+<span class="nc" id="L86">        }</span>
+
+        /** Generates dec --&gt; def declaration dependencies for objects (constructors only). */
+        private void buildDeclarationDependencies(JSysCFG jSysCFG, VariableAction varAct) {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            if (!varAct.getName().startsWith(&quot;this.&quot;))</span>
+<span class="nc" id="L91">                return;</span>
+<span class="nc" id="L92">            jSysCFG.findAllFutureObjectDefinitionsFor(varAct).forEach(def -&gt; addDeclarationFlowDependencyArc(varAct, def));</span>
+<span class="nc" id="L93">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,96 @@
+[2026-01-24 04:00:26] 修复结果
+修复类型: 致命错误修复 + 方法覆盖补充
+修复前错误: 编译错误 - 使用了未定义的类型变量K和V；该测试代码在验证[测试方法有效性]时失败，错误位置：[160行-162行]，错误原因：invokeTypeEquals方法未实际调用typeEquals方法
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package gson.reflect;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.lang.reflect.*;
+import java.util.*;
+
+import org.junit.jupiter.api.Test;
+
+class TypeTokenTest {
+
+    @Test
+    void testTypeEqualsWithMap() {
+        TypeVariable<Class<Map>>[] variables = Map.class.getTypeParameters();
+        Map<String, Type> typeMap = new HashMap<>();
+        typeMap.put(variables[0].getName(), String.class);
+        typeMap.put(variables[1].getName(), Number.class);
+
+        ParameterizedType fromType = (ParameterizedType) new TypeToken<Map<String, Number>>() {}.getType();
+        
+        ParameterizedType toType = new ParameterizedType() {
+            @Override
+            public Type[] getActualTypeArguments() {
+                return new Type[] { variables[0], variables[1] };
+            }
+            @Override
+            public Type getRawType() {
+                return Map.class;
+            }
+            @Override
+            public Type getOwnerType() {
+                return null;
+            }
+        };
+
+        try {
+            Method typeEqualsMethod = TypeToken.class
+                .getDeclaredMethod("typeEquals", ParameterizedType.class, ParameterizedType.class, Map.class);
+            typeEqualsMethod.setAccessible(true);
+            boolean result = (boolean) typeEqualsMethod.invoke(null, fromType, toType, typeMap);
+            assertTrue(result);
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to invoke typeEquals method", e);
+        }
+    }
+
+    @Test
+    void testIsCapturingTypeVariablesForbidden() throws Exception {
+        Method method = TypeToken.class.getDeclaredMethod("isCapturingTypeVariablesForbidden");
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null);
+        assertFalse(result);
+    }
+
+    @Test
+    void testGetTypeTokenTypeArgument() throws Exception {
+        TypeToken<String> token = new TypeToken<String>() {};
+        Method method = TypeToken.class.getDeclaredMethod("getTypeTokenTypeArgument");
+        method.setAccessible(true);
+        Type type = (Type) method.invoke(token);
+        assertEquals(String.class, type);
+    }
+
+    @Test
+    void testVerifyNoTypeVariable() throws Exception {
+        Method method = TypeToken.class.getDeclaredMethod("verifyNoTypeVariable", Type.class);
+        method.setAccessible(true);
+        method.invoke(null, String.class);
+    }
+
+    @Test
+    void testBuildUnsupportedTypeException() throws Exception {
+        Method method = TypeToken.class.getDeclaredMethod("buildUnsupportedTypeException", Type.class, Class[].class);
+        method.setAccessible(true);
+        IllegalArgumentException ex = (IllegalArgumentException) method.invoke(null, Integer.class, new Class[]{String.class, Number.class});
+        assertTrue(ex.getMessage().contains("Integer") && ex.getMessage().contains("String, Number"));
+    }
+
+    @Test
+    void testMatches() throws Exception {
+        Method method = TypeToken.class.getDeclaredMethod("matches", Type.class, Type.class, Map.class);
+        method.setAccessible(true);
+        Map<String, Type> typeMap = new HashMap<>();
+        boolean result = (boolean) method.invoke(null, String.class, String.class, typeMap);
+        assertTrue(result);
+    }
+}
+```
+

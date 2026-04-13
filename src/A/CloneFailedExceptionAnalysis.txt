@@ -1,0 +1,14 @@
+```包路径：lang3.exception
+类名：CloneFailedException
+父类：RuntimeException
+依赖类：无
+---
+序号：1
+方法名：CloneFailedException(String message, Throwable cause)
+返回类型：void
+功能描述：使用指定消息和原因构造异常实例
+序号：2
+方法名：CloneFailedException(Throwable cause)
+返回类型：void
+功能描述：使用原因构造异常实例
+```

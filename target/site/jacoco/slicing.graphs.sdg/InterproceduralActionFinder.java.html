@@ -1,0 +1,232 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InterproceduralActionFinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.sdg</a> &gt; <span class="el_source">InterproceduralActionFinder.java</span></div><h1>InterproceduralActionFinder.java</h1><pre class="source lang-java linenums">package slicing.graphs.sdg;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
+import lombok.var;
+import slicing.graphs.BackwardDataFlowAnalysis;
+import slicing.graphs.CallGraph;
+import slicing.graphs.cfg.CFG;
+import slicing.nodes.VariableAction;
+import slicing.utils.ASTUtils;
+import slicing.utils.Logger;
+import slicing.utils.Utils;
+
+import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+/**
+ * A backward data flow analysis on the call graph and a map of CFGs, to find which callable
+ * declarations define, use or declare which variables, interprocedurally.
+ * @param &lt;A&gt; The action to be searched for
+ */
+public abstract class InterproceduralActionFinder&lt;A extends VariableAction&gt; extends BackwardDataFlowAnalysis&lt;CallGraph.Vertex, CallGraph.Edge&lt;?&gt;, Set&lt;A&gt;&gt; {
+    protected final Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap;
+    /** A map from vertex and action to its corresponding stored action, to avoid generating duplicate nodes. */
+<span class="nc" id="L29">    protected final Map&lt;CallGraph.Vertex, Map&lt;A, StoredAction&gt;&gt; actionStoredMap = new HashMap&lt;&gt;();</span>
+
+    protected InterproceduralActionFinder(CallGraph callGraph, Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap) {
+<span class="nc" id="L32">        super(callGraph);</span>
+<span class="nc" id="L33">        this.cfgMap = cfgMap;</span>
+<span class="nc" id="L34">    }</span>
+
+    // ===========================================================
+    // ===================== SAVE DATA ===========================
+    // ===========================================================
+
+    /** Entry-point to the class. Performs the analysis and then saves the results to the CFG nodes. */
+    public void save() {
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (!built) analyze();</span>
+<span class="nc" id="L43">        graph.vertexSet().forEach(this::saveDeclarationFormalNodes);</span>
+<span class="nc" id="L44">    }</span>
+
+    /** Obtains the StoredAction object with information on which actions have been stored. */
+    protected StoredAction getStored(CallGraph.Vertex vertex, A action) {
+<span class="nc" id="L48">        return actionStoredMap.get(vertex).get(action);</span>
+    }
+
+    /** Save the current set of actions associated with the given declaration. This method will
+     *  only generate actual-in and actual-out nodes. It is idempotent, and won't generate duplicates. */
+    protected void saveDeclarationActualNodes(CallGraph.Vertex vertex) {
+<span class="nc" id="L54">        var actions = vertexDataMap.get(vertex);</span>
+        // Update stored action map
+<span class="nc" id="L56">        actionStoredMap.computeIfAbsent(vertex, v -&gt; new HashMap&lt;&gt;());</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        for (A a : actions)</span>
+<span class="nc" id="L58">            actionStoredMap.get(vertex).computeIfAbsent(a, __ -&gt; new StoredAction());</span>
+        // ACTUAL: per call (n)
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        for (CallGraph.Edge&lt;?&gt; edge : graph.incomingEdgesOf(vertex))</span>
+<span class="nc" id="L61">            actions.stream().sorted(new ParameterFieldSorter(edge)).forEach(a -&gt;</span>
+<span class="nc" id="L62">                    getStored(vertex, a).storeActual(edge, a, e -&gt; sandBoxedHandler(e, a, this::handleActualAction)));</span>
+<span class="nc" id="L63">    }</span>
+
+    /** Save the current set of actions associated with the given declaration. This method will
+     *  only generate formal-in and formal-out nodes. It is idempotent, and won't generate duplicates. */
+    protected void saveDeclarationFormalNodes(CallGraph.Vertex vertex) {
+<span class="nc" id="L68">        var actions = vertexDataMap.get(vertex);</span>
+        // Update stored action map
+<span class="nc" id="L70">        actionStoredMap.computeIfAbsent(vertex, __ -&gt; new HashMap&lt;&gt;());</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        for (A a : actions)</span>
+<span class="nc" id="L72">            actionStoredMap.get(vertex).computeIfAbsent(a, __ -&gt; new StoredAction());</span>
+        // 1 formal per declaration and action
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        for (A a : actions)</span>
+<span class="nc" id="L75">            getStored(vertex, a).storeFormal(a, () -&gt; sandBoxedHandler(vertex, a, this::handleFormalAction));</span>
+<span class="nc" id="L76">    }</span>
+
+    /** A sandbox to avoid resolution errors when a variable is included that is a class name
+     *  for static usage of methods and fields. */
+    protected final &lt;T&gt; void sandBoxedHandler(T location, A action, BiConsumer&lt;T, A&gt; handler) {
+        try {
+<span class="nc" id="L82">            handler.accept(location, action);</span>
+<span class="nc" id="L83">        } catch (UnsolvedSymbolException e) {</span>
+<span class="nc" id="L84">            Logger.log(&quot;Skipping a symbol, cannot be resolved: &quot; + action.getName());</span>
+<span class="nc" id="L85">        }</span>
+<span class="nc" id="L86">    }</span>
+
+    /** Generate the formal node(s) related to this action and declaration. */
+    protected abstract void handleFormalAction(CallGraph.Vertex vertex, A action);
+
+    /** Generate the actual node(s) related to this action and call. */
+    protected abstract void handleActualAction(CallGraph.Edge&lt;?&gt; edge, A action);
+
+    // ===========================================================
+    // ============== AUXILIARY METHODS FOR CHILDREN =============
+    // ===========================================================
+
+    /** Obtains the expression passed as argument for the given action at the given call. If {@code input}
+     * is false, primitive parameters will be skipped, as their value cannot be redefined.*/
+    protected Optional&lt;Expression&gt; extractArgument(VariableAction action, CallGraph.Edge&lt;?&gt; edge, boolean input) {
+<span class="nc" id="L101">        CallableDeclaration&lt;?&gt; callTarget = graph.getEdgeTarget(edge).getDeclaration();</span>
+<span class="nc bnc" id="L102" title="All 4 branches missed.">        if (!input &amp;&amp; action.isPrimitive())</span>
+<span class="nc" id="L103">            return Optional.empty(); // primitives do not have actual-out!</span>
+<span class="nc" id="L104">        int paramIndex = ASTUtils.getMatchingParameterIndex(callTarget, action.getName());</span>
+<span class="nc" id="L105">        return Optional.of(ASTUtils.getResolvableArgs(edge.getCall()).get(paramIndex));</span>
+    }
+
+    // ===========================================================
+    // =============== COMPUTE DATA FOR FIXED POINT ==============
+    // ===========================================================
+
+    @Override
+    protected Set&lt;A&gt; compute(CallGraph.Vertex vertex, Set&lt;CallGraph.Vertex&gt; predecessors) {
+<span class="nc" id="L114">        saveDeclarationActualNodes(vertex);</span>
+<span class="nc" id="L115">        return initialValue(vertex);</span>
+    }
+
+    @Override
+    protected Set&lt;A&gt; initialValue(CallGraph.Vertex vertex) {
+        // Skip abstract vertices
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (vertex.getDeclaration().isAbstract() ||</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                (vertex.getDeclaration().isMethodDeclaration() &amp;&amp;</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                        !vertex.getDeclaration().asMethodDeclaration().getBody().isPresent()))</span>
+<span class="nc" id="L125">            return new HashSet&lt;&gt;();</span>
+<span class="nc" id="L126">        CFG cfg = cfgMap.get(vertex.getDeclaration());</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">        if (cfg == null) {</span>
+<span class="nc" id="L128">            return new HashSet&lt;&gt;();</span>
+        }
+<span class="nc" id="L130">        Stream&lt;VariableAction&gt; actionStream = cfg.vertexSet().stream()</span>
+                // Ignore root node, it is literally the entrypoint for interprocedural actions.
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                .filter(n -&gt; n != cfg.getRootNode())</span>
+<span class="nc" id="L133">                .flatMap(n -&gt; n.getVariableActions().stream())</span>
+                // We never analyze synthetic variables (all intraprocedural)
+<span class="nc bnc" id="L135" title="All 2 branches missed.">                .filter(v -&gt; !v.isSynthetic())</span>
+                // We skip over non-root variables (for each 'x.a' action we'll find 'x' later)
+<span class="nc" id="L137">                .filter(VariableAction::isRootAction)</span>
+                // We skip local variables, as those can't be interprocedural
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                .filter(v -&gt; !v.isLocalVariable());</span>
+
+<span class="nc" id="L141">        Stream&lt;A&gt; filteredStream = mapAndFilterActionStream(actionStream, cfg);</span>
+<span class="nc" id="L142">        Set&lt;A&gt; set = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        for (Iterator&lt;A&gt; it = filteredStream.iterator(); it.hasNext(); ) {</span>
+<span class="nc" id="L144">            A a = it.next();</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            if (set.contains(a)) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                if (a.hasObjectTree())</span>
+<span class="nc" id="L147">                    Utils.setGet(set, a).getObjectTree().addAll(a.getObjectTree());</span>
+            } else {
+<span class="nc" id="L149">                set.add(a.createCopy());</span>
+            }
+<span class="nc" id="L151">        }</span>
+<span class="nc" id="L152">        return set;</span>
+    }
+
+    /** Given a stream of VariableAction objects, map it to the finders' type and
+     *  filter unwanted items (only if the filter is specific to that type). */
+    protected abstract Stream&lt;A&gt; mapAndFilterActionStream(Stream&lt;VariableAction&gt; stream, CFG cfg);
+
+    @Override
+    protected boolean dataMatch(Set&lt;A&gt; oldData, Set&lt;A&gt; newData) {
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (oldData == newData)</span>
+<span class="nc" id="L162">            return true;</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (oldData.size() != newData.size())</span>
+<span class="nc" id="L164">            return false;</span>
+<span class="nc" id="L165">        HashMap&lt;String, A&gt; map = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        for (A a : oldData)</span>
+<span class="nc" id="L167">            map.put(a.getName(), a);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        for (A b : newData)</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (!VariableAction.objectTreeMatches(map.get(b.getName()), b))</span>
+<span class="nc" id="L170">                return false;</span>
+<span class="nc" id="L171">        return true;</span>
+    }
+
+    // ===========================================================
+    // ========================= SUBCLASSES ======================
+    // ===========================================================
+
+    /** A comparator to sort parameters and fields in the generation of actual nodes. It will sort
+     *  {@link StoredAction}s in the following order: fields, then parameters by descending index number.
+     *  The actual nodes will be generated in that order and inserted in reverse order in the graph node. */
+    private class ParameterFieldSorter implements Comparator&lt;A&gt; {
+        protected final CallGraph.Edge&lt;?&gt; edge;
+<span class="nc" id="L183">        public ParameterFieldSorter(CallGraph.Edge&lt;?&gt; edge) {</span>
+<span class="nc" id="L184">            this.edge = edge;</span>
+<span class="nc" id="L185">        }</span>
+
+        @Override
+        public int compare(A o1, A o2) {
+<span class="nc bnc" id="L189" title="All 4 branches missed.">            if (o1.isParameter() &amp;&amp; o2.isParameter())</span>
+<span class="nc" id="L190">                return -Integer.compare(ASTUtils.getMatchingParameterIndex(graph.getEdgeTarget(edge).getDeclaration(), o1.getName()),</span>
+<span class="nc" id="L191">                        ASTUtils.getMatchingParameterIndex(graph.getEdgeTarget(edge).getDeclaration(), o2.getName()));</span>
+<span class="nc bnc" id="L192" title="All 4 branches missed.">            else if (o1.isField() &amp;&amp; o2.isField())</span>
+<span class="nc" id="L193">                return 0;</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">            else if (o1.isParameter() &amp;&amp; o2.isField())</span>
+<span class="nc" id="L195">                return -1;</span>
+<span class="nc bnc" id="L196" title="All 4 branches missed.">            else if (o1.isField() &amp;&amp; o2.isParameter())</span>
+<span class="nc" id="L197">                return 1;</span>
+<span class="nc" id="L198">            throw new IllegalArgumentException(&quot;One or more arguments is not a field or parameter&quot;);</span>
+        }
+    }
+
+    /** A wrapper around a variable action, which keeps track of whether formal and actual nodes
+     *  have been saved to the graph or not. */
+    protected static class StoredAction {
+        /** Whether the action has been saved as actual node for each call. */
+<span class="nc" id="L206">        private final Map&lt;CallGraph.Edge&lt;?&gt;, VariableAction&gt; actualStoredMap = new HashMap&lt;&gt;();</span>
+
+        /** Whether the action has been saved as formal node. */
+<span class="nc" id="L209">        protected VariableAction formalStored = null;</span>
+
+<span class="nc" id="L211">        private StoredAction() {}</span>
+
+        /** If this action has not yet been saved as formal node, use the argument to do so, then mark it as stored. */
+        private void storeFormal(VariableAction action, Runnable save) {
+<span class="nc bnc" id="L215" title="All 4 branches missed.">            if (formalStored == null || !VariableAction.objectTreeMatches(action, formalStored)) {</span>
+<span class="nc" id="L216">                save.run();</span>
+<span class="nc" id="L217">                formalStored = action;</span>
+            }
+<span class="nc" id="L219">        }</span>
+
+        /** If this action has not yet been saved as actual node for the given edge,
+         * use the consumer to do so, then mark it as stored. */
+        private void storeActual(CallGraph.Edge&lt;?&gt; edge, VariableAction action, Consumer&lt;CallGraph.Edge&lt;?&gt;&gt; save) {
+<span class="nc" id="L224">            VariableAction storedAction = actualStoredMap.get(edge);</span>
+<span class="nc bnc" id="L225" title="All 4 branches missed.">            if (storedAction == null || !VariableAction.objectTreeMatches(storedAction, action)) {</span>
+<span class="nc" id="L226">                save.accept(edge);</span>
+<span class="nc" id="L227">                actualStoredMap.put(edge, action);</span>
+            }
+<span class="nc" id="L229">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

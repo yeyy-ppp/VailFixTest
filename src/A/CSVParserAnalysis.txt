@@ -1,0 +1,129 @@
+包路径：csv
+类名：CSVParser
+父类：无
+依赖类：Token, Lexer, ExtendedBufferedReader, CSVFormat, CSVRecord, AbstractStreamBuilder, Constants, Uncheck, CSVException, Charsets
+---
+序号：1
+方法名：builder()
+返回类型：CSVParser.Builder
+功能描述：创建并返回一个新的 Builder 对象。
+序号：2
+方法名：parse(File file, Charset charset, CSVFormat format)
+返回类型：CSVParser
+功能描述：解析指定的文件为CSV数据并返回 CSVParser 实例。
+序号：3
+方法名：parse(InputStream inputStream, Charset charset, CSVFormat format)
+返回类型：CSVParser
+功能描述：解析指定的输入流为CSV数据并返回 CSVParser 实例。
+序号：4
+方法名：parse(Path path, Charset charset, CSVFormat format)
+返回类型：CSVParser
+功能描述：解析指定的路径为CSV数据并返回 CSVParser 实例。
+序号：5
+方法名：parse(Reader reader, CSVFormat format)
+返回类型：CSVParser
+功能描述：解析指定的读取器为CSV数据并返回 CSVParser 实例。
+序号：6
+方法名：parse(String string, CSVFormat format)
+返回类型：CSVParser
+功能描述：解析指定的字符串为CSV数据并返回 CSVParser 实例。
+序号：7
+方法名：parse(URL url, Charset charset, CSVFormat format)
+返回类型：CSVParser
+功能描述：解析指定的URL为CSV数据并返回 CSVParser 实例。
+序号：8
+方法名：CSVParser(Reader reader, CSVFormat format)
+返回类型：无
+功能描述：构造一个 CSVParser 实例（已弃用）。
+序号：9
+方法名：CSVParser(Reader reader, CSVFormat format, long characterOffset, long recordNumber)
+返回类型：无
+功能描述：构造一个 CSVParser 实例（已弃用）。
+序号：10
+方法名：CSVParser(Reader reader, CSVFormat format, long characterOffset, long recordNumber, Charset charset, boolean trackBytes)
+返回类型：无
+功能描述：私有构造方法，初始化 CSVParser 实例。
+序号：11
+方法名：addRecordValue(boolean lastRecord)
+返回类型：void
+功能描述：添加当前 token 的值到记录列表。
+序号：12
+方法名：close()
+返回类型：void
+功能描述：关闭解析器并释放资源。
+序号：13
+方法名：createEmptyHeaderMap()
+返回类型：Map<String, Integer>
+功能描述：创建一个空的头部映射。
+序号：14
+方法名：createHeaders()
+返回类型：Headers
+功能描述：创建并初始化头部信息。
+序号：15
+方法名：getCurrentLineNumber()
+返回类型：long
+功能描述：返回当前行号。
+序号：16
+方法名：getFirstEndOfLine()
+返回类型：String
+功能描述：返回第一个行结束符。
+序号：17
+方法名：getHeaderComment()
+返回类型：String
+功能描述：返回头部注释内容。
+序号：18
+方法名：getHeaderMap()
+返回类型：Map<String, Integer>
+功能描述：返回头部映射的副本。
+序号：19
+方法名：getHeaderMapRaw()
+返回类型：Map<String, Integer>
+功能描述：返回原始头部映射。
+序号：20
+方法名：getHeaderNames()
+返回类型：List<String>
+功能描述：返回头部名称列表。
+序号：21
+方法名：getRecordNumber()
+返回类型：long
+功能描述：返回当前记录号。
+序号：22
+方法名：getRecords()
+返回类型：List<CSVRecord>
+功能描述：返回所有解析的记录列表。
+序号：23
+方法名：getTrailerComment()
+返回类型：String
+功能描述：返回尾部注释内容。
+序号：24
+方法名：handleNull(String input)
+返回类型：String
+功能描述：处理输入字符串中的 null 值。
+序号：25
+方法名：hasHeaderComment()
+返回类型：boolean
+功能描述：检查是否存在头部注释。
+序号：26
+方法名：hasTrailerComment()
+返回类型：boolean
+功能描述：检查是否存在尾部注释。
+序号：27
+方法名：isClosed()
+返回类型：boolean
+功能描述：检查解析器是否已关闭。
+序号：28
+方法名：isStrictQuoteMode()
+返回类型：boolean
+功能描述：检查是否启用严格引号模式。
+序号：29
+方法名：iterator()
+返回类型：Iterator<CSVRecord>
+功能描述：返回 CSV 记录的迭代器。
+序号：30
+方法名：nextRecord()
+返回类型：CSVRecord
+功能描述：解析并返回下一条 CSV 记录。
+序号：31
+方法名：stream()
+返回类型：Stream<CSVRecord>
+功能描述：返回 CSV 记录的流。

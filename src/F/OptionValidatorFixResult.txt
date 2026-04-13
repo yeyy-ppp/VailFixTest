@@ -1,0 +1,132 @@
+[2026-01-13 18:48:35] 修复结果
+修复类型: 致命错误修复
+修复前错误: 断言值错误 - testValidate_ValidWithAdditionalChars断言"?option@"合法，但'@'字符在isValidChar逻辑中应无效
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Assertions;
+import java.lang.reflect.Method;
+
+public class OptionValidatorTest {
+
+    @Test
+    public void testIsValidChar_ValidJavaIdentifier() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("isValidChar", char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, 'a');
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testIsValidChar_AdditionalLongChar() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("isValidChar", char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, '-');
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testIsValidChar_InvalidChar() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("isValidChar", char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, '!');
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    public void testIsValidOpt_ValidJavaIdentifier() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("isValidOpt", char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, 'b');
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testIsValidOpt_AdditionalOptionChar() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("isValidOpt", char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, '?');
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testIsValidOpt_InvalidChar() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("isValidOpt", char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, '&');
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    public void testSearch_CharFound() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("search", char[].class, char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, new char[]{'x', 'y', 'z'}, 'y');
+        Assertions.assertTrue(result);
+    }
+
+    @Test
+    public void testSearch_CharNotFound() throws Exception {
+        Method method = OptionValidator.class.getDeclaredMethod("search", char[].class, char.class);
+        method.setAccessible(true);
+        boolean result = (boolean) method.invoke(null, new char[]{'x', 'y', 'z'}, 'a');
+        Assertions.assertFalse(result);
+    }
+
+    @Test
+    public void testValidate_NullOption() {
+        String result = OptionValidator.validate(null);
+        Assertions.assertNull(result);
+    }
+
+    @Test
+    public void testValidate_EmptyOption() {
+        Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("");
+        });
+        Assertions.assertEquals("Empty option name.", exception.getMessage());
+    }
+
+    @Test
+    public void testValidate_InvalidFirstChar() {
+        Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("&test");
+        });
+        Assertions.assertTrue(exception.getMessage().contains("Illegal option name"));
+    }
+
+    @Test
+    public void testValidate_ValidSingleChar() {
+        String result = OptionValidator.validate("a");
+        Assertions.assertEquals("a", result);
+    }
+
+    @Test
+    public void testValidate_InvalidSubsequentChar() {
+        Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            OptionValidator.validate("a*b");
+        });
+        Assertions.assertTrue(exception.getMessage().contains("contains an illegal"));
+    }
+
+    @Test
+    public void testValidate_ValidMultiChar() {
+        String result = OptionValidator.validate("valid-option");
+        Assertions.assertEquals("valid-option", result);
+    }
+
+@Test
+public void testValidate_ValidWithAdditionalChars() {
+    String result = OptionValidator.validate("?option-");
+    Assertions.assertEquals("?option-", result);
+}
+}
+```
+
+```
+

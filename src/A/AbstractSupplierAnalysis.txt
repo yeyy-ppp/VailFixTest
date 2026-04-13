@@ -1,0 +1,15 @@
+```
+包路径：lang3.builder
+类名：AbstractSupplier
+父类：无
+依赖类：FailableSupplier
+---
+序号：1
+方法名：AbstractSupplier()
+返回类型：无
+功能描述：构造方法，初始化对象
+序号：2
+方法名：asThis()
+返回类型：B
+功能描述：返回当前对象的类型转换结果（转换为泛型类型B）
+```

@@ -1,0 +1,12 @@
+[2026-01-24 01:07:19] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: isJavaType, isJavaType, isAndroidType, isAndroidType, isAnyPlatformType, getFilterResult, canAccess, canAccess
+  未覆盖: ReflectionAccessFilterHelper
+
+[2026-01-24 01:10:45] 修复后验证结果
+错误类型: 编译错误, 错误行: 77, 错误原因: 使用了未定义的类JavaVersion, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: isJavaType, isJavaType, isAndroidType, isAndroidType, isAnyPlatformType, getFilterResult, canAccess, canAccess
+  未覆盖: ReflectionAccessFilterHelper
+

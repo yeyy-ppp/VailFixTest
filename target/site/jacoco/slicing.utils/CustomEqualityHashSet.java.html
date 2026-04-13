@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CustomEqualityHashSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.utils</a> &gt; <span class="el_source">CustomEqualityHashSet.java</span></div><h1>CustomEqualityHashSet.java</h1><pre class="source lang-java linenums">package slicing.utils;
+
+import java.util.*;
+
+/**
+ * A customized abstract HashSet, which allows for customization of the equality
+ * method used to compare objects. To create a child class, just implement the
+ * abstract methods.
+ */
+public abstract class CustomEqualityHashSet&lt;T&gt; extends AbstractSet&lt;T&gt; {
+    /** The underlying collection of objects, each list acts as bucket for colliding hash codes. */
+    protected final Map&lt;Integer, List&lt;T&gt;&gt; map;
+
+<span class="nc" id="L14">    protected int size = 0;</span>
+
+<span class="nc" id="L16">    public CustomEqualityHashSet() {</span>
+<span class="nc" id="L17">        map = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L18">    }</span>
+
+<span class="nc" id="L20">    public CustomEqualityHashSet(int initialCapacity) {</span>
+<span class="nc" id="L21">        map = new HashMap&lt;&gt;(initialCapacity);</span>
+<span class="nc" id="L22">    }</span>
+
+<span class="nc" id="L24">    public CustomEqualityHashSet(int initialCapacity, float loadFactor) {</span>
+<span class="nc" id="L25">        map = new HashMap&lt;&gt;(initialCapacity, loadFactor);</span>
+<span class="nc" id="L26">    }</span>
+
+    /** Compares two objects to determine equality. The objects are assumed to be of type {@link T}. */
+    protected abstract boolean objEquals(T a, Object b);
+
+    /** Checks whether the argument is of a compatible class with the set. A
+     *  default implementation could check against {@link Object}. */
+    protected abstract boolean objInstanceOf(Object o);
+
+    @Override
+    public boolean add(T t) {
+<span class="nc" id="L37">        Objects.requireNonNull(t);</span>
+<span class="nc" id="L38">        List&lt;T&gt; bucket = map.computeIfAbsent(t.hashCode(), i -&gt; new LinkedList&lt;&gt;());</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (contains(t, bucket))</span>
+<span class="nc" id="L40">            return false;</span>
+<span class="nc" id="L41">        bucket.add(t);</span>
+<span class="nc" id="L42">        size++;</span>
+<span class="nc" id="L43">        return true;</span>
+    }
+
+    @Override
+    public boolean remove(Object o) {
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (!objInstanceOf(o))</span>
+<span class="nc" id="L49">            return false;</span>
+<span class="nc" id="L50">        List&lt;T&gt; bucket = map.get(o.hashCode());</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (bucket == null)</span>
+<span class="nc" id="L52">            return false;</span>
+<span class="nc" id="L53">        Iterator&lt;T&gt; it = bucket.iterator();</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">        while (it.hasNext()) {</span>
+<span class="nc" id="L55">            T t = it.next();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (objEquals(t, o)) {</span>
+<span class="nc" id="L57">                it.remove();</span>
+<span class="nc" id="L58">                size--;</span>
+<span class="nc" id="L59">                return true;</span>
+            }
+<span class="nc" id="L61">        }</span>
+<span class="nc" id="L62">        return false; // matching element not found</span>
+    }
+
+    @Override
+    public boolean contains(Object o) {
+<span class="nc" id="L67">        List&lt;T&gt; bucket = map.get(o.hashCode());</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (bucket == null)</span>
+<span class="nc" id="L69">            return false;</span>
+<span class="nc" id="L70">        return contains(o, bucket);</span>
+    }
+
+    /** Whether the given bucket contains the given object. */
+    protected boolean contains(Object o, List&lt;T&gt; bucket) {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (!objInstanceOf(o))</span>
+<span class="nc" id="L76">            return false;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        for (T element : bucket)</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            if (objEquals(element, o))</span>
+<span class="nc" id="L79">                return true;</span>
+<span class="nc" id="L80">        return false;</span>
+    }
+
+    @Override
+    public void clear() {
+<span class="nc" id="L85">        map.clear();</span>
+<span class="nc" id="L86">        size = 0;</span>
+<span class="nc" id="L87">    }</span>
+
+    @Override
+    public Iterator&lt;T&gt; iterator() {
+<span class="nc" id="L91">        Iterator&lt;T&gt; it = map.values().stream().flatMap(Collection::stream).iterator();</span>
+<span class="nc" id="L92">        return new Iterator&lt;T&gt;() {</span>
+<span class="nc" id="L93">            T last = null;</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="nc" id="L97">                return it.hasNext();</span>
+            }
+
+            @Override
+            public T next() {
+<span class="nc" id="L102">                return last = it.next();</span>
+            }
+
+            @Override
+            public void remove() {
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                if (last != null)</span>
+<span class="nc" id="L108">                    CustomEqualityHashSet.this.remove(last);</span>
+<span class="nc" id="L109">            }</span>
+        };
+    }
+
+    @Override
+    public int size() {
+<span class="nc" id="L115">        return size;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

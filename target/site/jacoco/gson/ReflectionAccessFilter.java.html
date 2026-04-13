@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectionAccessFilter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">ReflectionAccessFilter.java</span></div><h1>ReflectionAccessFilter.java</h1><pre class="source lang-java linenums">package gson;
+import gson.internal.ReflectionAccessFilterHelper;
+public interface ReflectionAccessFilter {
+<span class="fc" id="L4">    enum FilterResult {</span>
+<span class="fc" id="L5">    ALLOW,</span>
+<span class="fc" id="L6">    INDECISIVE,</span>
+<span class="fc" id="L7">    BLOCK_INACCESSIBLE,</span>
+<span class="fc" id="L8">    BLOCK_ALL</span>
+  }
+<span class="fc" id="L10">  ReflectionAccessFilter BLOCK_INACCESSIBLE_JAVA =</span>
+<span class="fc" id="L11">      new ReflectionAccessFilter() {</span>
+        @Override
+        public FilterResult check(Class&lt;?&gt; rawClass) {
+<span class="fc bfc" id="L14" title="All 2 branches covered.">          return ReflectionAccessFilterHelper.isJavaType(rawClass)</span>
+<span class="fc" id="L15">              ? FilterResult.BLOCK_INACCESSIBLE</span>
+<span class="fc" id="L16">              : FilterResult.INDECISIVE;</span>
+        }
+        @Override
+        public String toString() {
+<span class="fc" id="L20">          return &quot;ReflectionAccessFilter#BLOCK_INACCESSIBLE_JAVA&quot;;</span>
+        }
+      };
+<span class="fc" id="L23">  ReflectionAccessFilter BLOCK_ALL_JAVA =</span>
+<span class="fc" id="L24">      new ReflectionAccessFilter() {</span>
+        @Override
+        public FilterResult check(Class&lt;?&gt; rawClass) {
+<span class="fc bfc" id="L27" title="All 2 branches covered.">          return ReflectionAccessFilterHelper.isJavaType(rawClass)</span>
+<span class="fc" id="L28">              ? FilterResult.BLOCK_ALL</span>
+<span class="fc" id="L29">              : FilterResult.INDECISIVE;</span>
+        }
+        @Override
+        public String toString() {
+<span class="fc" id="L33">          return &quot;ReflectionAccessFilter#BLOCK_ALL_JAVA&quot;;</span>
+        }
+      };
+<span class="fc" id="L36">  ReflectionAccessFilter BLOCK_ALL_ANDROID =</span>
+<span class="fc" id="L37">      new ReflectionAccessFilter() {</span>
+        @Override
+        public FilterResult check(Class&lt;?&gt; rawClass) {
+<span class="fc bfc" id="L40" title="All 2 branches covered.">          return ReflectionAccessFilterHelper.isAndroidType(rawClass)</span>
+<span class="fc" id="L41">              ? FilterResult.BLOCK_ALL</span>
+<span class="fc" id="L42">              : FilterResult.INDECISIVE;</span>
+        }
+        @Override
+        public String toString() {
+<span class="fc" id="L46">          return &quot;ReflectionAccessFilter#BLOCK_ALL_ANDROID&quot;;</span>
+        }
+      };
+<span class="fc" id="L49">  ReflectionAccessFilter BLOCK_ALL_PLATFORM =</span>
+<span class="fc" id="L50">      new ReflectionAccessFilter() {</span>
+        @Override
+        public FilterResult check(Class&lt;?&gt; rawClass) {
+<span class="fc bfc" id="L53" title="All 2 branches covered.">          return ReflectionAccessFilterHelper.isAnyPlatformType(rawClass)</span>
+<span class="fc" id="L54">              ? FilterResult.BLOCK_ALL</span>
+<span class="fc" id="L55">              : FilterResult.INDECISIVE;</span>
+        }
+        @Override
+        public String toString() {
+<span class="fc" id="L59">          return &quot;ReflectionAccessFilter#BLOCK_ALL_PLATFORM&quot;;</span>
+        }
+      };
+  FilterResult check(Class&lt;?&gt; rawClass);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

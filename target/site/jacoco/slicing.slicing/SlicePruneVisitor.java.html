@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SlicePruneVisitor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.slicing</a> &gt; <span class="el_source">SlicePruneVisitor.java</span></div><h1>SlicePruneVisitor.java</h1><pre class="source lang-java linenums">package slicing.slicing;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.BooleanLiteralExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithBody;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.ast.visitor.Visitable;
+import slicing.utils.NodeHashSet;
+
+import java.util.stream.Collectors;
+
+/** Given an AST tree and a slice, removes or prunes all nodes that are not
+ *  included in the slice. Some nodes are included if they are present in the slice
+ *  or of any of their children are (as is the case with {@link CompilationUnit}s). */
+<span class="nc" id="L19">public class SlicePruneVisitor extends ModifierVisitor&lt;NodeHashSet&lt;Node&gt;&gt; {</span>
+    // ========== Utility methods ==========
+
+    /** Place a valid placeholder in this node's body, if there is none. */
+    protected void fillBody(NodeWithBody&lt;?&gt; n) {
+<span class="nc bnc" id="L24" title="All 2 branches missed.">        if (n.getBody() == null)</span>
+<span class="nc" id="L25">            n.setBody(new EmptyStmt());</span>
+<span class="nc" id="L26">    }</span>
+
+    // ========== File visitors ==========
+
+    @Override
+    public Visitable visit(CompilationUnit n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L32">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L33">        Visitable v = super.visit(n, arg);</span>
+<span class="nc bnc" id="L34" title="All 4 branches missed.">        return keep || !((Node) v).getChildNodes().isEmpty() ? v : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ClassOrInterfaceDeclaration n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L39">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L40">        Visitable v = super.visit(n, arg);</span>
+<span class="nc" id="L41">        boolean containsDeclarations = ((Node) v).getChildNodes().stream().anyMatch(BodyDeclaration.class::isInstance);</span>
+<span class="nc bnc" id="L42" title="All 4 branches missed.">        return keep || containsDeclarations ? v : null;</span>
+    }
+
+    // ============= Enum visitors =============
+
+    @Override
+    public Visitable visit(EnumDeclaration n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L49">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L50">        Visitable v = super.visit(n, arg);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        return keep ? v : null;</span>
+    }
+
+    @Override
+    public Visitable visit(EnumConstantDeclaration n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    // ========== Class body visitors ==========
+
+    @Override
+    public Visitable visit(MethodDeclaration n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L63">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L64">        Visitable v = super.visit(n, arg);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        return keep ? v : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ConstructorDeclaration n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L70">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L71">        Visitable v = super.visit(n, arg);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        return keep ? v : null;</span>
+    }
+
+    @Override
+    public Visitable visit(FieldDeclaration n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+// ========== Method body visitors ==========
+    // 3 alternatives:
+    //      a. Without relevant children and included if on the slice or not (e.g. ExpressionStmt)
+    //      b. With relevant children and included if of the slice or not, children are discarded if not included (e.g. WhileStmt)
+    //      c. With relevant children and included if any children is included OR if on the slice (e.g. SwitchEntryStmt, LabeledStmt)
+
+    @Override
+    public Visitable visit(BreakStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ContinueStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(DoStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L98">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L99">        super.visit(n, arg);</span>
+<span class="nc" id="L100">        fillBody(n);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ForEachStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L106">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L107">        super.visit(n, arg);</span>
+<span class="nc" id="L108">        fillBody(n);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ForStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L114">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L115">        super.visit(n, arg);</span>
+<span class="nc" id="L116">        n.setInitialization(new NodeList&lt;&gt;(n.getInitialization().stream()</span>
+<span class="nc" id="L117">                .filter(arg::contains).collect(Collectors.toList())));</span>
+<span class="nc" id="L118">        n.setUpdate(new NodeList&lt;&gt;(n.getUpdate().stream()</span>
+<span class="nc" id="L119">                .filter(arg::contains).collect(Collectors.toList())));</span>
+<span class="nc" id="L120">        fillBody(n);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (keep)</span>
+<span class="nc" id="L122">            return n;</span>
+<span class="nc bnc" id="L123" title="All 4 branches missed.">        if (n.getInitialization().isEmpty() &amp;&amp; n.getUpdate().isEmpty())</span>
+<span class="nc" id="L124">            return null;</span>
+<span class="nc" id="L125">        return new ForStmt(n.getInitialization(), new BooleanLiteralExpr(false),</span>
+<span class="nc" id="L126">                n.getUpdate(), n.getBody());</span>
+    }
+
+    @Override
+    public Visitable visit(WhileStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L131">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L132">        super.visit(n, arg);</span>
+<span class="nc" id="L133">        fillBody(n);</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(IfStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L139">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L140">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (n.getThenStmt() == null)</span>
+<span class="nc" id="L142">            n.setThenStmt(new EmptyStmt());</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(LabeledStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L148">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        return n.getStatement() != null ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ReturnStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ThrowStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L159" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(SwitchEntry n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L164">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L165">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (!n.getStatements().isEmpty())</span>
+<span class="nc" id="L167">            return n;</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(SwitchStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L173">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L174">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ExpressionStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(ExplicitConstructorInvocationStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        return arg.contains(n) ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(TryStmt n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L190">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L191">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+
+    @Override
+    public Visitable visit(CatchClause n, NodeHashSet&lt;Node&gt; arg) {
+<span class="nc" id="L197">        boolean keep = arg.contains(n);</span>
+<span class="nc" id="L198">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">        return keep ? n : null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

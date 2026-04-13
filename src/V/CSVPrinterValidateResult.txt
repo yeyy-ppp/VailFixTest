@@ -1,0 +1,12 @@
+[2026-01-21 12:58:15] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: CSVPrinter, close, close, endOfRecord, flush, getOut, getRecordCount, print, printComment, printHeaders, printRecord, printRecord, printRecord, printRecords, printRecords, printRecords, printRecords, printRecords, printRecords
+  未覆盖: println, printRaw, printRecordObject
+
+[2026-01-21 13:01:55] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: CSVPrinter, close, close, endOfRecord, flush, getOut, getRecordCount, print, printComment, printHeaders, println, printRaw, printRecord, printRecord, printRecord, printRecordObject, printRecords, printRecords, printRecords, printRecords, printRecords, printRecords
+  未覆盖: 全部覆盖
+

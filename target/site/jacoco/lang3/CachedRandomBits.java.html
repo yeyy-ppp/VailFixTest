@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CachedRandomBits.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">CachedRandomBits.java</span></div><h1>CachedRandomBits.java</h1><pre class="source lang-java linenums">package lang3;
+import java.util.Objects;
+import java.util.Random;
+<span class="fc" id="L4">final class CachedRandomBits {</span>
+    private static final int MAX_CACHE_SIZE = Integer.MAX_VALUE &gt;&gt; 3;
+    private static final int MAX_BITS = 32;
+    private static final int BIT_INDEX_MASK = 0x7;
+    private static final int BITS_PER_BYTE = 8;
+    private final Random random;
+    private final byte[] cache;
+    private int bitIndex;
+<span class="fc" id="L12">    CachedRandomBits(final int cacheSize, final Random random) {</span>
+<span class="pc bpc" id="L13" title="1 of 2 branches missed.">        if (cacheSize &lt;= 0) {</span>
+<span class="nc" id="L14">            throw new IllegalArgumentException(&quot;cacheSize must be positive&quot;);</span>
+        }
+<span class="pc bpc" id="L16" title="1 of 2 branches missed.">        this.cache = cacheSize &lt;= MAX_CACHE_SIZE ? new byte[cacheSize] : new byte[MAX_CACHE_SIZE];</span>
+<span class="fc" id="L17">        this.random = Objects.requireNonNull(random, &quot;random&quot;);</span>
+<span class="fc" id="L18">        this.random.nextBytes(this.cache);</span>
+<span class="fc" id="L19">        this.bitIndex = 0;</span>
+<span class="fc" id="L20">    }</span>
+    public int nextBits(final int bits) {
+<span class="pc bpc" id="L22" title="2 of 4 branches missed.">        if (bits &gt; MAX_BITS || bits &lt;= 0) {</span>
+<span class="nc" id="L23">            throw new IllegalArgumentException(&quot;number of bits must be between 1 and &quot; + MAX_BITS);</span>
+        }
+<span class="fc" id="L25">        int result = 0;</span>
+<span class="fc" id="L26">        int generatedBits = 0;</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        while (generatedBits &lt; bits) {</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">            if (bitIndex &gt;&gt; 3 &gt;= cache.length) {</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">                assert bitIndex == cache.length * BITS_PER_BYTE;</span>
+<span class="fc" id="L30">                random.nextBytes(cache);</span>
+<span class="fc" id="L31">                bitIndex = 0;</span>
+            }
+<span class="fc" id="L33">            final int generatedBitsInIteration = Math.min(</span>
+                BITS_PER_BYTE - (bitIndex &amp; BIT_INDEX_MASK),
+                bits - generatedBits);
+<span class="fc" id="L36">            result = result &lt;&lt; generatedBitsInIteration;</span>
+<span class="fc" id="L37">            result |= cache[bitIndex &gt;&gt; 3] &gt;&gt; (bitIndex &amp; BIT_INDEX_MASK) &amp; ((1 &lt;&lt; generatedBitsInIteration) - 1);</span>
+<span class="fc" id="L38">            generatedBits += generatedBitsInIteration;</span>
+<span class="fc" id="L39">            bitIndex += generatedBitsInIteration;</span>
+<span class="fc" id="L40">        }</span>
+<span class="fc" id="L41">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

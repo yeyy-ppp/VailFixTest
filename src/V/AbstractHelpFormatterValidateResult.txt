@@ -1,0 +1,42 @@
+[2026-01-19 17:21:26] 验证结果
+错误类型: 未知错误, 错误行: 3, 错误原因: 待测类Option/OptionGroup/Options必须使用包cli.help，但测试代码中使用了cli包, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator
+  未覆盖: AbstractHelpFormatter, getTableDefinition, printHelp, printHelp, printOptions, printOptions, printOptions, asThis, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+
+[2026-01-19 17:27:39] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, getTableDefinition, printHelp, printHelp, printOptions, printOptions, printOptions, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, asThis, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+  未覆盖: AbstractHelpFormatter
+
+[2026-01-20 09:26:52] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, getTableDefinition, printHelp, printHelp, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, asThis, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+  未覆盖: AbstractHelpFormatter, printOptions, printOptions, printOptions
+
+[2026-01-20 09:32:47] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, getTableDefinition, printHelp, printHelp, printOptions, printOptions, printOptions, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, asThis, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+  未覆盖: AbstractHelpFormatter
+
+[2026-01-20 10:41:33] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: AbstractHelpFormatter, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, getTableDefinition, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+  未覆盖: printHelp, printHelp, printOptions, printOptions, printOptions, asThis
+
+[2026-01-20 11:30:53] 验证结果
+错误类型: 未知错误, 错误行: 83, 错误原因: 未导入TextHelpAppendable、OptionFormatter、TableDefinition类, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, getTableDefinition, printHelp, printHelp, printOptions, printOptions, printOptions, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+  未覆盖: AbstractHelpFormatter, asThis
+
+[2026-01-20 11:34:19] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionFormatter, getOptionGroupSeparator, getSerializer, getSyntaxPrefix, getTableDefinition, printHelp, printHelp, printOptions, printOptions, printOptions, setSyntaxPrefix, sort, sort, toArgName, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, toSyntaxOptions, Builder, asThis, getComparator, getHelpAppendable, getOptionFormatBuilder, getOptionGroupSeparator, setComparator, setHelpAppendable, setOptionFormatBuilder, setOptionGroupSeparator
+  未覆盖: AbstractHelpFormatter
+

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractFutureProxy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.concurrent</a> &gt; <span class="el_source">AbstractFutureProxy.java</span></div><h1>AbstractFutureProxy.java</h1><pre class="source lang-java linenums">package lang3.concurrent;
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+public abstract class AbstractFutureProxy&lt;V&gt; implements Future&lt;V&gt; {
+    private final Future&lt;V&gt; future;
+<span class="fc" id="L9">    public AbstractFutureProxy(final Future&lt;V&gt; future) {</span>
+<span class="fc" id="L10">        this.future = Objects.requireNonNull(future, &quot;future&quot;);</span>
+<span class="fc" id="L11">    }</span>
+    @Override
+    public boolean cancel(final boolean mayInterruptIfRunning) {
+<span class="fc" id="L14">        return future.cancel(mayInterruptIfRunning);</span>
+    }
+    @Override
+    public V get() throws InterruptedException, ExecutionException {
+<span class="fc" id="L18">        return future.get();</span>
+    }
+    @Override
+    public V get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+<span class="fc" id="L22">        return future.get(timeout, unit);</span>
+    }
+    public Future&lt;V&gt; getFuture() {
+<span class="fc" id="L25">        return future;</span>
+    }
+    @Override
+    public boolean isCancelled() {
+<span class="fc" id="L29">        return future.isCancelled();</span>
+    }
+    @Override
+    public boolean isDone() {
+<span class="fc" id="L33">        return future.isDone();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

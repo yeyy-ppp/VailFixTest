@@ -1,0 +1,35 @@
+```
+包路径：gson.internal.bind
+类名：ObjectTypeAdapter
+父类：TypeAdapter<Object>
+依赖类：Gson,ToNumberPolicy,ToNumberStrategy,TypeAdapter,TypeAdapterFactory,LinkedTreeMap,TypeToken,JsonReader,JsonToken,JsonWriter
+---
+序号：1
+方法名：ObjectTypeAdapter(Gson gson, ToNumberStrategy toNumberStrategy)
+返回类型：无
+功能描述：初始化ObjectTypeAdapter实例
+序号：2
+方法名：newFactory(ToNumberStrategy toNumberStrategy)
+返回类型：TypeAdapterFactory
+功能描述：创建并返回基于指定数字策略的TypeAdapterFactory
+序号：3
+方法名：getFactory(ToNumberStrategy toNumberStrategy)
+返回类型：TypeAdapterFactory
+功能描述：获取指定数字策略对应的TypeAdapterFactory
+序号：4
+方法名：tryBeginNesting(JsonReader in, JsonToken peeked)
+返回类型：Object
+功能描述：尝试开始嵌套结构读取并返回初始集合对象
+序号：5
+方法名：readTerminal(JsonReader in, JsonToken peeked)
+返回类型：Object
+功能描述：读取基础JSON值并返回对应Java对象
+序号：6
+方法名：read(JsonReader in)
+返回类型：Object
+功能描述：解析JSON流并构建完整Java对象结构
+序号：7
+方法名：write(JsonWriter out, Object value)
+返回类型：void
+功能描述：将Java对象写入JSON流
+```

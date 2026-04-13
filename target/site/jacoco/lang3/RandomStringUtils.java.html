@@ -1,0 +1,293 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RandomStringUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">RandomStringUtils.java</span></div><h1>RandomStringUtils.java</h1><pre class="source lang-java linenums">package lang3;
+import org.apache.maven.surefire.shared.lang3.StringUtils;
+
+import java.util.Random;
+import java.util.function.Supplier;
+public class RandomStringUtils {
+<span class="fc" id="L7">    private static final Supplier&lt;lang3.RandomUtils&gt; SECURE_SUPPLIER = lang3.RandomUtils::secure;</span>
+<span class="fc" id="L8">    private static final RandomStringUtils INSECURE = new RandomStringUtils(lang3.RandomUtils::insecure);</span>
+<span class="fc" id="L9">    private static final RandomStringUtils SECURE = new RandomStringUtils(SECURE_SUPPLIER);</span>
+<span class="fc" id="L10">    private static final RandomStringUtils SECURE_STRONG = new RandomStringUtils(lang3.RandomUtils::secureStrong);</span>
+<span class="fc" id="L11">    private static final char[] ALPHANUMERICAL_CHARS = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l',</span>
+            'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z', 'A', 'B', 'C', 'D', 'E', 'F', 'G',
+            'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', '0', '1',
+            '2', '3', '4', '5', '6', '7', '8', '9' };
+    private static final int ASCII_0 = '0';
+    private static final int ASCII_9 = '9';
+    private static final int ASCII_A = 'A';
+    private static final int ASCII_z = 'z';
+    private static final int CACHE_PADDING_BITS = 3;
+    private static final int BITS_TO_BYTES_DIVISOR = 5;
+    private static final int BASE_CACHE_SIZE_PADDING = 10;
+    public static RandomStringUtils insecure() {
+<span class="fc" id="L23">        return INSECURE;</span>
+    }
+    @Deprecated
+    public static String random(final int count) {
+<span class="nc" id="L27">        return secure().next(count);</span>
+    }
+    @Deprecated
+    public static String random(final int count, final boolean letters, final boolean numbers) {
+<span class="nc" id="L31">        return secure().next(count, letters, numbers);</span>
+    }
+    @Deprecated
+    public static String random(final int count, final char... chars) {
+<span class="nc" id="L35">        return secure().next(count, chars);</span>
+    }
+    @Deprecated
+    public static String random(final int count, final int start, final int end, final boolean letters,
+            final boolean numbers) {
+<span class="nc" id="L40">        return secure().next(count, start, end, letters, numbers);</span>
+    }
+    @Deprecated
+    public static String random(final int count, final int start, final int end, final boolean letters,
+            final boolean numbers, final char... chars) {
+<span class="nc" id="L45">        return secure().next(count, start, end, letters, numbers, chars);</span>
+    }
+    public static String random(int count, int start, int end, final boolean letters, final boolean digits,
+            final char[] chars, final Random random) {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (count == 0) {</span>
+<span class="fc" id="L50">            return StringUtils.EMPTY;</span>
+        }
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (count &lt; 0) {</span>
+<span class="fc" id="L53">            throw new IllegalArgumentException(&quot;Requested random string length &quot; + count + &quot; is less than 0.&quot;);</span>
+        }
+<span class="fc bfc" id="L55" title="All 4 branches covered.">        if (chars != null &amp;&amp; chars.length == 0) {</span>
+<span class="fc" id="L56">            throw new IllegalArgumentException(&quot;The chars array must not be empty&quot;);</span>
+        }
+<span class="fc bfc" id="L58" title="All 4 branches covered.">        if (start == 0 &amp;&amp; end == 0) {</span>
+<span class="fc bfc" id="L59" title="All 2 branches covered.">            if (chars != null) {</span>
+<span class="fc" id="L60">                end = chars.length;</span>
+<span class="fc bfc" id="L61" title="All 4 branches covered.">            } else if (!letters &amp;&amp; !digits) {</span>
+<span class="fc" id="L62">                end = Character.MAX_CODE_POINT;</span>
+            } else {
+<span class="fc" id="L64">                end = 'z' + 1;</span>
+<span class="fc" id="L65">                start = ' ';</span>
+            }
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        } else if (end &lt;= start) {</span>
+<span class="fc" id="L68">            throw new IllegalArgumentException(&quot;Parameter end (&quot; + end + &quot;) must be greater than start (&quot; + start + &quot;)&quot;);</span>
+<span class="pc bpc" id="L69" title="1 of 4 branches missed.">        } else if (start &lt; 0 || end &lt; 0) {</span>
+<span class="fc" id="L70">            throw new IllegalArgumentException(&quot;Character positions MUST be &gt;= 0&quot;);</span>
+        }
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">        if (end &gt; Character.MAX_CODE_POINT) {</span>
+<span class="nc" id="L73">            end = Character.MAX_CODE_POINT;</span>
+        }
+<span class="fc bfc" id="L75" title="All 4 branches covered.">        if (chars == null &amp;&amp; end &lt;= 0x7f) {</span>
+<span class="pc bpc" id="L76" title="2 of 8 branches missed.">            if (letters &amp;&amp; digits &amp;&amp; start &lt;= ASCII_0 &amp;&amp; end &gt;= ASCII_z + 1) {</span>
+<span class="fc" id="L77">                return random(count, 0, 0, false, false, ALPHANUMERICAL_CHARS, random);</span>
+            }
+<span class="fc bfc" id="L79" title="All 8 branches covered.">            if (digits &amp;&amp; end &lt;= ASCII_0 || letters &amp;&amp; end &lt;= ASCII_A) {</span>
+<span class="fc" id="L80">                throw new IllegalArgumentException(&quot;Parameter end (&quot; + end + &quot;) must be greater than (&quot; + ASCII_0 + &quot;) for generating digits &quot;</span>
+                        + &quot;or greater than (&quot; + ASCII_A + &quot;) for generating letters.&quot;);
+            }
+<span class="pc bpc" id="L83" title="1 of 4 branches missed.">            if (letters &amp;&amp; digits) {</span>
+<span class="nc" id="L84">                start = Math.max(ASCII_0, start);</span>
+<span class="nc" id="L85">                end = Math.min(ASCII_z + 1, end);</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            } else if (digits) {</span>
+<span class="fc" id="L87">                start = Math.max(ASCII_0, start);</span>
+<span class="fc" id="L88">                end = Math.min(ASCII_9 + 1, end);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">            } else if (letters) {</span>
+<span class="fc" id="L90">                start = Math.max(ASCII_A, start);</span>
+<span class="fc" id="L91">                end = Math.min(ASCII_z + 1, end);</span>
+            }
+        }
+<span class="pc bpc" id="L94" title="1 of 4 branches missed.">        if (letters &amp;&amp; !digits) {</span>
+<span class="pc bpc" id="L95" title="1 of 2 branches missed.">            for (int i = start; i &lt; end; i++) {</span>
+<span class="pc bpc" id="L96" title="1 of 2 branches missed.">                if (Character.isLetter(i)) {</span>
+<span class="fc" id="L97">                    break;</span>
+                }
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                if (i == end - 1) {</span>
+<span class="nc" id="L100">                    throw new IllegalArgumentException(String.format(&quot;No letters exist between start %,d and end %,d.&quot;, start, end));</span>
+                }
+            }
+        }
+<span class="fc bfc" id="L104" title="All 4 branches covered.">        if (!letters &amp;&amp; digits) {</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">            for (int i = start; i &lt; end; i++) {</span>
+<span class="pc bpc" id="L106" title="1 of 2 branches missed.">                if (Character.isDigit(i)) {</span>
+<span class="fc" id="L107">                    break;</span>
+                }
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (i == end - 1) {</span>
+<span class="nc" id="L110">                    throw new IllegalArgumentException(String.format(&quot;No digits exist between start %,d and end %,d.&quot;, start, end));</span>
+                }
+            }
+        }
+<span class="fc" id="L114">        final StringBuilder builder = new StringBuilder(count);</span>
+<span class="fc" id="L115">        final int gap = end - start;</span>
+<span class="fc" id="L116">        final int gapBits = Integer.SIZE - Integer.numberOfLeadingZeros(gap);</span>
+<span class="fc" id="L117">        final long desiredCacheSize = ((long) count * gapBits + CACHE_PADDING_BITS) / BITS_TO_BYTES_DIVISOR + BASE_CACHE_SIZE_PADDING;</span>
+<span class="fc" id="L118">        final int cacheSize = (int) Math.min(desiredCacheSize, Integer.MAX_VALUE / BITS_TO_BYTES_DIVISOR + BASE_CACHE_SIZE_PADDING);</span>
+<span class="fc" id="L119">        final CachedRandomBits arb = new CachedRandomBits(cacheSize, random);</span>
+<span class="fc bfc" id="L120" title="All 2 branches covered.">        while (count-- != 0) {</span>
+<span class="fc" id="L121">            final int randomValue = arb.nextBits(gapBits) + start;</span>
+<span class="fc bfc" id="L122" title="All 2 branches covered.">            if (randomValue &gt;= end) {</span>
+<span class="fc" id="L123">                count++;</span>
+<span class="fc" id="L124">                continue;</span>
+            }
+            final int codePoint;
+<span class="fc bfc" id="L127" title="All 2 branches covered.">            if (chars == null) {</span>
+<span class="fc" id="L128">                codePoint = randomValue;</span>
+<span class="fc bfc" id="L129" title="All 2 branches covered.">                switch (Character.getType(codePoint)) {</span>
+                case Character.UNASSIGNED:
+                case Character.PRIVATE_USE:
+                case Character.SURROGATE:
+<span class="fc" id="L133">                    count++;</span>
+<span class="fc" id="L134">                    continue;</span>
+                }
+            } else {
+<span class="fc" id="L137">                codePoint = chars[randomValue];</span>
+            }
+<span class="fc" id="L139">            final int numberOfChars = Character.charCount(codePoint);</span>
+<span class="fc bfc" id="L140" title="All 4 branches covered.">            if (count == 0 &amp;&amp; numberOfChars &gt; 1) {</span>
+<span class="fc" id="L141">                count++;</span>
+<span class="fc" id="L142">                continue;</span>
+            }
+<span class="pc bpc" id="L144" title="2 of 12 branches missed.">            if (letters &amp;&amp; Character.isLetter(codePoint) || digits &amp;&amp; Character.isDigit(codePoint) || !letters &amp;&amp; !digits) {</span>
+<span class="fc" id="L145">                builder.appendCodePoint(codePoint);</span>
+<span class="fc bfc" id="L146" title="All 2 branches covered.">                if (numberOfChars == 2) {</span>
+<span class="fc" id="L147">                    count--;</span>
+                }
+            } else {
+<span class="fc" id="L150">                count++;</span>
+            }
+<span class="fc" id="L152">        }</span>
+<span class="fc" id="L153">        return builder.toString();</span>
+    }
+    @Deprecated
+    public static String random(final int count, final String chars) {
+<span class="nc" id="L157">        return secure().next(count, chars);</span>
+    }
+    @Deprecated
+    public static String randomAlphabetic(final int count) {
+<span class="fc" id="L161">        return secure().nextAlphabetic(count);</span>
+    }
+    @Deprecated
+    public static String randomAlphabetic(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L165">        return secure().nextAlphabetic(minLengthInclusive, maxLengthExclusive);</span>
+    }
+    @Deprecated
+    public static String randomAlphanumeric(final int count) {
+<span class="fc" id="L169">        return secure().nextAlphanumeric(count);</span>
+    }
+    @Deprecated
+    public static String randomAlphanumeric(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L173">        return secure().nextAlphanumeric(minLengthInclusive, maxLengthExclusive);</span>
+    }
+    @Deprecated
+    public static String randomAscii(final int count) {
+<span class="fc" id="L177">        return secure().nextAscii(count);</span>
+    }
+    @Deprecated
+    public static String randomAscii(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L181">        return secure().nextAscii(minLengthInclusive, maxLengthExclusive);</span>
+    }
+    @Deprecated
+    public static String randomGraph(final int count) {
+<span class="fc" id="L185">        return secure().nextGraph(count);</span>
+    }
+    @Deprecated
+    public static String randomGraph(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L189">        return secure().nextGraph(minLengthInclusive, maxLengthExclusive);</span>
+    }
+    @Deprecated
+    public static String randomNumeric(final int count) {
+<span class="fc" id="L193">        return secure().nextNumeric(count);</span>
+    }
+    @Deprecated
+    public static String randomNumeric(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L197">        return secure().nextNumeric(minLengthInclusive, maxLengthExclusive);</span>
+    }
+    @Deprecated
+    public static String randomPrint(final int count) {
+<span class="fc" id="L201">        return secure().nextPrint(count);</span>
+    }
+    @Deprecated
+    public static String randomPrint(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L205">        return secure().nextPrint(minLengthInclusive, maxLengthExclusive);</span>
+    }
+    public static RandomStringUtils secure() {
+<span class="fc" id="L208">        return SECURE;</span>
+    }
+    public static RandomStringUtils secureStrong() {
+<span class="fc" id="L211">        return SECURE_STRONG;</span>
+    }
+    private final Supplier&lt;lang3.RandomUtils&gt; random;
+    @Deprecated
+    public RandomStringUtils() {
+<span class="fc" id="L216">        this(SECURE_SUPPLIER);</span>
+<span class="fc" id="L217">    }</span>
+<span class="fc" id="L218">    private RandomStringUtils(final Supplier&lt;lang3.RandomUtils&gt; random) {</span>
+<span class="fc" id="L219">        this.random = random;</span>
+<span class="fc" id="L220">    }</span>
+    public String next(final int count) {
+<span class="fc" id="L222">        return next(count, false, false);</span>
+    }
+    public String next(final int count, final boolean letters, final boolean numbers) {
+<span class="fc" id="L225">        return next(count, 0, 0, letters, numbers);</span>
+    }
+    public String next(final int count, final char... chars) {
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        if (chars == null) {</span>
+<span class="nc" id="L229">            return random(count, 0, 0, false, false, null, random());</span>
+        }
+<span class="fc" id="L231">        return random(count, 0, chars.length, false, false, chars, random());</span>
+    }
+    public String next(final int count, final int start, final int end, final boolean letters, final boolean numbers) {
+<span class="fc" id="L234">        return random(count, start, end, letters, numbers, null, random());</span>
+    }
+    public String next(final int count, final int start, final int end, final boolean letters, final boolean numbers,
+            final char... chars) {
+<span class="nc" id="L238">        return random(count, start, end, letters, numbers, chars, random());</span>
+    }
+    public String next(final int count, final String chars) {
+<span class="pc bpc" id="L241" title="1 of 2 branches missed.">        if (chars == null) {</span>
+<span class="nc" id="L242">            return random(count, 0, 0, false, false, null, random());</span>
+        }
+<span class="fc" id="L244">        return next(count, chars.toCharArray());</span>
+    }
+    public String nextAlphabetic(final int count) {
+<span class="fc" id="L247">        return next(count, true, false);</span>
+    }
+    public String nextAlphabetic(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L250">        return nextAlphabetic(randomUtils().randomInt(minLengthInclusive, maxLengthExclusive));</span>
+    }
+    public String nextAlphanumeric(final int count) {
+<span class="fc" id="L253">        return next(count, true, true);</span>
+    }
+    public String nextAlphanumeric(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L256">        return nextAlphanumeric(randomUtils().randomInt(minLengthInclusive, maxLengthExclusive));</span>
+    }
+    public String nextAscii(final int count) {
+<span class="fc" id="L259">        return next(count, 32, 127, false, false);</span>
+    }
+    public String nextAscii(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L262">        return nextAscii(randomUtils().randomInt(minLengthInclusive, maxLengthExclusive));</span>
+    }
+    public String nextGraph(final int count) {
+<span class="fc" id="L265">        return next(count, 33, 126, false, false);</span>
+    }
+    public String nextGraph(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L268">        return nextGraph(randomUtils().randomInt(minLengthInclusive, maxLengthExclusive));</span>
+    }
+    public String nextNumeric(final int count) {
+<span class="fc" id="L271">        return next(count, false, true);</span>
+    }
+    public String nextNumeric(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L274">        return nextNumeric(randomUtils().randomInt(minLengthInclusive, maxLengthExclusive));</span>
+    }
+    public String nextPrint(final int count) {
+<span class="fc" id="L277">        return next(count, 32, 126, false, false);</span>
+    }
+    public String nextPrint(final int minLengthInclusive, final int maxLengthExclusive) {
+<span class="fc" id="L280">        return nextPrint(randomUtils().randomInt(minLengthInclusive, maxLengthExclusive));</span>
+    }
+    private Random random() {
+<span class="fc" id="L283">        return randomUtils().random();</span>
+    }
+    private RandomUtils randomUtils() {
+<span class="fc" id="L286">        return random.get();</span>
+    }
+    @Override
+    public String toString() {
+<span class="fc" id="L290">        return &quot;RandomStringUtils [random=&quot; + random() + &quot;]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,245 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SDG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.sdg</a> &gt; <span class="el_source">SDG.java</span></div><h1>SDG.java</h1><pre class="source lang-java linenums">package slicing.graphs.sdg;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.stmt.TryStmt;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import lombok.Getter;
+import lombok.var;
+import slicing.arcs.pdg.ControlDependencyArc;
+import slicing.arcs.pdg.DataDependencyArc;
+import slicing.arcs.sdg.CallArc;
+import slicing.arcs.sdg.InterproceduralArc;
+import slicing.arcs.sdg.ParameterInOutArc;
+import slicing.arcs.sdg.SummaryArc;
+import slicing.graphs.Buildable;
+import slicing.graphs.CallGraph;
+import slicing.graphs.ClassGraph;
+import slicing.graphs.Graph;
+import slicing.graphs.cfg.CFG;
+import slicing.graphs.pdg.PDG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.SyntheticNode;
+import slicing.slicing.*;
+import slicing.utils.ASTUtils;
+
+import java.util.Collection;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Set;
+
+/**
+ * The &lt;b&gt;System Dependence Graph&lt;/b&gt; represents the statements of a program in
+ * a graph, connecting statements according to their {@link ControlDependencyArc control},
+ * {@link DataDependencyArc data} and {@link InterproceduralArc interprocedural}
+ * relationships. You can build one manually or use the {@link Builder SDGBuilder}.
+ * The variations of the SDG are represented as child types.
+ * &lt;ol&gt;
+ *      &lt;li&gt;Build a graph: {@link #build(NodeList)}&lt;/li&gt;
+ *      &lt;li&gt;Slice a graph: {@link #slice(SlicingCriterion)}&lt;/li&gt;
+ *      &lt;li&gt;Obtain the sliced Java: {@link Slice#toAst()}&lt;/li&gt;
+ * &lt;/ol&gt;
+ */
+<span class="nc" id="L47">public class SDG extends Graph implements Sliceable, Buildable&lt;NodeList&lt;CompilationUnit&gt;&gt; {</span>
+<span class="nc" id="L48">    @Getter</span>
+<span class="nc" id="L49">    protected final Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap = ASTUtils.newIdentityHashMap();</span>
+    @Getter
+    protected CallGraph callGraph;
+
+<span class="nc" id="L53">    protected boolean built = false;</span>
+    protected NodeList&lt;CompilationUnit&gt; compilationUnits;
+
+    /** Obtain the list of compilation units used to create this graph. */
+    public NodeList&lt;CompilationUnit&gt; getCompilationUnits() {
+<span class="nc" id="L58">        return compilationUnits;</span>
+    }
+
+    @Override
+    public Slice slice(SlicingCriterion slicingCriterion) {
+        Set&lt;GraphNode&lt;?&gt;&gt; slicingCriterionNodes;
+        try {
+<span class="nc" id="L65">            slicingCriterionNodes = slicingCriterion.findNode(this);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            assert !slicingCriterionNodes.isEmpty();</span>
+<span class="nc" id="L67">        } catch (NoSuchElementException e) {</span>
+<span class="nc" id="L68">            throw new IllegalArgumentException(&quot;Could not locate the slicing criterion &quot; + slicingCriterion);</span>
+<span class="nc" id="L69">        }</span>
+<span class="nc" id="L70">        return createSlicingAlgorithm().traverse(slicingCriterionNodes);</span>
+    }
+
+    protected SlicingAlgorithm createSlicingAlgorithm() {
+<span class="nc" id="L74">        return new ClassicSlicingAlgorithm(this);</span>
+    }
+
+    @Override
+    public void build(NodeList&lt;CompilationUnit&gt; nodeList) {
+<span class="nc" id="L79">        var builder = createBuilder();</span>
+<span class="nc" id="L80">        builder.build(nodeList);</span>
+<span class="nc" id="L81">        this.callGraph = builder.callGraph;</span>
+<span class="nc" id="L82">        compilationUnits = nodeList;</span>
+<span class="nc" id="L83">        built = true;</span>
+<span class="nc" id="L84">    }</span>
+
+    /** Create a new SDG builder. Child classes that wish to alter the creation of the graph
+     * should create a new SDG builder and override this method. */
+    protected Builder createBuilder() {
+<span class="nc" id="L89">        return new Builder();</span>
+    }
+
+    @Override
+    public boolean isBuilt() {
+<span class="nc" id="L94">        return built;</span>
+    }
+
+    /** Obtain the CFGs that were generated in the process of creating this graph. */
+    public Collection&lt;CFG&gt; getCFGs() {
+<span class="nc" id="L99">        return cfgMap.values();</span>
+    }
+
+    /** @see CFG#isPredicate(GraphNode) */
+    public boolean isPredicate(GraphNode&lt;?&gt; node) {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (node instanceof SyntheticNode)</span>
+<span class="nc" id="L105">            return false;</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        for (CFG cfg : cfgMap.values())</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">            if (cfg.containsVertex(node))</span>
+<span class="nc" id="L108">                return cfg.isPredicate(node);</span>
+<span class="nc" id="L109">        throw new IllegalArgumentException(&quot;Node &quot; + node.getId() + &quot;'s associated CFG cannot be found!&quot;);</span>
+    }
+
+    public void addCallArc(GraphNode&lt;?&gt; from, GraphNode&lt;? extends CallableDeclaration&lt;?&gt;&gt; to) {
+<span class="nc" id="L113">        this.addEdge(from, to, new CallArc());</span>
+<span class="nc" id="L114">    }</span>
+
+    public void addParameterInOutArc(GraphNode&lt;?&gt; from, GraphNode&lt;?&gt; to) {
+<span class="nc" id="L117">        this.addEdge(from, to, new ParameterInOutArc());</span>
+<span class="nc" id="L118">    }</span>
+
+    public void addSummaryArc(SyntheticNode&lt;?&gt; from, SyntheticNode&lt;?&gt; to) {
+<span class="nc" id="L121">        this.addEdge(from, to, new SummaryArc());</span>
+<span class="nc" id="L122">    }</span>
+
+    /** Populates this SDG by building the corresponding CFGs, call graph, performing data flow analyses,
+     *  building the PDGs, connecting the calls to declarations and computing the summary arcs.
+     *  By default, it uses {@link PDG}s and {@link CFG}s. */
+<span class="nc" id="L127">    public class Builder {</span>
+        protected CallGraph callGraph;
+
+        public void build(NodeList&lt;CompilationUnit&gt; nodeList) {
+            // See creation strategy at http://kaz2.dsic.upv.es:3000/Fzg46cQvT1GzHQG9hFnP1g#Using-data-flow-in-the-SDG
+            // This ordering cannot be altered, as each step requires elements from the previous one.
+<span class="nc" id="L133">            createClassGraph(nodeList); // 0</span>
+<span class="nc" id="L134">            buildCFGs(nodeList);        // 1</span>
+<span class="nc" id="L135">            createCallGraph(nodeList);  // 2</span>
+<span class="nc" id="L136">            dataFlowAnalysis();         // 3</span>
+<span class="nc" id="L137">            buildAndCopyPDGs();         // 4</span>
+<span class="nc" id="L138">            connectCalls();             // 5</span>
+<span class="nc" id="L139">            createSummaryArcs();        // 6</span>
+<span class="nc" id="L140">        }</span>
+
+        /** Build a CFG per declaration found in the list of compilation units. */
+        protected void buildCFGs(NodeList&lt;CompilationUnit&gt; nodeList) {
+<span class="nc" id="L144">            nodeList.accept(new VoidVisitorAdapter&lt;Void&gt;() {</span>
+                @Override
+                public void visit(MethodDeclaration n, Void arg) {
+<span class="nc" id="L147">                    boolean isInInterface = n.findAncestor(ClassOrInterfaceDeclaration.class)</span>
+<span class="nc" id="L148">                            .map(ClassOrInterfaceDeclaration::isInterface).orElse(false);</span>
+<span class="nc bnc" id="L149" title="All 4 branches missed.">                    isInInterface = isInInterface &amp;&amp; !n.isStatic();</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                    if (containTryWithResources(n)) {</span>
+<span class="nc" id="L151">                        return;</span>
+                    }
+<span class="nc bnc" id="L153" title="All 4 branches missed.">                    if (n.isAbstract() || isInInterface)</span>
+<span class="nc" id="L154">                        return; // Allow abstract methods</span>
+<span class="nc" id="L155">                    CFG cfg = createCFG();</span>
+<span class="nc" id="L156">                    buildCFG(n, cfg);</span>
+<span class="nc" id="L157">                    cfgMap.put(n, cfg);</span>
+<span class="nc" id="L158">                    super.visit(n, arg);</span>
+<span class="nc" id="L159">                }</span>
+
+                @Override
+                public void visit(ConstructorDeclaration n, Void arg) {
+<span class="nc" id="L163">                    boolean isInInterface = n.findAncestor(ClassOrInterfaceDeclaration.class)</span>
+<span class="nc" id="L164">                            .map(ClassOrInterfaceDeclaration::isInterface).orElse(false);</span>
+<span class="nc bnc" id="L165" title="All 4 branches missed.">                    isInInterface = isInInterface &amp;&amp; !n.isStatic();</span>
+<span class="nc bnc" id="L166" title="All 4 branches missed.">                    if (n.isAbstract() || isInInterface)</span>
+<span class="nc" id="L167">                        return; // Allow abstract methods</span>
+<span class="nc" id="L168">                    CFG cfg = createCFG();</span>
+<span class="nc" id="L169">                    buildCFG(n, cfg);</span>
+<span class="nc" id="L170">                    cfgMap.put(n, cfg);</span>
+<span class="nc" id="L171">                    super.visit(n, arg);</span>
+<span class="nc" id="L172">                }</span>
+            }, null);
+<span class="nc" id="L174">        }</span>
+
+        private boolean containTryWithResources(CallableDeclaration&lt;?&gt; n) {
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            for (TryStmt tryStmt : n.findAll(TryStmt.class)) {</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">                if (tryStmt.getResources().isNonEmpty()) {</span>
+<span class="nc" id="L179">                    return true;</span>
+                }
+<span class="nc" id="L181">            }</span>
+<span class="nc" id="L182">            return false;</span>
+        }
+
+        /** Given a single empty CFG and a declaration, build the CFG. */
+        protected void buildCFG(CallableDeclaration&lt;?&gt; declaration, CFG cfg) {
+<span class="nc" id="L187">            cfg.build(declaration);</span>
+<span class="nc" id="L188">        }</span>
+
+        /** Create call graph from the list of compilation units. */
+        protected void createCallGraph(NodeList&lt;CompilationUnit&gt; nodeList) {
+<span class="nc" id="L192">            callGraph = new CallGraph(cfgMap, ClassGraph.getInstance());</span>
+<span class="nc" id="L193">            callGraph.build(nodeList);</span>
+<span class="nc" id="L194">        }</span>
+
+        /** Create class graph from the list of compilation units. */
+        protected void createClassGraph(NodeList&lt;CompilationUnit&gt; nodeList){
+<span class="nc" id="L198">            ClassGraph.getNewInstance().build(nodeList);</span>
+<span class="nc" id="L199">        }</span>
+
+
+        /** Perform interprocedural analyses to determine the actual and formal nodes. */
+        protected void dataFlowAnalysis() {
+<span class="nc" id="L204">            new InterproceduralDefinitionFinder(callGraph, cfgMap).save(); // 3.1</span>
+<span class="nc" id="L205">            new InterproceduralUsageFinder(callGraph, cfgMap).save();      // 3.2</span>
+<span class="nc" id="L206">        }</span>
+
+        /** Build a PDG per declaration, based on the CFGs built previously and enhanced by data analyses. */
+        protected void buildAndCopyPDGs() {
+<span class="nc bnc" id="L210" title="All 2 branches missed.">            for (CFG cfg : cfgMap.values()) {</span>
+                // 4.1, 4.2, 4.3
+                try {
+<span class="nc" id="L213">                    PDG pdg = createPDG(cfg);</span>
+<span class="nc" id="L214">                    pdg.build(cfg.getDeclaration());</span>
+                    // 4.4
+<span class="nc" id="L216">                    pdg.vertexSet().forEach(SDG.this::addVertex);</span>
+<span class="nc" id="L217">                    pdg.edgeSet().forEach(arc -&gt; addEdge(pdg.getEdgeSource(arc), pdg.getEdgeTarget(arc), arc));</span>
+<span class="nc" id="L218">                } catch (Exception e) {</span>
+<span class="nc" id="L219">                    e.printStackTrace();</span>
+<span class="nc" id="L220">                }</span>
+<span class="nc" id="L221">            }</span>
+<span class="nc" id="L222">        }</span>
+
+        /** Add interprocedural arcs, connecting calls, their arguments and results to their corresponding declarations. */
+        protected void connectCalls() {
+<span class="nc" id="L226">            new CallConnector(SDG.this).connectAllCalls(callGraph);</span>
+<span class="nc" id="L227">        }</span>
+
+        /** Connect actual-in to actual-out nodes, summarizing the interprocedural arcs. */
+        protected void createSummaryArcs() {
+<span class="nc" id="L231">            new SummaryArcAnalyzer(SDG.this, callGraph).analyze();</span>
+<span class="nc" id="L232">        }</span>
+
+        /** Create a new CFG, of the appropriate type for the kind of SDG we're building. */
+        protected CFG createCFG() {
+<span class="nc" id="L236">            return new CFG();</span>
+        }
+
+        /** Create a new PDG, of the appropriate type for the kind of SDG we're building. */
+        protected PDG createPDG(CFG cfg) {
+<span class="nc" id="L241">            return new PDG(cfg);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

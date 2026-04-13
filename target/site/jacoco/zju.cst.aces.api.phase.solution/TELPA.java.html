@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TELPA.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.phase.solution</a> &gt; <span class="el_source">TELPA.java</span></div><h1>TELPA.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.phase.solution;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.phase.PhaseImpl;
+import zju.cst.aces.coverage.CodeCoverageAnalyzer;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.parser.ProjectParser;
+import zju.cst.aces.util.telpa.JavaParserUtil;
+
+
+import java.io.IOException;
+import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class TELPA extends PhaseImpl {
+    public static  MethodExampleMap methodExampleMap;
+    public static  Map&lt;String, String&gt; forwardAnalysis;
+    public static  Map&lt;String, String&gt; backwardAnalysis;
+    public static  String counterExampleCode;
+<span class="nc" id="L24">    public static  boolean isCovered=false;</span>
+    private JavaParserUtil javaParserUtil;
+    public TELPA(Config config) {
+<span class="nc" id="L27">        super(config);</span>
+<span class="nc" id="L28">        javaParserUtil=new JavaParserUtil(config);</span>
+<span class="nc" id="L29">    }</span>
+    @Override
+    public void prepare() {
+<span class="nc" id="L32">        ProjectParser.config=config;</span>
+<span class="nc" id="L33">        MethodExampleMap methodExampleMap = javaParserUtil.createMethodExampleMap(javaParserUtil.getCompilationUnits());</span>
+<span class="nc" id="L34">        this.methodExampleMap = methodExampleMap;</span>
+<span class="nc" id="L35">        javaParserUtil.findBackwardAnalysis(methodExampleMap);</span>
+<span class="nc" id="L36">        javaParserUtil.exportMethodExampleMap(methodExampleMap);</span>
+<span class="nc" id="L37">        javaParserUtil.exportBackwardAnalysis(methodExampleMap);</span>
+<span class="nc" id="L38">        super.prepare();</span>
+<span class="nc" id="L39">    }</span>
+
+    @Override
+    public PromptConstructorImpl generatePrompt(ClassInfo classInfo, MethodInfo methodInfo, int num) {
+        // String
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (config.getTmpOutput() != null) {</span>
+            // Get forward analysis results
+<span class="nc" id="L46">            Map&lt;String, String&gt;  forwardAnalysis = null;</span>
+<span class="nc" id="L47">            Map&lt;String, String&gt;  backwardAnalysis=null;</span>
+            try {
+<span class="nc" id="L49">                forwardAnalysis = getForwardAnalysis(classInfo, methodInfo);</span>
+                // Get backward analysis results
+<span class="nc" id="L51">                backwardAnalysis = getBackwardAnalysis(classInfo, methodInfo);</span>
+<span class="nc" id="L52">            } catch (IOException e) {</span>
+<span class="nc" id="L53">                throw new RuntimeException(e);</span>
+<span class="nc" id="L54">            }</span>
+<span class="nc" id="L55">            this.forwardAnalysis=forwardAnalysis;</span>
+<span class="nc" id="L56">            this.backwardAnalysis=backwardAnalysis;</span>
+        }
+<span class="nc" id="L58">        String counterExampleCode = getCounterExampleCode(classInfo,methodInfo);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if(counterExampleCode!=null){</span>
+<span class="nc" id="L60">            this.counterExampleCode=counterExampleCode;</span>
+        }
+<span class="nc" id="L62">        return super.generatePrompt(classInfo, methodInfo, num);</span>
+    }
+    @Override
+    public void generateTest(PromptConstructorImpl pc){
+<span class="nc" id="L66">        super.generateTest(pc);</span>
+<span class="nc" id="L67">    }</span>
+
+    public String getCounterExampleCode(ClassInfo classInfo,MethodInfo methodInfo) {
+<span class="nc" id="L70">        NodeList&lt;CompilationUnit&gt; parseResult = javaParserUtil.addTestFiles(config.getCounterExamplePath());</span>
+        //Initialize the Coverage Relevant Variables
+<span class="nc" id="L72">        StringBuilder counterExampleCode = new StringBuilder();</span>
+<span class="nc" id="L73">        List&lt;Map&lt;String, Object&gt;&gt; coverageResults = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L74">        Map&lt;String, Object&gt; bestCoverageInfo = null;</span>
+<span class="nc" id="L75">        List&lt;String&gt; selectedMethods = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L76">        Set&lt;String&gt; totalUncoveredLines = new HashSet&lt;&gt;();</span>
+
+
+<span class="nc" id="L79">        String targetMethodName = classInfo.getFullClassName() + &quot;.&quot; + methodInfo.getMethodSignature();</span>
+
+        // Backward analysis result data structure as follows:
+<span class="nc" id="L82">        Map&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; methodPaths = this.methodExampleMap.getMemList();</span>
+
+<span class="nc bnc" id="L84" title="All 4 branches missed.">        if(methodPaths!=null&amp;&amp;methodPaths.containsKey(targetMethodName)) {</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">            for (List&lt;MethodExampleMap.MEC&gt; path : methodPaths.get(targetMethodName)) {</span>
+<span class="nc" id="L86">                MethodExampleMap.MEC topMethod = path.get(path.size() - 1);  // Get the top method of the path</span>
+<span class="nc" id="L87">                Map&lt;String, String&gt; testMethodInfo = javaParserUtil.findCodeByMethodInfo(topMethod.getMethodName(), parseResult);</span>
+                try {
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                    for (Map.Entry&lt;String, String&gt; testMethod : testMethodInfo.entrySet()) {</span>
+<span class="nc" id="L90">                        Map&lt;String, Object&gt; coverageInfo = new CodeCoverageAnalyzer().analyzeCoverage(</span>
+<span class="nc" id="L91">                                testMethod.getValue(), testMethod.getKey(),</span>
+<span class="nc" id="L92">                                classInfo.getFullClassName(),</span>
+<span class="nc" id="L93">                                methodInfo.getMethodSignature(),</span>
+<span class="nc" id="L94">                                config.project.getBuildPath().toString(),</span>
+<span class="nc" id="L95">                                config.project.getCompileSourceRoots().get(0),</span>
+                                config.classPaths
+                        );
+<span class="nc" id="L98">                        coverageResults.add(coverageInfo);</span>
+<span class="nc" id="L99">                    }</span>
+<span class="nc" id="L100">                } catch (Exception e) {</span>
+<span class="nc" id="L101">                    config.getLogger().error(&quot;Failed to analyze coverage for &quot; + topMethod.getClassName());</span>
+<span class="nc" id="L102">                }</span>
+<span class="nc" id="L103">            }</span>
+        }
+        // Sort by coverage rate
+<span class="nc" id="L106">        coverageResults.sort((a, b) -&gt; {</span>
+<span class="nc" id="L107">            Double lineCoverageA = (Double) a.get(&quot;lineCoverage&quot;);</span>
+<span class="nc" id="L108">            Double lineCoverageB = (Double) b.get(&quot;lineCoverage&quot;);</span>
+<span class="nc" id="L109">            return Double.compare(lineCoverageB,lineCoverageA);</span>
+        });
+
+        // Select the method with the highest coverage
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (!coverageResults.isEmpty()) {</span>
+<span class="nc" id="L114">            bestCoverageInfo = coverageResults.get(0);</span>
+            // Coverage reached 100.00%
+<span class="nc bnc" id="L116" title="All 2 branches missed.">            if(bestCoverageInfo.get(&quot;lineCoverage&quot;).equals(100.0)){</span>
+<span class="nc" id="L117">                config.getLogger().info(&quot;The test generated by the SBST has reached 100%&quot;);</span>
+<span class="nc" id="L118">                isCovered=true;</span>
+<span class="nc" id="L119">                return null;</span>
+            }
+<span class="nc" id="L121">            totalUncoveredLines.addAll((Collection&lt;String&gt;) bestCoverageInfo.get(&quot;uncoveredLines&quot;));</span>
+<span class="nc" id="L122">            selectedMethods.add(bestCoverageInfo.get(&quot;methodCode&quot;).toString());</span>
+        }
+
+        // Check if other methods can reduce uncovered lines
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (int  i = 1; i &lt; coverageResults.size(); i++) {</span>
+<span class="nc" id="L127">            Map&lt;String, Object&gt; coverageInfo = coverageResults.get(i);</span>
+<span class="nc" id="L128">            List&lt;String&gt; uncoveredLines = (List&lt;String&gt;) coverageInfo.get(&quot;uncoveredLines&quot;);</span>
+<span class="nc" id="L129">            boolean reducesUncoveredLines = false;</span>
+
+<span class="nc bnc" id="L131" title="All 2 branches missed.">            for (String line : totalUncoveredLines) {</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                if (!uncoveredLines.contains(line)) {</span>
+<span class="nc" id="L133">                    reducesUncoveredLines = true;</span>
+<span class="nc" id="L134">                    break;</span>
+                }
+<span class="nc" id="L136">            }</span>
+            // Take intersection
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (reducesUncoveredLines) {</span>
+<span class="nc" id="L139">                totalUncoveredLines.retainAll(uncoveredLines);</span>
+<span class="nc" id="L140">                selectedMethods.add((String) coverageInfo.get(&quot;methodCode&quot;));</span>
+            }
+        }
+
+        // Build the return result
+<span class="nc" id="L145">        counterExampleCode.append(&quot;these counter-examples enter the target method via the selected sequence of method invocations:\n&quot;);</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">        for (String method : selectedMethods) {</span>
+<span class="nc" id="L147">            counterExampleCode.append(method).append(&quot;\n&quot;);</span>
+<span class="nc" id="L148">        }</span>
+
+<span class="nc" id="L150">        return counterExampleCode.toString(); // Return result</span>
+    }
+
+
+    public Map&lt;String, String&gt; getBackwardAnalysis(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L155">        Map&lt;String, String&gt; backwardAnalysis = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L156">        MethodExampleMap methodExampleMap = this.methodExampleMap;</span>
+<span class="nc" id="L157">        String targetMethodName = classInfo.getFullClassName() + &quot;.&quot; + methodInfo.getMethodSignature();</span>
+
+        // Directly get the value corresponding to targetMethodName
+<span class="nc" id="L160">        Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt; paths = methodExampleMap.getMemList().get(targetMethodName);</span>
+<span class="nc bnc" id="L161" title="All 2 branches missed.">        if (paths != null) {</span>
+<span class="nc" id="L162">            StringBuilder info = new StringBuilder();</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            for (List&lt;MethodExampleMap.MEC&gt; path : paths) {</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">                for (int i = path.size() - 1; i &gt;= 0; i--) {</span>
+<span class="nc" id="L165">                    MethodExampleMap.MEC mec = path.get(i);</span>
+<span class="nc" id="L166">                    info.append(mec.getCode()).append(&quot; -&gt; &quot;);</span>
+                }
+<span class="nc" id="L168">                info.append(targetMethodName).append(&quot;\n&quot;);</span>
+<span class="nc" id="L169">            }</span>
+
+<span class="nc bnc" id="L171" title="All 2 branches missed.">            if (info.length() &gt; 0) {</span>
+<span class="nc" id="L172">                backwardAnalysis.put(targetMethodName, info.toString().trim());</span>
+            }
+        }
+<span class="nc" id="L175">        return backwardAnalysis;</span>
+    }
+
+
+    public Map&lt;String, String&gt; getForwardAnalysis(ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L180">        Map&lt;String, String&gt; forwardAnalysis = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L181">        Map&lt;String, TreeSet&lt;OCM.OCC&gt;&gt; ocm = config.ocm.getOCM();</span>
+<span class="nc" id="L182">        String targetClassName = classInfo.getFullClassName();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">        for (Map.Entry&lt;String, TreeSet&lt;OCM.OCC&gt;&gt; entry : ocm.entrySet()) {</span>
+<span class="nc" id="L184">            String key = entry.getKey();</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">            if (targetClassName.equals(key)) {</span>
+<span class="nc" id="L186">                TreeSet&lt;OCM.OCC&gt; occSet = entry.getValue();</span>
+<span class="nc" id="L187">                StringBuilder info = new StringBuilder();</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">                for (OCM.OCC occ : occSet) {</span>
+<span class="nc" id="L189">                    info.append(occ.getClassName()).append(&quot;.&quot;).append(occ.getMethodName())</span>
+<span class="nc" id="L190">                            .append(&quot; at line &quot;).append(occ.getLineNum()).append(&quot; the construction code is &quot;).append(occ.getCode()).append(&quot;\n&quot;);</span>
+<span class="nc" id="L191">                }</span>
+
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                if (info.length() &gt; 0) {</span>
+<span class="nc" id="L194">                    forwardAnalysis.put(targetClassName, info.toString().trim());</span>
+                }
+                break;
+            }
+<span class="nc" id="L198">        }</span>
+<span class="nc" id="L199">        return forwardAnalysis;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

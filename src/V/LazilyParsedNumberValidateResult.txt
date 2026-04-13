@@ -1,0 +1,12 @@
+[2026-01-23 23:53:45] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: LazilyParsedNumber, intValue, longValue, floatValue, doubleValue, toString, writeReplace, readObject, hashCode, equals
+  未覆盖: asBigDecimal
+
+[2026-01-23 23:56:28] 修复后验证结果
+错误类型: 运行时错误, 错误行: 125, 错误原因: 传入null ObjectInputStream可能引发NullPointerException而非预期的InvalidObjectException, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: LazilyParsedNumber, asBigDecimal, intValue, longValue, floatValue, doubleValue, toString, writeReplace, readObject, hashCode, equals
+  未覆盖: 全部覆盖
+

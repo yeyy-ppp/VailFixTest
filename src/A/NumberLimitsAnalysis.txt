@@ -1,0 +1,23 @@
+```
+包路径：gson.internal
+类名：NumberLimits
+父类：无
+依赖类：无
+---
+序号：1
+方法名：NumberLimits()
+返回类型：void
+功能描述：私有构造方法，防止类实例化
+序号：2
+方法名：checkNumberStringLength(String s)
+返回类型：void
+功能描述：检查数字字符串长度是否超过最大限制
+序号：3
+方法名：parseBigDecimal(String s)
+返回类型：BigDecimal
+功能描述：解析字符串为BigDecimal对象并进行有效性检查
+序号：4
+方法名：parseBigInteger(String s)
+返回类型：BigInteger
+功能描述：解析字符串为BigInteger对象并进行长度检查
+```

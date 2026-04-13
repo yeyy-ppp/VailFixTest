@@ -1,0 +1,27 @@
+```
+包路径：cli
+类名：AlreadySelectedException
+父类：ParseException
+依赖类：ParseException,OptionGroup,Option
+---
+序号：1
+方法名：AlreadySelectedException(OptionGroup, Option)
+返回类型：无
+功能描述：构造异常对象，提示指定选项时选项组内已有选项被选择
+序号：2
+方法名：AlreadySelectedException(String)
+返回类型：无
+功能描述：用指定消息构造异常对象
+序号：3
+方法名：AlreadySelectedException(String, OptionGroup, Option)
+返回类型：无
+功能描述：用指定消息、选项组和选项构造异常对象
+序号：4
+方法名：getOption()
+返回类型：Option
+功能描述：返回导致异常的选项
+序号：5
+方法名：getOptionGroup()
+返回类型：OptionGroup
+功能描述：返回关联的选项组
+```

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PSDG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.augmented</a> &gt; <span class="el_source">PSDG.java</span></div><h1>PSDG.java</h1><pre class="source lang-java linenums">package slicing.graphs.augmented;
+
+import slicing.graphs.cfg.CFG;
+import slicing.graphs.pdg.PDG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.SyntheticNode;
+import slicing.slicing.PseudoPredicateSlicingAlgorithm;
+import slicing.slicing.SlicingAlgorithm;
+
+/** A pseudo-predicate SDG, equivalent to an ASDG that is built using the {@link PPDG} instead of {@link APDG}.
+ * It uses a different slicing algorithm than its parent graphs. */
+<span class="nc" id="L12">public class PSDG extends ASDG {</span>
+    @Override
+    protected Builder createBuilder() {
+<span class="nc" id="L15">        return new Builder();</span>
+    }
+
+    @Override
+    protected SlicingAlgorithm createSlicingAlgorithm() {
+<span class="nc" id="L20">        return new PseudoPredicateSlicingAlgorithm(this);</span>
+    }
+
+    /** @see ACFG#isPseudoPredicate(GraphNode) */
+    public boolean isPseudoPredicate(GraphNode&lt;?&gt; node) {
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if (node instanceof SyntheticNode)</span>
+<span class="nc" id="L26">            return false;</span>
+<span class="nc bnc" id="L27" title="All 2 branches missed.">        for (CFG cfg : cfgMap.values())</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">            if (cfg.containsVertex(node))</span>
+<span class="nc" id="L29">                return ((ACFG) cfg).isPseudoPredicate(node);</span>
+<span class="nc" id="L30">        throw new IllegalArgumentException(&quot;Node &quot; + node.getId() + &quot;'s associated CFG cannot be found!&quot;);</span>
+    }
+
+    /** Populates a PSDG, using {@link ACFG} and {@link PPDG} as default graphs.
+     * @see ASDG.Builder */
+<span class="nc" id="L35">    public class Builder extends ASDG.Builder {</span>
+        @Override
+        protected PDG createPDG(CFG cfg) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">            assert cfg instanceof ACFG;</span>
+<span class="nc" id="L39">            return new PPDG((ACFG) cfg);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

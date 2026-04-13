@@ -1,0 +1,23 @@
+```
+包路径：codeing
+类名：Add
+父类：无
+依赖类：无
+---
+序号：1
+方法名：countChar(String str, char ch)
+返回类型：int
+功能描述：统计字符串中指定字符出现的次数
+序号：2
+方法名：reverse(String input)
+返回类型：String
+功能描述：反转输入字符串
+序号：3
+方法名：charAt(String str, int index)
+返回类型：char
+功能描述：获取字符串指定索引位置的字符（索引从1开始）
+序号：4
+方法名：maxLength(String[] arr)
+返回类型：int
+功能描述：计算字符串数组中最长字符串的长度
+```

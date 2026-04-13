@@ -1,0 +1,121 @@
+包路径：lang3
+类名：RandomUtils
+父类：无
+依赖类：UncheckedException,Validate
+---
+序号：1
+方法名：insecure()
+返回类型：RandomUtils
+功能描述：返回一个不安全的RandomUtils实例
+序号：2
+方法名：nextBoolean()
+返回类型：boolean
+功能描述：生成一个随机布尔值（已弃用）
+序号：3
+方法名：nextBytes(int count)
+返回类型：byte[]
+功能描述：生成指定数量的随机字节数组（已弃用）
+序号：4
+方法名：nextDouble()
+返回类型：double
+功能描述：生成一个随机双精度浮点数（已弃用）
+序号：5
+方法名：nextDouble(double startInclusive, double endExclusive)
+返回类型：double
+功能描述：生成指定范围内的随机双精度浮点数（已弃用）
+序号：6
+方法名：nextFloat()
+返回类型：float
+功能描述：生成一个随机单精度浮点数（已弃用）
+序号：7
+方法名：nextFloat(float startInclusive, float endExclusive)
+返回类型：float
+功能描述：生成指定范围内的随机单精度浮点数（已弃用）
+序号：8
+方法名：nextInt()
+返回类型：int
+功能描述：生成一个随机整数（已弃用）
+序号：9
+方法名：nextInt(int startInclusive, int endExclusive)
+返回类型：int
+功能描述：生成指定范围内的随机整数（已弃用）
+序号：10
+方法名：nextLong()
+返回类型：long
+功能描述：生成一个随机长整数（已弃用）
+序号：11
+方法名：nextLong(long startInclusive, long endExclusive)
+返回类型：long
+功能描述：生成指定范围内的随机长整数（已弃用）
+序号：12
+方法名：secure()
+返回类型：RandomUtils
+功能描述：返回一个安全的RandomUtils实例
+序号：13
+方法名：secureRandom()
+返回类型：SecureRandom
+功能描述：返回一个强安全的SecureRandom实例
+序号：14
+方法名：secureStrong()
+返回类型：RandomUtils
+功能描述：返回一个强安全的RandomUtils实例
+序号：15
+方法名：RandomUtils()
+返回类型：-
+功能描述：构造一个使用强安全随机数的RandomUtils实例（已弃用）
+序号：16
+方法名：RandomUtils(Supplier<Random> random)
+返回类型：-
+功能描述：构造一个使用指定随机数提供者的RandomUtils实例
+序号：17
+方法名：random()
+返回类型：Random
+功能描述：返回当前随机数生成器实例
+序号：18
+方法名：randomBoolean()
+返回类型：boolean
+功能描述：生成一个随机布尔值
+序号：19
+方法名：randomBytes(int count)
+返回类型：byte[]
+功能描述：生成指定数量的随机字节数组
+序号：20
+方法名：randomDouble()
+返回类型：double
+功能描述：生成一个随机双精度浮点数
+序号：21
+方法名：randomDouble(double startInclusive, double endExclusive)
+返回类型：double
+功能描述：生成指定范围内的随机双精度浮点数
+序号：22
+方法名：randomFloat()
+返回类型：float
+功能描述：生成一个随机单精度浮点数
+序号：23
+方法名：randomFloat(float startInclusive, float endExclusive)
+返回类型：float
+功能描述：生成指定范围内的随机单精度浮点数
+序号：24
+方法名：randomInt()
+返回类型：int
+功能描述：生成一个随机整数
+序号：25
+方法名：randomInt(int startInclusive, int endExclusive)
+返回类型：int
+功能描述：生成指定范围内的随机整数
+序号：26
+方法名：randomLong()
+返回类型：long
+功能描述：生成一个随机长整数
+序号：27
+方法名：randomLong(long n)
+返回类型：long
+功能描述：生成0到n-1之间的随机长整数
+序号：28
+方法名：randomLong(long startInclusive, long endExclusive)
+返回类型：long
+功能描述：生成指定范围内的随机长整数
+序号：29
+方法名：toString()
+返回类型：String
+功能描述：返回对象的字符串表示

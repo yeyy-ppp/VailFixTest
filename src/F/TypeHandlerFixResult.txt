@@ -1,0 +1,279 @@
+[2026-01-13 19:09:23] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
+import java.io.File;
+import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import static org.junit.jupiter.api.Assertions.*;
+
+class TypeHandlerTest {
+
+    @Test
+    void testCreateClassValid() throws Exception {
+        Class<?> result = TypeHandler.createClass("java.lang.String");
+        assertEquals(String.class, result);
+    }
+
+    @Test
+    void testCreateClassInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.createClass("invalid.ClassName"));
+    }
+
+    @Test
+    void testCreateClassEmpty() {
+        assertThrows(Exception.class, () -> TypeHandler.createClass(""));
+    }
+
+    @Test
+    void testCreateDateValid() {
+        Date result = TypeHandler.createDate("2023-01-01");
+        assertNotNull(result);
+    }
+
+    @Test
+    void testCreateDateInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> TypeHandler.createDate("invalid-date"));
+    }
+
+    @Test
+    void testCreateDateEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> TypeHandler.createDate(""));
+    }
+
+    @Test
+    void testCreateDefaultMap() {
+        Map<Class<?>, Converter<?, ? extends Throwable>> map = TypeHandler.createDefaultMap();
+        assertNotNull(map);
+        assertTrue(map.containsKey(Date.class));
+        assertTrue(map.containsKey(File.class));
+    }
+
+    @Test
+    void testCreateFileValid() {
+        File result = TypeHandler.createFile("test.txt");
+        assertEquals(new File("test.txt"), result);
+    }
+
+    @Test
+    void testCreateFileInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> TypeHandler.createFile("::invalid::"));
+    }
+
+    @Test
+    void testCreateFileEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> TypeHandler.createFile(""));
+    }
+
+    @Test
+    void testCreateFiles() {
+        assertThrows(UnsupportedOperationException.class, () -> TypeHandler.createFiles("any"));
+    }
+
+    @Test
+    void testCreateNumberValid() throws Exception {
+        Number result = TypeHandler.createNumber("123");
+        assertEquals(123, result.intValue());
+    }
+
+    @Test
+    void testCreateNumberInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.createNumber("abc"));
+    }
+
+    @Test
+    void testCreateNumberEmpty() {
+        assertThrows(Exception.class, () -> TypeHandler.createNumber(""));
+    }
+
+    @Test
+    void testCreateObjectValid() throws Exception {
+        Object result = TypeHandler.createObject("java.lang.String");
+        assertEquals("", result);
+    }
+
+    @Test
+    void testCreateObjectInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.createObject("invalid.Class"));
+    }
+
+    @Test
+    void testCreateURLValid() throws Exception {
+        URL result = TypeHandler.createURL("http://example.com");
+        assertEquals(new URL("http://example.com"), result);
+    }
+
+    @Test
+    void testCreateURLInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.createURL("invalid_url"));
+    }
+
+    @Test
+    void testCreateURLWithEmpty() {
+        assertThrows(MalformedURLException.class, () -> TypeHandler.createURL(""));
+    }
+
+    @Test
+    void testCreateValueWithClassValid() throws Exception {
+        Integer result = TypeHandler.createValue("123", Integer.class);
+        assertEquals(123, result);
+    }
+
+    @Test
+    void testCreateValueWithClassInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.createValue("abc", Integer.class));
+    }
+
+    @Test
+    void testCreateValueWithClassEmpty() {
+        assertThrows(Exception.class, () -> TypeHandler.createValue("", Integer.class));
+    }
+
+    @Test
+    void testCreateValueWithObjectValid() throws Exception {
+        Object result = TypeHandler.createValue("123", Integer.valueOf(0));
+        assertEquals(123, result);
+    }
+
+    @Test
+    void testCreateValueWithObjectInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.createValue("abc", Integer.valueOf(0)));
+    }
+
+    @Test
+    void testCreateValueWithObjectEmpty() {
+        assertThrows(Exception.class, () -> TypeHandler.createValue("", Integer.valueOf(0)));
+    }
+
+    @Test
+    void testCreateValueUncheckedValid() {
+        Integer result = TypeHandler.createValueUnchecked("123", Integer.class);
+        assertEquals(123, result);
+    }
+
+    @Test
+    void testCreateValueUncheckedInvalid() {
+        assertThrows(IllegalArgumentException.class, () -> TypeHandler.createValueUnchecked("abc", Integer.class));
+    }
+
+    @Test
+    void testCreateValueUncheckedEmpty() {
+        assertThrows(IllegalArgumentException.class, () -> TypeHandler.createValueUnchecked("", Integer.class));
+    }
+
+    @Test
+    void testGetDefault() {
+        TypeHandler instance1 = TypeHandler.getDefault();
+        TypeHandler instance2 = TypeHandler.getDefault();
+        assertSame(instance1, instance2);
+    }
+
+    @Test
+    void testOpenFileValid(@TempDir Path tempDir) throws Exception {
+        File tempFile = tempDir.resolve("test.txt").toFile();
+        assertTrue(tempFile.createNewFile());
+        try (FileInputStream fis = TypeHandler.openFile(tempFile.getAbsolutePath())) {
+            assertNotNull(fis);
+        }
+    }
+
+    @Test
+    void testOpenFileInvalid() {
+        assertThrows(Exception.class, () -> TypeHandler.openFile("non_existent_file.txt"));
+    }
+
+    @Test
+    void testPutDefaultMap() {
+        Map<Class<?>, Converter<?, ? extends Throwable>> customMap = new HashMap<>();
+        TypeHandler.putDefaultMap(customMap);
+        assertTrue(customMap.containsKey(Date.class));
+        assertTrue(customMap.containsKey(File.class));
+    }
+
+    @Test
+    void testConstructorDefault() {
+        TypeHandler handler = new TypeHandler();
+        Converter<Date, ?> converter = handler.getConverter(Date.class);
+        assertNotNull(converter);
+    }
+
+    @Test
+    void testConstructorCustomMap() {
+        Map<Class<?>, Converter<?, ? extends Throwable>> customMap = new HashMap<>();
+        customMap.put(String.class, s -> "custom_" + s);
+        TypeHandler handler = new TypeHandler(customMap);
+        Converter<String, ?> converter = handler.getConverter(String.class);
+        assertEquals("custom_test", converter.apply("test"));
+    }
+
+    @Test
+    void testGetConverterExisting() {
+        TypeHandler handler = TypeHandler.getDefault();
+        Converter<Integer, ?> converter = handler.getConverter(Integer.class);
+        assertNotNull(converter);
+        assertEquals(123, converter.apply("123"));
+    }
+
+    @Test
+    void testGetConverterDefaultFallback() {
+        Map<Class<?>, Converter<?, ? extends Throwable>> customMap = new HashMap<>();
+        TypeHandler handler = new TypeHandler(customMap);
+        Converter<Object, ?> converter = handler.getConverter(Object.class);
+        assertSame(Converter.OBJECT, converter);
+    }
+
+    @Test
+    void testCharacterConverterHex() {
+        TypeHandler handler = TypeHandler.getDefault();
+        Converter<Character, ?> converter = handler.getConverter(Character.class);
+        char result = converter.apply("\\u0041");
+        assertEquals('A', result);
+    }
+
+    @Test
+    void testCharacterConverterSingleChar() {
+        TypeHandler handler = TypeHandler.getDefault();
+        Converter<Character, ?> converter = handler.getConverter(Character.class);
+        char result = converter.apply("B");
+        assertEquals('B', result);
+    }
+
+    @Test
+    void testCharacterConverterInvalid() {
+        TypeHandler handler = TypeHandler.getDefault();
+        Converter<Character, ?> converter = handler.getConverter(Character.class);
+        assertThrows(IllegalArgumentException.class, () -> converter.apply(""));
+    }
+
+    @Test
+    void testBigIntegerConversion() {
+        TypeHandler handler = TypeHandler.getDefault();
+        Converter<BigInteger, ?> converter = handler.getConverter(BigInteger.class);
+        BigInteger result = converter.apply("1234567890");
+        assertEquals(new BigInteger("1234567890"), result);
+    }
+
+    @Test
+    void testBigDecimalConversion() {
+        TypeHandler handler = TypeHandler.getDefault();
+        Converter<BigDecimal, ?> converter = handler.getConverter(BigDecimal.class);
+        BigDecimal result = converter.apply("123.456");
+        assertEquals(new BigDecimal("123.456"), result);
+    }
+}
+```
+

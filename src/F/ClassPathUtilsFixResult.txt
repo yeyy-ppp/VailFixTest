@@ -1,0 +1,151 @@
+[2026-01-23 16:36:29] 修复结果
+修复类型: 致命错误修复 + 方法覆盖补充
+修复前错误: 运行时错误 - Package.getPackage("java.lang")可能返回null导致空指针异常
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package lang3;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ClassPathUtilsTest {
+
+    @Test
+    void testPackageToPath_NullInput() {
+        assertThrows(NullPointerException.class, () -> ClassPathUtils.packageToPath(null));
+    }
+
+    @Test
+    void testPackageToPath_EmptyString() {
+        assertEquals("", ClassPathUtils.packageToPath(""));
+    }
+
+    @Test
+    void testPackageToPath_SingleSegment() {
+        assertEquals("abc", ClassPathUtils.packageToPath("abc"));
+    }
+
+    @Test
+    void testPackageToPath_MultipleSegments() {
+        assertEquals("a/b/c", ClassPathUtils.packageToPath("a.b.c"));
+    }
+
+    @Test
+    void testPackageToPath_AlreadyContainingSlashes() {
+        assertEquals("a/b/c", ClassPathUtils.packageToPath("a/b.c"));
+    }
+
+    @Test
+    void testPathToPackage_NullInput() {
+        assertThrows(NullPointerException.class, () -> ClassPathUtils.pathToPackage(null));
+    }
+
+    @Test
+    void testPathToPackage_EmptyString() {
+        assertEquals("", ClassPathUtils.pathToPackage(""));
+    }
+
+    @Test
+    void testPathToPackage_SingleSegment() {
+        assertEquals("abc", ClassPathUtils.pathToPackage("abc"));
+    }
+
+    @Test
+    void testPathToPackage_MultipleSegments() {
+        assertEquals("a.b.c", ClassPathUtils.pathToPackage("a/b/c"));
+    }
+
+    @Test
+    void testPathToPackage_AlreadyContainingDots() {
+        assertEquals("a.b.c", ClassPathUtils.pathToPackage("a/b.c"));
+    }
+
+    @Test
+    void testToFullyQualifiedName_ClassContext_NullClass() {
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedName(null, "res"));
+    }
+
+    @Test
+    void testToFullyQualifiedName_ClassContext_NullResource() {
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedName(String.class, null));
+    }
+
+    @Test
+    void testToFullyQualifiedName_ClassContext_Valid() {
+        Package pkg = String.class.getPackage();
+        String expected = pkg.getName() + ".resource";
+        assertEquals(expected, 
+            ClassPathUtils.toFullyQualifiedName(String.class, "resource"));
+    }
+
+    @Test
+    void testToFullyQualifiedName_PackageContext_NullPackage() {
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedName(null, "res"));
+    }
+
+    @Test
+    void testToFullyQualifiedName_PackageContext_NullResource() {
+        Package pkg = String.class.getPackage();
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedName(pkg, null));
+    }
+
+    @Test
+    void testToFullyQualifiedName_PackageContext_Valid() {
+        Package pkg = String.class.getPackage();
+        assertEquals("java.lang.String", 
+            ClassPathUtils.toFullyQualifiedName(pkg, "String"));
+    }
+
+    @Test
+    void testToFullyQualifiedPath_ClassContext_NullClass() {
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedPath(null, "res"));
+    }
+
+    @Test
+    void testToFullyQualifiedPath_ClassContext_NullResource() {
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedPath(Object.class, null));
+    }
+
+    @Test
+    void testToFullyQualifiedPath_ClassContext_Valid() {
+        Package pkg = Object.class.getPackage();
+        String expected = pkg.getName().replace('.', '/') + "/resource";
+        assertEquals(expected, 
+            ClassPathUtils.toFullyQualifiedPath(Object.class, "resource"));
+    }
+
+    @Test
+    void testToFullyQualifiedPath_PackageContext_NullPackage() {
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedPath(null, "res"));
+    }
+
+    @Test
+    void testToFullyQualifiedPath_PackageContext_NullResource() {
+        Package pkg = java.util.List.class.getPackage();
+        assertThrows(NullPointerException.class, () -> 
+            ClassPathUtils.toFullyQualifiedPath(pkg, null));
+    }
+
+    @Test
+    void testToFullyQualifiedPath_PackageContext_Valid() {
+        Package pkg = java.util.List.class.getPackage();
+        assertEquals("java/util/List", 
+            ClassPathUtils.toFullyQualifiedPath(pkg, "List"));
+    }
+
+    @Test
+    void testConstructor() {
+        new ClassPathUtils();
+    }
+}
+```
+

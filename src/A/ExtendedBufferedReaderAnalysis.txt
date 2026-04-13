@@ -1,0 +1,71 @@
+```
+包路径：csv
+类名：ExtendedBufferedReader
+父类：Reader
+依赖类：Constants
+---
+序号：1
+方法名：ExtendedBufferedReader(Reader reader)
+返回类型：void
+功能描述：使用指定Reader初始化对象
+序号：2
+方法名：ExtendedBufferedReader(Reader reader, Charset charset, boolean trackBytes)
+返回类型：void
+功能描述：初始化对象并配置字符编码和字节跟踪
+序号：3
+方法名：close()
+返回类型：void
+功能描述：关闭读取器并标记状态
+序号：4
+方法名：isClosed()
+返回类型：boolean
+功能描述：检查读取器是否关闭
+序号：5
+方法名：getBytesRead()
+返回类型：long
+功能描述：获取读取的字节数
+序号：6
+方法名：getEncodedCharLength(int current)
+返回类型：int
+功能描述：计算当前字符的编码字节长度
+序号：7
+方法名：getLastChar()
+返回类型：int
+功能描述：获取最后读取的字符
+序号：8
+方法名：getLineNumber()
+返回类型：long
+功能描述：获取当前行号
+序号：9
+方法名：getPosition()
+返回类型：long
+功能描述：获取当前读取位置
+序号：10
+方法名：peek()
+返回类型：int
+功能描述：预览下一个字符
+序号：11
+方法名：peek(char[] buf)
+返回类型：int
+功能描述：预览多个字符到缓冲区
+序号：12
+方法名：mark(int readAheadLimit)
+返回类型：void
+功能描述：标记当前读取位置
+序号：13
+方法名：read()
+返回类型：int
+功能描述：读取单个字符并更新状态
+序号：14
+方法名：read(char[] buf, int offset, int length)
+返回类型：int
+功能描述：读取字符到缓冲区并更新状态
+序号：15
+方法名：readLine()
+返回类型：String
+功能描述：读取一行文本
+序号：16
+方法名：reset()
+返回类型：void
+功能描述：重置到上次标记的位置
+```

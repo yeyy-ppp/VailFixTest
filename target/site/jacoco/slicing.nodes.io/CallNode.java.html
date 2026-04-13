@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes.io</a> &gt; <span class="el_source">CallNode.java</span></div><h1>CallNode.java</h1><pre class="source lang-java linenums">package slicing.nodes.io;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import slicing.nodes.SyntheticNode;
+
+import java.util.LinkedList;
+
+/** A node representing a call to a method or constructor. */
+public class CallNode extends SyntheticNode&lt;Node&gt; {
+    protected static final String LABEL_TEMPLATE = &quot;CALL %s&quot;;
+
+    public CallNode(MethodCallExpr astNode) {
+<span class="nc" id="L18">        super(String.format(LABEL_TEMPLATE, astNode), astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L19">    }</span>
+
+    public CallNode(ObjectCreationExpr astNode) {
+<span class="nc" id="L22">        super(String.format(LABEL_TEMPLATE, astNode), astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L23">    }</span>
+
+    public CallNode(ExplicitConstructorInvocationStmt astNode) {
+<span class="nc" id="L26">        super(String.format(LABEL_TEMPLATE, astNode), astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L27">    }</span>
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; getCallASTNode() {
+<span class="nc" id="L31">        return (Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt;) astNode;</span>
+    }
+
+    public static CallNode create(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; astNode) {
+<span class="nc" id="L35">        return create((Object) astNode);</span>
+    }
+
+    private static CallNode create(Object astNode) {
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (astNode instanceof MethodCallExpr)</span>
+<span class="nc" id="L40">            return new CallNode((MethodCallExpr) astNode);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        else if (astNode instanceof ObjectCreationExpr)</span>
+<span class="nc" id="L42">            return new CallNode((ObjectCreationExpr) astNode);</span>
+<span class="nc bnc" id="L43" title="All 2 branches missed.">        else if (astNode instanceof ExplicitConstructorInvocationStmt)</span>
+<span class="nc" id="L44">            return new CallNode((ExplicitConstructorInvocationStmt) astNode);</span>
+<span class="nc" id="L45">        else throw new IllegalArgumentException(&quot;Call node was not a proper type&quot;);</span>
+    }
+
+    public static class Return extends SyntheticNode&lt;Node&gt; {
+        protected static final String LABEL = &quot;call return&quot;;
+
+        public Return(MethodCallExpr astNode) {
+<span class="nc" id="L52">            super(LABEL, astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L53">        }</span>
+
+        public Return(ObjectCreationExpr astNode) {
+<span class="nc" id="L56">            super(LABEL, astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L57">        }</span>
+
+        public Return(ExplicitConstructorInvocationStmt astNode) {
+<span class="nc" id="L60">            super(LABEL, astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L61">        }</span>
+
+        public static Return create(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; astNode) {
+<span class="nc" id="L64">            return create((Object) astNode);</span>
+        }
+
+        private static Return create(Object astNode) {
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (astNode instanceof MethodCallExpr)</span>
+<span class="nc" id="L69">                return new Return((MethodCallExpr) astNode);</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">            else if (astNode instanceof ObjectCreationExpr)</span>
+<span class="nc" id="L71">                return new Return((ObjectCreationExpr) astNode);</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            else if (astNode instanceof ExplicitConstructorInvocationStmt)</span>
+<span class="nc" id="L73">                return new Return((ExplicitConstructorInvocationStmt) astNode);</span>
+<span class="nc" id="L74">            else throw new IllegalArgumentException(&quot;Call node was not a proper type&quot;);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,380 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Option.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">Option.java</span></div><h1>Option.java</h1><pre class="source lang-java linenums">package cli;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+public class Option implements Cloneable, Serializable {
+    public static final class Builder {
+<span class="fc" id="L8">        private static final Class&lt;String&gt; DEFAULT_TYPE = String.class;</span>
+        private static Class&lt;?&gt; toType(final Class&lt;?&gt; type) {
+<span class="fc bfc" id="L10" title="All 2 branches covered.">            return type != null ? type : DEFAULT_TYPE;</span>
+        }
+<span class="fc" id="L12">        private int argCount = UNINITIALIZED;</span>
+        private String argName;
+        private Converter&lt;?, ?&gt; converter;
+        private DeprecatedAttributes deprecated;
+        private String description;
+        private String longOption;
+        private String option;
+        private boolean optionalArg;
+        private boolean required;
+        private String since;
+<span class="fc" id="L22">        private Class&lt;?&gt; type = DEFAULT_TYPE;</span>
+        private char valueSeparator;
+<span class="fc" id="L24">        Builder(final String option) throws IllegalArgumentException {</span>
+<span class="fc" id="L25">            option(option);</span>
+<span class="fc" id="L26">        }</span>
+        public Builder argName(final String argName) {
+<span class="fc" id="L28">            this.argName = argName;</span>
+<span class="fc" id="L29">            return this;</span>
+        }
+        public Option build() {
+<span class="fc bfc" id="L32" title="All 4 branches covered.">            if (option == null &amp;&amp; longOption == null) {</span>
+<span class="fc" id="L33">                throw new IllegalArgumentException(&quot;Either opt or longOpt must be specified&quot;);</span>
+            }
+<span class="fc" id="L35">            return new Option(this);</span>
+        }
+        public Builder converter(final Converter&lt;?, ?&gt; converter) {
+<span class="fc" id="L38">            this.converter = converter;</span>
+<span class="fc" id="L39">            return this;</span>
+        }
+        public Builder deprecated() {
+<span class="fc" id="L42">            return deprecated(DeprecatedAttributes.DEFAULT);</span>
+        }
+        public Builder deprecated(final DeprecatedAttributes deprecated) {
+<span class="fc" id="L45">            this.deprecated = deprecated;</span>
+<span class="fc" id="L46">            return this;</span>
+        }
+        public Builder desc(final String description) {
+<span class="fc" id="L49">            this.description = description;</span>
+<span class="fc" id="L50">            return this;</span>
+        }
+        public Builder hasArg() {
+<span class="fc" id="L53">            return hasArg(true);</span>
+        }
+        public Builder hasArg(final boolean hasArg) {
+<span class="fc bfc" id="L56" title="All 2 branches covered.">            argCount = hasArg ? 1 : UNINITIALIZED;</span>
+<span class="fc" id="L57">            return this;</span>
+        }
+        public Builder hasArgs() {
+<span class="fc" id="L60">            argCount = UNLIMITED_VALUES;</span>
+<span class="fc" id="L61">            return this;</span>
+        }
+        public Builder longOpt(final String longOption) {
+<span class="fc" id="L64">            this.longOption = longOption;</span>
+<span class="fc" id="L65">            return this;</span>
+        }
+        public Builder numberOfArgs(final int argCount) {
+<span class="fc" id="L68">            this.argCount = argCount;</span>
+<span class="fc" id="L69">            return this;</span>
+        }
+        public Builder option(final String option) throws IllegalArgumentException {
+<span class="fc" id="L72">            this.option = OptionValidator.validate(option);</span>
+<span class="fc" id="L73">            return this;</span>
+        }
+        public Builder optionalArg(final boolean optionalArg) {
+<span class="pc bpc" id="L76" title="2 of 4 branches missed.">            if (optionalArg &amp;&amp; argCount == UNINITIALIZED) {</span>
+<span class="fc" id="L77">                argCount = 1;</span>
+            }
+<span class="fc" id="L79">            this.optionalArg = optionalArg;</span>
+<span class="fc" id="L80">            return this;</span>
+        }
+        public Builder required() {
+<span class="fc" id="L83">            return required(true);</span>
+        }
+        public Builder required(final boolean required) {
+<span class="fc" id="L86">            this.required = required;</span>
+<span class="fc" id="L87">            return this;</span>
+        }
+        public Builder since(final String since) {
+<span class="fc" id="L90">            this.since = since;</span>
+<span class="fc" id="L91">            return this;</span>
+        }
+        public Builder type(final Class&lt;?&gt; type) {
+<span class="fc" id="L94">            this.type = toType(type);</span>
+<span class="fc" id="L95">            return this;</span>
+        }
+        public Builder valueSeparator() {
+<span class="fc" id="L98">            return valueSeparator(Char.EQUAL);</span>
+        }
+        public Builder valueSeparator(final char valueSeparator) {
+<span class="fc" id="L101">            this.valueSeparator = valueSeparator;</span>
+<span class="fc" id="L102">            return this;</span>
+        }
+    }
+<span class="fc" id="L105">    static final Option[] EMPTY_ARRAY = {};</span>
+    private static final long serialVersionUID = 1L;
+    public static final int UNINITIALIZED = -1;
+    public static final int UNLIMITED_VALUES = -2;
+    public static Builder builder() {
+<span class="fc" id="L110">        return builder(null);</span>
+    }
+    public static Builder builder(final String option) {
+<span class="fc" id="L113">        return new Builder(option);</span>
+    }
+<span class="fc" id="L115">    private int argCount = UNINITIALIZED;</span>
+    private String argName;
+    private transient Converter&lt;?, ?&gt; converter;
+    private final transient DeprecatedAttributes deprecated;
+    private String description;
+    private String longOption;
+    private final String option;
+    private boolean optionalArg;
+    private boolean required;
+    private String since;
+<span class="fc" id="L125">    private Class&lt;?&gt; type = String.class;</span>
+<span class="fc" id="L126">    private List&lt;String&gt; values = new ArrayList&lt;&gt;();</span>
+    private char valueSeparator;
+<span class="fc" id="L128">    Option(final Builder builder) {</span>
+<span class="fc" id="L129">        this.argName = builder.argName;</span>
+<span class="fc" id="L130">        this.description = builder.description;</span>
+<span class="fc" id="L131">        this.longOption = builder.longOption;</span>
+<span class="fc" id="L132">        this.argCount = builder.argCount;</span>
+<span class="fc" id="L133">        this.option = builder.option;</span>
+<span class="fc" id="L134">        this.optionalArg = builder.optionalArg;</span>
+<span class="fc" id="L135">        this.deprecated = builder.deprecated;</span>
+<span class="fc" id="L136">        this.required = builder.required;</span>
+<span class="fc" id="L137">        this.since = builder.since;</span>
+<span class="fc" id="L138">        this.type = builder.type;</span>
+<span class="fc" id="L139">        this.valueSeparator = builder.valueSeparator;</span>
+<span class="fc" id="L140">        this.converter = builder.converter;</span>
+<span class="fc" id="L141">    }</span>
+    public Option(final String option, final boolean hasArg, final String description)
+            throws IllegalArgumentException {
+<span class="fc" id="L144">        this(option, null, hasArg, description);</span>
+<span class="fc" id="L145">    }</span>
+    public Option(final String option, final String description) throws IllegalArgumentException {
+<span class="fc" id="L147">        this(option, null, false, description);</span>
+<span class="fc" id="L148">    }</span>
+    public Option(
+            final String option, final String longOption, final boolean hasArg, final String description)
+<span class="fc" id="L151">            throws IllegalArgumentException {</span>
+<span class="fc" id="L152">        this.deprecated = null;</span>
+<span class="fc" id="L153">        this.option = OptionValidator.validate(option);</span>
+<span class="fc" id="L154">        this.longOption = longOption;</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">        if (hasArg) {</span>
+<span class="fc" id="L156">            this.argCount = 1;</span>
+        }
+<span class="fc" id="L158">        this.description = description;</span>
+<span class="fc" id="L159">    }</span>
+    boolean acceptsArg() {
+<span class="pc bpc" id="L161" title="2 of 8 branches missed.">        return (hasArg() || hasArgs() || hasOptionalArg())</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">                &amp;&amp; (argCount &lt;= 0 || values.size() &lt; argCount);</span>
+    }
+    private void add(final String value) {
+<span class="pc bpc" id="L165" title="1 of 2 branches missed.">        if (!acceptsArg()) {</span>
+<span class="nc" id="L166">            throw new IllegalArgumentException(&quot;Cannot add value, list full.&quot;);</span>
+        }
+<span class="fc" id="L168">        values.add(value);</span>
+<span class="fc" id="L169">    }</span>
+    @Deprecated
+    public boolean addValue(final String value) {
+<span class="fc" id="L172">        throw new UnsupportedOperationException(</span>
+                &quot;The addValue method is not intended for client use. Subclasses should use the processValue method instead.&quot;);
+    }
+    void clearValues() {
+<span class="fc" id="L176">        values.clear();</span>
+<span class="fc" id="L177">    }</span>
+    @Override
+    public Object clone() {
+        try {
+<span class="fc" id="L181">            final Option option = (Option) super.clone();</span>
+<span class="fc" id="L182">            option.values = new ArrayList&lt;&gt;(values);</span>
+<span class="fc" id="L183">            return option;</span>
+<span class="nc" id="L184">        } catch (final CloneNotSupportedException e) {</span>
+<span class="nc" id="L185">            throw new UnsupportedOperationException(e.getMessage(), e);</span>
+        }
+    }
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        if (this == obj) {</span>
+<span class="fc" id="L191">            return true;</span>
+        }
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (!(obj instanceof Option)) {</span>
+<span class="nc" id="L194">            return false;</span>
+        }
+<span class="fc" id="L196">        final Option other = (Option) obj;</span>
+<span class="fc bfc" id="L197" title="All 4 branches covered.">        return Objects.equals(longOption, other.longOption) &amp;&amp; Objects.equals(option, other.option);</span>
+    }
+    public String getArgName() {
+<span class="fc" id="L200">        return argName;</span>
+    }
+    public int getArgs() {
+<span class="fc" id="L203">        return argCount;</span>
+    }
+    public Converter&lt;?, ?&gt; getConverter() {
+<span class="fc bfc" id="L206" title="All 2 branches covered.">        return converter == null ? TypeHandler.getDefault().getConverter(type) : converter;</span>
+    }
+    public DeprecatedAttributes getDeprecated() {
+<span class="fc" id="L209">        return deprecated;</span>
+    }
+    public String getDescription() {
+<span class="fc" id="L212">        return description;</span>
+    }
+    public int getId() {
+<span class="fc" id="L215">        return getKey().charAt(0);</span>
+    }
+    public String getKey() {
+<span class="fc bfc" id="L218" title="All 2 branches covered.">        return option == null ? longOption : option;</span>
+    }
+    public String getLongOpt() {
+<span class="fc" id="L221">        return longOption;</span>
+    }
+    public String getOpt() {
+<span class="fc" id="L224">        return option;</span>
+    }
+    public String getSince() {
+<span class="fc" id="L227">        return since;</span>
+    }
+    public Object getType() {
+<span class="fc" id="L230">        return type;</span>
+    }
+    public String getValue() {
+<span class="pc bpc" id="L233" title="1 of 2 branches missed.">        return hasNoValues() ? null : values.get(0);</span>
+    }
+    public String getValue(final int index) throws IndexOutOfBoundsException {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        return hasNoValues() ? null : values.get(index);</span>
+    }
+    public String getValue(final String defaultValue) {
+<span class="nc" id="L239">        final String value = getValue();</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">        return value != null ? value : defaultValue;</span>
+    }
+<span class="fc" id="L242">    static final String[] EMPTY_STRING_ARRAY = {};</span>
+    public String[] getValues() {
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">        return hasNoValues() ? null : values.toArray(EMPTY_STRING_ARRAY);</span>
+    }
+    public char getValueSeparator() {
+<span class="fc" id="L247">        return valueSeparator;</span>
+    }
+    public List&lt;String&gt; getValuesList() {
+<span class="fc" id="L250">        return values;</span>
+    }
+    public boolean hasArg() {
+<span class="fc bfc" id="L253" title="All 4 branches covered.">        return argCount &gt; 0 || argCount == UNLIMITED_VALUES;</span>
+    }
+    public boolean hasArgName() {
+<span class="pc bpc" id="L256" title="2 of 4 branches missed.">        return argName != null &amp;&amp; !argName.isEmpty();</span>
+    }
+    public boolean hasArgs() {
+<span class="fc bfc" id="L259" title="All 4 branches covered.">        return argCount &gt; 1 || argCount == UNLIMITED_VALUES;</span>
+    }
+    @Override
+    public int hashCode() {
+<span class="fc" id="L263">        return Objects.hash(longOption, option);</span>
+    }
+    public boolean hasLongOpt() {
+<span class="fc bfc" id="L266" title="All 2 branches covered.">        return longOption != null;</span>
+    }
+    private boolean hasNoValues() {
+<span class="fc" id="L269">        return values.isEmpty();</span>
+    }
+    public boolean hasOptionalArg() {
+<span class="fc" id="L272">        return optionalArg;</span>
+    }
+    public boolean hasValueSeparator() {
+<span class="fc bfc" id="L275" title="All 2 branches covered.">        return valueSeparator &gt; 0;</span>
+    }
+    public boolean isDeprecated() {
+<span class="fc bfc" id="L278" title="All 2 branches covered.">        return deprecated != null;</span>
+    }
+    public boolean isRequired() {
+<span class="fc" id="L281">        return required;</span>
+    }
+    void processValue(final String value) {
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        if (argCount == UNINITIALIZED) {</span>
+<span class="fc" id="L285">            throw new IllegalArgumentException(&quot;NO_ARGS_ALLOWED&quot;);</span>
+        }
+<span class="fc" id="L287">        String add = value;</span>
+<span class="fc bfc" id="L288" title="All 2 branches covered.">        if (hasValueSeparator()) {</span>
+<span class="fc" id="L289">            final char sep = getValueSeparator();</span>
+<span class="fc" id="L290">            int index = add.indexOf(sep);</span>
+<span class="fc bfc" id="L291" title="All 2 branches covered.">            while (index != -1) {</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">                if (values.size() == argCount - 1) {</span>
+<span class="nc" id="L293">                    break;</span>
+                }
+<span class="fc" id="L295">                add(add.substring(0, index));</span>
+<span class="fc" id="L296">                add = add.substring(index + 1);</span>
+<span class="fc" id="L297">                index = add.indexOf(sep);</span>
+            }
+        }
+<span class="fc" id="L300">        add(add);</span>
+<span class="fc" id="L301">    }</span>
+    boolean requiresArg() {
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">        if (optionalArg) {</span>
+<span class="nc" id="L304">            return false;</span>
+        }
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">        if (argCount == UNLIMITED_VALUES) {</span>
+<span class="nc" id="L307">            return values.isEmpty();</span>
+        }
+<span class="fc" id="L309">        return acceptsArg();</span>
+    }
+    public void setArgName(final String argName) {
+<span class="fc" id="L312">        this.argName = argName;</span>
+<span class="fc" id="L313">    }</span>
+    public void setArgs(final int num) {
+<span class="fc" id="L315">        this.argCount = num;</span>
+<span class="fc" id="L316">    }</span>
+    public void setConverter(final Converter&lt;?, ?&gt; converter) {
+<span class="fc" id="L318">        this.converter = converter;</span>
+<span class="fc" id="L319">    }</span>
+    public void setDescription(final String description) {
+<span class="fc" id="L321">        this.description = description;</span>
+<span class="fc" id="L322">    }</span>
+    public void setLongOpt(final String longOpt) {
+<span class="fc" id="L324">        this.longOption = longOpt;</span>
+<span class="fc" id="L325">    }</span>
+    public void setOptionalArg(final boolean optionalArg) {
+<span class="fc" id="L327">        this.optionalArg = optionalArg;</span>
+<span class="fc" id="L328">    }</span>
+    public void setRequired(final boolean required) {
+<span class="fc" id="L330">        this.required = required;</span>
+<span class="fc" id="L331">    }</span>
+    public void setType(final Class&lt;?&gt; type) {
+<span class="fc" id="L333">        this.type = Builder.toType(type);</span>
+<span class="fc" id="L334">    }</span>
+    @Deprecated
+    public void setType(final Object type) {
+<span class="nc" id="L337">        setType((Class&lt;?&gt;) type);</span>
+<span class="nc" id="L338">    }</span>
+    public void setValueSeparator(final char valueSeparator) {
+<span class="fc" id="L340">        this.valueSeparator = valueSeparator;</span>
+<span class="fc" id="L341">    }</span>
+    String toDeprecatedString() {
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">        if (!isDeprecated()) {</span>
+<span class="nc" id="L344">            return &quot;&quot;;</span>
+        }
+<span class="fc" id="L346">        final StringBuilder buf =</span>
+<span class="fc" id="L347">                new StringBuilder().append(&quot;Option '&quot;).append(option).append(Char.APOS);</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">        if (longOption != null) {</span>
+<span class="nc" id="L349">            buf.append(Char.APOS).append(longOption).append(Char.APOS);</span>
+        }
+<span class="fc" id="L351">        buf.append(&quot;: &quot;).append(deprecated);</span>
+<span class="fc" id="L352">        return buf.toString();</span>
+    }
+    @Override
+    public String toString() {
+<span class="fc" id="L356">        final StringBuilder buf = new StringBuilder().append(&quot;[ &quot;);</span>
+<span class="fc" id="L357">        buf.append(&quot;Option &quot;);</span>
+<span class="fc" id="L358">        buf.append(option);</span>
+<span class="fc bfc" id="L359" title="All 2 branches covered.">        if (longOption != null) {</span>
+<span class="fc" id="L360">            buf.append(Char.SP).append(longOption);</span>
+        }
+<span class="pc bpc" id="L362" title="1 of 2 branches missed.">        if (isDeprecated()) {</span>
+<span class="nc" id="L363">            buf.append(Char.SP);</span>
+<span class="nc" id="L364">            buf.append(deprecated.toString());</span>
+        }
+<span class="pc bpc" id="L366" title="1 of 2 branches missed.">        if (hasArgs()) {</span>
+<span class="nc" id="L367">            buf.append(&quot;[ARG...]&quot;);</span>
+<span class="pc bpc" id="L368" title="1 of 2 branches missed.">        } else if (hasArg()) {</span>
+<span class="nc" id="L369">            buf.append(&quot; [ARG]&quot;);</span>
+        }
+<span class="fc" id="L371">        return buf.append(&quot; :: &quot;)</span>
+<span class="fc" id="L372">                .append(description)</span>
+<span class="fc" id="L373">                .append(&quot; :: &quot;)</span>
+<span class="fc" id="L374">                .append(type)</span>
+<span class="fc" id="L375">                .append(&quot; ]&quot;)</span>
+<span class="fc" id="L376">                .toString();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,11 @@
+```
+包路径：gson.internal
+类名：ObjectConstructor
+父类：无
+依赖类：无
+---
+序号：1
+方法名：construct()
+返回类型：T
+功能描述：构造一个类型为T的新对象
+```

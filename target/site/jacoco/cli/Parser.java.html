@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Parser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">Parser.java</span></div><h1>Parser.java</h1><pre class="source lang-java linenums">package cli;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Properties;
+@Deprecated
+public abstract class Parser implements CommandLineParser {
+    protected CommandLine cmd;
+    private Options options;
+    private List requiredOptions;
+<span class="fc" id="L13">    public Parser() {</span>
+<span class="fc" id="L14">    }</span>
+    protected void checkRequiredOptions() throws MissingOptionException {
+<span class="fc bfc" id="L16" title="All 2 branches covered.">        if (!getRequiredOptions().isEmpty()) {</span>
+<span class="fc" id="L17">            throw new MissingOptionException(getRequiredOptions());</span>
+        }
+<span class="fc" id="L19">    }</span>
+    protected abstract String[] flatten(Options opts, String[] arguments, boolean stopAtNonOption)
+            throws ParseException;
+    protected Options getOptions() {
+<span class="fc" id="L23">        return options;</span>
+    }
+    protected List getRequiredOptions() {
+<span class="fc" id="L26">        return requiredOptions;</span>
+    }
+    @Override
+    public CommandLine parse(final Options options, final String[] arguments) throws ParseException {
+<span class="fc" id="L30">        return parse(options, arguments, null, false);</span>
+    }
+    @Override
+    public CommandLine parse(
+            final Options options, final String[] arguments, final boolean stopAtNonOption)
+            throws ParseException {
+<span class="fc" id="L36">        return parse(options, arguments, null, stopAtNonOption);</span>
+    }
+    public CommandLine parse(
+            final Options options, final String[] arguments, final Properties properties)
+            throws ParseException {
+<span class="fc" id="L41">        return parse(options, arguments, properties, false);</span>
+    }
+    public CommandLine parse(
+            final Options options,
+            final String[] arguments,
+            final Properties properties,
+            final boolean stopAtNonOption)
+            throws ParseException {
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        for (final Option opt : options.helpOptions()) {</span>
+<span class="fc" id="L50">            opt.clearValues();</span>
+<span class="fc" id="L51">        }</span>
+<span class="pc bpc" id="L52" title="1 of 2 branches missed.">        for (final OptionGroup group : options.getOptionGroups()) {</span>
+<span class="nc" id="L53">            group.setSelected(null);</span>
+<span class="nc" id="L54">        }</span>
+<span class="fc" id="L55">        setOptions(options);</span>
+<span class="fc" id="L56">        cmd = CommandLine.builder().get();</span>
+<span class="fc" id="L57">        boolean eatTheRest = false;</span>
+<span class="fc" id="L58">        final List&lt;String&gt; tokenList =</span>
+<span class="fc" id="L59">                Arrays.asList(</span>
+<span class="pc bpc" id="L60" title="1 of 2 branches missed.">                        flatten(getOptions(), arguments == null ? new String[0] : arguments, stopAtNonOption));</span>
+<span class="fc" id="L61">        final ListIterator&lt;String&gt; iterator = tokenList.listIterator();</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        while (iterator.hasNext()) {</span>
+<span class="fc" id="L63">            final String token = iterator.next();</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            if (token != null) {</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">                if (&quot;--&quot;.equals(token)) {</span>
+<span class="nc" id="L66">                    eatTheRest = true;</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">                } else if (&quot;-&quot;.equals(token)) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                    if (stopAtNonOption) {</span>
+<span class="nc" id="L69">                        eatTheRest = true;</span>
+                    } else {
+<span class="nc" id="L71">                        cmd.addArg(token);</span>
+                    }
+<span class="fc bfc" id="L73" title="All 2 branches covered.">                } else if (token.startsWith(&quot;-&quot;)) {</span>
+<span class="pc bpc" id="L74" title="1 of 4 branches missed.">                    if (stopAtNonOption &amp;&amp; !getOptions().hasOption(token)) {</span>
+<span class="nc" id="L75">                        eatTheRest = true;</span>
+<span class="nc" id="L76">                        cmd.addArg(token);</span>
+                    } else {
+<span class="fc" id="L78">                        processOption(token, iterator);</span>
+                    }
+                } else {
+<span class="fc" id="L81">                    cmd.addArg(token);</span>
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">                    if (stopAtNonOption) {</span>
+<span class="fc" id="L83">                        eatTheRest = true;</span>
+                    }
+                }
+<span class="fc bfc" id="L86" title="All 2 branches covered.">                if (eatTheRest) {</span>
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">                    while (iterator.hasNext()) {</span>
+<span class="nc" id="L88">                        final String str = iterator.next();</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">                        if (!&quot;--&quot;.equals(str)) {</span>
+<span class="nc" id="L90">                            cmd.addArg(str);</span>
+                        }
+<span class="nc" id="L92">                    }</span>
+                }
+            }
+<span class="fc" id="L95">        }</span>
+<span class="fc" id="L96">        processProperties(properties);</span>
+<span class="fc" id="L97">        checkRequiredOptions();</span>
+<span class="fc" id="L98">        return cmd;</span>
+    }
+    public void processArgs(final Option opt, final ListIterator&lt;String&gt; iter) throws ParseException {
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L102">            final String str = iter.next();</span>
+<span class="nc bnc" id="L103" title="All 4 branches missed.">            if (getOptions().hasOption(str) &amp;&amp; str.startsWith(&quot;-&quot;)) {</span>
+<span class="nc" id="L104">                iter.previous();</span>
+<span class="nc" id="L105">                break;</span>
+            }
+            try {
+<span class="nc" id="L108">                opt.processValue(Util.stripLeadingAndTrailingQuotes(str));</span>
+<span class="nc" id="L109">            } catch (final RuntimeException exp) {</span>
+<span class="nc" id="L110">                iter.previous();</span>
+<span class="nc" id="L111">                break;</span>
+<span class="nc" id="L112">            }</span>
+<span class="nc" id="L113">        }</span>
+<span class="nc bnc" id="L114" title="All 4 branches missed.">        if (opt.getValues() == null &amp;&amp; !opt.hasOptionalArg()) {</span>
+<span class="nc" id="L115">            throw new MissingArgumentException(opt);</span>
+        }
+<span class="nc" id="L117">    }</span>
+    protected void processOption(final String arg, final ListIterator&lt;String&gt; iter)
+            throws ParseException {
+<span class="fc" id="L120">        final boolean hasOption = getOptions().hasOption(arg);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (!hasOption) {</span>
+<span class="fc" id="L122">            throw new UnrecognizedOptionException(&quot;Unrecognized option: &quot; + arg, arg);</span>
+        }
+<span class="fc" id="L124">        final Option opt = (Option) getOptions().getOption(arg).clone();</span>
+<span class="fc" id="L125">        updateRequiredOptions(opt);</span>
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        if (opt.hasArg()) {</span>
+<span class="nc" id="L127">            processArgs(opt, iter);</span>
+        }
+<span class="fc" id="L129">        cmd.addOption(opt);</span>
+<span class="fc" id="L130">    }</span>
+    protected void processProperties(final Properties properties) throws ParseException {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">        if (properties == null) {</span>
+<span class="fc" id="L133">            return;</span>
+        }
+<span class="fc bfc" id="L135" title="All 2 branches covered.">        for (final Enumeration&lt;?&gt; e = properties.propertyNames(); e.hasMoreElements(); ) {</span>
+<span class="fc" id="L136">            final String option = e.nextElement().toString();</span>
+<span class="fc" id="L137">            final Option opt = options.getOption(option);</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">            if (opt == null) {</span>
+<span class="nc" id="L139">                throw new UnrecognizedOptionException(&quot;Default option wasn't defined&quot;, option);</span>
+            }
+<span class="fc" id="L141">            final OptionGroup group = options.getOptionGroup(opt);</span>
+<span class="pc bpc" id="L142" title="3 of 4 branches missed.">            final boolean selected = group != null &amp;&amp; group.isSelected();</span>
+<span class="pc bpc" id="L143" title="2 of 4 branches missed.">            if (!cmd.hasOption(option) &amp;&amp; !selected) {</span>
+<span class="fc" id="L144">                final String value = properties.getProperty(option);</span>
+<span class="pc bpc" id="L145" title="1 of 2 branches missed.">                if (opt.hasArg()) {</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">                    if (Util.isEmpty(opt.getValues())) {</span>
+                        try {
+<span class="nc" id="L148">                            opt.processValue(value);</span>
+<span class="nc" id="L149">                        } catch (final RuntimeException exp) {</span>
+<span class="nc" id="L150">                        }</span>
+                    }
+<span class="pc bpc" id="L152" title="1 of 2 branches missed.">                } else if (!(&quot;yes&quot;.equalsIgnoreCase(value)</span>
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">                        || &quot;true&quot;.equalsIgnoreCase(value)</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                        || &quot;1&quot;.equalsIgnoreCase(value))) {</span>
+<span class="nc" id="L155">                    continue;</span>
+                }
+<span class="fc" id="L157">                cmd.addOption(opt);</span>
+<span class="fc" id="L158">                updateRequiredOptions(opt);</span>
+            }
+<span class="fc" id="L160">        }</span>
+<span class="fc" id="L161">    }</span>
+    protected void setOptions(final Options options) {
+<span class="fc" id="L163">        this.options = options;</span>
+<span class="fc" id="L164">        this.requiredOptions = new ArrayList&lt;&gt;(options.getRequiredOptions());</span>
+<span class="fc" id="L165">    }</span>
+    private void updateRequiredOptions(final Option opt) throws ParseException {
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        if (opt.isRequired()) {</span>
+<span class="fc" id="L168">            getRequiredOptions().remove(opt.getKey());</span>
+        }
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">        if (getOptions().getOptionGroup(opt) != null) {</span>
+<span class="nc" id="L171">            final OptionGroup group = getOptions().getOptionGroup(opt);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">            if (group.isRequired()) {</span>
+<span class="nc" id="L173">                getRequiredOptions().remove(group);</span>
+            }
+<span class="nc" id="L175">            group.setSelected(opt);</span>
+        }
+<span class="fc" id="L177">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

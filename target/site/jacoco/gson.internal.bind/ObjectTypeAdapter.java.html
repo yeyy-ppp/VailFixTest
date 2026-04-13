@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjectTypeAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">ObjectTypeAdapter.java</span></div><h1>ObjectTypeAdapter.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.Gson;
+import gson.ToNumberPolicy;
+import gson.ToNumberStrategy;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.internal.LinkedTreeMap;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.List;
+import java.util.Map;
+public final class ObjectTypeAdapter extends TypeAdapter&lt;Object&gt; {
+<span class="fc" id="L19">  private static final TypeAdapterFactory DOUBLE_FACTORY = newFactory(ToNumberPolicy.DOUBLE);</span>
+  private final Gson gson;
+  private final ToNumberStrategy toNumberStrategy;
+<span class="fc" id="L22">  private ObjectTypeAdapter(Gson gson, ToNumberStrategy toNumberStrategy) {</span>
+<span class="fc" id="L23">    this.gson = gson;</span>
+<span class="fc" id="L24">    this.toNumberStrategy = toNumberStrategy;</span>
+<span class="fc" id="L25">  }</span>
+  private static TypeAdapterFactory newFactory(ToNumberStrategy toNumberStrategy) {
+<span class="fc" id="L27">    return new TypeAdapterFactory() {</span>
+      @SuppressWarnings(&quot;unchecked&quot;)
+      @Override
+      public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        if (type.getRawType() == Object.class) {</span>
+<span class="fc" id="L32">          return (TypeAdapter&lt;T&gt;) new ObjectTypeAdapter(gson, toNumberStrategy);</span>
+        }
+<span class="fc" id="L34">        return null;</span>
+      }
+    };
+  }
+  public static TypeAdapterFactory getFactory(ToNumberStrategy toNumberStrategy) {
+<span class="fc bfc" id="L39" title="All 2 branches covered.">    if (toNumberStrategy == ToNumberPolicy.DOUBLE) {</span>
+<span class="fc" id="L40">      return DOUBLE_FACTORY;</span>
+    } else {
+<span class="fc" id="L42">      return newFactory(toNumberStrategy);</span>
+    }
+  }
+  private Object tryBeginNesting(JsonReader in, JsonToken peeked) throws IOException {
+<span class="fc bfc" id="L46" title="All 3 branches covered.">    switch (peeked) {</span>
+      case BEGIN_ARRAY:
+<span class="fc" id="L48">        in.beginArray();</span>
+<span class="fc" id="L49">        return new ArrayList&lt;&gt;();</span>
+      case BEGIN_OBJECT:
+<span class="fc" id="L51">        in.beginObject();</span>
+<span class="fc" id="L52">        return new LinkedTreeMap&lt;&gt;();</span>
+      default:
+<span class="fc" id="L54">        return null;</span>
+    }
+  }
+  private Object readTerminal(JsonReader in, JsonToken peeked) throws IOException {
+<span class="fc bfc" id="L58" title="All 5 branches covered.">    switch (peeked) {</span>
+      case STRING:
+<span class="fc" id="L60">        return in.nextString();</span>
+      case NUMBER:
+<span class="fc" id="L62">        return toNumberStrategy.readNumber(in);</span>
+      case BOOLEAN:
+<span class="fc" id="L64">        return in.nextBoolean();</span>
+      case NULL:
+<span class="fc" id="L66">        in.nextNull();</span>
+<span class="fc" id="L67">        return null;</span>
+      default:
+<span class="fc" id="L69">        throw new IllegalStateException(&quot;Unexpected token: &quot; + peeked);</span>
+    }
+  }
+  @Override
+  public Object read(JsonReader in) throws IOException {
+    Object current;
+<span class="fc" id="L75">    JsonToken peeked = in.peek();</span>
+<span class="fc" id="L76">    current = tryBeginNesting(in, peeked);</span>
+<span class="fc bfc" id="L77" title="All 2 branches covered.">    if (current == null) {</span>
+<span class="fc" id="L78">      return readTerminal(in, peeked);</span>
+    }
+<span class="fc" id="L80">    Deque&lt;Object&gt; stack = new ArrayDeque&lt;&gt;();</span>
+    while (true) {
+<span class="fc bfc" id="L82" title="All 2 branches covered.">      while (in.hasNext()) {</span>
+<span class="fc" id="L83">        String name = null;</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">        if (current instanceof Map) {</span>
+<span class="fc" id="L85">          name = in.nextName();</span>
+        }
+<span class="fc" id="L87">        peeked = in.peek();</span>
+<span class="fc" id="L88">        Object value = tryBeginNesting(in, peeked);</span>
+<span class="fc bfc" id="L89" title="All 2 branches covered.">        boolean isNesting = value != null;</span>
+<span class="fc bfc" id="L90" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L91">          value = readTerminal(in, peeked);</span>
+        }
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        if (current instanceof List) {</span>
+          @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L95">          List&lt;Object&gt; list = (List&lt;Object&gt;) current;</span>
+<span class="fc" id="L96">          list.add(value);</span>
+<span class="fc" id="L97">        } else {</span>
+          @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L99">          Map&lt;String, Object&gt; map = (Map&lt;String, Object&gt;) current;</span>
+<span class="fc" id="L100">          map.put(name, value);</span>
+        }
+<span class="fc bfc" id="L102" title="All 2 branches covered.">        if (isNesting) {</span>
+<span class="fc" id="L103">          stack.addLast(current);</span>
+<span class="fc" id="L104">          current = value;</span>
+        }
+<span class="fc" id="L106">      }</span>
+<span class="fc bfc" id="L107" title="All 2 branches covered.">      if (current instanceof List) {</span>
+<span class="fc" id="L108">        in.endArray();</span>
+      } else {
+<span class="fc" id="L110">        in.endObject();</span>
+      }
+<span class="fc bfc" id="L112" title="All 2 branches covered.">      if (stack.isEmpty()) {</span>
+<span class="fc" id="L113">        return current;</span>
+      } else {
+<span class="fc" id="L115">        current = stack.removeLast();</span>
+      }
+    }
+  }
+
+  @Override
+  public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L123">  }</span>
+
+  @Override
+  public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L127">    return null;</span>
+  }
+
+  @Override
+  public void write(JsonWriter out, Object value) throws IOException {
+<span class="fc bfc" id="L132" title="All 2 branches covered.">    if (value == null) {</span>
+<span class="fc" id="L133">      out.nullValue();</span>
+<span class="fc" id="L134">      return;</span>
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L137">    TypeAdapter&lt;Object&gt; typeAdapter = (TypeAdapter&lt;Object&gt;) gson.getAdapter(value.getClass());</span>
+<span class="pc bpc" id="L138" title="1 of 2 branches missed.">    if (typeAdapter instanceof ObjectTypeAdapter) {</span>
+<span class="nc" id="L139">      out.beginObject();</span>
+<span class="nc" id="L140">      out.endObject();</span>
+<span class="nc" id="L141">      return;</span>
+    }
+<span class="fc" id="L143">    typeAdapter.write(out, value);</span>
+<span class="fc" id="L144">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

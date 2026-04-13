@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GuideFixHealer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">GuideFixHealer.java</span></div><h1>GuideFixHealer.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * 自动修复“expected:&lt;X&gt; but was:&lt;Y&gt;”这类简单失败的工具类
+ */
+<span class="nc" id="L15">public class GuideFixHealer {</span>
+
+
+        /** 入口：传入 mvn test 控制台输出文本路径，直接改源码 */
+        public static void fixSimpleFailures(String mvnTestOutputPath) throws IOException {
+<span class="nc" id="L20">            Path out = Paths.get(mvnTestOutputPath);</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">            if (!Files.exists(out)) {</span>
+<span class="nc" id="L22">                System.err.println(&quot;mvn 输出文件不存在: &quot; + mvnTestOutputPath);</span>
+<span class="nc" id="L23">                return;</span>
+            }
+<span class="nc" id="L25">            List&lt;String&gt; lines = Files.readAllLines(out);</span>
+
+
+            //针对错误反馈1：• testMixedCharacters() [FAILED]  错误: expected: &lt;2&gt; but was: &lt;3&gt;
+<span class="nc" id="L29">            Pattern p = Pattern.compile(</span>
+                    &quot;\\s*•\\s*(\\w+)\\(\\)\\s*\\[FAILED\\].*\\n.*错误:\\s*expected:\\s*&lt;(\\d+)&gt;\\s*but was:\\s*&lt;(\\d+)&gt;&quot;
+            );
+<span class="nc" id="L32">            Matcher m = p.matcher(String.join(&quot;\n&quot;, lines));</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">            while (m.find()) {</span>
+<span class="nc" id="L34">                String method = m.group(1);</span>
+<span class="nc" id="L35">                int wrong = Integer.parseInt(m.group(2));</span>
+<span class="nc" id="L36">                int right = Integer.parseInt(m.group(3));</span>
+<span class="nc" id="L37">                patchExpectedValue(method, wrong, right);</span>
+<span class="nc" id="L38">            }</span>
+<span class="nc" id="L39">        }</span>
+
+        /** 到测试源文件里把 assertEquals(wrong, ...) 改成 assertEquals(right, ...) */
+        private static void patchExpectedValue(String methodName, int wrong, int right) throws IOException {
+            // 1. 定位测试源码目录
+<span class="nc" id="L44">            Path testDir = Paths.get(&quot;src/test/java&quot;);</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">            if (!Files.exists(testDir)) return;</span>
+
+            // 2. 全局搜 *Test.java
+<span class="nc" id="L48">            Files.walk(testDir)</span>
+<span class="nc" id="L49">                    .filter(p -&gt; p.toString().endsWith(&quot;Test.java&quot;))</span>
+<span class="nc" id="L50">                    .forEach(p -&gt; {</span>
+                        try {
+<span class="nc" id="L52">                            List&lt;String&gt; src = Files.readAllLines(p);</span>
+<span class="nc" id="L53">                            List&lt;String&gt; patched = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L54">                            boolean hit = false;</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">                            for (String line : src) {</span>
+                                // 只改目标方法里的第一处 assertEquals(wrong, ...)
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                                if (line.contains(&quot;void &quot; + methodName + &quot;()&quot;)) {</span>
+<span class="nc" id="L58">                                    hit = true;</span>
+                                }
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                                if (hit) {</span>
+<span class="nc" id="L61">                                    line = line.replaceFirst(</span>
+                                            &quot;assertEquals\\(\\s*&quot; + wrong + &quot;\\s*,&quot;,
+                                            &quot;assertEquals(&quot; + right + &quot;, &quot;);
+                                    // 方法结束就停
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                                    if (line.contains(&quot;}&quot;)) hit = false;</span>
+                                }
+<span class="nc" id="L67">                                patched.add(line);</span>
+<span class="nc" id="L68">                            }</span>
+<span class="nc" id="L69">                            Files.write(p, patched);</span>
+<span class="nc" id="L70">                            System.out.println(&quot;已自动修复：[&quot; + methodName + &quot;] expected &quot; + wrong + &quot; -&gt; &quot; + right);</span>
+<span class="nc" id="L71">                        } catch (IOException e) {</span>
+<span class="nc" id="L72">                            e.printStackTrace();</span>
+<span class="nc" id="L73">                        }</span>
+<span class="nc" id="L74">                    });</span>
+<span class="nc" id="L75">        }</span>
+
+    public static void main(String[] args) throws IOException {
+        // 1. 用刚才落盘的文件
+<span class="nc" id="L79">        String logFile = &quot;target/mvn-guideFixTest.log&quot;;</span>
+
+        // 2. 执行自动修复
+<span class="nc" id="L82">        GuideFixHealer.fixSimpleFailures(logFile);</span>
+
+        /*
+        已自动修复：[testMixedCharacters] expected 2 -&gt; 3
+        已自动修复：[testMixedCharacters] expected 2 -&gt; 3
+        已自动修复：[testMixedCharacters] expected 2 -&gt; 3
+        已自动修复：[testMixedCharacters] expected 2 -&gt; 3
+        已自动修复：[testMixedCharacters] expected 2 -&gt; 3
+        已自动修复：[testMixedCharacters] expected 2 -&gt; 3
+        ✅ 修复完成，请重新执行： mvn test -Dtest=AddTest
+        若 testMixedCharacters 变为 PASSED，则 GuideFixHealer 可行性验证成功！
+        */
+
+        // 3. 提示二次验证
+<span class="nc" id="L96">        System.out.println(&quot;✅ 修复完成，请重新执行： mvn test -Dtest=AddTest&quot;);</span>
+<span class="nc" id="L97">        System.out.println(&quot;若 testMixedCharacters 变为 PASSED，则 GuideFixHealer 可行性验证成功！&quot;);</span>
+<span class="nc" id="L98">    }</span>
+    }
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

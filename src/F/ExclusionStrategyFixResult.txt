@@ -1,0 +1,35 @@
+[2026-01-23 18:26:58] 修复结果
+修复类型: 致命错误修复
+修复前错误: 编译错误 - 构造器GsonExclusionStrategy不存在
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package gson;
+
+import gson.ExclusionStrategy;
+import gson.FieldAttributes;
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Field;
+
+public class ExclusionStrategyTest {
+
+    public String testField = "test";
+
+    @Test
+    void testShouldSkipField() throws Exception {
+        Field field = this.getClass().getField("testField");
+        FieldAttributes fieldAttributes = new FieldAttributes(field);
+        ExclusionStrategy strategy = new ExclusionStrategy();
+        strategy.shouldSkipField(fieldAttributes);
+    }
+
+    @Test
+    void testShouldSkipClass() {
+        ExclusionStrategy strategy = new ExclusionStrategy();
+        strategy.shouldSkipClass(Object.class);
+    }
+}
+
+```
+

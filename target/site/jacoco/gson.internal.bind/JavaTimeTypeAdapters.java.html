@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaTimeTypeAdapters.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">JavaTimeTypeAdapters.java</span></div><h1>JavaTimeTypeAdapters.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import static java.lang.Math.toIntExact;
+import gson.Gson;
+import gson.JsonSyntaxException;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.internal.bind.TypeAdapters.IntegerFieldsTypeAdapter;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.MonthDay;
+import java.time.OffsetDateTime;
+import java.time.OffsetTime;
+import java.time.Period;
+import java.time.Year;
+import java.time.YearMonth;
+import java.time.ZoneId;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+@IgnoreJRERequirement
+<span class="fc" id="L28">final class JavaTimeTypeAdapters implements TypeAdapters.FactorySupplier {</span>
+  @Override
+  public TypeAdapterFactory get() {
+<span class="fc" id="L31">    return JAVA_TIME_FACTORY;</span>
+  }
+<span class="fc" id="L33">  private static final TypeAdapter&lt;Duration&gt; DURATION =</span>
+<span class="fc" id="L34">      new IntegerFieldsTypeAdapter&lt;Duration&gt;(&quot;seconds&quot;, &quot;nanos&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L38">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L42">              return null;</span>
+          }
+        @Override
+        Duration create(long[] values) {
+<span class="nc" id="L46">          return Duration.ofSeconds(values[0], values[1]);</span>
+        }
+        @Override
+        @SuppressWarnings(&quot;JavaDurationGetSecondsGetNano&quot;)
+        long[] integerValues(Duration duration) {
+<span class="nc" id="L51">          return new long[] {duration.getSeconds(), duration.getNano()};</span>
+        }
+      };
+<span class="fc" id="L54">  private static final TypeAdapter&lt;Instant&gt; INSTANT =</span>
+<span class="fc" id="L55">      new IntegerFieldsTypeAdapter&lt;Instant&gt;(&quot;seconds&quot;, &quot;nanos&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L59">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L63">              return null;</span>
+          }
+        @Override
+        Instant create(long[] values) {
+<span class="nc" id="L67">          return Instant.ofEpochSecond(values[0], values[1]);</span>
+        }
+        @Override
+        @SuppressWarnings(&quot;JavaInstantGetSecondsGetNano&quot;)
+        long[] integerValues(Instant instant) {
+<span class="nc" id="L72">          return new long[] {instant.getEpochSecond(), instant.getNano()};</span>
+        }
+      };
+<span class="fc" id="L75">  private static final TypeAdapter&lt;LocalDate&gt; LOCAL_DATE =</span>
+<span class="fc" id="L76">      new IntegerFieldsTypeAdapter&lt;LocalDate&gt;(&quot;year&quot;, &quot;month&quot;, &quot;day&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L80">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L84">              return null;</span>
+          }
+        @Override
+        LocalDate create(long[] values) {
+<span class="nc" id="L88">          return LocalDate.of(toIntExact(values[0]), toIntExact(values[1]), toIntExact(values[2]));</span>
+        }
+        @Override
+        long[] integerValues(LocalDate localDate) {
+<span class="nc" id="L92">          return new long[] {</span>
+<span class="nc" id="L93">            localDate.getYear(), localDate.getMonthValue(), localDate.getDayOfMonth()</span>
+          };
+        }
+      };
+<span class="fc" id="L97">  public static final TypeAdapter&lt;LocalTime&gt; LOCAL_TIME =</span>
+<span class="fc" id="L98">      new IntegerFieldsTypeAdapter&lt;LocalTime&gt;(&quot;hour&quot;, &quot;minute&quot;, &quot;second&quot;, &quot;nano&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L102">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L106">              return null;</span>
+          }
+        @Override
+        LocalTime create(long[] values) {
+<span class="nc" id="L110">          return LocalTime.of(</span>
+<span class="nc" id="L111">              toIntExact(values[0]),</span>
+<span class="nc" id="L112">              toIntExact(values[1]),</span>
+<span class="nc" id="L113">              toIntExact(values[2]),</span>
+<span class="nc" id="L114">              toIntExact(values[3]));</span>
+        }
+        @Override
+        long[] integerValues(LocalTime localTime) {
+<span class="nc" id="L118">          return new long[] {</span>
+<span class="nc" id="L119">            localTime.getHour(), localTime.getMinute(), localTime.getSecond(), localTime.getNano()</span>
+          };
+        }
+      };
+  private static TypeAdapter&lt;LocalDateTime&gt; localDateTime(Gson gson) {
+<span class="nc" id="L124">    TypeAdapter&lt;LocalDate&gt; localDateAdapter = gson.getAdapter(LocalDate.class);</span>
+<span class="nc" id="L125">    TypeAdapter&lt;LocalTime&gt; localTimeAdapter = gson.getAdapter(LocalTime.class);</span>
+<span class="nc" id="L126">    return new TypeAdapter&lt;LocalDateTime&gt;() {</span>
+        @Override
+        public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L130">        }</span>
+
+        @Override
+        public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L134">            return null;</span>
+        }
+      @Override
+      public LocalDateTime read(JsonReader in) throws IOException {
+<span class="nc" id="L138">        LocalDate localDate = null;</span>
+<span class="nc" id="L139">        LocalTime localTime = null;</span>
+<span class="nc" id="L140">        in.beginObject();</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        while (in.peek() != JsonToken.END_OBJECT) {</span>
+<span class="nc" id="L142">          String name = in.nextName();</span>
+<span class="nc bnc" id="L143" title="All 3 branches missed.">          switch (name) {</span>
+            case &quot;date&quot;:
+<span class="nc" id="L145">              localDate = localDateAdapter.read(in);</span>
+<span class="nc" id="L146">              break;</span>
+            case &quot;time&quot;:
+<span class="nc" id="L148">              localTime = localTimeAdapter.read(in);</span>
+<span class="nc" id="L149">              break;</span>
+            default:
+<span class="nc" id="L151">              in.skipValue();</span>
+          }
+<span class="nc" id="L153">        }</span>
+<span class="nc" id="L154">        in.endObject();</span>
+<span class="nc" id="L155">        return LocalDateTime.of(</span>
+<span class="nc" id="L156">            requireNonNullField(localDate, &quot;date&quot;, in), requireNonNullField(localTime, &quot;time&quot;, in));</span>
+      }
+      @Override
+      public void write(JsonWriter out, LocalDateTime value) throws IOException {
+<span class="nc" id="L160">        out.beginObject();</span>
+<span class="nc" id="L161">        out.name(&quot;date&quot;);</span>
+<span class="nc" id="L162">        localDateAdapter.write(out, value.toLocalDate());</span>
+<span class="nc" id="L163">        out.name(&quot;time&quot;);</span>
+<span class="nc" id="L164">        localTimeAdapter.write(out, value.toLocalTime());</span>
+<span class="nc" id="L165">        out.endObject();</span>
+<span class="nc" id="L166">      }</span>
+<span class="nc" id="L167">    }.nullSafe();</span>
+  }
+<span class="fc" id="L169">  private static final TypeAdapter&lt;MonthDay&gt; MONTH_DAY =</span>
+<span class="fc" id="L170">      new IntegerFieldsTypeAdapter&lt;MonthDay&gt;(&quot;month&quot;, &quot;day&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L174">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L178">              return null;</span>
+          }
+        @Override
+        MonthDay create(long[] values) {
+<span class="nc" id="L182">          return MonthDay.of(toIntExact(values[0]), toIntExact(values[1]));</span>
+        }
+        @Override
+        long[] integerValues(MonthDay monthDay) {
+<span class="nc" id="L186">          return new long[] {monthDay.getMonthValue(), monthDay.getDayOfMonth()};</span>
+        }
+      };
+  private static TypeAdapter&lt;OffsetDateTime&gt; offsetDateTime(Gson gson) {
+<span class="nc" id="L190">    TypeAdapter&lt;LocalDateTime&gt; localDateTimeAdapter = localDateTime(gson);</span>
+<span class="nc" id="L191">    TypeAdapter&lt;ZoneOffset&gt; zoneOffsetAdapter = gson.getAdapter(ZoneOffset.class);</span>
+<span class="nc" id="L192">    return new TypeAdapter&lt;OffsetDateTime&gt;() {</span>
+        @Override
+        public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L196">        }</span>
+
+        @Override
+        public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L200">            return null;</span>
+        }
+      @Override
+      public OffsetDateTime read(JsonReader in) throws IOException {
+<span class="nc" id="L204">        in.beginObject();</span>
+<span class="nc" id="L205">        LocalDateTime localDateTime = null;</span>
+<span class="nc" id="L206">        ZoneOffset zoneOffset = null;</span>
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        while (in.peek() != JsonToken.END_OBJECT) {</span>
+<span class="nc" id="L208">          String name = in.nextName();</span>
+<span class="nc bnc" id="L209" title="All 3 branches missed.">          switch (name) {</span>
+            case &quot;dateTime&quot;:
+<span class="nc" id="L211">              localDateTime = localDateTimeAdapter.read(in);</span>
+<span class="nc" id="L212">              break;</span>
+            case &quot;offset&quot;:
+<span class="nc" id="L214">              zoneOffset = zoneOffsetAdapter.read(in);</span>
+<span class="nc" id="L215">              break;</span>
+            default:
+<span class="nc" id="L217">              in.skipValue();</span>
+          }
+<span class="nc" id="L219">        }</span>
+<span class="nc" id="L220">        in.endObject();</span>
+<span class="nc" id="L221">        return OffsetDateTime.of(</span>
+<span class="nc" id="L222">            requireNonNullField(localDateTime, &quot;dateTime&quot;, in),</span>
+<span class="nc" id="L223">            requireNonNullField(zoneOffset, &quot;offset&quot;, in));</span>
+      }
+      @Override
+      public void write(JsonWriter out, OffsetDateTime value) throws IOException {
+<span class="nc" id="L227">        out.beginObject();</span>
+<span class="nc" id="L228">        out.name(&quot;dateTime&quot;);</span>
+<span class="nc" id="L229">        localDateTimeAdapter.write(out, value.toLocalDateTime());</span>
+<span class="nc" id="L230">        out.name(&quot;offset&quot;);</span>
+<span class="nc" id="L231">        zoneOffsetAdapter.write(out, value.getOffset());</span>
+<span class="nc" id="L232">        out.endObject();</span>
+<span class="nc" id="L233">      }</span>
+<span class="nc" id="L234">    }.nullSafe();</span>
+  }
+  private static TypeAdapter&lt;OffsetTime&gt; offsetTime(Gson gson) {
+<span class="nc" id="L237">    TypeAdapter&lt;LocalTime&gt; localTimeAdapter = gson.getAdapter(LocalTime.class);</span>
+<span class="nc" id="L238">    TypeAdapter&lt;ZoneOffset&gt; zoneOffsetAdapter = gson.getAdapter(ZoneOffset.class);</span>
+<span class="nc" id="L239">    return new TypeAdapter&lt;OffsetTime&gt;() {</span>
+        @Override
+        public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L243">        }</span>
+
+        @Override
+        public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L247">            return null;</span>
+        }
+      @Override
+      public OffsetTime read(JsonReader in) throws IOException {
+<span class="nc" id="L251">        in.beginObject();</span>
+<span class="nc" id="L252">        LocalTime localTime = null;</span>
+<span class="nc" id="L253">        ZoneOffset zoneOffset = null;</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">        while (in.peek() != JsonToken.END_OBJECT) {</span>
+<span class="nc" id="L255">          String name = in.nextName();</span>
+<span class="nc bnc" id="L256" title="All 3 branches missed.">          switch (name) {</span>
+            case &quot;time&quot;:
+<span class="nc" id="L258">              localTime = localTimeAdapter.read(in);</span>
+<span class="nc" id="L259">              break;</span>
+            case &quot;offset&quot;:
+<span class="nc" id="L261">              zoneOffset = zoneOffsetAdapter.read(in);</span>
+<span class="nc" id="L262">              break;</span>
+            default:
+<span class="nc" id="L264">              in.skipValue();</span>
+          }
+<span class="nc" id="L266">        }</span>
+<span class="nc" id="L267">        in.endObject();</span>
+<span class="nc" id="L268">        return OffsetTime.of(</span>
+<span class="nc" id="L269">            requireNonNullField(localTime, &quot;time&quot;, in),</span>
+<span class="nc" id="L270">            requireNonNullField(zoneOffset, &quot;offset&quot;, in));</span>
+      }
+      @Override
+      public void write(JsonWriter out, OffsetTime value) throws IOException {
+<span class="nc" id="L274">        out.beginObject();</span>
+<span class="nc" id="L275">        out.name(&quot;time&quot;);</span>
+<span class="nc" id="L276">        localTimeAdapter.write(out, value.toLocalTime());</span>
+<span class="nc" id="L277">        out.name(&quot;offset&quot;);</span>
+<span class="nc" id="L278">        zoneOffsetAdapter.write(out, value.getOffset());</span>
+<span class="nc" id="L279">        out.endObject();</span>
+<span class="nc" id="L280">      }</span>
+<span class="nc" id="L281">    }.nullSafe();</span>
+  }
+<span class="fc" id="L283">  private static final TypeAdapter&lt;Period&gt; PERIOD =</span>
+<span class="fc" id="L284">      new IntegerFieldsTypeAdapter&lt;Period&gt;(&quot;years&quot;, &quot;months&quot;, &quot;days&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L288">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L292">              return null;</span>
+          }
+        @Override
+        Period create(long[] values) {
+<span class="nc" id="L296">          return Period.of(toIntExact(values[0]), toIntExact(values[1]), toIntExact(values[2]));</span>
+        }
+        @Override
+        long[] integerValues(Period period) {
+<span class="nc" id="L300">          return new long[] {period.getYears(), period.getMonths(), period.getDays()};</span>
+        }
+      };
+<span class="fc" id="L303">  private static final TypeAdapter&lt;Year&gt; YEAR =</span>
+<span class="fc" id="L304">      new IntegerFieldsTypeAdapter&lt;Year&gt;(&quot;year&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L308">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L312">              return null;</span>
+          }
+        @Override
+        Year create(long[] values) {
+<span class="nc" id="L316">          return Year.of(toIntExact(values[0]));</span>
+        }
+        @Override
+        long[] integerValues(Year year) {
+<span class="nc" id="L320">          return new long[] {year.getValue()};</span>
+        }
+      };
+<span class="fc" id="L323">  private static final TypeAdapter&lt;YearMonth&gt; YEAR_MONTH =</span>
+<span class="fc" id="L324">      new IntegerFieldsTypeAdapter&lt;YearMonth&gt;(&quot;year&quot;, &quot;month&quot;) {</span>
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L328">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L332">              return null;</span>
+          }
+        @Override
+        YearMonth create(long[] values) {
+<span class="nc" id="L336">          return YearMonth.of(toIntExact(values[0]), toIntExact(values[1]));</span>
+        }
+        @Override
+        long[] integerValues(YearMonth yearMonth) {
+<span class="nc" id="L340">          return new long[] {yearMonth.getYear(), yearMonth.getMonthValue()};</span>
+        }
+      };
+<span class="fc" id="L343">  private static final TypeAdapter&lt;ZoneId&gt; ZONE_ID =</span>
+<span class="fc" id="L344">      new TypeAdapter&lt;ZoneId&gt;() {</span>
+        @Override
+        public ZoneId read(JsonReader in) throws IOException {
+<span class="nc" id="L347">          in.beginObject();</span>
+<span class="nc" id="L348">          String id = null;</span>
+<span class="nc" id="L349">          Integer totalSeconds = null;</span>
+<span class="nc bnc" id="L350" title="All 2 branches missed.">          while (in.peek() != JsonToken.END_OBJECT) {</span>
+<span class="nc" id="L351">            String name = in.nextName();</span>
+<span class="nc bnc" id="L352" title="All 3 branches missed.">            switch (name) {</span>
+              case &quot;id&quot;:
+<span class="nc" id="L354">                id = in.nextString();</span>
+<span class="nc" id="L355">                break;</span>
+              case &quot;totalSeconds&quot;:
+<span class="nc" id="L357">                totalSeconds = in.nextInt();</span>
+<span class="nc" id="L358">                break;</span>
+              default:
+<span class="nc" id="L360">                in.skipValue();</span>
+            }
+<span class="nc" id="L362">          }</span>
+<span class="nc" id="L363">          in.endObject();</span>
+<span class="nc bnc" id="L364" title="All 2 branches missed.">          if (id != null) {</span>
+<span class="nc" id="L365">            return ZoneId.of(id);</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">          } else if (totalSeconds != null) {</span>
+<span class="nc" id="L367">            return ZoneOffset.ofTotalSeconds(totalSeconds);</span>
+          } else {
+<span class="nc" id="L369">            throw new JsonSyntaxException(</span>
+<span class="nc" id="L370">                &quot;Missing id or totalSeconds field; at path &quot; + in.getPreviousPath());</span>
+          }
+        }
+
+          @Override
+          public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L377">          }</span>
+
+          @Override
+          public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L381">              return null;</span>
+          }
+
+          @Override
+        public void write(JsonWriter out, ZoneId value) throws IOException {
+<span class="nc bnc" id="L386" title="All 2 branches missed.">          if (value instanceof ZoneOffset) {</span>
+<span class="nc" id="L387">            out.beginObject();</span>
+<span class="nc" id="L388">            out.name(&quot;totalSeconds&quot;);</span>
+<span class="nc" id="L389">            out.value(((ZoneOffset) value).getTotalSeconds());</span>
+<span class="nc" id="L390">            out.endObject();</span>
+          } else {
+<span class="nc" id="L392">            out.beginObject();</span>
+<span class="nc" id="L393">            out.name(&quot;id&quot;);</span>
+<span class="nc" id="L394">            out.value(value.getId());</span>
+<span class="nc" id="L395">            out.endObject();</span>
+          }
+<span class="nc" id="L397">        }</span>
+<span class="fc" id="L398">      }.nullSafe();</span>
+  private static TypeAdapter&lt;ZonedDateTime&gt; zonedDateTime(Gson gson) {
+<span class="nc" id="L400">    TypeAdapter&lt;LocalDateTime&gt; localDateTimeAdapter = localDateTime(gson);</span>
+<span class="nc" id="L401">    TypeAdapter&lt;ZoneOffset&gt; zoneOffsetAdapter = gson.getAdapter(ZoneOffset.class);</span>
+<span class="nc" id="L402">    TypeAdapter&lt;ZoneId&gt; zoneIdAdapter = gson.getAdapter(ZoneId.class);</span>
+<span class="nc" id="L403">    return new TypeAdapter&lt;ZonedDateTime&gt;() {</span>
+      @Override
+      public ZonedDateTime read(JsonReader in) throws IOException {
+<span class="nc" id="L406">        in.beginObject();</span>
+<span class="nc" id="L407">        LocalDateTime localDateTime = null;</span>
+<span class="nc" id="L408">        ZoneOffset zoneOffset = null;</span>
+<span class="nc" id="L409">        ZoneId zoneId = null;</span>
+<span class="nc bnc" id="L410" title="All 2 branches missed.">        while (in.peek() != JsonToken.END_OBJECT) {</span>
+<span class="nc" id="L411">          String name = in.nextName();</span>
+<span class="nc bnc" id="L412" title="All 4 branches missed.">          switch (name) {</span>
+            case &quot;dateTime&quot;:
+<span class="nc" id="L414">              localDateTime = localDateTimeAdapter.read(in);</span>
+<span class="nc" id="L415">              break;</span>
+            case &quot;offset&quot;:
+<span class="nc" id="L417">              zoneOffset = zoneOffsetAdapter.read(in);</span>
+<span class="nc" id="L418">              break;</span>
+            case &quot;zone&quot;:
+<span class="nc" id="L420">              zoneId = zoneIdAdapter.read(in);</span>
+<span class="nc" id="L421">              break;</span>
+            default:
+<span class="nc" id="L423">              in.skipValue();</span>
+          }
+<span class="nc" id="L425">        }</span>
+<span class="nc" id="L426">        in.endObject();</span>
+<span class="nc" id="L427">        return ZonedDateTime.ofInstant(</span>
+<span class="nc" id="L428">            requireNonNullField(localDateTime, &quot;dateTime&quot;, in),</span>
+<span class="nc" id="L429">            requireNonNullField(zoneOffset, &quot;offset&quot;, in),</span>
+<span class="nc" id="L430">            requireNonNullField(zoneId, &quot;zone&quot;, in));</span>
+      }
+
+        @Override
+        public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L436">        }</span>
+
+        @Override
+        public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L440">            return null;</span>
+        }
+
+        @Override
+      public void write(JsonWriter out, ZonedDateTime value) throws IOException {
+<span class="nc bnc" id="L445" title="All 2 branches missed.">        if (value == null) {</span>
+<span class="nc" id="L446">          out.nullValue();</span>
+<span class="nc" id="L447">          return;</span>
+        }
+<span class="nc" id="L449">        out.beginObject();</span>
+<span class="nc" id="L450">        out.name(&quot;dateTime&quot;);</span>
+<span class="nc" id="L451">        localDateTimeAdapter.write(out, value.toLocalDateTime());</span>
+<span class="nc" id="L452">        out.name(&quot;offset&quot;);</span>
+<span class="nc" id="L453">        zoneOffsetAdapter.write(out, value.getOffset());</span>
+<span class="nc" id="L454">        out.name(&quot;zone&quot;);</span>
+<span class="nc" id="L455">        zoneIdAdapter.write(out, value.getZone());</span>
+<span class="nc" id="L456">        out.endObject();</span>
+<span class="nc" id="L457">      }</span>
+<span class="nc" id="L458">    }.nullSafe();</span>
+  }
+<span class="fc" id="L460">  static final TypeAdapterFactory JAVA_TIME_FACTORY =</span>
+<span class="fc" id="L461">      new TypeAdapterFactory() {</span>
+        @Override
+        public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; typeToken) {
+<span class="fc" id="L464">          Class&lt;? super T&gt; rawType = typeToken.getRawType();</span>
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">          if (!rawType.getName().startsWith(&quot;java.time.&quot;)) {</span>
+<span class="fc" id="L466">            return null;</span>
+          }
+<span class="nc" id="L468">          TypeAdapter&lt;?&gt; adapter = null;</span>
+<span class="nc bnc" id="L469" title="All 2 branches missed.">          if (rawType == Duration.class) {</span>
+<span class="nc" id="L470">            adapter = DURATION;</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">          } else if (rawType == Instant.class) {</span>
+<span class="nc" id="L472">            adapter = INSTANT;</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">          } else if (rawType == LocalDate.class) {</span>
+<span class="nc" id="L474">            adapter = LOCAL_DATE;</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">          } else if (rawType == LocalTime.class) {</span>
+<span class="nc" id="L476">            adapter = LOCAL_TIME;</span>
+<span class="nc bnc" id="L477" title="All 2 branches missed.">          } else if (rawType == LocalDateTime.class) {</span>
+<span class="nc" id="L478">            adapter = localDateTime(gson);</span>
+<span class="nc bnc" id="L479" title="All 2 branches missed.">          } else if (rawType == MonthDay.class) {</span>
+<span class="nc" id="L480">            adapter = MONTH_DAY;</span>
+<span class="nc bnc" id="L481" title="All 2 branches missed.">          } else if (rawType == OffsetDateTime.class) {</span>
+<span class="nc" id="L482">            adapter = offsetDateTime(gson);</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">          } else if (rawType == OffsetTime.class) {</span>
+<span class="nc" id="L484">            adapter = offsetTime(gson);</span>
+<span class="nc bnc" id="L485" title="All 2 branches missed.">          } else if (rawType == Period.class) {</span>
+<span class="nc" id="L486">            adapter = PERIOD;</span>
+<span class="nc bnc" id="L487" title="All 2 branches missed.">          } else if (rawType == Year.class) {</span>
+<span class="nc" id="L488">            adapter = YEAR;</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">          } else if (rawType == YearMonth.class) {</span>
+<span class="nc" id="L490">            adapter = YEAR_MONTH;</span>
+<span class="nc bnc" id="L491" title="All 4 branches missed.">          } else if (rawType == ZoneId.class || rawType == ZoneOffset.class) {</span>
+<span class="nc" id="L492">            adapter = ZONE_ID;</span>
+<span class="nc bnc" id="L493" title="All 2 branches missed.">          } else if (rawType == ZonedDateTime.class) {</span>
+<span class="nc" id="L494">            adapter = zonedDateTime(gson);</span>
+          }
+          @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L497">          TypeAdapter&lt;T&gt; result = (TypeAdapter&lt;T&gt;) adapter;</span>
+<span class="nc" id="L498">          return result;</span>
+        }
+      };
+  private static &lt;T&gt; T requireNonNullField(T field, String fieldName, JsonReader reader) {
+<span class="nc bnc" id="L502" title="All 2 branches missed.">    if (field == null) {</span>
+<span class="nc" id="L503">      throw new JsonSyntaxException(</span>
+<span class="nc" id="L504">          &quot;Missing &quot; + fieldName + &quot; field; at path &quot; + reader.getPreviousPath());</span>
+    }
+<span class="nc" id="L506">    return field;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

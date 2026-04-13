@@ -1,0 +1,12 @@
+[2026-01-24 01:21:56] 验证结果
+错误类型: testNextInt, 错误行: 77, 错误原因: 断言结果非负，但随机整数可能为负, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: insecure, nextBoolean, nextBytes, nextDouble, nextDouble, nextFloat, nextFloat, nextInt, nextInt, nextLong, nextLong, secure, secureRandom, secureStrong, random, randomBoolean, randomBytes, randomDouble, randomDouble, randomFloat, randomFloat, randomInt, randomInt, randomLong, randomLong, randomLong, toString
+  未覆盖: RandomUtils, RandomUtils
+
+[2026-01-24 01:27:01] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: insecure, nextBoolean, nextBytes, nextDouble, nextDouble, nextFloat, nextFloat, nextInt, nextInt, nextLong, nextLong, secure, secureRandom, secureStrong, RandomUtils, RandomUtils, random, randomBoolean, randomBytes, randomDouble, randomDouble, randomFloat, randomFloat, randomInt, randomInt, randomLong, randomLong, randomLong, toString
+  未覆盖: 全部覆盖
+

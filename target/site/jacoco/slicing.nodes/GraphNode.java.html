@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>GraphNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes</a> &gt; <span class="el_source">GraphNode.java</span></div><h1>GraphNode.java</h1><pre class="source lang-java linenums">package slicing.nodes;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import slicing.graphs.cfg.CFG;
+import slicing.graphs.pdg.PDG;
+import slicing.graphs.sdg.SDG;
+import slicing.utils.ASTUtils;
+
+import java.util.*;
+
+import static slicing.graphs.exceptionsensitive.ESCFG.ACTIVE_EXCEPTION_VARIABLE;
+
+/**
+ * Represents a node in the various graphs ({@link CFG CFG}, {@link PDG PDG} and {@link SDG SDG}),
+ * including its AST represenThere are no variable actions in this nodetation and the connections it has to other nodes in the same graph.
+ * It can hold a string of characters that will be used to represent it. &lt;br/&gt;
+ * It is immutable.
+ * @param &lt;N&gt; The type of the AST represented by this node.
+ */
+<span class="nc" id="L23">public class GraphNode&lt;N extends Node&gt; implements Comparable&lt;GraphNode&lt;?&gt;&gt; {</span>
+    /** A unique id within the graph. */
+    protected final long id;
+    /** The textual representation of the node. */
+    protected final String label;
+    /** The JavaParser AST node represented by this node. */
+    protected final N astNode;
+    /** A sorted list of actions (usages, definitions and declarations) performed in this node. */
+    protected final List&lt;VariableAction&gt; variableActions;
+    /** The method calls contained  */
+<span class="nc" id="L33">    protected final List&lt;Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt;&gt; methodCalls = new LinkedList&lt;&gt;();</span>
+    /** Nodes that are generated as a result of the instruction represented by this GraphNode and that may
+     *  be included in Movable actions. */
+<span class="nc" id="L36">    protected final Set&lt;SyntheticNode&lt;?&gt;&gt; syntheticNodesInMovables = new HashSet&lt;&gt;();</span>
+
+    /** @see #isImplicitInstruction() */
+<span class="nc" id="L39">    protected boolean isImplicit = false;</span>
+
+    /** Create a graph node, with id and variable actions generated automatically. */
+    public GraphNode(String label, N astNode) {
+<span class="nc" id="L43">        this(IdHelper.getInstance().getNextId(), label, astNode);</span>
+<span class="nc" id="L44">    }</span>
+
+    /** Create a graph node, with variable actions generated automatically. */
+    protected GraphNode(long id, String label, N astNode) {
+<span class="nc" id="L48">        this(id, label, astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L49">        extractVariables();</span>
+<span class="nc" id="L50">    }</span>
+
+    /** Create a graph node, with id generated automatically. */
+    public GraphNode(String label, N astNode, List&lt;VariableAction&gt; variableActions) {
+<span class="nc" id="L54">        this(IdHelper.getInstance().getNextId(), label, astNode, variableActions);</span>
+<span class="nc" id="L55">    }</span>
+
+<span class="nc" id="L57">    protected GraphNode(long id, String label, N astNode, List&lt;VariableAction&gt; variableActions) {</span>
+<span class="nc" id="L58">        this.id = id;</span>
+<span class="nc" id="L59">        this.label = label;</span>
+<span class="nc" id="L60">        this.astNode = astNode;</span>
+<span class="nc" id="L61">        this.variableActions = variableActions;</span>
+<span class="nc" id="L62">    }</span>
+
+    /** Search for all the declarations, definitions and usages in this node. */
+    protected void extractVariables() {
+<span class="nc" id="L66">        new VariableVisitor().startVisit(this);</span>
+<span class="nc" id="L67">    }</span>
+
+    /** A unique id in this graph. */
+    public long getId() {
+<span class="nc" id="L71">        return id;</span>
+    }
+
+    /** The AST node represented by this graph. */
+    public N getAstNode() {
+<span class="nc" id="L76">        return astNode;</span>
+    }
+
+    /** An unmodifiable list of variable actions in this node. */
+    public List&lt;VariableAction&gt; getVariableActions() {
+<span class="nc" id="L81">        return Collections.unmodifiableList(variableActions);</span>
+    }
+
+    /** Returns the last variable action in this node.
+     *  @throws IllegalStateException If there are no variable actions. */
+    public VariableAction getLastVariableAction() {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (variableActions.isEmpty())</span>
+<span class="nc" id="L88">            throw new IllegalStateException(&quot;There are no variable actions in this node&quot;);</span>
+<span class="nc" id="L89">        return variableActions.get(variableActions.size() - 1);</span>
+    }
+
+    /** The node's label. It represents the portion of the node that
+     *  is covered by this node, in the case of block statements. */
+    public String getLabel() {
+<span class="nc" id="L95">        return label;</span>
+    }
+
+    /** The node's long-form label, including its id and information on variables. */
+    public String getLongLabel() {
+<span class="nc" id="L100">        String label = getId() + &quot;: &quot; + getLabel().replace(&quot;\\&quot;, &quot;\\\\&quot;);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">        if (!getVariableActions().isEmpty())</span>
+<span class="nc" id="L102">            label += &quot;\\n&quot; + getVariableActions().stream().map(Object::toString).reduce((a, b) -&gt; a + &quot;,&quot; + b).orElse(&quot;--&quot;);</span>
+<span class="nc" id="L103">        return label;</span>
+    }
+
+    /** Marks the current node as implicit.
+     *  @see #isImplicitInstruction() */
+    public void markAsImplicit() {
+<span class="nc" id="L109">        this.isImplicit = true;</span>
+<span class="nc" id="L110">        variableActions.stream()</span>
+<span class="nc" id="L111">                .filter(VariableAction.Movable.class::isInstance)</span>
+<span class="nc" id="L112">                .map(VariableAction.Movable.class::cast)</span>
+<span class="nc" id="L113">                .map(VariableAction.Movable::getRealNode)</span>
+<span class="nc" id="L114">                .forEach(GraphNode::markAsImplicit);</span>
+<span class="nc" id="L115">    }</span>
+
+    /** Whether this graph node represents an AST node that didn't exist explicitly, such as 'super()'. */
+    public boolean isImplicitInstruction() {
+<span class="nc" id="L119">        return isImplicit;</span>
+    }
+
+    // =============================================================
+    // ===================  Variables and Calls  ===================
+    // =============================================================
+
+    /** Whether this node contains the given call AST node. */
+    public boolean containsCall(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc bnc" id="L128" title="All 2 branches missed.">        for (Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; c : methodCalls)</span>
+<span class="nc bnc" id="L129" title="All 4 branches missed.">            if (c == call || ASTUtils.equalsWithRange((Node) c, (Node) call))</span>
+<span class="nc" id="L130">                return true;</span>
+<span class="nc" id="L131">        return false;</span>
+    }
+
+    /** Append or prepend the given set of actions to the actions of the given call. */
+    public void addActionsForCall(List&lt;VariableAction.Movable&gt; actions, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, boolean prepend) {
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        for (int i = 0; i &lt; variableActions.size(); i++) {</span>
+<span class="nc" id="L137">            VariableAction var = variableActions.get(i);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (var instanceof VariableAction.CallMarker) {</span>
+<span class="nc" id="L139">                VariableAction.CallMarker marker = (VariableAction.CallMarker) var;</span>
+<span class="nc bnc" id="L140" title="All 4 branches missed.">                if (marker.getCall().equals(call) &amp;&amp; marker.isEnter() == prepend) {</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">                    variableActions.addAll(prepend ? i + 1 : i, actions);</span>
+<span class="nc" id="L142">                    return;</span>
+                }
+            }
+        }
+<span class="nc" id="L146">        throw new IllegalArgumentException(&quot;Could not find markers for &quot; + call.resolve().getSignature() + &quot; in &quot; + this);</span>
+    }
+
+    /** Register a node that is contained in this node until the CFG
+     *  is converted into the PDG. */
+    public void addSyntheticNode(SyntheticNode&lt;?&gt; node) {
+<span class="nc" id="L152">        syntheticNodesInMovables.add(node);</span>
+<span class="nc" id="L153">    }</span>
+
+    /** @see #syntheticNodesInMovables */
+    public Collection&lt;SyntheticNode&lt;?&gt;&gt; getSyntheticNodesInMovables() {
+<span class="nc" id="L157">        return Collections.unmodifiableSet(syntheticNodesInMovables);</span>
+    }
+
+    /** Append a variable action to the list of variable actions. When the action
+     *  is movable, its real node is registered in {@link #syntheticNodesInMovables}. */
+    public void addVariableAction(VariableAction action) {
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        if (action instanceof VariableAction.Movable)</span>
+<span class="nc" id="L164">            syntheticNodesInMovables.add(((VariableAction.Movable) action).getRealNode());</span>
+<span class="nc" id="L165">        variableActions.add(action);</span>
+<span class="nc" id="L166">    }</span>
+
+    /**
+     * Searches for the last variable action that matches the given real node, and appends
+     * the given action immediately after.
+     */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public void addVariableActionAfterLastMatchingRealNode(VariableAction.Movable action, SyntheticNode&lt;?&gt; realNode) {
+<span class="nc" id="L174">        boolean found = false;</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        for (int i = 0; i &lt; variableActions.size(); i++) {</span>
+<span class="nc" id="L176">            VariableAction a = variableActions.get(i);</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">            if (a instanceof VariableAction.Movable</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">                    &amp;&amp; ((VariableAction.Movable) a).getRealNode() == realNode) {</span>
+<span class="nc" id="L179">                found = true;</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">            } else if (found) {</span>
+                // The previous one matched, this one does not. Add before this one.
+<span class="nc" id="L182">                variableActions.add(i, action);</span>
+<span class="nc" id="L183">                return;</span>
+            }
+        }
+        // If the last one matched, add to the end
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        if (found)</span>
+<span class="nc" id="L188">            variableActions.add(action);</span>
+        else {
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            assert syntheticNodesInMovables.contains(realNode);</span>
+<span class="nc" id="L191">            addActionsForCall(Collections.singletonList(action), (Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt;) realNode.getAstNode(), true);</span>
+        }
+<span class="nc" id="L193">    }</span>
+
+    /** Adds the variable action DEF(-active-exception-) to the end of this method. */
+    public void addVADefineActiveException(Expression expression) {
+<span class="nc" id="L197">        variableActions.add(new VariableAction.Definition(VariableAction.DeclarationType.SYNTHETIC, ACTIVE_EXCEPTION_VARIABLE, this, expression));</span>
+<span class="nc" id="L198">    }</span>
+
+    /** Adds the variable action USE(-active-exception-) to the end of this method. */
+    public void addVAUseActiveException() {
+<span class="nc" id="L202">        variableActions.add(new VariableAction.Usage(VariableAction.DeclarationType.SYNTHETIC, ACTIVE_EXCEPTION_VARIABLE, this));</span>
+<span class="nc" id="L203">    }</span>
+
+    /** Create and append a call marker to the list of actions of this node. */
+    public void addCallMarker(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, boolean enter) {
+<span class="nc bnc" id="L207" title="All 2 branches missed.">        if (enter) methodCalls.add(call);</span>
+<span class="nc" id="L208">        variableActions.add(new VariableAction.CallMarker(call, this, enter));</span>
+<span class="nc" id="L209">    }</span>
+
+    // ============================================================
+    // =======================  Overridden  =======================
+    // ============================================================
+
+    @Override
+    public String toString() {
+<span class="nc" id="L217">        return String.format(&quot;%s{id: %s, label: '%s', astNodeType: %s}&quot;,</span>
+<span class="nc" id="L218">                getClass().getSimpleName(),</span>
+<span class="nc" id="L219">                getId(),</span>
+<span class="nc" id="L220">                getLabel(),</span>
+<span class="nc" id="L221">                getAstNode().getClass().getSimpleName()</span>
+        );
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (this == o)</span>
+<span class="nc" id="L228">            return true;</span>
+<span class="nc bnc" id="L229" title="All 4 branches missed.">        return o instanceof GraphNode &amp;&amp; Objects.equals(getId(), ((GraphNode&lt;?&gt;) o).getId());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L234">        return Objects.hash(getId());</span>
+    }
+
+    @Override
+    public int compareTo(GraphNode&lt;?&gt; o) {
+<span class="nc" id="L239">        return Long.compare(id, o.id);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

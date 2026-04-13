@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CommandLine.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">CommandLine.java</span></div><h1>CommandLine.java</h1><pre class="source lang-java linenums">package cli;
+import java.io.Serializable;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+public class CommandLine implements Serializable {
+    public static final class Builder implements Supplier&lt;CommandLine&gt; {
+<span class="fc" id="L14">        static final Consumer&lt;Option&gt; DEPRECATED_HANDLER =</span>
+<span class="nc" id="L15">                o -&gt; System.out.println(o.toDeprecatedString());</span>
+<span class="fc" id="L16">        public final List&lt;String&gt; args = new LinkedList&lt;&gt;();</span>
+<span class="fc" id="L17">        public final List&lt;Option&gt; options = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L18">        public Consumer&lt;Option&gt; deprecatedHandler = DEPRECATED_HANDLER;</span>
+        @Deprecated
+<span class="fc" id="L20">        public Builder() {</span>
+<span class="fc" id="L21">        }</span>
+        public Builder addArg(final String arg) {
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">            if (arg != null) {</span>
+<span class="fc" id="L24">                args.add(arg);</span>
+            }
+<span class="fc" id="L26">            return this;</span>
+        }
+        public Builder addOption(final Option option) {
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">            if (option != null) {</span>
+<span class="fc" id="L30">                options.add(option);</span>
+            }
+<span class="fc" id="L32">            return this;</span>
+        }
+        @Deprecated
+        public CommandLine build() {
+<span class="fc" id="L36">            return get();</span>
+        }
+        @Override
+        public CommandLine get() {
+<span class="fc" id="L40">            return new CommandLine(args, options, deprecatedHandler);</span>
+        }
+        public Builder setDeprecatedHandler(final Consumer&lt;Option&gt; deprecatedHandler) {
+<span class="fc" id="L43">            this.deprecatedHandler = deprecatedHandler;</span>
+<span class="fc" id="L44">            return this;</span>
+        }
+    }
+    private static final long serialVersionUID = 1L;
+    public static Builder builder() {
+<span class="fc" id="L49">        return new Builder();</span>
+    }
+    public final List&lt;String&gt; args;
+    public final List&lt;Option&gt; options;
+    public final transient Consumer&lt;Option&gt; deprecatedHandler;
+    protected CommandLine() {
+<span class="fc" id="L55">        this(new LinkedList&lt;&gt;(), new ArrayList&lt;&gt;(), Builder.DEPRECATED_HANDLER);</span>
+<span class="fc" id="L56">    }</span>
+    public CommandLine(
+            final List&lt;String&gt; args,
+            final List&lt;Option&gt; options,
+<span class="fc" id="L60">            final Consumer&lt;Option&gt; deprecatedHandler) {</span>
+<span class="fc" id="L61">        this.args = Objects.requireNonNull(args, &quot;args&quot;);</span>
+<span class="fc" id="L62">        this.options = Objects.requireNonNull(options, &quot;options&quot;);</span>
+<span class="fc" id="L63">        this.deprecatedHandler = deprecatedHandler;</span>
+<span class="fc" id="L64">    }</span>
+    protected void addArg(final String arg) {
+<span class="pc bpc" id="L66" title="1 of 2 branches missed.">        if (arg != null) {</span>
+<span class="fc" id="L67">            args.add(arg);</span>
+        }
+<span class="fc" id="L69">    }</span>
+    protected void addOption(final Option option) {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">        if (option != null) {</span>
+<span class="fc" id="L72">            options.add(option);</span>
+        }
+<span class="fc" id="L74">    }</span>
+
+    private &lt;T&gt; T get(final Supplier&lt;T&gt; supplier) {
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        return supplier == null ? null : supplier.get();</span>
+    }
+    public List&lt;String&gt; getArgList() {
+<span class="fc" id="L80">        return args;</span>
+    }
+    public String[] getArgs() {
+<span class="fc" id="L83">        return args.toArray(Util.EMPTY_STRING_ARRAY);</span>
+    }
+    @Deprecated
+    public Object getOptionObject(final char optionChar) {
+<span class="nc" id="L87">        return getOptionObject(String.valueOf(optionChar));</span>
+    }
+    @Deprecated
+    public Object getOptionObject(final String optionName) {
+        try {
+<span class="nc" id="L92">            return getParsedOptionValue(optionName);</span>
+<span class="nc" id="L93">        } catch (final ParseException pe) {</span>
+<span class="nc" id="L94">            System.err.println(</span>
+<span class="nc" id="L95">                    &quot;Exception found converting &quot; + optionName + &quot; to desired type: &quot; + pe.getMessage());</span>
+<span class="nc" id="L96">            return null;</span>
+        }
+    }
+    public Properties getOptionProperties(final Option option) {
+<span class="fc" id="L100">        final Properties props = new Properties();</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">        for (final Option processedOption : options) {</span>
+<span class="pc bpc" id="L102" title="1 of 2 branches missed.">            if (processedOption.equals(option)) {</span>
+<span class="fc" id="L103">                processPropertiesFromValues(props, processedOption.getValuesList());</span>
+            }
+<span class="fc" id="L105">        }</span>
+<span class="fc" id="L106">        return props;</span>
+    }
+    public Properties getOptionProperties(final String optionName) {
+<span class="nc" id="L109">        final Properties props = new Properties();</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        for (final Option option : options) {</span>
+<span class="nc bnc" id="L111" title="All 4 branches missed.">            if (optionName.equals(option.getOpt()) || optionName.equals(option.getLongOpt())) {</span>
+<span class="nc" id="L112">                processPropertiesFromValues(props, option.getValuesList());</span>
+            }
+<span class="nc" id="L114">        }</span>
+<span class="nc" id="L115">        return props;</span>
+    }
+    public Option[] getOptions() {
+<span class="fc" id="L118">        return options.toArray(Option.EMPTY_ARRAY);</span>
+    }
+    public String getOptionValue(final char optionChar) {
+<span class="nc" id="L121">        return getOptionValue(String.valueOf(optionChar));</span>
+    }
+    public String getOptionValue(final char optionChar, final String defaultValue) {
+<span class="nc" id="L124">        return getOptionValue(String.valueOf(optionChar), () -&gt; defaultValue);</span>
+    }
+    public String getOptionValue(final char optionChar, final Supplier&lt;String&gt; defaultValue) {
+<span class="nc" id="L127">        return getOptionValue(String.valueOf(optionChar), defaultValue);</span>
+    }
+    public String getOptionValue(final Option option) {
+<span class="fc" id="L130">        final String[] values = getOptionValues(option);</span>
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        return values == null ? null : values[0];</span>
+    }
+    public String getOptionValue(final Option option, final String defaultValue) {
+<span class="nc" id="L134">        return getOptionValue(option, () -&gt; defaultValue);</span>
+    }
+    public String getOptionValue(final Option option, final Supplier&lt;String&gt; defaultValue) {
+<span class="nc" id="L137">        final String answer = getOptionValue(option);</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        return answer != null ? answer : get(defaultValue);</span>
+    }
+    public String getOptionValue(final OptionGroup optionGroup) {
+<span class="nc" id="L141">        final String[] values = getOptionValues(optionGroup);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        return values == null ? null : values[0];</span>
+    }
+    public String getOptionValue(final OptionGroup optionGroup, final String defaultValue) {
+<span class="nc" id="L145">        return getOptionValue(optionGroup, () -&gt; defaultValue);</span>
+    }
+    public String getOptionValue(final OptionGroup optionGroup, final Supplier&lt;String&gt; defaultValue) {
+<span class="nc" id="L148">        final String answer = getOptionValue(optionGroup);</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        return answer != null ? answer : get(defaultValue);</span>
+    }
+    public String getOptionValue(final String optionName) {
+<span class="fc" id="L152">        return getOptionValue(resolveOption(optionName));</span>
+    }
+    public String getOptionValue(final String optionName, final String defaultValue) {
+<span class="nc" id="L155">        return getOptionValue(resolveOption(optionName), () -&gt; defaultValue);</span>
+    }
+    public String getOptionValue(final String optionName, final Supplier&lt;String&gt; defaultValue) {
+<span class="nc" id="L158">        return getOptionValue(resolveOption(optionName), defaultValue);</span>
+    }
+    public String[] getOptionValues(final char optionChar) {
+<span class="nc" id="L161">        return getOptionValues(String.valueOf(optionChar));</span>
+    }
+    public String[] getOptionValues(final Option option) {
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (option == null) {</span>
+<span class="nc" id="L165">            return null;</span>
+        }
+<span class="fc" id="L167">        final List&lt;String&gt; values = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">        for (final Option processedOption : options) {</span>
+<span class="fc bfc" id="L169" title="All 2 branches covered.">            if (processedOption.equals(option)) {</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">                if (option.isDeprecated()) {</span>
+<span class="nc" id="L171">                    handleDeprecated(option);</span>
+                }
+<span class="fc" id="L173">                values.addAll(processedOption.getValuesList());</span>
+            }
+<span class="fc" id="L175">        }</span>
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">        return values.isEmpty() ? null : values.toArray(Util.EMPTY_STRING_ARRAY);</span>
+    }
+    public String[] getOptionValues(final OptionGroup optionGroup) {
+<span class="nc bnc" id="L179" title="All 4 branches missed.">        if (optionGroup == null || !optionGroup.isSelected()) {</span>
+<span class="nc" id="L180">            return null;</span>
+        }
+<span class="nc" id="L182">        return getOptionValues(optionGroup.getSelected());</span>
+    }
+    public String[] getOptionValues(final String optionName) {
+<span class="nc" id="L185">        return getOptionValues(resolveOption(optionName));</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final char optionChar) throws ParseException {
+<span class="nc" id="L188">        return getParsedOptionValue(String.valueOf(optionChar));</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final char optionChar, final Supplier&lt;T&gt; defaultValue)
+            throws ParseException {
+<span class="nc" id="L192">        return getParsedOptionValue(String.valueOf(optionChar), defaultValue);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final char optionChar, final T defaultValue)
+            throws ParseException {
+<span class="nc" id="L196">        return getParsedOptionValue(String.valueOf(optionChar), defaultValue);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final Option option) throws ParseException {
+<span class="nc" id="L199">        return getParsedOptionValue(option, () -&gt; null);</span>
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;T&gt; T getParsedOptionValue(final Option option, final Supplier&lt;T&gt; defaultValue)
+            throws ParseException {
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        if (option == null) {</span>
+<span class="nc" id="L205">            return get(defaultValue);</span>
+        }
+<span class="nc" id="L207">        final String res = getOptionValue(option);</span>
+        try {
+<span class="nc bnc" id="L209" title="All 2 branches missed.">            if (res == null) {</span>
+<span class="nc" id="L210">                return get(defaultValue);</span>
+            }
+<span class="nc" id="L212">            return (T) option.getConverter().apply(res);</span>
+<span class="nc" id="L213">        } catch (final Exception e) {</span>
+<span class="nc" id="L214">            throw ParseException.wrap(e);</span>
+        }
+    }
+    public &lt;T&gt; T getParsedOptionValue(final Option option, final T defaultValue)
+            throws ParseException {
+<span class="nc" id="L219">        return getParsedOptionValue(option, () -&gt; defaultValue);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final OptionGroup optionGroup) throws ParseException {
+<span class="nc" id="L222">        return getParsedOptionValue(optionGroup, () -&gt; null);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final OptionGroup optionGroup, final Supplier&lt;T&gt; defaultValue)
+            throws ParseException {
+<span class="nc bnc" id="L226" title="All 4 branches missed.">        if (optionGroup == null || !optionGroup.isSelected()) {</span>
+<span class="nc" id="L227">            return get(defaultValue);</span>
+        }
+<span class="nc" id="L229">        return getParsedOptionValue(optionGroup.getSelected(), defaultValue);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final OptionGroup optionGroup, final T defaultValue)
+            throws ParseException {
+<span class="nc" id="L233">        return getParsedOptionValue(optionGroup, () -&gt; defaultValue);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final String optionName) throws ParseException {
+<span class="nc" id="L236">        return getParsedOptionValue(resolveOption(optionName));</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final String optionName, final Supplier&lt;T&gt; defaultValue)
+            throws ParseException {
+<span class="nc" id="L240">        return getParsedOptionValue(resolveOption(optionName), defaultValue);</span>
+    }
+    public &lt;T&gt; T getParsedOptionValue(final String optionName, final T defaultValue)
+            throws ParseException {
+<span class="nc" id="L244">        return getParsedOptionValue(resolveOption(optionName), defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final char optionChar) throws ParseException {
+<span class="nc" id="L247">        return getParsedOptionValues(String.valueOf(optionChar));</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final char optionChar, final Supplier&lt;T[]&gt; defaultValue)
+            throws ParseException {
+<span class="nc" id="L251">        return getParsedOptionValues(String.valueOf(optionChar), defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final char optionChar, final T[] defaultValue)
+            throws ParseException {
+<span class="nc" id="L255">        return getParsedOptionValues(String.valueOf(optionChar), defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final Option option) throws ParseException {
+<span class="nc" id="L258">        return getParsedOptionValues(option, () -&gt; null);</span>
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public &lt;T&gt; T[] getParsedOptionValues(final Option option, final Supplier&lt;T[]&gt; defaultValue)
+            throws ParseException {
+<span class="nc bnc" id="L263" title="All 2 branches missed.">        if (option == null) {</span>
+<span class="nc" id="L264">            return get(defaultValue);</span>
+        }
+<span class="nc" id="L266">        Class&lt;? extends T&gt; clazz = (Class&lt;? extends T&gt;) option.getType();</span>
+<span class="nc" id="L267">        String[] values = getOptionValues(option);</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">        if (values == null) {</span>
+<span class="nc" id="L269">            return get(defaultValue);</span>
+        }
+<span class="nc" id="L271">        T[] result = (T[]) Array.newInstance(clazz, values.length);</span>
+        try {
+<span class="nc bnc" id="L273" title="All 2 branches missed.">            for (int i = 0; i &lt; values.length; i++) {</span>
+<span class="nc" id="L274">                result[i] = clazz.cast(option.getConverter().apply(values[i]));</span>
+            }
+<span class="nc" id="L276">            return result;</span>
+<span class="nc" id="L277">        } catch (final Exception t) {</span>
+<span class="nc" id="L278">            throw ParseException.wrap(t);</span>
+        }
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final Option option, final T[] defaultValue)
+            throws ParseException {
+<span class="nc" id="L283">        return getParsedOptionValues(option, () -&gt; defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final OptionGroup optionGroup) throws ParseException {
+<span class="nc" id="L286">        return getParsedOptionValues(optionGroup, () -&gt; null);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(
+            final OptionGroup optionGroup, final Supplier&lt;T[]&gt; defaultValue) throws ParseException {
+<span class="nc bnc" id="L290" title="All 4 branches missed.">        if (optionGroup == null || !optionGroup.isSelected()) {</span>
+<span class="nc" id="L291">            return get(defaultValue);</span>
+        }
+<span class="nc" id="L293">        return getParsedOptionValues(optionGroup.getSelected(), defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final OptionGroup optionGroup, final T[] defaultValue)
+            throws ParseException {
+<span class="nc" id="L297">        return getParsedOptionValues(optionGroup, () -&gt; defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final String optionName) throws ParseException {
+<span class="nc" id="L300">        return getParsedOptionValues(resolveOption(optionName));</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final String optionName, final Supplier&lt;T[]&gt; defaultValue)
+            throws ParseException {
+<span class="nc" id="L304">        return getParsedOptionValues(resolveOption(optionName), defaultValue);</span>
+    }
+    public &lt;T&gt; T[] getParsedOptionValues(final String optionName, final T[] defaultValue)
+            throws ParseException {
+<span class="nc" id="L308">        return getParsedOptionValues(resolveOption(optionName), defaultValue);</span>
+    }
+    private void handleDeprecated(final Option option) {
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">        if (deprecatedHandler != null) {</span>
+<span class="fc" id="L312">            deprecatedHandler.accept(option);</span>
+        }
+<span class="fc" id="L314">    }</span>
+    public boolean hasOption(final char optionChar) {
+<span class="nc" id="L316">        return hasOption(String.valueOf(optionChar));</span>
+    }
+    public boolean hasOption(final Option option) {
+<span class="fc" id="L319">        final boolean result = options.contains(option);</span>
+<span class="fc bfc" id="L320" title="All 4 branches covered.">        if (result &amp;&amp; option.isDeprecated()) {</span>
+<span class="fc" id="L321">            handleDeprecated(option);</span>
+        }
+<span class="fc" id="L323">        return result;</span>
+    }
+    public boolean hasOption(final OptionGroup optionGroup) {
+<span class="nc bnc" id="L326" title="All 4 branches missed.">        if (optionGroup == null || !optionGroup.isSelected()) {</span>
+<span class="nc" id="L327">            return false;</span>
+        }
+<span class="nc" id="L329">        return hasOption(optionGroup.getSelected());</span>
+    }
+    public boolean hasOption(final String optionName) {
+<span class="fc" id="L332">        return hasOption(resolveOption(optionName));</span>
+    }
+    public Iterator&lt;Option&gt; iterator() {
+<span class="fc" id="L335">        return options.iterator();</span>
+    }
+    private void processPropertiesFromValues(final Properties props, final List&lt;String&gt; values) {
+<span class="fc bfc" id="L338" title="All 2 branches covered.">        for (int i = 0; i &lt; values.size(); i += 2) {</span>
+<span class="pc bpc" id="L339" title="1 of 2 branches missed.">            if (i + 1 &lt; values.size()) {</span>
+<span class="fc" id="L340">                props.put(values.get(i), values.get(i + 1));</span>
+            } else {
+<span class="nc" id="L342">                props.put(values.get(i), &quot;true&quot;);</span>
+            }
+        }
+<span class="fc" id="L345">    }</span>
+    private Option resolveOption(final String optionName) {
+<span class="fc" id="L347">        final String actual = Util.stripLeadingHyphens(optionName);</span>
+<span class="pc bpc" id="L348" title="1 of 2 branches missed.">        if (actual != null) {</span>
+<span class="fc bfc" id="L349" title="All 2 branches covered.">            for (final Option option : options) {</span>
+<span class="fc bfc" id="L350" title="All 4 branches covered.">                if (actual.equals(option.getOpt()) || actual.equals(option.getLongOpt())) {</span>
+<span class="fc" id="L351">                    return option;</span>
+                }
+<span class="fc" id="L353">            }</span>
+        }
+<span class="fc" id="L355">        return null;</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

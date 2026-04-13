@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CharSet.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">CharSet.java</span></div><h1>CharSet.java</h1><pre class="source lang-java linenums">package lang3;
+import org.apache.maven.surefire.shared.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Stream;
+public class CharSet implements Serializable {
+    private static final long serialVersionUID = 5947847346149275958L;
+<span class="fc" id="L13">    public static final CharSet EMPTY = new CharSet((String) null);</span>
+<span class="fc" id="L14">    public static final CharSet ASCII_ALPHA = new CharSet(&quot;a-zA-Z&quot;);</span>
+<span class="fc" id="L15">    public static final CharSet ASCII_ALPHA_LOWER = new CharSet(&quot;a-z&quot;);</span>
+<span class="fc" id="L16">    public static final CharSet ASCII_ALPHA_UPPER = new CharSet(&quot;A-Z&quot;);</span>
+<span class="fc" id="L17">    public static final CharSet ASCII_NUMERIC = new CharSet(&quot;0-9&quot;);</span>
+<span class="fc" id="L18">    protected static final Map&lt;String, CharSet&gt; COMMON = Collections.synchronizedMap(new HashMap&lt;&gt;());</span>
+    static {
+<span class="fc" id="L20">        COMMON.put(null, EMPTY);</span>
+<span class="fc" id="L21">        COMMON.put(StringUtils.EMPTY, EMPTY);</span>
+<span class="fc" id="L22">        COMMON.put(&quot;a-zA-Z&quot;, ASCII_ALPHA);</span>
+<span class="fc" id="L23">        COMMON.put(&quot;A-Za-z&quot;, ASCII_ALPHA);</span>
+<span class="fc" id="L24">        COMMON.put(&quot;a-z&quot;, ASCII_ALPHA_LOWER);</span>
+<span class="fc" id="L25">        COMMON.put(&quot;A-Z&quot;, ASCII_ALPHA_UPPER);</span>
+<span class="fc" id="L26">        COMMON.put(&quot;0-9&quot;, ASCII_NUMERIC);</span>
+<span class="fc" id="L27">    }</span>
+    public static CharSet getInstance(final String... setStrs) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if (setStrs == null) {</span>
+<span class="fc" id="L30">            return EMPTY;</span>
+        }
+<span class="fc bfc" id="L32" title="All 2 branches covered.">        if (setStrs.length == 1) {</span>
+<span class="fc" id="L33">            final CharSet common = COMMON.get(setStrs[0]);</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">            if (common != null) {</span>
+<span class="fc" id="L35">                return common;</span>
+            }
+        }
+<span class="fc" id="L38">        return new CharSet(setStrs);</span>
+    }
+<span class="fc" id="L40">    private final Set&lt;CharRange&gt; set = Collections.synchronizedSet(new HashSet&lt;&gt;());</span>
+<span class="fc" id="L41">    protected CharSet(final String... set) {</span>
+<span class="fc" id="L42">        Stream.of(set).forEach(this::add);</span>
+<span class="fc" id="L43">    }</span>
+    protected void add(final String str) {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">        if (str == null) {</span>
+<span class="fc" id="L46">            return;</span>
+        }
+<span class="fc" id="L48">        final int len = str.length();</span>
+<span class="fc" id="L49">        int pos = 0;</span>
+<span class="fc bfc" id="L50" title="All 2 branches covered.">        while (pos &lt; len) {</span>
+<span class="fc" id="L51">            final int remainder = len - pos;</span>
+<span class="pc bpc" id="L52" title="1 of 6 branches missed.">            if (remainder &gt;= 4 &amp;&amp; str.charAt(pos) == '^' &amp;&amp; str.charAt(pos + 2) == '-') {</span>
+<span class="fc" id="L53">                set.add(CharRange.isNotIn(str.charAt(pos + 1), str.charAt(pos + 3)));</span>
+<span class="fc" id="L54">                pos += 4;</span>
+<span class="fc bfc" id="L55" title="All 4 branches covered.">            } else if (remainder &gt;= 3 &amp;&amp; str.charAt(pos + 1) == '-') {</span>
+<span class="fc" id="L56">                set.add(CharRange.isIn(str.charAt(pos), str.charAt(pos + 2)));</span>
+<span class="fc" id="L57">                pos += 3;</span>
+<span class="fc bfc" id="L58" title="All 4 branches covered.">            } else if (remainder &gt;= 2 &amp;&amp; str.charAt(pos) == '^') {</span>
+<span class="fc" id="L59">                set.add(CharRange.isNot(str.charAt(pos + 1)));</span>
+<span class="fc" id="L60">                pos += 2;</span>
+            } else {
+<span class="fc" id="L62">                set.add(CharRange.is(str.charAt(pos)));</span>
+<span class="fc" id="L63">                pos += 1;</span>
+            }
+<span class="fc" id="L65">        }</span>
+<span class="fc" id="L66">    }</span>
+    public boolean contains(final char ch) {
+<span class="fc" id="L68">        synchronized (set) {</span>
+<span class="fc" id="L69">            return set.stream().anyMatch(range -&gt; range.contains(ch));</span>
+        }
+    }
+    @Override
+    public boolean equals(final Object obj) {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (obj == this) {</span>
+<span class="fc" id="L75">            return true;</span>
+        }
+<span class="fc bfc" id="L77" title="All 2 branches covered.">        if (!(obj instanceof CharSet)) {</span>
+<span class="fc" id="L78">            return false;</span>
+        }
+<span class="fc" id="L80">        final CharSet other = (CharSet) obj;</span>
+<span class="fc" id="L81">        return set.equals(other.set);</span>
+    }
+     CharRange[] getCharRanges() {
+<span class="fc" id="L84">        return set.toArray(CharRange.EMPTY_ARRAY);</span>
+    }
+    @Override
+    public int hashCode() {
+<span class="fc" id="L88">        return 89 + set.hashCode();</span>
+    }
+    @Override
+    public String toString() {
+<span class="fc" id="L92">        return set.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

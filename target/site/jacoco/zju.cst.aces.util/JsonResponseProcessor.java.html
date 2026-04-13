@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonResponseProcessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util</a> &gt; <span class="el_source">JsonResponseProcessor.java</span></div><h1>JsonResponseProcessor.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+<span class="nc" id="L17">public class JsonResponseProcessor {</span>
+
+<span class="nc" id="L19">    private static final Pattern JSON_PATTERN = Pattern.compile(&quot;```[json]*([\\s\\S]*?)```&quot;);</span>
+
+    // Inner class to represent the structure of the JSON data
+    public static class JsonData {
+        private List&lt;String&gt; invokedOutsideVars;
+        private List&lt;String&gt; invokedOutsideMethods;
+        private String summarization;
+        private List&lt;Step&gt; steps;
+
+        // 无参构造函数
+<span class="nc" id="L29">        public JsonData() {}</span>
+
+        public List&lt;Step&gt; getSteps() {
+<span class="nc" id="L32">            return steps;</span>
+        }
+
+        public static class Step {
+            private String desp;
+            private String code;
+
+            // 无参构造函数
+<span class="nc" id="L40">            public Step() {}</span>
+
+<span class="nc" id="L42">            public Step(String desp, String code) {</span>
+<span class="nc" id="L43">                this.desp = desp;</span>
+<span class="nc" id="L44">                this.code = code;</span>
+<span class="nc" id="L45">            }</span>
+
+            public String getDesp() {
+<span class="nc" id="L48">                return desp;</span>
+            }
+
+            public String getCode() {
+<span class="nc" id="L52">                return code;</span>
+            }
+
+            @Override
+            public String toString() {
+<span class="nc" id="L57">                return &quot;Step{&quot; +</span>
+                        &quot;desp='&quot; + desp + '\'' +
+                        &quot;, code='&quot; + code + '\'' +
+                        '}';
+            }
+        }
+    }
+
+    /**
+     * Extracts JSON content from a response string.
+     *
+     * @param response The response string containing JSON content.
+     * @return The extracted JSON string or null if no JSON content is found.
+     */
+    public static String getJsonContentByResponse(String response) {
+<span class="nc" id="L72">        Matcher matcher = JSON_PATTERN.matcher(response);</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L74">            return matcher.group(1).trim();</span>
+        }
+<span class="nc" id="L76">        return null;</span>
+    }
+
+    /**
+     * Extracts specific information from a JSON string and returns it as a JsonData object.
+     *
+     * @param jsonString The JSON string from which to extract information.
+     * @return A JsonData object containing the extracted information or null if extraction fails.
+     */
+    public static JsonData extractInfoFromJson(String jsonString) {
+<span class="nc" id="L86">        ObjectMapper objectMapper = new ObjectMapper();</span>
+        try {
+<span class="nc" id="L88">            JsonNode jsonNode = objectMapper.readTree(jsonString);</span>
+            // Check for required keys
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            if (jsonNode.has(&quot;invoked_outside_vars&quot;) &amp;&amp;</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                    jsonNode.has(&quot;invoked_outside_methods&quot;) &amp;&amp;</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                    jsonNode.has(&quot;summarization&quot;) &amp;&amp;</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                    jsonNode.has(&quot;steps&quot;)) {</span>
+
+                // Convert JsonNode to JsonData
+<span class="nc" id="L96">                JsonData jsonData = new JsonData();</span>
+<span class="nc" id="L97">                jsonData.invokedOutsideVars = objectMapper.convertValue(jsonNode.get(&quot;invoked_outside_vars&quot;), List.class);</span>
+<span class="nc" id="L98">                jsonData.invokedOutsideMethods = objectMapper.convertValue(jsonNode.get(&quot;invoked_outside_methods&quot;), List.class);</span>
+<span class="nc" id="L99">                jsonData.summarization = jsonNode.get(&quot;summarization&quot;).asText();</span>
+
+                // Convert steps
+<span class="nc" id="L102">                List&lt;JsonData.Step&gt; steps = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                for (JsonNode stepNode : jsonNode.get(&quot;steps&quot;)) {</span>
+<span class="nc" id="L104">                    String desp = stepNode.get(&quot;desp&quot;).asText();</span>
+<span class="nc" id="L105">                    String code = stepNode.get(&quot;code&quot;).asText();</span>
+<span class="nc" id="L106">                    steps.add(new JsonData.Step(desp, code));</span>
+<span class="nc" id="L107">                }</span>
+<span class="nc" id="L108">                jsonData.steps = steps;</span>
+
+<span class="nc" id="L110">                return jsonData;</span>
+            }
+<span class="nc" id="L112">        } catch (Exception e) {</span>
+<span class="nc" id="L113">            e.printStackTrace();</span>
+<span class="nc" id="L114">            return null;</span>
+<span class="nc" id="L115">        }</span>
+<span class="nc" id="L116">        return null;</span>
+    }
+
+    /**
+     * Writes the JSON information to a file.
+     *
+     * @param jsonNode The JsonNode containing information to write.
+     */
+    public static void writeJsonToFile(JsonNode jsonNode, Path fullDirectoryPath) {
+<span class="nc" id="L125">        ObjectMapper objectMapper = new ObjectMapper();</span>
+<span class="nc" id="L126">        objectMapper.enable(SerializationFeature.INDENT_OUTPUT);</span>
+
+        // Create the directory structure
+<span class="nc" id="L129">        File directory = new File(fullDirectoryPath.toString());</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        if (!directory.exists()) {</span>
+<span class="nc" id="L131">            directory.mkdirs(); // Create the directory if it doesn't exist</span>
+        }
+
+        // Define the file path
+<span class="nc" id="L135">        Path filePath = fullDirectoryPath.resolve(&quot;slice.json&quot;);</span>
+
+<span class="nc" id="L137">        try (FileWriter fileWriter = new FileWriter(filePath.toFile())) {</span>
+<span class="nc" id="L138">            objectMapper.writeValue(fileWriter, jsonNode);</span>
+<span class="nc" id="L139">            System.out.println(&quot;JSON information successfully written to &quot; + filePath);</span>
+<span class="nc" id="L140">        } catch (IOException e) {</span>
+<span class="nc" id="L141">            e.printStackTrace();</span>
+<span class="nc" id="L142">        }</span>
+<span class="nc" id="L143">    }</span>
+
+    /**
+     * Reads JSON data from a file and converts it to a JsonData object.
+     *
+     * @param filePath The path of the file to read.
+     * @return A JsonData object containing the JSON data or null if reading fails.
+     */
+    public static JsonData readJsonFromFile(Path filePath) {
+<span class="nc" id="L152">        ObjectMapper objectMapper = new ObjectMapper();</span>
+        try {
+<span class="nc" id="L154">            return objectMapper.readValue(filePath.toFile(), JsonData.class);</span>
+<span class="nc" id="L155">        } catch (IOException e) {</span>
+<span class="nc" id="L156">            e.printStackTrace();</span>
+<span class="nc" id="L157">            return null;</span>
+        }
+    }
+
+    public static void main(String[] args) {
+        // Initialize with className and methodName
+<span class="nc" id="L163">        String response = &quot;Your response string here with ```json content```.&quot;;</span>
+
+        // Step 1: Extract JSON content from response
+<span class="nc" id="L166">        String jsonContent = getJsonContentByResponse(response);</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">        if (jsonContent != null) {</span>
+            // Step 2: Extract information from JSON content
+<span class="nc" id="L169">            JsonData info = extractInfoFromJson(jsonContent);</span>
+<span class="nc bnc" id="L170" title="All 2 branches missed.">            if (info != null) {</span>
+<span class="nc" id="L171">                System.out.println(&quot;Extracted JSON Info: &quot; + info.toString());</span>
+<span class="nc" id="L172">                Path outputPath = Paths.get(&quot;output_directory&quot;); // Specify your output directory</span>
+                // Step 3: Write the extracted JSON information to a file
+<span class="nc" id="L174">                writeJsonToFile(new ObjectMapper().valueToTree(info), outputPath);</span>
+
+                // Step 4: Read the JSON data back from the file
+<span class="nc" id="L177">                JsonData readInfo = readJsonFromFile(outputPath.resolve(&quot;slice.json&quot;));</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">                if (readInfo != null) {</span>
+                    // Accessing the steps
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                    for (JsonData.Step step : readInfo.getSteps()) {</span>
+<span class="nc" id="L181">                        System.out.println(&quot;Step Description: &quot; + step.getDesp());</span>
+<span class="nc" id="L182">                        System.out.println(&quot;Step Code: &quot; + step.getCode());</span>
+<span class="nc" id="L183">                    }</span>
+                } else {
+<span class="nc" id="L185">                    System.out.println(&quot;Failed to read JSON data from file.&quot;);</span>
+                }
+<span class="nc" id="L187">            } else {</span>
+<span class="nc" id="L188">                System.out.println(&quot;Failed to extract required information from JSON.&quot;);</span>
+            }
+<span class="nc" id="L190">        } else {</span>
+<span class="nc" id="L191">            System.out.println(&quot;No JSON content found in the response.&quot;);</span>
+        }
+<span class="nc" id="L193">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

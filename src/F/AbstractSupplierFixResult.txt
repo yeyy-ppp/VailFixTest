@@ -1,0 +1,67 @@
+[2026-01-23 16:05:32] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 无 - 验证通过
+修复后状态: 仍有问题 - 无 - 验证通过
+修复后方法覆盖: 未覆盖: AbstractSupplier
+修复后代码:
+```java
+package lang3.builder;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+public class AbstractSupplierTest {
+
+    public static class ConcreteSupplier<T, E extends Throwable> extends AbstractSupplier<T, ConcreteSupplier<T, E>, E> {
+        public ConcreteSupplier() {
+            super();
+        }
+    }
+
+    @Test
+    void testConstructor() {
+        ConcreteSupplier<String, Exception> supplier = new ConcreteSupplier<>();
+        assertNotNull(supplier);
+    }
+
+    @Test
+    void testAsThis() {
+        ConcreteSupplier<String, Exception> supplier = new ConcreteSupplier<>();
+        ConcreteSupplier<String, Exception> result = supplier.asThis();
+        assertSame(supplier, result);
+    }
+}
+```
+
+[2026-01-23 16:07:18] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package lang3.builder;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+public class AbstractSupplierTest {
+
+    private static class ConcreteSupplier<T, E extends Throwable> extends AbstractSupplier<T, ConcreteSupplier<T, E>, E> {
+        public ConcreteSupplier() {}
+    }
+
+    @Test
+    void testConstructor() {
+        ConcreteSupplier<String, Exception> supplier = new ConcreteSupplier<>();
+        assertNotNull(supplier);
+    }
+
+    @Test
+    void testAsThis() {
+        ConcreteSupplier<String, Exception> supplier = new ConcreteSupplier<>();
+        ConcreteSupplier<String, Exception> result = supplier.asThis();
+        assertSame(supplier, result);
+    }
+
+}
+```
+

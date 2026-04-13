@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExampleUsage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.dto</a> &gt; <span class="el_source">ExampleUsage.java</span></div><h1>ExampleUsage.java</h1><pre class="source lang-java linenums">package zju.cst.aces.dto;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import zju.cst.aces.api.config.Config;
+
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Map;
+
+public class ExampleUsage {
+    public String className;
+    public Map&lt;String, List&lt;String&gt;&gt; methodUsages;
+<span class="nc" id="L16">    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+
+<span class="nc" id="L18">    public ExampleUsage(Path examplePath, String className) {</span>
+<span class="nc" id="L19">        this.className = className;</span>
+<span class="nc" id="L20">        this.methodUsages  = loadUsages(examplePath, className);</span>
+<span class="nc" id="L21">    }</span>
+
+    public Map&lt;String, List&lt;String&gt;&gt; loadUsages(Path path, String name) {
+        // read examplePath and load methodUsages
+<span class="nc" id="L25">        Map&lt;String, List&lt;String&gt;&gt; usages = null;</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (!path.toFile().exists()) {</span>
+<span class="nc" id="L27">            return null;</span>
+        }
+        try {
+<span class="nc" id="L30">            usages = (Map&lt;String, List&lt;String&gt;&gt;) GSON.fromJson(new String(Files.readAllBytes(path), StandardCharsets.UTF_8), Map.class).get(name);</span>
+<span class="nc" id="L31">        } catch (Exception e) {</span>
+<span class="nc" id="L32">            throw new RuntimeException(&quot;In ExampleUsage.loadUsages: &quot; + e);</span>
+<span class="nc" id="L33">        }</span>
+<span class="nc" id="L34">        return usages;</span>
+    }
+
+    public String getShortestUsage(String methodSig) {
+<span class="nc bnc" id="L38" title="All 2 branches missed.">        if (methodUsages == null) {</span>
+<span class="nc" id="L39">            return null;</span>
+        }
+        // sort the list and return the shortest usage of the list
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (methodUsages.containsKey(methodSig)) {</span>
+<span class="nc" id="L43">            List&lt;String&gt; usages = methodUsages.get(methodSig);</span>
+<span class="nc" id="L44">            usages.sort((a, b) -&gt; a.length() - b.length());</span>
+<span class="nc" id="L45">            return usages.get(0);</span>
+        } else {
+<span class="nc" id="L47">            return null;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

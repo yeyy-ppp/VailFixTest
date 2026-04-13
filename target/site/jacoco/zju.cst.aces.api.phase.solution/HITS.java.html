@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HITS.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.phase.solution</a> &gt; <span class="el_source">HITS.java</span></div><h1>HITS.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.phase.solution;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.ChatGenerator;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.impl.RepairImpl;
+import zju.cst.aces.api.impl.obfuscator.Obfuscator;
+import zju.cst.aces.api.phase.PhaseImpl;
+import zju.cst.aces.api.phase.step.*;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.runner.solution_runner.MethodRunner;
+import zju.cst.aces.util.CodeExtractor;
+import zju.cst.aces.util.JsonResponseProcessor;
+
+import java.nio.file.Path;
+import java.util.List;
+
+
+public class HITS extends PhaseImpl {
+    public HITS(Config config) {
+<span class="nc" id="L22">        super(config);</span>
+<span class="nc" id="L23">    }</span>
+
+    public void generateMethodSlice(PromptConstructorImpl pc) {
+<span class="nc" id="L26">        new HITSTestGenerationTask(config).executeForMethodSlice(pc);</span>
+<span class="nc" id="L27">    }</span>
+
+    public void generateSliceTest(PromptConstructorImpl pc) {
+<span class="nc" id="L30">        new HITSTestGenerationTask(config).executeForSliceTest(pc);</span>
+<span class="nc" id="L31">    }</span>
+
+    // 内部类 HITSTestGenerationTask
+<span class="nc" id="L34">    public class HITSTestGenerationTask extends TestGeneration {</span>
+<span class="nc" id="L35">        public HITSTestGenerationTask(Config config) {</span>
+<span class="nc" id="L36">            super(config);</span>
+<span class="nc" id="L37">        }</span>
+
+        public void executeForMethodSlice(PromptConstructorImpl pc) {
+<span class="nc" id="L40">            PromptInfo promptInfo = pc.getPromptInfo();</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">            if (promptGenerator == null) {</span>
+<span class="nc" id="L42">                setUp(promptInfo);</span>
+            }
+<span class="nc bnc" id="L44" title="All 2 branches missed.">            assert(promptInfo.getRound() != null);</span>
+<span class="nc" id="L45">            int rounds = promptInfo.getRound();</span>
+<span class="nc" id="L46">            promptInfo.addRecord(new RoundRecord(rounds));</span>
+<span class="nc" id="L47">            RoundRecord record = promptInfo.getRecords().get(rounds);</span>
+<span class="nc" id="L48">            record.setAttempt(promptInfo.getTestNum());</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            if (rounds == 0) {</span>
+<span class="nc" id="L50">                config.getLogger().info(&quot;Generating test slices for method &lt; &quot; + methodInfo.methodName + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+            } else {
+<span class="nc" id="L52">                config.getLogger().info(&quot;Fixing test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+            }
+            List&lt;ChatMessage&gt; prompt;
+            String response;
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            if (config.isEnableObfuscate()) {</span>
+<span class="nc" id="L57">                Obfuscator obfuscator = new Obfuscator(config);</span>
+<span class="nc" id="L58">                PromptInfo obfuscatedPromptInfo = new PromptInfo(promptInfo);</span>
+<span class="nc" id="L59">                obfuscator.obfuscatePromptInfo(obfuscatedPromptInfo);</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                if(config.useSlice) {</span>
+<span class="nc" id="L61">                    prompt = promptGenerator.generateMessages(obfuscatedPromptInfo, &quot;HITS&quot;); // todo</span>
+<span class="nc" id="L62">                    generateMethodSlice(prompt, record, obfuscatedPromptInfo);</span>
+<span class="nc" id="L63">                    config.useSlice = false;</span>
+                }else{
+                    //todo 不生成切片，正常生成test
+                }
+<span class="nc" id="L67">            } else {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">                if(config.useSlice) {</span>
+<span class="nc" id="L69">                    prompt = promptGenerator.generateMessages(promptInfo, &quot;HITS&quot;);</span>
+<span class="nc" id="L70">                    generateMethodSlice(prompt, record, promptInfo);</span>
+<span class="nc" id="L71">                    config.useSlice = false;</span>
+                }else {
+                    //todo
+                }
+            }
+<span class="nc" id="L76">        }</span>
+
+        public void executeForSliceTest(PromptConstructorImpl pc) {
+<span class="nc" id="L79">            PromptInfo promptInfo = pc.getPromptInfo();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            if (promptGenerator == null) {</span>
+<span class="nc" id="L81">                setUp(promptInfo);</span>
+            }
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            assert(promptInfo.getRound() != null);</span>
+<span class="nc" id="L84">            int rounds = promptInfo.getRound();</span>
+<span class="nc" id="L85">            promptInfo.addRecord(new RoundRecord(rounds));</span>
+<span class="nc" id="L86">            RoundRecord record = promptInfo.getRecords().get(rounds);</span>
+<span class="nc" id="L87">            record.setAttempt(promptInfo.getTestNum());</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (rounds == 0) {</span>
+<span class="nc" id="L89">                config.getLogger().info(&quot;Generating test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; &lt; sliceNum&quot;+ promptInfo.getSliceNum() + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+            } else {
+<span class="nc" id="L91">                config.getLogger().info(&quot;Fixing test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; &lt; sliceNum&quot;+ promptInfo.getSliceNum() + &quot; &gt; round &quot;  + rounds + &quot; ...&quot;);</span>
+            }
+            List&lt;ChatMessage&gt; prompt;
+            String code;
+<span class="nc bnc" id="L95" title="All 2 branches missed.">            if (config.isEnableObfuscate()) {</span>
+<span class="nc" id="L96">                Obfuscator obfuscator = new Obfuscator(config);</span>
+<span class="nc" id="L97">                PromptInfo obfuscatedPromptInfo = new PromptInfo(promptInfo);</span>
+<span class="nc" id="L98">                obfuscator.obfuscatePromptInfo(obfuscatedPromptInfo);</span>
+<span class="nc" id="L99">                prompt = promptGenerator.generateMessages(obfuscatedPromptInfo, &quot;HITS&quot;);</span>
+<span class="nc" id="L100">                code = generateTest(prompt, record);</span>
+<span class="nc bnc" id="L101" title="All 2 branches missed.">                if (!record.isHasCode()) {</span>
+<span class="nc" id="L102">                    promptInfo.setUnitTest(&quot;&quot;);</span>
+<span class="nc" id="L103">                    return;</span>
+                }
+<span class="nc" id="L105">                code = obfuscator.deobfuscateJava(code);</span>
+<span class="nc" id="L106">            } else {</span>
+<span class="nc" id="L107">                prompt = promptGenerator.generateMessages(promptInfo, &quot;HITS&quot;);</span>
+<span class="nc" id="L108">                code = generateTest(prompt, record);</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (!record.isHasCode()) {</span>
+<span class="nc" id="L110">                    promptInfo.setUnitTest(&quot;&quot;);</span>
+<span class="nc" id="L111">                    return;</span>
+                }
+            }
+<span class="nc bnc" id="L114" title="All 2 branches missed.">            if (CodeExtractor.isTestMethod(code)) {</span>
+<span class="nc" id="L115">                TestSkeleton skeleton = new TestSkeleton(promptInfo); // test skeleton to wrap a test method</span>
+<span class="nc" id="L116">                code = skeleton.build(code);</span>
+<span class="nc" id="L117">            } else {</span>
+<span class="nc" id="L118">                RepairImpl repair = new RepairImpl(config, pc);</span>
+<span class="nc" id="L119">                code = repair.ruleBasedRepair(code);</span>
+            }
+<span class="nc" id="L121">            promptInfo.setUnitTest(code);</span>
+<span class="nc" id="L122">            record.setCode(code);</span>
+<span class="nc" id="L123">        }</span>
+
+        /**
+         * Core process to chat with LLM and get method slices in its response
+         * @param prompt
+         * @param record
+         * @param promptInfo
+         * @return
+         */
+        public void generateMethodSlice(List&lt;ChatMessage&gt; prompt, RoundRecord record, PromptInfo promptInfo) {
+
+<span class="nc bnc" id="L134" title="All 2 branches missed.">            if (MethodRunner.isExceedMaxTokens(config.getMaxPromptTokens(), prompt)) {</span>
+<span class="nc" id="L135">                config.getLogger().error(&quot;Exceed max prompt tokens: &quot; + methodInfo.methodName + &quot; Skipped.&quot;);</span>
+<span class="nc" id="L136">                record.setPromptToken(-1);</span>
+<span class="nc" id="L137">                record.setHasCode(false);</span>
+<span class="nc" id="L138">                return;</span>
+            }
+<span class="nc" id="L140">            config.getLogger().debug(&quot;[Prompt]:\n&quot; + prompt);</span>
+
+<span class="nc" id="L142">            String slicePath = &quot;methodSlice/&quot; + promptInfo.getClassName() + &quot;/&quot; + promptInfo.getMethodName();</span>
+<span class="nc" id="L143">            Path fullDirectoryPath = config.tmpOutput.resolve(slicePath); //todo 每次初始生成需要将文件夹清空</span>
+
+<span class="nc" id="L145">            ChatResponse response = ChatGenerator.chat(config, prompt);</span>
+<span class="nc" id="L146">            String content = JsonResponseProcessor.getJsonContentByResponse(response.toString()); //todo get slice json result</span>
+<span class="nc" id="L147">            config.getLogger().debug(&quot;[Response]:\n&quot; + content);</span>
+
+<span class="nc" id="L149">            boolean success = true;</span>
+
+<span class="nc bnc" id="L151" title="All 2 branches missed.">            if (content != null) {</span>
+                // Step 2: Extract information from JSON content
+<span class="nc" id="L153">                JsonResponseProcessor.JsonData info = JsonResponseProcessor.extractInfoFromJson(content);//todo extract main info and store in file</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                if (info != null) {</span>
+<span class="nc" id="L155">                    config.getLogger().debug(&quot;Extracted JSON Info: &quot; + info.toString());</span>
+                    // Step 3: Write the extracted JSON information to a file
+<span class="nc" id="L157">                    JsonResponseProcessor.writeJsonToFile(new ObjectMapper().valueToTree(info), fullDirectoryPath);</span>
+                } else {
+<span class="nc" id="L159">                    success = false;</span>
+<span class="nc" id="L160">                    config.getLogger().debug(&quot;Failed to extract required information from JSON.&quot;);</span>
+                }
+<span class="nc" id="L162">            } else {</span>
+<span class="nc" id="L163">                success = false;</span>
+<span class="nc" id="L164">                config.getLogger().debug(&quot;No JSON content found in the response.&quot;);</span>
+            }
+            // todo 这里应该要有重复生成的机制，如果说content为null，或者提取不出info，应该要重新生成
+
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            if (!success) { //If getting method slices fails</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">                for (int i = 0; i &lt; 3; i++) { // todo 这里暂定3次，可以在config中设置</span>
+                    try {
+<span class="nc" id="L171">                        response = ChatGenerator.chat(config, prompt);</span>
+<span class="nc" id="L172">                        content = JsonResponseProcessor.getJsonContentByResponse(response.toString());</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">                        if (content != null) {</span>
+<span class="nc" id="L174">                            JsonResponseProcessor.JsonData info = JsonResponseProcessor.extractInfoFromJson(content);</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">                            if (info != null) {</span>
+<span class="nc" id="L176">                                JsonResponseProcessor.writeJsonToFile(new ObjectMapper().valueToTree(info), fullDirectoryPath);</span>
+<span class="nc" id="L177">                                break;</span>
+                            }
+                        }
+<span class="nc" id="L180">                    } catch (Exception e) {</span>
+<span class="nc" id="L181">                        config.getLogger().debug(&quot;generate method slices failed with exception: &quot; + e.getMessage());</span>
+<span class="nc" id="L182">                    }</span>
+                }
+            }
+
+<span class="nc" id="L186">            record.setPromptToken(response.getUsage().getPromptTokens());</span>
+<span class="nc" id="L187">            record.setResponseToken(response.getUsage().getCompletionTokens());</span>
+<span class="nc" id="L188">            record.setPrompt(prompt);</span>
+<span class="nc" id="L189">            record.setResponse(content);</span>
+
+//            JsonResponseProcessor jsonResponseProcessor = new JsonResponseProcessor(promptInfo.getClassName(), promptInfo.getMethodName());
+
+<span class="nc" id="L193">            promptInfo.setMethodSlicePath(fullDirectoryPath);</span>
+<span class="nc" id="L194">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

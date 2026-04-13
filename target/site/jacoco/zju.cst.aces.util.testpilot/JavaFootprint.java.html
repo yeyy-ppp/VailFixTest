@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaFootprint.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.testpilot</a> &gt; <span class="el_source">JavaFootprint.java</span></div><h1>JavaFootprint.java</h1><pre class="source lang-java linenums">
+package zju.cst.aces.util.testpilot;
+
+import java.util.HashSet;
+import java.util.Set;
+import org.sonarsource.analyzer.commons.recognizers.CamelCaseDetector;
+import org.sonarsource.analyzer.commons.recognizers.ContainsDetector;
+import org.sonarsource.analyzer.commons.recognizers.Detector;
+import org.sonarsource.analyzer.commons.recognizers.EndWithDetector;
+import org.sonarsource.analyzer.commons.recognizers.KeywordsDetector;
+import org.sonarsource.analyzer.commons.recognizers.LanguageFootprint;
+
+public final class JavaFootprint implements LanguageFootprint {
+
+<span class="nc" id="L15">  private final Set&lt;Detector&gt; detectors = new HashSet&lt;&gt;();</span>
+
+<span class="nc" id="L17">  public JavaFootprint() {</span>
+<span class="nc" id="L18">    detectors.add(new EndWithDetector(0.95, '}', ';', '{'));</span>
+<span class="nc" id="L19">    detectors.add(new KeywordsDetector(0.7, &quot;++&quot;, &quot;||&quot;, &quot;&amp;&amp;&quot;));</span>
+<span class="nc" id="L20">    detectors.add(new KeywordsDetector(0.3, &quot;public&quot;, &quot;abstract&quot;, &quot;class&quot;, &quot;implements&quot;, &quot;extends&quot;, &quot;return&quot;, &quot;throw&quot;,</span>
+        &quot;private&quot;, &quot;protected&quot;, &quot;enum&quot;, &quot;continue&quot;, &quot;assert&quot;, &quot;package&quot;, &quot;synchronized&quot;, &quot;boolean&quot;, &quot;this&quot;, &quot;double&quot;, &quot;instanceof&quot;,
+        &quot;final&quot;, &quot;interface&quot;, &quot;static&quot;, &quot;void&quot;, &quot;long&quot;, &quot;int&quot;, &quot;float&quot;, &quot;super&quot;, &quot;true&quot;, &quot;case:&quot;));
+<span class="nc" id="L23">    detectors.add(new ContainsDetector(0.95, &quot;for(&quot;, &quot;if(&quot;, &quot;while(&quot;, &quot;catch(&quot;, &quot;switch(&quot;, &quot;try{&quot;, &quot;else{&quot;));</span>
+<span class="nc" id="L24">    detectors.add(new CamelCaseDetector(0.5));</span>
+<span class="nc" id="L25">  }</span>
+
+  @Override
+  public Set&lt;Detector&gt; getDetectors() {
+<span class="nc" id="L29">    return detectors;</span>
+  }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

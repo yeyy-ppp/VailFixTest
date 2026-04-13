@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CoverageAnalyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">CoverageAnalyzer.java</span></div><h1>CoverageAnalyzer.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import org.jacoco.core.analysis.*;
+import org.jacoco.core.data.*;
+import org.jacoco.core.instr.Instrumenter;
+import org.jacoco.core.runtime.LoggerRuntime;
+import org.jacoco.core.tools.ExecFileLoader;
+import org.objectweb.asm.ClassReader;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.*;
+
+<span class="nc" id="L14">public class CoverageAnalyzer {</span>
+
+    /**
+     * 插桩原始类，并输出到目标目录
+     */
+    public static void instrumentClasses(String originalClassDir, String outputDir) throws IOException {
+<span class="nc" id="L20">        LoggerRuntime runtime = new LoggerRuntime();</span>
+<span class="nc" id="L21">        Instrumenter instrumenter = new Instrumenter(runtime);</span>
+
+<span class="nc" id="L23">        Path sourcePath = Paths.get(originalClassDir);</span>
+<span class="nc" id="L24">        Path outputPath = Paths.get(outputDir);</span>
+<span class="nc" id="L25">        Files.createDirectories(outputPath);</span>
+
+<span class="nc" id="L27">        Files.walk(sourcePath)</span>
+<span class="nc" id="L28">                .filter(path -&gt; path.toString().endsWith(&quot;.class&quot;))</span>
+<span class="nc" id="L29">                .forEach(path -&gt; {</span>
+                    try {
+<span class="nc" id="L31">                        Path relative = sourcePath.relativize(path);</span>
+<span class="nc" id="L32">                        byte[] original = Files.readAllBytes(path);</span>
+<span class="nc" id="L33">                        byte[] instrumented = instrumenter.instrument(original, path.toString());</span>
+
+<span class="nc" id="L35">                        Path outPath = outputPath.resolve(relative);</span>
+<span class="nc" id="L36">                        Files.createDirectories(outPath.getParent());</span>
+<span class="nc" id="L37">                        Files.write(outPath, instrumented);</span>
+<span class="nc" id="L38">                    } catch (Exception e) {</span>
+<span class="nc" id="L39">                        throw new RuntimeException(&quot;插桩失败：&quot; + path, e);</span>
+<span class="nc" id="L40">                    }</span>
+<span class="nc" id="L41">                });</span>
+
+<span class="nc" id="L43">        System.out.println(&quot;✅ 插桩完成，输出目录: &quot; + outputPath);</span>
+<span class="nc" id="L44">    }</span>
+
+    /**
+     * 分析执行后的覆盖率（需要 exec 数据 + 原始 class）
+     */
+    public static void analyzeCoverage(String originalClassDir, String execFilePath) throws IOException {
+<span class="nc" id="L50">        ExecFileLoader loader = new ExecFileLoader();</span>
+<span class="nc" id="L51">        loader.load(new File(execFilePath));</span>
+
+<span class="nc" id="L53">        CoverageBuilder builder = new CoverageBuilder();</span>
+<span class="nc" id="L54">        Analyzer analyzer = new Analyzer(loader.getExecutionDataStore(), builder);</span>
+
+<span class="nc" id="L56">        analyzer.analyzeAll(new File(originalClassDir));</span>
+
+<span class="nc" id="L58">        printSummary(builder.getClasses());</span>
+<span class="nc" id="L59">    }</span>
+
+    /**
+     * 打印覆盖率汇总
+     */
+    private static void printSummary(Collection&lt;IClassCoverage&gt; classes) {
+<span class="nc" id="L65">        double totalInstructions = 0, coveredInstructions = 0;</span>
+<span class="nc" id="L66">        double totalBranches = 0, coveredBranches = 0;</span>
+<span class="nc" id="L67">        double totalLines = 0, coveredLines = 0;</span>
+<span class="nc" id="L68">        double totalMethods = 0, coveredMethods = 0;</span>
+
+<span class="nc" id="L70">        System.out.println(&quot;📊 覆盖率报告：&quot;);</span>
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        for (IClassCoverage cc : classes) {</span>
+<span class="nc" id="L73">            System.out.println(&quot;  • 类名：&quot; + cc.getName().replace(&quot;/&quot;, &quot;.&quot;));</span>
+<span class="nc" id="L74">            System.out.printf(&quot;    - 指令覆盖率:  %.2f%%%n&quot;, percent(cc.getInstructionCounter()));</span>
+<span class="nc" id="L75">            System.out.printf(&quot;    - 分支覆盖率:  %.2f%%%n&quot;, percent(cc.getBranchCounter()));</span>
+<span class="nc" id="L76">            System.out.printf(&quot;    - 行覆盖率:    %.2f%%%n&quot;, percent(cc.getLineCounter()));</span>
+<span class="nc" id="L77">            System.out.printf(&quot;    - 方法覆盖率:  %.2f%%%n&quot;, percent(cc.getMethodCounter()));</span>
+<span class="nc" id="L78">            System.out.printf(&quot;    - 类覆盖率:    %.2f%%%n&quot;, percent(cc.getClassCounter()));</span>
+
+<span class="nc" id="L80">            totalInstructions += cc.getInstructionCounter().getTotalCount();</span>
+<span class="nc" id="L81">            coveredInstructions += cc.getInstructionCounter().getCoveredCount();</span>
+<span class="nc" id="L82">            totalBranches += cc.getBranchCounter().getTotalCount();</span>
+<span class="nc" id="L83">            coveredBranches += cc.getBranchCounter().getCoveredCount();</span>
+<span class="nc" id="L84">            totalLines += cc.getLineCounter().getTotalCount();</span>
+<span class="nc" id="L85">            coveredLines += cc.getLineCounter().getCoveredCount();</span>
+<span class="nc" id="L86">            totalMethods += cc.getMethodCounter().getTotalCount();</span>
+<span class="nc" id="L87">            coveredMethods += cc.getMethodCounter().getCoveredCount();</span>
+<span class="nc" id="L88">        }</span>
+
+<span class="nc" id="L90">        System.out.println();</span>
+<span class="nc" id="L91">        System.out.printf(&quot;✅ 整体代码覆盖率:  %.2f%%%n&quot;, percent(coveredInstructions, totalInstructions));</span>
+<span class="nc" id="L92">        System.out.printf(&quot;✅ 分支覆盖率:      %.2f%%%n&quot;, percent(coveredBranches, totalBranches));</span>
+<span class="nc" id="L93">        System.out.printf(&quot;✅ 行覆盖率:        %.2f%%%n&quot;, percent(coveredLines, totalLines));</span>
+<span class="nc" id="L94">        System.out.printf(&quot;✅ 方法覆盖率:      %.2f%%%n&quot;, percent(coveredMethods, totalMethods));</span>
+<span class="nc" id="L95">        System.out.printf(&quot;✅ 类覆盖率:        %.2f%%%n&quot;, percent(classes.size(), classes.size()));</span>
+<span class="nc" id="L96">    }</span>
+
+    private static double percent(ICounter counter) {
+<span class="nc" id="L99">        return percent(counter.getCoveredCount(), counter.getTotalCount());</span>
+    }
+
+    private static double percent(double covered, double total) {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        return total == 0 ? 0.0 : (covered / total) * 100;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

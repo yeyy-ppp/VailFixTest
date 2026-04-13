@@ -1,0 +1,626 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjectTree.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes</a> &gt; <span class="el_source">ObjectTree.java</span></div><h1>ObjectTree.java</h1><pre class="source lang-java linenums">package slicing.nodes;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.resolution.types.ResolvedType;
+import slicing.nodes.oo.MemberNode;
+import slicing.nodes.oo.PolyMemberNode;
+import slicing.utils.Utils;
+
+import java.util.*;
+import java.util.concurrent.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static slicing.utils.Utils.arrayJoin;
+
+/**
+ * A tree data structure that mimics the tree found in an object's fields.
+ * Each tree contains a MemberNode that represents its, including a name.
+ * If the variable is undefined when the tree is created, the root of this
+ * tree will be named &quot;-root-&quot;. The real name of the root can be found in
+ * its associated VariableAction. &lt;br/&gt;
+ *
+ * Object trees may not be reused, and must be cloned via {@link #clone()}.
+ * Otherwise, the MemberNodes representing the tree will be the same in the graph.
+ */
+public class ObjectTree implements Cloneable {
+    /** The default name of a tree's root. */
+    public static final String ROOT_NAME = &quot;-root-&quot;;
+    /** The representation of the root node in member form. */
+<span class="nc" id="L32">    public static final String[] ROOT_NODE = new String[] { ROOT_NAME };</span>
+
+    /** Regex pattern to split the root from the fields of a field access expression. */
+<span class="nc" id="L35">    private static final Pattern FIELD_SPLIT = Pattern.compile(&quot;^(?&lt;root&gt;(([_0-9A-Za-z]+\\.)*this)|(?&lt;dash&gt;(-?))([_0-9A-Za-z]+\\k&lt;dash&gt;)+)(\\.(?&lt;fields&gt;.+))?$&quot;);</span>
+
+    /** Direct children of this tree node, mapped by field name. */
+<span class="nc" id="L38">    private final Map&lt;String, ObjectTree&gt; childrenMap = new HashMap&lt;&gt;();</span>
+    /** The MemberNode that represents this tree node in the PDG and SDG. */
+    private final MemberNode memberNode;
+
+    /** Create a root of a new object tree with the default name. */
+    public ObjectTree() {
+<span class="nc" id="L44">        this(ROOT_NAME);</span>
+<span class="nc" id="L45">    }</span>
+
+    /** Create a root of a new object tree with the given name. */
+    public ObjectTree(String memberName) {
+<span class="nc" id="L49">        this(new MemberNode(memberName, null));</span>
+<span class="nc" id="L50">    }</span>
+
+    /** Create a child tree node for the given field, whose node is linked to the given parent. */
+    private ObjectTree(String memberName, ObjectTree parent) {
+<span class="nc" id="L54">        this(new MemberNode(memberName, parent.memberNode));</span>
+<span class="nc" id="L55">    }</span>
+
+    /** Create a child tree node for the given type, whose node is linked to the given parent. */
+    private ObjectTree(ResolvedType resolvedType, ObjectTree parent) {
+<span class="nc" id="L59">        this(new PolyMemberNode(resolvedType, parent.memberNode));</span>
+<span class="nc" id="L60">    }</span>
+
+    /** Create a child tree with the given member node. */
+<span class="nc" id="L63">    private ObjectTree(MemberNode memberNode) {</span>
+<span class="nc" id="L64">        this.memberNode = memberNode;</span>
+<span class="nc" id="L65">    }</span>
+
+    /** The name of the variable or field represented by this tree. It doesn't include ancestors. */
+    protected String getMemberName() {
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        return memberNode == null ? ROOT_NAME : memberNode.getLabel();</span>
+    }
+
+    public MemberNode getMemberNode() {
+<span class="nc" id="L73">        return memberNode;</span>
+    }
+
+    /** Whether this object tree has fields. */
+    public boolean hasChildren() {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        return !childrenMap.isEmpty();</span>
+    }
+
+    /** Whether the field passed as argument has children. */
+    public boolean hasChildren(String memberWithRoot) {
+<span class="nc" id="L83">        String member = removeRoot(memberWithRoot);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (member.isEmpty())</span>
+<span class="nc" id="L85">            return hasChildren();</span>
+<span class="nc" id="L86">        return hasChildrenInternal(member, false);</span>
+    }
+
+    /** Same as {@link #hasChildren(String)}, but considering the optional presence of polymorphic nodes. */
+    public boolean hasChildrenPoly(String memberWithRoot) {
+<span class="nc" id="L91">        String member = removeRoot(memberWithRoot);</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (member.isEmpty())</span>
+<span class="nc" id="L93">            return hasChildren();</span>
+<span class="nc" id="L94">        return hasChildrenInternal(member, true);</span>
+    }
+
+    protected boolean hasChildrenInternal(String members, boolean polymorphic) {
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (members.contains(&quot;.&quot;)) {</span>
+<span class="nc" id="L99">            int firstDot = members.indexOf('.');</span>
+<span class="nc" id="L100">            String first = members.substring(0, firstDot);</span>
+<span class="nc" id="L101">            String rest = members.substring(firstDot + 1);</span>
+<span class="nc bnc" id="L102" title="All 6 branches missed.">            if (polymorphic &amp;&amp; !childrenMap.containsKey(first) &amp;&amp; !childrenMap.isEmpty())</span>
+<span class="nc" id="L103">                return childrenMap.values().stream()</span>
+<span class="nc" id="L104">                        .filter(ot -&gt; ot.getMemberNode() instanceof PolyMemberNode)</span>
+<span class="nc" id="L105">                        .anyMatch(ot -&gt; ot.hasChildrenInternal(members, true));</span>
+<span class="nc bnc" id="L106" title="All 4 branches missed.">            return childrenMap.containsKey(first) &amp;&amp; childrenMap.get(first).hasChildrenInternal(rest, polymorphic);</span>
+        } else {
+<span class="nc bnc" id="L108" title="All 6 branches missed.">            if (polymorphic &amp;&amp; !childrenMap.containsKey(members) &amp;&amp; !childrenMap.isEmpty())</span>
+<span class="nc" id="L109">                return childrenMap.values().stream()</span>
+<span class="nc" id="L110">                        .filter(ot -&gt; ot.getMemberNode() instanceof PolyMemberNode)</span>
+<span class="nc" id="L111">                        .anyMatch(ot -&gt; ot.hasChildrenInternal(members, true));</span>
+<span class="nc" id="L112">            return childrenMap.get(members).hasChildren();</span>
+        }
+    }
+
+    /** Whether this object tree immediately contains polymorphic nodes. */
+    public boolean hasPoly() {
+<span class="nc" id="L118">        return childrenMap.values().stream().anyMatch(ot -&gt; ot.getMemberNode() instanceof PolyMemberNode);</span>
+    }
+
+    /** A set of entry pairs, containing the field name and its corresponding tree. It is unmodifiable. */
+    public Set&lt;Map.Entry&lt;String, ObjectTree&gt;&gt; entrySet() {
+<span class="nc" id="L123">        return Collections.unmodifiableSet(childrenMap.entrySet());</span>
+    }
+
+    /** Insert a polymorphic node for the given type. The type node will be
+     *  generated immediately beneath this tree node. */
+    public ObjectTree addType(ResolvedType rt) {
+<span class="nc bnc" id="L129" title="All 2 branches missed.">        assert !rt.describe().trim().isEmpty();</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">        assert !(memberNode instanceof PolyMemberNode);</span>
+<span class="nc" id="L131">        return childrenMap.computeIfAbsent(rt.describe(), n -&gt; new ObjectTree(rt, this));</span>
+    }
+
+    public ObjectTree addType(ResolvedType rt, String[] prefix) {
+<span class="nc" id="L135">        String[] members = removeRoot(prefix);</span>
+<span class="nc" id="L136">        Collection&lt;ObjectTree&gt; trees = findObjectTreeOfPolyMember(members);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (trees.size() &gt; 1)</span>
+<span class="nc" id="L138">            throw new IllegalArgumentException(&quot;This method accepts only prefixes with all the necessary types&quot;);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">        for (ObjectTree tree : trees)</span>
+<span class="nc" id="L140">            return tree.addType(rt);</span>
+<span class="nc" id="L141">        throw new IllegalArgumentException(&quot;Could not locate any tree for the given prefix &quot; + arrayJoin(prefix, &quot;.&quot;));</span>
+    }
+
+    /**
+     * Insert a field with the given name. This method should only be called on a root object tree.
+     * This method may be used to add multiple levels simultaneously, calling this method with
+     * the argument {@code &quot;a.b.c&quot;} on a new root tree, it will create the tree &quot;b&quot; inside the root
+     * and &quot;c&quot; inside &quot;b&quot;.
+     * @param fieldName The field to be added, should include the root variable name. For example,
+     *                  to add the field &quot;x&quot; to a variable &quot;a&quot;, this argument should be &quot;a.x&quot;.
+     */
+    public ObjectTree addField(String fieldName) {
+<span class="nc" id="L153">        String members = removeRoot(fieldName);</span>
+<span class="nc" id="L154">        return addNonRootField(members);</span>
+    }
+
+    public ObjectTree addField(String[] fieldName) {
+<span class="nc" id="L158">        String[] members = removeRoot(fieldName);</span>
+<span class="nc" id="L159">        return addNonRootField(members, 0);</span>
+    }
+
+    /** Insert a field in the current level of object tree. The field should be a variable name,
+     *  and not contain dots or be blank. */
+    public ObjectTree addImmediateField(String fieldName) {
+<span class="nc bnc" id="L165" title="All 4 branches missed.">        if (fieldName.contains(&quot;.&quot;) || fieldName.trim().isEmpty())</span>
+<span class="nc" id="L166">            throw new IllegalArgumentException(&quot;field name must not include dots or be blank!&quot;);</span>
+<span class="nc" id="L167">        return childrenMap.computeIfAbsent(fieldName, f -&gt; new ObjectTree(f, this));</span>
+    }
+
+    public ObjectTree addStaticField(String fieldName, Node node) {
+<span class="nc bnc" id="L171" title="All 4 branches missed.">        if (fieldName.contains(&quot;.&quot;) || fieldName.trim().isEmpty())</span>
+<span class="nc" id="L172">            throw new IllegalArgumentException(&quot;field name must not include dots or be blank!&quot;);</span>
+<span class="nc" id="L173">        return childrenMap.computeIfAbsent(fieldName, f -&gt; new ObjectTree(new MemberNode(fieldName, node, memberNode)));</span>
+    }
+
+    /** Similar to {@link #addField(String)}, but may be called at any level
+     *  and the argument must not contain the root variable. */
+    private ObjectTree addNonRootField(String members) {
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        if (members.contains(&quot;.&quot;)) {</span>
+<span class="nc" id="L180">            int firstDot = members.indexOf('.');</span>
+<span class="nc" id="L181">            String first = members.substring(0, firstDot);</span>
+<span class="nc" id="L182">            String rest = members.substring(firstDot + 1);</span>
+<span class="nc" id="L183">            childrenMap.computeIfAbsent(first, f -&gt; new ObjectTree(f, this));</span>
+<span class="nc" id="L184">            return childrenMap.get(first).addNonRootField(rest);</span>
+        } else {
+<span class="nc" id="L186">            return childrenMap.computeIfAbsent(members, f -&gt; new ObjectTree(f, this));</span>
+        }
+    }
+
+    private ObjectTree addNonRootField(String[] members, int index) {
+<span class="nc bnc" id="L191" title="All 2 branches missed.">        assert index &lt; members.length;</span>
+<span class="nc" id="L192">        ObjectTree tree = childrenMap.computeIfAbsent(members[index], f -&gt; new ObjectTree(f, this));</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">        if (members.length - 1 == index)</span>
+<span class="nc" id="L194">            return tree;</span>
+        else
+<span class="nc" id="L196">            return tree.addNonRootField(members, index + 1);</span>
+    }
+
+    /** Copies the structure of another object tree into this object tree.
+     *  All elements inserted in the current tree are a copy of the argument's children and members. */
+    public void addAll(ObjectTree tree) {
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        for (Map.Entry&lt;String, ObjectTree&gt; entry : tree.childrenMap.entrySet())</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (childrenMap.containsKey(entry.getKey()))</span>
+<span class="nc" id="L204">                childrenMap.get(entry.getKey()).addAll(entry.getValue());</span>
+            else
+<span class="nc" id="L206">                childrenMap.put(entry.getKey(), entry.getValue().clone(this));</span>
+<span class="nc" id="L207">    }</span>
+
+    /**
+     * Copies a subtree from source into another subtree in target. The tree may be
+     * pasted multiple times, if there are polymorphic nodes that are not explicitly marked
+     * in the prefix arguments.
+     * @param source       The source of the nodes.
+     * @param target       The tree where nodes will be added
+     * @param sourcePrefix The prefix to be consumed before copying nodes. Without root.
+     * @param targetPrefix The prefix to be consumed before copying nodes. Without root.
+     */
+    public static void copyTargetTreeToSource(ObjectTree source, ObjectTree target, String sourcePrefix, String targetPrefix) {
+<span class="nc" id="L219">        Collection&lt;ObjectTree&gt; a = source.findObjectTreeOfPolyMember(sourcePrefix);</span>
+<span class="nc" id="L220">        Collection&lt;ObjectTree&gt; b = target.findObjectTreeOfPolyMember(targetPrefix);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        for (ObjectTree sourceTree : a)</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">            for (ObjectTree targetTree : b)</span>
+<span class="nc" id="L223">                sourceTree.addAll(targetTree);</span>
+<span class="nc" id="L224">    }</span>
+
+    /** Obtains the set of nodes in this object tree that have no children. */
+    public Collection&lt;MemberNode&gt; leaves() {
+<span class="nc" id="L228">        return streamLeaves().collect(Collectors.toSet());</span>
+    }
+
+    /** @see #leaves() */
+    protected Stream&lt;MemberNode&gt; streamLeaves() {
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        if (childrenMap.isEmpty())</span>
+<span class="nc" id="L234">            return Stream.of(memberNode);</span>
+<span class="nc" id="L235">        return childrenMap.values().stream()</span>
+<span class="nc" id="L236">                .flatMap(ObjectTree::streamLeaves);</span>
+    }
+
+    /** Similar to {@link #getNodesForPoly(String)}, but returns object trees
+     *  instead of member nodes. */
+    Collection&lt;ObjectTree&gt; findObjectTreeOfPolyMember(String member) {
+<span class="nc" id="L242">        Collection&lt;ObjectTree&gt; result = Collections.singletonList(this);</span>
+<span class="nc bnc" id="L243" title="All 2 branches missed.">        while (!member.isEmpty()) {</span>
+<span class="nc" id="L244">            int firstDot = member.indexOf('.');</span>
+            String first, rest;
+<span class="nc bnc" id="L246" title="All 2 branches missed.">            if (firstDot != -1) {</span>
+<span class="nc" id="L247">                first = member.substring(0, firstDot);</span>
+<span class="nc" id="L248">                rest = member.substring(firstDot + 1);</span>
+            } else {
+<span class="nc" id="L250">                first = member;</span>
+<span class="nc" id="L251">                rest = &quot;&quot;;</span>
+            }
+<span class="nc" id="L253">            Collection&lt;ObjectTree&gt; newResult = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">            for (ObjectTree res : result) {</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">                if (!res.childrenMap.containsKey(first)) {</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">                    for (String key : res.childrenMap.keySet()) {</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">                        if (member.startsWith(key)) {</span>
+<span class="nc" id="L258">                            first = member.substring(0, key.length());</span>
+                            try {
+<span class="nc" id="L260">                                rest = member.substring(key.length() + 1);</span>
+<span class="nc" id="L261">                            } catch (StringIndexOutOfBoundsException e) {</span>
+<span class="nc" id="L262">                                rest = &quot;&quot;;</span>
+<span class="nc" id="L263">                            }</span>
+<span class="nc" id="L264">                            break;</span>
+                        }
+<span class="nc" id="L266">                    }</span>
+                }
+<span class="nc" id="L268">                ObjectTree ot = res.childrenMap.get(first);</span>
+<span class="nc bnc" id="L269" title="All 4 branches missed.">                if (ot == null &amp;&amp; res.childrenMap.size() &gt; 0) {</span>
+<span class="nc bnc" id="L270" title="All 2 branches missed.">                    for (ObjectTree child : res.childrenMap.values()) {</span>
+<span class="nc bnc" id="L271" title="All 4 branches missed.">                        if (!(child.getMemberNode() instanceof PolyMemberNode) || !child.childrenMap.containsKey(first))</span>
+<span class="nc" id="L272">                            throw new IllegalArgumentException(&quot;Could not locate member in object tree&quot;);</span>
+<span class="nc" id="L273">                        newResult.add(child.childrenMap.get(first));</span>
+<span class="nc" id="L274">                    }</span>
+<span class="nc" id="L275">                    break;</span>
+<span class="nc bnc" id="L276" title="All 2 branches missed.">                } else if (ot == null) {</span>
+<span class="nc" id="L277">                    throw new IllegalArgumentException(&quot;Could not locate member in object tree&quot;);</span>
+                } else {
+<span class="nc" id="L279">                    newResult.add(ot);</span>
+                }
+<span class="nc" id="L281">            }</span>
+<span class="nc" id="L282">            result = newResult;</span>
+<span class="nc" id="L283">            member = rest;</span>
+<span class="nc" id="L284">        }</span>
+<span class="nc" id="L285">        return result;</span>
+    }
+
+    Collection&lt;ObjectTree&gt; findObjectTreeOfPolyMember(String[] member) {
+<span class="nc" id="L289">        Collection&lt;ObjectTree&gt; result = Collections.singletonList(this);</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">        for (String field : member) {</span>
+<span class="nc" id="L291">            Collection&lt;ObjectTree&gt; newResult = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">            for (ObjectTree res : result) {</span>
+<span class="nc" id="L293">                ObjectTree ot = res.childrenMap.get(field);</span>
+<span class="nc bnc" id="L294" title="All 4 branches missed.">                if (ot == null &amp;&amp; res.childrenMap.size() &gt; 0) {</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">                    for (ObjectTree child : res.childrenMap.values()) {</span>
+<span class="nc bnc" id="L296" title="All 4 branches missed.">                        if (!(child.getMemberNode() instanceof PolyMemberNode) || !child.childrenMap.containsKey(field))</span>
+<span class="nc" id="L297">                            throw new IllegalArgumentException(&quot;Could not locate member in object tree&quot;);</span>
+<span class="nc" id="L298">                        newResult.add(child.childrenMap.get(field));</span>
+<span class="nc" id="L299">                    }</span>
+<span class="nc" id="L300">                    break;</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                } else if (ot == null) {</span>
+<span class="nc" id="L302">                    throw new IllegalArgumentException(&quot;Could not locate member in object tree&quot;);</span>
+                } else {
+<span class="nc" id="L304">                    newResult.add(ot);</span>
+                }
+<span class="nc" id="L306">            }</span>
+<span class="nc" id="L307">            result = newResult;</span>
+        }
+<span class="nc" id="L309">        return result;</span>
+    }
+
+    /** Whether this object tree contains the given member. The argument should contain the root variable name. */
+    public boolean hasMember(String member) {
+<span class="nc" id="L314">        String field = removeRoot(member);</span>
+<span class="nc" id="L315">        return hasNonRootMember(field, false);</span>
+    }
+
+    public boolean hasMember(String[] member) {
+<span class="nc bnc" id="L319" title="All 2 branches missed.">        if (member.length &lt; 2)</span>
+<span class="nc" id="L320">            return true;</span>
+<span class="nc" id="L321">        return hasMemberIndexed(member, 1, false);</span>
+    }
+
+    /** Whether this object tree contains the given member. The argument may omit typing
+     *  information (i.e., 'a.x' will find 'a.A.x', where A is a polymorphic node). */
+    public boolean hasPolyMember(String member) {
+<span class="nc" id="L327">        String field = removeRoot(member);</span>
+<span class="nc" id="L328">        return hasNonRootMember(field, true);</span>
+    }
+
+    public boolean hasPolyMember(String[] member) {
+<span class="nc" id="L332">        return hasMemberIndexed(member, 1, true);</span>
+    }
+
+    /** Similar to hasMember, but valid at any level of the tree and the argument should not contain
+     *  the root variable's name.
+     *  @see #hasMember(String) */
+    private boolean hasNonRootMember(String members, boolean polymorphic) {
+<span class="nc bnc" id="L339" title="All 2 branches missed.">        if (members.contains(&quot;.&quot;)) {</span>
+<span class="nc" id="L340">            int firstDot = members.indexOf('.');</span>
+<span class="nc" id="L341">            String first = members.substring(0, firstDot);</span>
+<span class="nc" id="L342">            String rest = members.substring(firstDot + 1);</span>
+<span class="nc bnc" id="L343" title="All 6 branches missed.">            if (polymorphic &amp;&amp; !childrenMap.containsKey(first) &amp;&amp; !childrenMap.isEmpty())</span>
+<span class="nc" id="L344">                return childrenMap.values().stream()</span>
+<span class="nc" id="L345">                        .filter(ot -&gt; ot.getMemberNode() instanceof PolyMemberNode)</span>
+<span class="nc" id="L346">                        .anyMatch(ot -&gt; ot.hasNonRootMember(members, true));</span>
+<span class="nc bnc" id="L347" title="All 4 branches missed.">            return childrenMap.containsKey(first) &amp;&amp; childrenMap.get(first).hasNonRootMember(rest, polymorphic);</span>
+        } else {
+<span class="nc bnc" id="L349" title="All 6 branches missed.">            if (polymorphic &amp;&amp; !childrenMap.containsKey(members) &amp;&amp; !childrenMap.isEmpty())</span>
+<span class="nc" id="L350">                return childrenMap.values().stream()</span>
+<span class="nc" id="L351">                        .filter(ot -&gt; ot.getMemberNode() instanceof PolyMemberNode)</span>
+<span class="nc" id="L352">                        .anyMatch(ot -&gt; ot.hasNonRootMember(members, true));</span>
+<span class="nc" id="L353">            return childrenMap.containsKey(members);</span>
+        }
+    }
+
+    private boolean hasMemberIndexed(String[] member, int index, boolean polymorphic) {
+<span class="nc" id="L358">        String first = member[index];</span>
+<span class="nc bnc" id="L359" title="All 6 branches missed.">        if (polymorphic &amp;&amp; !childrenMap.containsKey(first) &amp;&amp; !childrenMap.isEmpty())</span>
+<span class="nc" id="L360">            return childrenMap.values().stream()</span>
+<span class="nc" id="L361">                    .filter(ot -&gt; ot.getMemberNode() instanceof PolyMemberNode)</span>
+<span class="nc" id="L362">                    .anyMatch(ot -&gt; ot.hasMemberIndexed(member, index, polymorphic));</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">        if (index + 1 &lt; member.length)</span>
+<span class="nc bnc" id="L364" title="All 4 branches missed.">            return childrenMap.containsKey(first) &amp;&amp; childrenMap.get(first).hasMemberIndexed(member, index + 1, polymorphic);</span>
+<span class="nc" id="L365">        else return childrenMap.containsKey(first);</span>
+    }
+
+    public MemberNode getRootNode() {
+<span class="nc" id="L369">        return memberNode;</span>
+    }
+
+    /** Obtain the member node that corresponds to the given field name (with root). */
+    public MemberNode getNodeFor(String member) {
+<span class="nc" id="L374">        String field = removeRoot(member);</span>
+<span class="nc" id="L375">        return getNodeForNonRoot(field);</span>
+    }
+
+    public MemberNode getNodeFor(boolean withRoot, String... members) {
+<span class="nc bnc" id="L379" title="All 2 branches missed.">        return getNodeForIndex(members, withRoot ? 1 : 0);</span>
+    }
+
+    /** Similar to getNodeFor, but valid at any level of the tree, and the argument must be the field only.
+     *  @see #getNodeFor(String) */
+    MemberNode getNodeForNonRoot(String members) {
+<span class="nc bnc" id="L385" title="All 2 branches missed.">        if (members.isEmpty()) {</span>
+<span class="nc" id="L386">            return memberNode;</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">        } else if (members.contains(&quot;.&quot;)) {</span>
+<span class="nc" id="L388">            int firstDot = members.indexOf('.');</span>
+<span class="nc" id="L389">            String first = members.substring(0, firstDot);</span>
+<span class="nc" id="L390">            String rest = members.substring(firstDot + 1);</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">            assert childrenMap.containsKey(first);</span>
+<span class="nc" id="L392">            return childrenMap.get(first).getNodeForNonRoot(rest);</span>
+        } else {
+<span class="nc bnc" id="L394" title="All 2 branches missed.">            assert childrenMap.containsKey(members);</span>
+<span class="nc" id="L395">            return childrenMap.get(members).memberNode;</span>
+        }
+    }
+
+    MemberNode getNodeForIndex(String[] members, int index) {
+<span class="nc bnc" id="L400" title="All 2 branches missed.">        if (members.length &lt;= index)</span>
+<span class="nc" id="L401">            return memberNode;</span>
+<span class="nc bnc" id="L402" title="All 2 branches missed.">        assert childrenMap.containsKey(members[index]);</span>
+<span class="nc bnc" id="L403" title="All 2 branches missed.">        if (members.length == index + 1)</span>
+<span class="nc" id="L404">            return childrenMap.get(members[index]).memberNode;</span>
+        else
+<span class="nc" id="L406">            return childrenMap.get(members[index]).getNodeForIndex(members, index + 1);</span>
+    }
+
+    /** Similar to {@link #getNodeFor(String)}, but if the argument does not contain
+     *  types, it will obtain all member nodes that represent a given field (in multiple
+     *  types). For example, the argument 'a.x' may produce 'a.A.x' and 'a.B.x'; whereas
+     *  the argument 'a.A.x' will only produce one node. */
+    public Collection&lt;MemberNode&gt; getNodesForPoly(String memberWithRoot) {
+<span class="nc" id="L414">        return findObjectTreeOfPolyMember(removeRoot(memberWithRoot)).stream()</span>
+<span class="nc" id="L415">                .map(ObjectTree::getMemberNode)</span>
+<span class="nc" id="L416">                .collect(Collectors.toList());</span>
+    }
+
+    public Collection&lt;MemberNode&gt; getNodesForPoly(String[] membersWithRoot) {
+<span class="nc" id="L420">        return findObjectTreeOfPolyMember(removeRoot(membersWithRoot)).stream()</span>
+<span class="nc" id="L421">                .map(ObjectTree::getMemberNode)</span>
+<span class="nc" id="L422">                .collect(Collectors.toList());</span>
+    }
+
+    /** @return An iterable through the names (with full prefixes) of all members of this tree,
+     *  excluding the root. */
+    public Iterable&lt;String&gt; nameIterable() {
+<span class="nc" id="L428">        return () -&gt; new Iterator&lt;String&gt;() {</span>
+<span class="nc" id="L429">            final Iterator&lt;ObjectTree&gt; it = treeIterator();</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="nc" id="L433">                return it.hasNext();</span>
+            }
+
+            @Override
+            public String next() {
+<span class="nc" id="L438">                ObjectTree element = it.next();</span>
+<span class="nc" id="L439">                StringBuilder builder = new StringBuilder();</span>
+<span class="nc" id="L440">                MemberNode node = element.memberNode;</span>
+<span class="nc bnc" id="L441" title="All 2 branches missed.">                if (node == null)</span>
+<span class="nc" id="L442">                    return ROOT_NAME;</span>
+<span class="nc bnc" id="L443" title="All 2 branches missed.">                else if (node instanceof PolyMemberNode)</span>
+<span class="nc" id="L444">                    return next();</span>
+                else
+<span class="nc" id="L446">                    builder.append(node.getLabel());</span>
+<span class="nc bnc" id="L447" title="All 2 branches missed.">                while (node.getParent() instanceof MemberNode) {</span>
+<span class="nc" id="L448">                    node = (MemberNode) node.getParent();</span>
+<span class="nc" id="L449">                    builder.insert(0, '.');</span>
+<span class="nc" id="L450">                    builder.insert(0, node.getLabel());</span>
+                }
+<span class="nc" id="L452">                return builder.toString();</span>
+            }
+        };
+    }
+
+    public Iterable&lt;String[]&gt; nameAsArrayIterable() {
+<span class="nc" id="L458">        return () -&gt; new Iterator&lt;String[]&gt;() {</span>
+<span class="nc" id="L459">            final Iterator&lt;ObjectTree&gt; it = treeIterator();</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="nc" id="L463">                return it.hasNext();</span>
+            }
+
+            @Override
+            public String[] next() {
+<span class="nc" id="L468">                ObjectTree element = it.next();</span>
+<span class="nc" id="L469">                List&lt;String&gt; builder = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L470">                MemberNode node = element.memberNode;</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">                if (node == null)</span>
+<span class="nc" id="L472">                    return new String[] {ROOT_NAME};</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">                else if (node instanceof PolyMemberNode)</span>
+<span class="nc" id="L474">                    return next();</span>
+                else
+<span class="nc" id="L476">                    builder.add(node.getLabel());</span>
+<span class="nc bnc" id="L477" title="All 2 branches missed.">                while (node.getParent() instanceof MemberNode) {</span>
+<span class="nc" id="L478">                    node = (MemberNode) node.getParent();</span>
+<span class="nc" id="L479">                    builder.add(0, node.getLabel());</span>
+                }
+<span class="nc" id="L481">                return builder.toArray(new String[0]);</span>
+            }
+        };
+    }
+
+    /** @return An iterable through the nodes of all members of this tree, excluding the root. */
+    public Iterable&lt;MemberNode&gt; nodeIterable() {
+<span class="nc" id="L488">        return () -&gt; new Iterator&lt;MemberNode&gt;() {</span>
+<span class="nc" id="L489">            final Iterator&lt;ObjectTree&gt; it = treeIterator();</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="nc" id="L493">                return it.hasNext();</span>
+            }
+
+            @Override
+            public MemberNode next() {
+<span class="nc" id="L498">                return it.next().memberNode;</span>
+            }
+        };
+    }
+
+    /** @return An iterator through all the trees of this structure, excluding the root. */
+    private Iterator&lt;ObjectTree&gt; treeIterator() {
+<span class="nc" id="L505">        return new Iterator&lt;ObjectTree&gt;() {</span>
+<span class="nc" id="L506">            final Set&lt;ObjectTree&gt; remaining = new HashSet&lt;&gt;(childrenMap.values());</span>
+<span class="nc" id="L507">            Iterator&lt;ObjectTree&gt; childIterator = null;</span>
+
+            @Override
+            public boolean hasNext() {
+<span class="nc bnc" id="L511" title="All 4 branches missed.">                if (childIterator == null || !childIterator.hasNext())</span>
+<span class="nc bnc" id="L512" title="All 2 branches missed.">                    return !remaining.isEmpty();</span>
+                else
+<span class="nc" id="L514">                    return true;</span>
+            }
+
+            @Override
+            public ObjectTree next() {
+<span class="nc bnc" id="L519" title="All 4 branches missed.">                if (childIterator == null || !childIterator.hasNext()) {</span>
+<span class="nc" id="L520">                    ObjectTree tree = Utils.setPop(remaining);</span>
+<span class="nc" id="L521">                    childIterator = tree.treeIterator();</span>
+<span class="nc" id="L522">                    return tree;</span>
+                } else {
+<span class="nc" id="L524">                    return childIterator.next();</span>
+                }
+            }
+        };
+    }
+
+    @SuppressWarnings(&quot;MethodDoesntCallSuperMethod&quot;)
+    @Override
+    public Object clone() {
+<span class="nc" id="L533">        ObjectTree clone = new ObjectTree(memberNode.getLabel());</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">        for (Map.Entry&lt;String, ObjectTree&gt; entry : childrenMap.entrySet())</span>
+<span class="nc" id="L535">            clone.childrenMap.put(entry.getKey(), entry.getValue().clone(clone));</span>
+<span class="nc" id="L536">        return clone;</span>
+    }
+
+    private ObjectTree clone(ObjectTree parent) {
+<span class="nc" id="L540">        ObjectTree clone = new ObjectTree(getMemberNode().copyToParent(parent.getMemberNode()));</span>
+<span class="nc bnc" id="L541" title="All 2 branches missed.">        for (Map.Entry&lt;String, ObjectTree&gt; entry : childrenMap.entrySet())</span>
+<span class="nc" id="L542">            clone.childrenMap.put(entry.getKey(), entry.getValue().clone(clone));</span>
+<span class="nc" id="L543">        return clone;</span>
+    }
+
+    /**
+     * Utility method to remove the root variable from a string. The root element or root of
+     * the object tree should be either &quot;-root-&quot;, a valid variable name or an optionally type-prefixed
+     * this (A.this, package.A.this or this).
+     * @throws IllegalArgumentException When there is no root to remove.
+     */
+    public static String removeRoot(String fieldWithRoot) {
+<span class="nc" id="L553">        Matcher matcher = FIELD_SPLIT.matcher(fieldWithRoot);</span>
+<span class="nc bnc" id="L554" title="All 2 branches missed.">        if (matcher.matches())</span>
+<span class="nc bnc" id="L555" title="All 2 branches missed.">            return matcher.group(&quot;fields&quot;) != null ? matcher.group(&quot;fields&quot;) : &quot;&quot;;</span>
+<span class="nc" id="L556">        throw new IllegalArgumentException(&quot;Field should be of the form &lt;obj&gt;.&lt;field&gt;, &lt;Type&gt;.this.&lt;field&gt;, where &lt;obj&gt; may not contain dots.&quot;);</span>
+    }
+
+    public static String[] removeRoot(String[] field) {
+<span class="nc" id="L560">        int newStart = 1;</span>
+<span class="nc bnc" id="L561" title="All 2 branches missed.">        for (int i = 0; i &lt; field.length; i++) {</span>
+<span class="nc bnc" id="L562" title="All 2 branches missed.">            if (field[i].equals(&quot;this&quot;)) {</span>
+<span class="nc" id="L563">                newStart = i + 1;</span>
+<span class="nc" id="L564">                break;</span>
+            }
+        }
+<span class="nc" id="L567">        String[] res = new String[field.length - newStart];</span>
+<span class="nc" id="L568">        System.arraycopy(field, newStart, res, 0, res.length);</span>
+<span class="nc" id="L569">        return res;</span>
+    }
+
+    /**
+     * Utility method to remove the fields a string, retaining just the root. The root element or root of
+     * the object tree should be either &quot;-root-&quot;, a valid variable name or an optionally type-prefixed
+     * this (A.this, package.A.this or this).
+     * @throws IllegalArgumentException When there are no fields to remove.
+     */
+    public static String removeFields(String fieldWithRoot) {
+<span class="nc" id="L579">        ExecutorService executor = Executors.newSingleThreadExecutor();</span>
+<span class="nc" id="L580">        Future&lt;String&gt; future = executor.submit(() -&gt; {</span>
+<span class="nc" id="L581">            Matcher matcher = FIELD_SPLIT.matcher(fieldWithRoot);</span>
+<span class="nc bnc" id="L582" title="All 4 branches missed.">            if (matcher.matches() &amp;&amp; matcher.group(&quot;root&quot;) != null) {</span>
+<span class="nc" id="L583">                return matcher.group(&quot;root&quot;);</span>
+            }
+<span class="nc" id="L585">            throw new IllegalArgumentException(&quot;Field should be of the form &lt;obj&gt;.&lt;field&gt;, &lt;Type&gt;.this.&lt;field&gt;, where &lt;obj&gt; may not contain dots.&quot;);</span>
+        });
+        try {
+<span class="nc" id="L588">            return future.get(1, TimeUnit.SECONDS); // 设置2秒的超时时间</span>
+<span class="nc" id="L589">        } catch (TimeoutException e) {</span>
+<span class="nc" id="L590">            return &quot;&quot;;</span>
+<span class="nc" id="L591">        } catch (Exception e) {</span>
+<span class="nc" id="L592">            throw new RuntimeException(e);</span>
+        } finally {
+<span class="nc" id="L594">            executor.shutdown();</span>
+        }
+    }
+
+    public static String[] removeFields(String[] fields) {
+<span class="nc" id="L599">        Pattern.compile(&quot;^(?&lt;root&gt;(([_0-9A-Za-z]+\\.)*this)|(?&lt;dash&gt;(-?))([_0-9A-Za-z]+\\k&lt;dash&gt;)+)(\\.(?&lt;fields&gt;.+))?$&quot;);</span>
+<span class="nc" id="L600">        int length = 1;</span>
+<span class="nc bnc" id="L601" title="All 2 branches missed.">        for (int i = 0; i &lt; fields.length; i++) {</span>
+<span class="nc bnc" id="L602" title="All 2 branches missed.">            if (fields[i].equals(&quot;this&quot;)) {</span>
+<span class="nc" id="L603">                length = i + 1;</span>
+<span class="nc" id="L604">                break;</span>
+            }
+        }
+<span class="nc" id="L607">        String[] res = new String[length];</span>
+<span class="nc" id="L608">        System.arraycopy(fields, 0, res, 0, length);</span>
+<span class="nc" id="L609">        return res;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L614" title="All 2 branches missed.">        if (this == o) return true;</span>
+<span class="nc bnc" id="L615" title="All 4 branches missed.">        if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="nc" id="L616">        ObjectTree tree = (ObjectTree) o;</span>
+<span class="nc bnc" id="L617" title="All 2 branches missed.">        return Objects.equals(getMemberName(), tree.getMemberName()) &amp;&amp;</span>
+<span class="nc bnc" id="L618" title="All 2 branches missed.">                childrenMap.equals(tree.childrenMap);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L623">        return Objects.hash(getMemberName(), childrenMap);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

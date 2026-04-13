@@ -1,0 +1,25 @@
+包路径：lang3.concurrent
+类名：UncheckedFuture
+父类：Future
+依赖类：UncheckedFutureImpl
+---
+序号：1
+方法名：map(final Collection<Future<T>> futures)
+返回类型：Stream<UncheckedFuture<T>>
+功能描述：将Future集合转换为UncheckedFuture的Stream
+序号：2
+方法名：on(final Collection<Future<T>> futures)
+返回类型：Collection<UncheckedFuture<T>>
+功能描述：将Future集合转换为UncheckedFuture集合
+序号：3
+方法名：on(final Future<T> future)
+返回类型：UncheckedFuture<T>
+功能描述：为给定Future创建UncheckedFuture实例
+序号：4
+方法名：get()
+返回类型：V
+功能描述：获取计算结果，阻塞直到完成
+序号：5
+方法名：get(long timeout, TimeUnit unit)
+返回类型：V
+功能描述：在超时时间内获取计算结果

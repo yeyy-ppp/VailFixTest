@@ -1,0 +1,31 @@
+```
+包路径：gson.internal.bind
+类名：NumberTypeAdapter
+父类：TypeAdapter
+依赖类：ToNumberStrategy,TypeAdapterFactory,ToNumberPolicy,Gson,TypeToken,TypeAdapter,JsonReader,JsonToken,JsonWriter,JsonSyntaxException
+---
+序号：1
+方法名：NumberTypeAdapter(ToNumberStrategy toNumberStrategy)
+返回类型：无
+功能描述：初始化NumberTypeAdapter实例，设置toNumberStrategy字段
+---
+序号：2
+方法名：newFactory(ToNumberStrategy toNumberStrategy)
+返回类型：TypeAdapterFactory
+功能描述：创建并返回一个TypeAdapterFactory实例，该工厂生成指定toNumberStrategy的NumberTypeAdapter
+---
+序号：3
+方法名：getFactory(ToNumberStrategy toNumberStrategy)
+返回类型：TypeAdapterFactory
+功能描述：根据toNumberStrategy类型返回对应的TypeAdapterFactory实例
+---
+序号：4
+方法名：read(JsonReader in)
+返回类型：Number
+功能描述：从JSON输入流读取数字值，根据不同类型进行解析处理
+---
+序号：5
+方法名：write(JsonWriter out, Number value)
+返回类型：void
+功能描述：将数值对象写入JSON输出流
+```

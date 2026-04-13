@@ -1,0 +1,12 @@
+[2026-01-24 00:44:18] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: getUsDateTimeFormat
+  未覆盖: PreJava9DateFormatProvider, getDatePartOfDateTimePattern, getTimePartOfDateTimePattern
+
+[2026-01-24 00:47:03] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: getUsDateTimeFormat, getDatePartOfDateTimePattern, getTimePartOfDateTimePattern
+  未覆盖: PreJava9DateFormatProvider
+

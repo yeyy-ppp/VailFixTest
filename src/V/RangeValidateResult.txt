@@ -1,0 +1,12 @@
+[2026-01-24 01:40:46] 验证结果
+错误类型: 断言值, 错误行: 88, 错误原因: [elementCompareTo(3)应返回负数但断言为1], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: between, between, is, is, of, of, Range, contains, containsRange, elementCompareTo, equals, fit, getComparator, getMaximum, getMinimum, hashCode, intersectionWith, isAfter, isAfterRange, isBefore, isBeforeRange, isEndedBy, isNaturalOrdering, isOverlappedBy, isStartedBy, toString, toString
+  未覆盖: compare
+
+[2026-01-24 01:46:16] 修复后验证结果
+错误类型: 编译错误, 错误行: 12, 错误原因: 调用了不存在的方法Range.compare（三个参数）, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: compare, between, between, is, is, of, of, Range, contains, containsRange, elementCompareTo, equals, fit, getComparator, getMaximum, getMinimum, hashCode, intersectionWith, isAfter, isAfterRange, isBefore, isBeforeRange, isEndedBy, isNaturalOrdering, isOverlappedBy, isStartedBy, toString, toString
+  未覆盖: 全部覆盖
+

@@ -1,0 +1,51 @@
+```
+包路径：gson.internal.bind
+类名：TypeAdapters
+父类：无
+依赖类：Gson,JsonElement,JsonIOException,JsonSyntaxException,TypeAdapter,TypeAdapterFactory,LazilyParsedNumber,NumberLimits,TroubleshootingGuide,TypeToken,JsonReader,JsonToken,JsonWriter,JsonElementTypeAdapter,EnumTypeAdapter,JavaTimeTypeAdapters
+---
+序号：1
+方法名：TypeAdapters()
+返回类型：void
+功能描述：私有构造方法，阻止实例化并抛出UnsupportedOperationException
+序号：2
+方法名：atomicLongAdapter(TypeAdapter<Number> longAdapter)
+返回类型：TypeAdapter<AtomicLong>
+功能描述：创建AtomicLong的TypeAdapter，使用给定的Number类型适配器进行读写
+序号：3
+方法名：atomicLongArrayAdapter(TypeAdapter<Number> longAdapter)
+返回类型：TypeAdapter<AtomicLongArray>
+功能描述：创建AtomicLongArray的TypeAdapter，使用给定的Number类型适配器进行读写
+序号：4
+方法名：checkValidFloatingPoint(double value)
+返回类型：void
+功能描述：检查浮点数值是否有效（非NaN和非无限大），否则抛出异常
+序号：5
+方法名：toIntExact(long x)
+返回类型：int
+功能描述：将long值转换为int，超出范围时抛出异常
+序号：6
+方法名：javaTimeTypeAdapterFactory()
+返回类型：TypeAdapterFactory
+功能描述：通过反射获取JavaTimeTypeAdapters的类型适配器工厂
+序号：7
+方法名：newFactory(TypeToken<TT> type, TypeAdapter<TT> typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建匹配指定TypeToken的自定义类型适配器工厂
+序号：8
+方法名：newFactory(Class<TT> type, TypeAdapter<TT> typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建匹配指定Class的自定义类型适配器工厂
+序号：9
+方法名：newFactory(Class<TT> unboxed, Class<TT> boxed, TypeAdapter<? super TT> typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建同时匹配基本类型和装箱类型的类型适配器工厂
+序号：10
+方法名：newFactoryForMultipleTypes(Class<TT> base, Class<? extends TT> sub, TypeAdapter<? super TT> typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建匹配基类及其子类的多类型适配器工厂
+序号：11
+方法名：newTypeHierarchyFactory(Class<T1> clazz, TypeAdapter<T1> typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建处理类层次结构（基类及所有子类）的类型适配器工厂
+```

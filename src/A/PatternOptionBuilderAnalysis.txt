@@ -1,0 +1,35 @@
+```包路径：cli
+类名：PatternOptionBuilder
+父类：无
+依赖类：Options, Option, Char, Converter, TypeHandler
+---
+序号：1
+方法名：PatternOptionBuilder()
+返回类型：void
+功能描述：构造函数（已弃用）
+---
+序号：2
+方法名：getValueClass(char ch)
+返回类型：Object
+功能描述：根据字符ch获取对应的值类型类（已弃用）
+---
+序号：3
+方法名：getValueType(char ch)
+返回类型：Class<?>
+功能描述：根据字符ch返回对应的类型类
+---
+序号：4
+方法名：isValueCode(char ch)
+返回类型：boolean
+功能描述：检查字符ch是否为有效值代码
+---
+序号：5
+方法名：parsePattern(String pattern)
+返回类型：Options
+功能描述：解析模式字符串生成Options对象
+---
+序号：6
+方法名：unsupported()
+返回类型：T
+功能描述：返回不支持的转换器实例
+```

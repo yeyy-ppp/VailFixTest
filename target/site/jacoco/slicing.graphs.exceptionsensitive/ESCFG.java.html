@@ -1,0 +1,420 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ESCFG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.exceptionsensitive</a> &gt; <span class="el_source">ESCFG.java</span></div><h1>ESCFG.java</h1><pre class="source lang-java linenums">package slicing.graphs.exceptionsensitive;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
+import com.github.javaparser.resolution.types.ResolvedType;
+import lombok.var;
+import slicing.arcs.cfg.ControlFlowArc;
+import slicing.graphs.augmented.ACFG;
+import slicing.graphs.augmented.ACFGBuilder;
+import slicing.graphs.augmented.PPControlDependencyBuilder;
+import slicing.graphs.cfg.CFGBuilder;
+import slicing.nodes.GraphNode;
+import slicing.nodes.exceptionsensitive.*;
+import slicing.nodes.io.MethodExitNode;
+
+import java.util.*;
+
+/**
+ * An exception-sensitive version of the CFG. It builds upon the ACFG, and adds support
+ * for exception-related instructions, such as {@link ThrowStmt throw}, {@link TryStmt try},
+ * {@link CatchClause catch} and calls to declarations that may throw exceptions. &lt;br/&gt;
+ * Limitations: {@code finally} is not handled, unchecked exceptions may present problems,
+ * and multiple calls with exceptions per CFG node are not considered.
+ */
+<span class="nc" id="L31">public class ESCFG extends ACFG {</span>
+    /** The name for the currently active exception variable. */
+    public static final String ACTIVE_EXCEPTION_VARIABLE = &quot;-activeException-&quot;;
+
+    @Override
+    protected CFGBuilder newCFGBuilder() {
+<span class="nc" id="L37">        return new Builder(this);</span>
+    }
+
+    protected ExceptionExitNode addExceptionExitNode(CallableDeclaration&lt;?&gt; method, ResolvedType type) {
+<span class="nc" id="L41">        ExceptionExitNode node = new ExceptionExitNode(method, type);</span>
+<span class="nc" id="L42">        addVertex(node);</span>
+<span class="nc" id="L43">        return node;</span>
+    }
+
+    protected ExceptionReturnNode addExceptionReturnNode(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, ResolvedType type) {
+<span class="nc" id="L47">        ExceptionReturnNode node = ExceptionReturnNode.create(call, type);</span>
+<span class="nc" id="L48">        addVertex(node);</span>
+<span class="nc" id="L49">        return node;</span>
+    }
+
+    /**
+     * An instruction which may the source of an exception.
+     * The exception's types are cached in this object.
+     */
+    protected static class ExceptionSource {
+        private final GraphNode&lt;?&gt; source;
+<span class="nc" id="L58">        private final Map&lt;ResolvedType, Boolean&gt; exceptions = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L60">        protected ExceptionSource(GraphNode&lt;?&gt; source) {</span>
+<span class="nc" id="L61">            this.source = Objects.requireNonNull(source);</span>
+<span class="nc" id="L62">        }</span>
+
+        public ExceptionSource(GraphNode&lt;?&gt; source, ResolvedType... exceptionTypes) {
+<span class="nc" id="L65">            this(source);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            if (exceptionTypes.length == 0)</span>
+<span class="nc" id="L67">                throw new IllegalArgumentException(&quot;There must be at least one exception type&quot;);</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            for (ResolvedType t : exceptionTypes)</span>
+<span class="nc" id="L69">                exceptions.put(t, true);</span>
+<span class="nc" id="L70">        }</span>
+
+        public void deactivateTypes(ResolvedReferenceType type) {
+<span class="nc" id="L73">            exceptions.keySet().stream().filter(type::isAssignableBy).forEach(t -&gt; exceptions.put(t, false));</span>
+<span class="nc" id="L74">        }</span>
+
+        public boolean isActive() {
+<span class="nc" id="L77">            return exceptions.containsValue(true);</span>
+        }
+
+        /** Creates a single ExceptionSource from a list of sources.
+         * Each type is marked active if it was active in any of the sources. */
+        public static ExceptionSource merge(GraphNode&lt;?&gt; summary, Collection&lt;ExceptionSource&gt; sources) {
+<span class="nc" id="L83">            ExceptionSource result = new ExceptionSource(summary);</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            for (ExceptionSource es : sources)</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                for (ResolvedType rt : es.exceptions.keySet())</span>
+<span class="nc" id="L86">                    result.exceptions.merge(rt, es.exceptions.get(rt), Boolean::logicalOr);</span>
+<span class="nc" id="L87">            return result;</span>
+        }
+    }
+
+<span class="nc" id="L91">    public class Builder extends ACFGBuilder {</span>
+        /** Map of the currently relevant exception sources, mapped by type. */
+<span class="nc" id="L93">        protected Map&lt;ResolvedType, List&lt;ExceptionSource&gt;&gt; exceptionSourceMap = new HashMap&lt;&gt;();</span>
+        /** Stack the 'try's that surround the element we're visiting now. */
+<span class="nc" id="L95">        protected Deque&lt;TryStmt&gt; tryStack = new LinkedList&lt;&gt;();</span>
+        /** Stack of statements that surround the element we're visiting now. */
+<span class="nc" id="L97">        protected Deque&lt;Statement&gt; stmtStack = new LinkedList&lt;&gt;();</span>
+        /** Stack of hanging nodes that need to be connected by
+         * non-executable edges at the end of the current try statement. */
+<span class="nc" id="L100">        protected Deque&lt;Set&lt;GraphNode&lt;?&gt;&gt;&gt; tryNonExecHangingStack = new LinkedList&lt;&gt;();</span>
+        /** Nodes that need to be connected by non-executable edges to the 'Exit' node. */
+<span class="nc" id="L102">        protected List&lt;GraphNode&lt;?&gt;&gt; exitNonExecHangingNodes = new LinkedList&lt;&gt;();</span>
+        /** Map of return nodes from each method call, mapped by the normal return node of said call. */
+<span class="nc" id="L104">        protected Map&lt;NormalReturnNode, Set&lt;ReturnNode&gt;&gt; pendingNormalReturnNodes = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L106">        protected Builder(ESCFG escfg) {</span>
+<span class="nc" id="L107">            super(ESCFG.this);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            assert escfg == ESCFG.this;</span>
+<span class="nc" id="L109">        }</span>
+
+        @Override
+        protected void buildExit(CallableDeclaration&lt;?&gt; callableDeclaration) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (!exceptionSourceMap.isEmpty()) {</span>
+                // Normal exit
+<span class="nc" id="L115">                NormalExitNode normalExit = new NormalExitNode(callableDeclaration);</span>
+<span class="nc" id="L116">                addVertex(normalExit);</span>
+<span class="nc" id="L117">                connectTo(normalExit);</span>
+<span class="nc" id="L118">                addMethodOutput(callableDeclaration, normalExit);</span>
+<span class="nc" id="L119">                List&lt;GraphNode&lt;?&gt;&gt; lastNodes = new LinkedList&lt;&gt;(hangingNodes);</span>
+<span class="nc" id="L120">                clearHanging();</span>
+                // Exception exit
+<span class="nc" id="L122">                Collection&lt;ExceptionExitNode&gt; exceptionExits = processExceptionSources(callableDeclaration);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">                for (ExceptionExitNode node : exceptionExits) {</span>
+<span class="nc" id="L124">                    node.addVAUseActiveException();</span>
+<span class="nc" id="L125">                    hangingNodes.add(node);</span>
+<span class="nc" id="L126">                    lastNodes.addAll(hangingNodes);</span>
+<span class="nc" id="L127">                    clearHanging();</span>
+<span class="nc" id="L128">                }</span>
+<span class="nc" id="L129">                hangingNodes.addAll(lastNodes);</span>
+            }
+<span class="nc" id="L131">            nonExecHangingNodes.add(getRootNode());</span>
+
+<span class="nc" id="L133">            MethodExitNode exit = new MethodExitNode(callableDeclaration);</span>
+<span class="nc" id="L134">            addVertex(exit);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">            if (exceptionSourceMap.isEmpty())</span>
+<span class="nc" id="L136">                addMethodOutput(callableDeclaration, exit);</span>
+<span class="nc" id="L137">            nonExecHangingNodes.addAll(exitNonExecHangingNodes);</span>
+<span class="nc" id="L138">            connectTo(exit);</span>
+
+<span class="nc" id="L140">            processPendingNormalResultNodes();</span>
+<span class="nc" id="L141">        }</span>
+
+        /** Converts the remaining exception sources into a collection of exception exit nodes.
+         * Each exception source is connected to at least one of the exception exit nodes. */
+        protected Collection&lt;ExceptionExitNode&gt; processExceptionSources(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            if (!tryStack.isEmpty())</span>
+<span class="nc" id="L147">                throw new IllegalStateException(&quot;Can't process exception sources inside a Try statement.&quot;);</span>
+<span class="nc" id="L148">            Map&lt;ResolvedType, ExceptionExitNode&gt; exceptionExitMap = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            for (var entry : exceptionSourceMap.entrySet()) {</span>
+                // 1. Create &quot;T exit&quot; if it does not exist
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                if (!exceptionExitMap.containsKey(entry.getKey()))</span>
+<span class="nc" id="L152">                    exceptionExitMap.put(entry.getKey(), addExceptionExitNode(declaration, entry.getKey()));</span>
+<span class="nc" id="L153">                ExceptionExitNode ee = exceptionExitMap.get(entry.getKey());</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">                for (ExceptionSource es : entry.getValue())</span>
+                    // 2. Connect exception source to &quot;T exit&quot;
+<span class="nc bnc" id="L156" title="All 2 branches missed.">                    addEdge(es.source, ee, es.isActive() ? new ControlFlowArc() : new ControlFlowArc.NonExecutable());</span>
+<span class="nc" id="L157">            }</span>
+<span class="nc" id="L158">            return exceptionExitMap.values();</span>
+        }
+
+        /**
+         * Creates the non-executable edges from &quot;normal return&quot; nodes to their target.
+         * (the first node shared by every path from all normal and exceptional return nodes of
+         * this method call -- which is equivalent to say the first node that post-dominates the call
+         * or that post-dominates all return nodes).
+         */
+        protected void processPendingNormalResultNodes() {
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            for (Map.Entry&lt;NormalReturnNode, Set&lt;ReturnNode&gt;&gt; entry : pendingNormalReturnNodes.entrySet())</span>
+<span class="nc" id="L169">                createNonExecArcFor(entry.getKey(), entry.getValue());</span>
+<span class="nc" id="L170">        }</span>
+
+        // TODO: improve accuracy, if there are multiple, select the one that is post-dominated by the others.
+        // TODO: improve accuracy and speed by implementing the Roman Chariots problem.
+        /** Creates the non-executable arc from &quot;normal return&quot; node to its target, given a set of its sibling return nodes. */
+        protected void createNonExecArcFor(NormalReturnNode node, Set&lt;ReturnNode&gt; returnNodes) {
+<span class="nc" id="L176">            PPControlDependencyBuilder cdBuilder = new PPControlDependencyBuilder(ESCFG.this, null);</span>
+<span class="nc" id="L177">            vertexSet().stream().sorted()</span>
+<span class="nc" id="L178">                    .filter(candidate -&gt; {</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">                        for (ReturnNode retNode : returnNodes)</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                            if (!cdBuilder.postDominates(retNode, candidate))</span>
+<span class="nc" id="L181">                                return false;</span>
+<span class="nc" id="L182">                        return true;</span>
+                    })
+<span class="nc" id="L184">                    .findFirst()</span>
+<span class="nc" id="L185">                    .ifPresent(</span>
+<span class="nc" id="L186">                            n -&gt; addNonExecutableControlFlowArc(node, n));</span>
+//                    .ifPresentOrElse(
+//                            n -&gt; addNonExecutableControlFlowArc(node, n),
+//                            () -&gt; {throw new IllegalStateException(&quot;A common post-dominator cannot be found for a normal exit!&quot;);});
+<span class="nc" id="L190">        }</span>
+
+        @Override
+        public void visit(TryStmt n, Void arg) {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            if (n.getResources().isNonEmpty())</span>
+<span class="nc" id="L195">                throw new IllegalStateException(&quot;try-with-resources is not supported&quot;);</span>
+<span class="nc" id="L196">            stmtStack.push(n);</span>
+<span class="nc" id="L197">            tryStack.push(n);</span>
+<span class="nc" id="L198">            tryNonExecHangingStack.push(new HashSet&lt;&gt;());</span>
+<span class="nc" id="L199">            GraphNode&lt;TryStmt&gt; node = connectTo(n, &quot;try&quot;);</span>
+<span class="nc" id="L200">            n.getTryBlock().accept(this, arg);</span>
+<span class="nc" id="L201">            List&lt;GraphNode&lt;?&gt;&gt; hanging = new LinkedList&lt;&gt;(hangingNodes);</span>
+<span class="nc" id="L202">            List&lt;GraphNode&lt;?&gt;&gt; nonExecHanging = new LinkedList&lt;&gt;(nonExecHangingNodes);</span>
+<span class="nc" id="L203">            clearHanging();</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            for (CatchClause cc : n.getCatchClauses()) {</span>
+<span class="nc" id="L205">                cc.accept(this, arg);</span>
+<span class="nc" id="L206">                hanging.addAll(hangingNodes);</span>
+<span class="nc" id="L207">                nonExecHanging.addAll(nonExecHangingNodes);</span>
+<span class="nc" id="L208">                clearHanging();</span>
+<span class="nc" id="L209">            }</span>
+<span class="nc" id="L210">            hangingNodes.addAll(hanging);</span>
+<span class="nc" id="L211">            nonExecHangingNodes.addAll(nonExecHanging);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            if (n.getFinallyBlock().isPresent()) {</span>
+                // 添加try节点到非执行挂起节点
+<span class="nc" id="L214">                nonExecHangingNodes.add(node);</span>
+<span class="nc" id="L215">                nonExecHangingNodes.addAll(tryNonExecHangingStack.pop());</span>
+
+                // 访问finally块
+<span class="nc" id="L218">                n.getFinallyBlock().get().accept(this, arg);</span>
+
+                // 将finally块之后的挂起节点添加到主挂起节点列表
+<span class="nc" id="L221">                hangingNodes.addAll(nonExecHangingNodes);</span>
+            } else {
+<span class="nc" id="L223">                nonExecHangingNodes.add(node);</span>
+<span class="nc" id="L224">                nonExecHangingNodes.addAll(tryNonExecHangingStack.pop());</span>
+            }
+<span class="nc" id="L226">            tryStack.pop();</span>
+<span class="nc" id="L227">            stmtStack.pop();</span>
+<span class="nc" id="L228">        }</span>
+
+        // =====================================================
+        // ================= Exception sources =================
+        // =====================================================
+
+        /** Save an exception source to a map under all the exception's possible types. */
+        protected void populateExceptionSourceMap(ExceptionSource source) {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            for (ResolvedType type : source.exceptions.keySet()) {</span>
+<span class="nc" id="L237">                exceptionSourceMap.computeIfAbsent(type, t -&gt; new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L238">                exceptionSourceMap.get(type).add(source);</span>
+<span class="nc" id="L239">            }</span>
+<span class="nc" id="L240">        }</span>
+
+        @Override
+        public void visit(ThrowStmt n, Void arg) {
+<span class="nc" id="L244">            stmtStack.push(n);</span>
+<span class="nc" id="L245">            GraphNode&lt;ThrowStmt&gt; stmt = connectTo(n);</span>
+<span class="nc" id="L246">            n.getExpression().accept(this, arg);</span>
+<span class="nc" id="L247">            populateExceptionSourceMap(new ExceptionSource(stmt, n.getExpression().calculateResolvedType()));</span>
+<span class="nc" id="L248">            clearHanging();</span>
+<span class="nc" id="L249">            nonExecHangingNodes.add(stmt);</span>
+<span class="nc" id="L250">            stmtStack.pop();</span>
+<span class="nc" id="L251">        }</span>
+
+        @Override
+        public void visit(MethodCallExpr n, Void arg) {
+<span class="nc" id="L255">            n.getArguments().accept(this, arg);</span>
+<span class="nc" id="L256">            n.getScope().ifPresent(s -&gt; s.accept(this, arg));</span>
+<span class="nc" id="L257">            visitCallForExceptions(n);</span>
+<span class="nc" id="L258">        }</span>
+
+        @Override
+        public void visit(ObjectCreationExpr n, Void arg) {
+<span class="nc" id="L262">            n.getArguments().accept(this, arg);</span>
+<span class="nc" id="L263">            n.getScope().ifPresent(s -&gt; s.accept(this, arg));</span>
+<span class="nc" id="L264">            visitCallForExceptions(n);</span>
+<span class="nc" id="L265">        }</span>
+
+        @Override
+        public void visit(ExplicitConstructorInvocationStmt n, Void arg) {
+<span class="nc" id="L269">            stmtStack.push(n);</span>
+<span class="nc" id="L270">            n.getExpression().ifPresent(e -&gt; e.accept(this, arg));</span>
+<span class="nc" id="L271">            n.getArguments().accept(this, arg);</span>
+<span class="nc" id="L272">            connectTo(n);</span>
+<span class="nc" id="L273">            visitCallForExceptions(n);</span>
+<span class="nc" id="L274">            stmtStack.pop();</span>
+<span class="nc" id="L275">        }</span>
+
+        /** Process a call that may throw exceptions. Generates normal and return nodes, and
+         * registers the appropriate exception source. */
+        protected void visitCallForExceptions(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L280">            ResolvedMethodLikeDeclaration resolved = null;</span>
+            try {
+<span class="nc" id="L282">                resolved = call.resolve();</span>
+<span class="nc bnc" id="L283" title="All 2 branches missed.">                if (resolved.getNumberOfSpecifiedExceptions() == 0)</span>
+<span class="nc" id="L284">                    return;</span>
+<span class="nc" id="L285">            } catch (Exception e) {</span>
+                // If the method is not resolved, we can't know if it throws exceptions.
+<span class="nc" id="L287">                return;</span>
+<span class="nc" id="L288">            }</span>
+
+<span class="nc" id="L290">            Set&lt;ReturnNode&gt; returnNodes = new HashSet&lt;&gt;();</span>
+
+            // Normal return
+<span class="nc" id="L293">            NormalReturnNode normalReturn = NormalReturnNode.create(call);</span>
+<span class="nc" id="L294">            addVertex(normalReturn);</span>
+<span class="nc" id="L295">            GraphNode&lt;?&gt; stmtNode = findNodeByASTNode(stmtStack.peek())</span>
+<span class="nc" id="L296">                    .orElseThrow(() -&gt; new NoSuchElementException(&quot;No node found for the given AST node&quot;));</span>
+<span class="nc bnc" id="L297" title="All 4 branches missed.">            assert hangingNodes.size() == 1 &amp;&amp; hangingNodes.get(0) == stmtNode;</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            assert nonExecHangingNodes.isEmpty();</span>
+<span class="nc" id="L299">            returnNodes.add(normalReturn);</span>
+<span class="nc" id="L300">            connectTo(normalReturn);</span>
+<span class="nc" id="L301">            clearHanging();</span>
+
+            // Exception return
+<span class="nc bnc" id="L304" title="All 2 branches missed.">            for (ResolvedType type : resolved.getSpecifiedExceptions()) {</span>
+<span class="nc" id="L305">                hangingNodes.add(stmtNode);</span>
+<span class="nc" id="L306">                ExceptionReturnNode exceptionReturn = addExceptionReturnNode(call, type);</span>
+<span class="nc" id="L307">                exceptionReturn.addVADefineActiveException(null);</span>
+<span class="nc" id="L308">                populateExceptionSourceMap(new ExceptionSource(exceptionReturn, type));</span>
+<span class="nc" id="L309">                returnNodes.add(exceptionReturn);</span>
+<span class="nc" id="L310">                connectTo(exceptionReturn);</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">                if (tryNonExecHangingStack.isEmpty())</span>
+<span class="nc" id="L312">                    exitNonExecHangingNodes.add(exceptionReturn);</span>
+                else
+<span class="nc" id="L314">                    tryNonExecHangingStack.peek().add(exceptionReturn);</span>
+<span class="nc" id="L315">                clearHanging();</span>
+<span class="nc" id="L316">            }</span>
+
+            // Register set of return nodes
+<span class="nc" id="L319">            pendingNormalReturnNodes.put(normalReturn, returnNodes);</span>
+
+            // Ready for next instruction
+<span class="nc" id="L322">            hangingNodes.add(normalReturn);</span>
+<span class="nc" id="L323">        }</span>
+
+        @Override
+        public void visit(CatchClause n, Void arg) {
+            // 1. Connect all available exception sources here
+<span class="nc" id="L328">            Set&lt;ExceptionSource&gt; sources = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L329" title="All 2 branches missed.">            for (List&lt;ExceptionSource&gt; list : exceptionSourceMap.values())</span>
+<span class="nc" id="L330">                sources.addAll(list);</span>
+<span class="nc bnc" id="L331" title="All 2 branches missed.">            for (ExceptionSource src : sources)</span>
+<span class="nc bnc" id="L332" title="All 2 branches missed.">                (src.isActive() ? hangingNodes : nonExecHangingNodes).add(src.source);</span>
+<span class="nc" id="L333">            GraphNode&lt;?&gt; node = connectTo(n, &quot;catch (&quot; + n.getParameter().toString() + &quot;)&quot;);</span>
+<span class="nc" id="L334">            node.addVAUseActiveException();</span>
+<span class="nc" id="L335">            exceptionSourceMap.clear();</span>
+            // 2. Set up as exception source
+<span class="nc" id="L337">            ExceptionSource catchES = ExceptionSource.merge(node, sources);</span>
+<span class="nc" id="L338">            Type type = n.getParameter().getType();</span>
+<span class="nc bnc" id="L339" title="All 2 branches missed.">            if (type.isUnionType())</span>
+<span class="nc" id="L340">                type.asUnionType().getElements().forEach(t -&gt; catchES.deactivateTypes(t.resolve().asReferenceType()));</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">            else if (type.isReferenceType())</span>
+<span class="nc" id="L342">                catchES.deactivateTypes(type.resolve().asReferenceType());</span>
+            else
+<span class="nc" id="L344">                throw new IllegalStateException(&quot;catch node with type different to union/reference type&quot;);</span>
+<span class="nc" id="L345">            populateExceptionSourceMap(catchES);</span>
+
+            // 3. Connect and visit body
+<span class="nc" id="L348">            n.getBody().accept(this, arg);</span>
+<span class="nc" id="L349">        }</span>
+
+        // =====================================================================================
+        // ================= Statements that may directly contain method calls =================
+        // =====================================================================================
+        // Note: expressions are visited as part of super.visit(Node, Void), see ACFG and CFG.
+
+        @Override
+        public void visit(IfStmt ifStmt, Void arg) {
+<span class="nc" id="L358">            stmtStack.push(ifStmt);</span>
+<span class="nc" id="L359">            super.visit(ifStmt, arg);</span>
+<span class="nc" id="L360">            stmtStack.pop();</span>
+<span class="nc" id="L361">        }</span>
+
+        @Override
+        public void visit(WhileStmt whileStmt, Void arg) {
+<span class="nc" id="L365">            stmtStack.push(whileStmt);</span>
+<span class="nc" id="L366">            super.visit(whileStmt, arg);</span>
+<span class="nc" id="L367">            stmtStack.pop();</span>
+<span class="nc" id="L368">        }</span>
+
+        @Override
+        public void visit(DoStmt doStmt, Void arg) {
+<span class="nc" id="L372">            stmtStack.push(doStmt);</span>
+<span class="nc" id="L373">            super.visit(doStmt, arg);</span>
+<span class="nc" id="L374">            stmtStack.pop();</span>
+<span class="nc" id="L375">        }</span>
+
+        @Override
+        public void visit(ForStmt forStmt, Void arg) {
+<span class="nc" id="L379">            stmtStack.push(forStmt);</span>
+<span class="nc" id="L380">            super.visit(forStmt, arg);</span>
+<span class="nc" id="L381">            stmtStack.pop();</span>
+<span class="nc" id="L382">        }</span>
+
+        @Override
+        public void visit(ForEachStmt forEachStmt, Void arg) {
+<span class="nc" id="L386">            stmtStack.push(forEachStmt);</span>
+<span class="nc" id="L387">            super.visit(forEachStmt, arg);</span>
+<span class="nc" id="L388">            stmtStack.pop();</span>
+<span class="nc" id="L389">        }</span>
+
+        @Override
+        public void visit(SwitchStmt switchStmt, Void arg) {
+<span class="nc" id="L393">            stmtStack.push(switchStmt);</span>
+<span class="nc" id="L394">            super.visit(switchStmt, arg);</span>
+<span class="nc" id="L395">            stmtStack.pop();</span>
+<span class="nc" id="L396">        }</span>
+
+        @Override
+        public void visit(ReturnStmt returnStmt, Void arg) {
+<span class="nc" id="L400">            stmtStack.push(returnStmt);</span>
+<span class="nc" id="L401">            GraphNode&lt;ReturnStmt&gt; node = connectTo(returnStmt);</span>
+            // This change is for exception/normal exits, in which only the normal
+            // exit constitutes a valid return, and thus the type of returnList must change.
+<span class="nc" id="L404">            returnStmt.getExpression().ifPresent(e -&gt; e.accept(this, arg));</span>
+<span class="nc" id="L405">            returnList.addAll(hangingNodes);</span>
+            // end of change w.r.t. ACFG
+<span class="nc" id="L407">            clearHanging();</span>
+<span class="nc" id="L408">            nonExecHangingNodes.add(node);</span>
+<span class="nc" id="L409">            stmtStack.pop();</span>
+<span class="nc" id="L410">        }</span>
+
+        @Override
+        public void visit(ExpressionStmt expressionStmt, Void arg) {
+<span class="nc" id="L414">            stmtStack.push(expressionStmt);</span>
+<span class="nc" id="L415">            super.visit(expressionStmt, arg);</span>
+<span class="nc" id="L416">            stmtStack.pop();</span>
+<span class="nc" id="L417">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

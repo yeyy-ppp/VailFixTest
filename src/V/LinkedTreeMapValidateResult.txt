@@ -1,0 +1,12 @@
+[2026-01-24 00:03:29] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: size, get, containsKey, put, clear, remove, find, findByObject, findByEntry, equal, removeInternal, removeInternalByKey, replaceInParent, rebalance, entrySet, keySet, writeReplace, readObject
+  未覆盖: LinkedTreeMap, LinkedTreeMap, LinkedTreeMap, rotateLeft, rotateRight
+
+[2026-01-24 00:10:29] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: size, get, containsKey, put, clear, remove, find, findByObject, findByEntry, equal, removeInternal, removeInternalByKey, replaceInParent, rebalance, rotateLeft, rotateRight, entrySet, keySet, writeReplace, readObject
+  未覆盖: LinkedTreeMap, LinkedTreeMap, LinkedTreeMap
+

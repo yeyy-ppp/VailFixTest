@@ -1,0 +1,6 @@
+[2026-01-24 02:40:37] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: JsonObject, deepCopy, add, remove, addProperty, addProperty, addProperty, addProperty, entrySet, keySet, size, isEmpty, has, get, getAsJsonPrimitive, getAsJsonArray, getAsJsonObject, asMap, equals, hashCode
+  未覆盖: 全部覆盖
+

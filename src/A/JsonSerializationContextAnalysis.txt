@@ -1,0 +1,13 @@
+包路径：gson
+类名：JsonSerializationContext
+父类：无
+依赖类：JsonElement
+---
+序号：1
+方法名：serialize(Object src)
+返回类型：JsonElement
+功能描述：序列化给定对象到JsonElement
+序号：2
+方法名：serialize(Object src, Type typeOfSrc)
+返回类型：JsonElement
+功能描述：序列化给定对象到JsonElement，指定类型

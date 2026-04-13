@@ -1,0 +1,1551 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestCore.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">TestCore.java</span></div><h1>TestCore.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import okhttp3.*;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import zju.cst.aces.runner.CoverageEvaluator;
+
+//核心代码
+public class TestCore {
+    private static final String API_URL=&quot;https://openrouter.ai/api/v1/chat/completions&quot;;
+    //private static final String MODEL= &quot;deepseek/deepseek-r1:free&quot;;
+    //private static final String MODEL= &quot;openai/gpt-4o-mini&quot;;
+    private static final String MODEL= &quot;deepseek/deepseek-r1&quot;;
+    //private static final String API_URL = &quot;https://api.gptsapi.net/v1/chat/completions&quot;;
+    //private static final String MODEL = &quot;gpt-4o-mini&quot;;
+    private final String apiKey;
+    private OkHttpClient client;
+    private final Gson gson;
+<span class="nc" id="L29">    private long startTime=System.currentTimeMillis();  // 测试代码生成开始时间</span>
+    private long endTime;  // 测试代码生成结束时间
+    private String sourceCodeFile;  //待测试源代码
+    private String sourceCodePath;  //待测试源代码路径
+    private long totalTime;  // 测试代码生成总耗时
+    private int tokenCount;  // API 调用消耗的 token 数量
+    private List&lt;String&gt; failedClasses;  // 记录修复失败的待测试类
+    private String className; // 当前处理的类名
+    // 分析提示
+    private static final String analyzeCodePromt=
+            &quot;你是一位Java程序分析专家，请根据以下要求从专业角度分析给定的Java代码，除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等）：\n&quot; +
+                    &quot;1. **包路径**：识别类的完整包路径。\n&quot; +
+                    &quot;2. **类名**：类的名称。\n&quot; +
+                    &quot;3. **序号**：类中包含多方法名时，自动为方法编号（从1开始）。\n&quot;+
+                    &quot;4. **方法名**：列出每个方法的名称。\n&quot; +
+                    &quot;5. **返回类型**：列出每个方法的返回类型。\n&quot; +
+                    &quot;6. **功能描述**：简洁清晰地描述每个方法的核心功能。\n&quot; +
+                    &quot;请严格按照以下格式输出：\n&quot; +
+                    &quot;```\n&quot; +
+                    &quot;包路径：[包路径]\n&quot; +
+                    &quot;类名：[类名]\n&quot; +
+                    &quot;序号：[序号]\n&quot;+
+                    &quot;方法名：[方法名]\n&quot; +
+                    &quot;返回类型：[返回类型]\n&quot; +
+                    &quot;功能描述：[功能描述]\n&quot; +
+                    &quot;```\n&quot;;
+    //生成提示
+    private static final String generatePrompt =
+            &quot;根据以下待测试类的信息生成测试代码：\n&quot; +
+                    &quot;包路径：{packagePath}\n&quot; +
+                    &quot;类名：{className}\n&quot; +
+                    &quot;全部方法信息：\n&quot; +
+                    &quot;{allMethodsInfo}\n&quot; +
+                    &quot;你是一位资深Java测试人员，请为上述类中的焦点方法编写JUnit 5风格且系统编译器版本为8的单元测试代码，除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等），要求如下：\n&quot; +
+                    &quot;1. 测试用例应覆盖所有代码路径，包括分支条件和边界情况。\n&quot; +
+                    &quot;2. 测试代码必须无编译错误。如有必要，可以使用反射测试私有方法或字段。\n&quot; +
+                    &quot;3. 请根据注释中提供的执行路径信息生成相应测试。\n&quot; +
+                    &quot;4. 测试类名为[类名]Test，若有命名冲突，则依次命名为[类名]Test1、Test2等。\n&quot; +
+                    &quot;5. 正确设置包路径与包导入；禁止使用 `org.junit.jupiter.params` 包内容。\n\n&quot; +
+                    &quot;请直接输出完整的测试代码，不包含任何注释、解释或思考过程。以下为待测试的源代码：\n&quot;;
+
+
+    private static final String generatePrompt2=
+            &quot;根据以下待测试类的信息生成测试代码：\n&quot; +
+                    &quot;包路径：{packagePath}\n&quot; +
+                    &quot;类名：{className}\n&quot; +
+                    &quot;方法：{methodName}\n&quot; +
+                    &quot;返回类型：{returnType}\n&quot; +
+                    &quot;功能描述：{functionDescription}\n&quot; +
+                    &quot;你是一位资深Java测试人员，请为上述类中的焦点方法编写JUnit 5风格且系统编译器版本为8的单元测试代码，除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等），要求如下：\n&quot; +
+                    &quot;1. 测试用例应覆盖所有代码路径，包括分支条件和边界情况。\n&quot; +
+                    &quot;2. 测试代码必须无编译错误。如有必要，可以使用反射测试私有方法或字段。\n&quot; +
+                    &quot;3. 请根据注释中提供的执行路径信息生成相应测试。\n&quot; +
+                    &quot;4. 测试类名为[类名]Test，若有命名冲突，则依次命名为[类名]Test1、Test2等。\n&quot; +
+                    &quot;5. 正确设置包路径与包导入；禁止使用 `org.junit.jupiter.params` 包内容。\n\n&quot; +
+                    &quot;请直接输出完整的测试代码，不包含任何注释、解释或思考过程。以下为待测试的源代码：\n&quot;;
+    //验证提示
+    private static final String validatePrompt=
+            &quot;你是测试代码审查专家，请检查以下测试代码是否符合如下要求：\n&quot; +
+                    &quot;1. **导入语句**：检查是否导入了正确的包。其中待测试类由系统导入，不需要手动导入待测试类。\n&quot; +
+                    &quot;2. **测试逻辑完整性**：检查正常路径、边界情况和异常处理逻辑覆盖情况。\n&quot; +
+                    &quot;3. **语法正确性**：检查是否存在语法或拼写错误。\n&quot; +
+                    &quot;4. **编译正确性**：检查是否存在可能导致编译失败的问题。\n&quot; +
+                    &quot;5. **运行时健壮性**：检查是否存在可能导致运行时错误的问题。\n&quot; +
+                    &quot;6. **数值正确性**：假设被测方法已给出实现，手工执行一遍测试用例，若expected值与实际结果不符，视为运行时错误，按格式反馈。\n&quot; +
+                    &quot;请逐项审查，并判断是否“通过验证”或“不通过验证”。格式如下：\n&quot; +
+                    &quot;- 若全部验证通过，请返回：【全部验证通过】。\n&quot; +
+                    &quot;- 若验证未通过，请使用如下格式反馈问题：\n&quot; +
+                    &quot;```\n&quot; +
+                    &quot;该测试代码在验证[验证项]时失败，错误位置：[行号]，错误原因：[详细描述]\n&quot; +
+                    &quot;```\n&quot; +
+                    &quot;除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等），以下是待验证的测试代码：\n&quot;;
+    //评估提示
+    private static final String evaluatePrompt =
+            &quot;你是一位专业的测试覆盖率评估专家，请基于以下要求分析测试代码质量：\n\n&quot; +
+                    &quot;1. 【指令覆盖率】：测试代码执行的字节码指令占总指令的百分比。\n&quot; +
+                    &quot;2. 【分支覆盖率】：覆盖的条件语句分支占总分支的百分比。如无分支，返回【分支覆盖率】：【-】。\n&quot; +
+                    &quot;3. 【复杂度】：被测方法的圈复杂度（Cyclomatic Complexity）。\n&quot; +
+                    &quot;4. 【行覆盖率】：被执行源代码行占总代码行的百分比。\n&quot; +
+                    &quot;5. 【方法覆盖率】：被测试的方法占总方法数量的百分比。\n&quot; +
+                    &quot;6. 【类覆盖率】：被测试的类占项目总类数量的百分比。\n\n&quot; +
+                    &quot;请严格按照以下格式输出，不包含任何解释性说明，除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等）：\n&quot; +
+                    &quot;【指令覆盖率】：【XX%】\n&quot; +
+                    &quot;【分支覆盖率】：【XX%】\n&quot; +
+                    &quot;【复杂度】：【X】\n&quot; +
+                    &quot;【行覆盖率】：【XX%】\n&quot; +
+                    &quot;【方法覆盖率】：【XX%】\n&quot; +
+                    &quot;【类覆盖率】：【XX%】\n\n&quot; +
+                    &quot;以下是待评估的测试代码：\n&quot;;
+
+
+    //优化提示
+    private static final String optimizePrompt =
+            &quot;你是一位高级Java测试工程师，任务是优化当前测试代码以提高覆盖率。\n\n&quot; +
+                    &quot;请根据以下要求对测试代码进行优化：\n&quot; +
+                    &quot;1. 分析当前测试结果，识别未覆盖的分支和代码行。\n&quot; +
+                    &quot;2. 添加新的测试用例以补足缺失路径。\n&quot; +
+                    &quot;3. 改进现有用例以提升测试效率。\n&quot; +
+                    &quot;4. 保证优化后的测试代码可无错误编译并通过测试。\n\n&quot; +
+                    &quot;以下为最新测试结果和原始测试代码，请输出优化后的完整测试代码，不需要任何注释或说明：\n&quot; +
+                    &quot;[TEST RESULTS]\n&quot;;
+
+    //修复提示
+    private static final String fixPrompt =
+            &quot;你是一名专业的java测试代码修复工程师，请仅对下面代码中【错误位置】所示的片段进行最小化修改，使其通过验证\n&quot; +
+                    &quot; 除【修改后片段】外不要返回任何解释、注释、行号或其他内容。\n &quot;+
+                    &quot;错误信息：{errorPrompt}\n&quot;+
+                    &quot;返回格式：\n&quot; +
+                    &quot;- 若修复失败，返回：【修复失败】，并附原因，格式：该测试代码在修复[修复项]时失败，错误位置：[行号]，错误原因：[详细描述]\\n\&quot;。\n&quot; +
+                    &quot;- 若修复成功，返回：【修复成功】，和修改后的测试代码。\n&quot; +
+                    &quot;不需要返回解释、注释、思考过程、分析思路等内容，除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等）。&quot; +
+                    &quot;如果第三次修复还是失败，就将错误的代码位置或整个测试方法删除或注释掉，以帮助成功构建编译测试类。&quot;;
+
+
+    //截取错误片段-原地修复测试代码
+
+
+
+
+
+
+<span class="nc" id="L150">    public TestCore(String apiKey) {</span>
+<span class="nc" id="L151">        this.apiKey=apiKey;</span>
+<span class="nc" id="L152">        this.client = new OkHttpClient.Builder()</span>
+<span class="nc" id="L153">                .connectTimeout(3000, TimeUnit.SECONDS) // 连接超时时间设为60秒</span>
+<span class="nc" id="L154">                .readTimeout(3000, TimeUnit.SECONDS)    // 读取超时时间设为60秒</span>
+<span class="nc" id="L155">                .writeTimeout(3000, TimeUnit.SECONDS)   // 写入超时时间设为60秒</span>
+<span class="nc" id="L156">                .build();</span>
+<span class="nc" id="L157">        this.gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+<span class="nc" id="L158">        this.failedClasses = new ArrayList&lt;&gt;(); // 初始化 failedClasses 列表</span>
+<span class="nc" id="L159">    }</span>
+    private void recreateClient() {
+        // 重新创建 OkHttpClient 实例
+<span class="nc" id="L162">        client = new OkHttpClient.Builder()</span>
+<span class="nc" id="L163">                .connectTimeout(3000, TimeUnit.SECONDS)</span>
+<span class="nc" id="L164">                .readTimeout(3000, TimeUnit.SECONDS)</span>
+<span class="nc" id="L165">                .writeTimeout(3000, TimeUnit.SECONDS)</span>
+<span class="nc" id="L166">                .build();</span>
+<span class="nc" id="L167">    }</span>
+
+    //1.读取源代码
+    private static String readSourceCode(String sourceCodePath) throws IOException {
+<span class="nc" id="L171">        StringBuilder content = new StringBuilder();</span>
+<span class="nc" id="L172">        try (BufferedReader br = new BufferedReader(new FileReader(sourceCodePath))) {</span>
+            String line;
+<span class="nc bnc" id="L174" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc" id="L175">                content.append(line).append(&quot;\n&quot;);</span>
+            }
+        }
+<span class="nc" id="L178">        return content.toString();</span>
+    }
+
+    //2.构建请求体
+    private RequestBody buildRequestBody(String code,String prompt) {
+<span class="nc" id="L183">        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L184">        Map&lt;String, String&gt; message = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L185">        message.put(&quot;role&quot;, &quot;user&quot;);</span>
+<span class="nc" id="L186">        message.put(&quot;content&quot;, prompt+ code);</span>
+<span class="nc" id="L187">        messages.add(message);</span>
+
+<span class="nc" id="L189">        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L190">        requestBodyMap.put(&quot;model&quot;, MODEL);</span>
+<span class="nc" id="L191">        requestBodyMap.put(&quot;messages&quot;, messages);</span>
+
+<span class="nc" id="L193">        return RequestBody.create(gson.toJson(requestBodyMap), MediaType.get(&quot;application/json; charset=utf-8&quot;));</span>
+    }
+
+    //2.2构建请求体，历史对话缓存
+    private RequestBody buildRequestBody2(String code, String prompt, String conversationHistory) {
+<span class="nc" id="L198">        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L199" title="All 4 branches missed.">        if (conversationHistory != null &amp;&amp; !conversationHistory.isEmpty()) {</span>
+            // 添加历史对话
+<span class="nc" id="L201">            String[] historyParts = conversationHistory.split(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">            for (String part : historyParts) {</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">                if (part.startsWith(&quot;user:&quot;)) {</span>
+<span class="nc" id="L204">                    Map&lt;String, String&gt; userMessage = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L205">                    userMessage.put(&quot;role&quot;, &quot;user&quot;);</span>
+<span class="nc" id="L206">                    userMessage.put(&quot;content&quot;, part.substring(5));</span>
+<span class="nc" id="L207">                    messages.add(userMessage);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                } else if (part.startsWith(&quot;assistant:&quot;)) {</span>
+<span class="nc" id="L209">                    Map&lt;String, String&gt; assistantMessage = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L210">                    assistantMessage.put(&quot;role&quot;, &quot;assistant&quot;);</span>
+<span class="nc" id="L211">                    assistantMessage.put(&quot;content&quot;, part.substring(10));</span>
+<span class="nc" id="L212">                    messages.add(assistantMessage);</span>
+                }
+            }
+        }
+        // 添加当前请求
+<span class="nc" id="L217">        Map&lt;String, String&gt; userMessage = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L218">        userMessage.put(&quot;role&quot;, &quot;user&quot;);</span>
+<span class="nc" id="L219">        userMessage.put(&quot;content&quot;, prompt + code);</span>
+<span class="nc" id="L220">        messages.add(userMessage);</span>
+
+<span class="nc" id="L222">        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L223">        requestBodyMap.put(&quot;model&quot;, MODEL);</span>
+<span class="nc" id="L224">        requestBodyMap.put(&quot;messages&quot;, messages);</span>
+
+<span class="nc" id="L226">        return RequestBody.create(gson.toJson(requestBodyMap), MediaType.get(&quot;application/json; charset=utf-8&quot;));</span>
+    }
+
+
+
+
+    //3.构建请求
+    private Request buildRequest(RequestBody requestBody) {
+<span class="nc" id="L234">        return new Request.Builder()</span>
+<span class="nc" id="L235">                .url(API_URL)</span>
+<span class="nc" id="L236">                .post(requestBody)</span>
+<span class="nc" id="L237">                .addHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey)</span>
+<span class="nc" id="L238">                .build();</span>
+    }
+    //4.发送请求获取响应
+    private String sendRequestAndGetResponse(String content, String prompt) throws IOException {
+<span class="nc" id="L242">        RequestBody requestBody = buildRequestBody(content, prompt);</span>
+<span class="nc" id="L243">        Request request = buildRequest(requestBody);</span>
+<span class="nc" id="L244">        try (Response response = client.newCall(request).execute()) {</span>
+<span class="nc bnc" id="L245" title="All 4 branches missed.">            if (response.isSuccessful() &amp;&amp; response.body() != null) {</span>
+<span class="nc" id="L246">                String responseBody=response.body().string();</span>
+<span class="nc" id="L247">                Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);</span>
+<span class="nc" id="L248">                List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);</span>
+<span class="nc bnc" id="L249" title="All 4 branches missed.">                if (choices != null &amp;&amp; !choices.isEmpty()) {</span>
+<span class="nc" id="L250">                    Map&lt;String, Object&gt; firstChoice = choices.get(0);</span>
+<span class="nc" id="L251">                    Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">                    return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;</span>
+                }
+<span class="nc" id="L254">                return &quot;&quot;;</span>
+            } else {
+<span class="nc" id="L256">                throw new IOException(&quot;请求响应失败！&quot; + response);</span>
+            }
+<span class="nc bnc" id="L258" title="All 2 branches missed.">        }</span>
+    }
+
+
+    private String sendRequestAndGetResponse0(String content, String prompt) throws IOException {
+<span class="nc" id="L263">        int maxRetries = 3; // 最大重试次数</span>
+<span class="nc" id="L264">        int retryDelayMillis = 2000; // 重试间隔时间（毫秒）</span>
+<span class="nc" id="L265">        int retryCount = 0;</span>
+
+<span class="nc bnc" id="L267" title="All 2 branches missed.">        while (retryCount &lt; maxRetries) {</span>
+<span class="nc" id="L268">            try (Response response = client.newCall(buildRequest(buildRequestBody(content, prompt))).execute()) {</span>
+<span class="nc bnc" id="L269" title="All 4 branches missed.">                if (response.isSuccessful() &amp;&amp; response.body() != null) {</span>
+<span class="nc" id="L270">                    String responseBody = response.body().string();</span>
+<span class="nc bnc" id="L271" title="All 4 branches missed.">                    if (responseBody == null || responseBody.trim().isEmpty()) {</span>
+<span class="nc" id="L272">                        throw new IOException(&quot;LLM 返回空响应，请检查 API 配额或网络。&quot;);</span>
+                    }
+<span class="nc" id="L274">                    Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);</span>
+<span class="nc" id="L275">                    List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);</span>
+<span class="nc bnc" id="L276" title="All 4 branches missed.">                    if (choices != null &amp;&amp; !choices.isEmpty()) {</span>
+<span class="nc" id="L277">                        Map&lt;String, Object&gt; firstChoice = choices.get(0);</span>
+<span class="nc" id="L278">                        Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">                        return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;</span>
+                    }
+<span class="nc" id="L281">                    return &quot;&quot;;</span>
+                } else {
+<span class="nc bnc" id="L283" title="All 2 branches missed.">                    if (response.code() == 500) {</span>
+                        // 如果服务器返回500错误，关闭当前客户端并重新创建
+<span class="nc" id="L285">                        client.dispatcher().cancelAll();</span>
+<span class="nc" id="L286">                        client.connectionPool().evictAll();</span>
+<span class="nc" id="L287">                        recreateClient(); // 调用方法重新创建客户端</span>
+                    }
+<span class="nc" id="L289">                    throw new IOException(&quot;请求响应失败！状态码：&quot; + response.code());</span>
+                }
+<span class="nc bnc" id="L291" title="All 2 branches missed.">            } catch (IOException e) {</span>
+<span class="nc" id="L292">                retryCount++;</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">                if (retryCount &gt;= maxRetries) {</span>
+<span class="nc" id="L294">                    throw e; // 如果达到最大重试次数，则抛出异常</span>
+                }
+<span class="nc" id="L296">                System.out.println(&quot;请求失败，正在进行第 &quot; + retryCount + &quot; 次重试...&quot;);</span>
+                try {
+<span class="nc" id="L298">                    Thread.sleep(retryDelayMillis); // 等待一段时间后重试</span>
+<span class="nc" id="L299">                } catch (InterruptedException ex) {</span>
+<span class="nc" id="L300">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L301">                    throw new IOException(&quot;请求被中断&quot;, ex);</span>
+<span class="nc" id="L302">                }</span>
+<span class="nc" id="L303">            }</span>
+        }
+      //  return null;
+<span class="nc" id="L306">        throw new IOException(&quot;LLM 请求失败，重试3次后仍无响应，请检查网络或API密钥。&quot;);</span>
+    }
+
+    //4.2发送请求获取响应，缓存历史对话
+    private String sendRequestAndGetResponse2(String content, String prompt, String conversationHistory) throws IOException {
+<span class="nc" id="L311">        RequestBody requestBody = buildRequestBody2(content, prompt, conversationHistory);</span>
+<span class="nc" id="L312">        Request request = buildRequest(requestBody);</span>
+<span class="nc" id="L313">        try (Response response = client.newCall(request).execute()) {</span>
+<span class="nc bnc" id="L314" title="All 4 branches missed.">            if (response.isSuccessful() &amp;&amp; response.body() != null) {</span>
+<span class="nc" id="L315">                String responseBody = response.body().string();</span>
+<span class="nc" id="L316">                Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);</span>
+<span class="nc" id="L317">                List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);</span>
+<span class="nc bnc" id="L318" title="All 4 branches missed.">                if (choices != null &amp;&amp; !choices.isEmpty()) {</span>
+<span class="nc" id="L319">                    Map&lt;String, Object&gt; firstChoice = choices.get(0);</span>
+<span class="nc" id="L320">                    Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);</span>
+<span class="nc bnc" id="L321" title="All 2 branches missed.">                    return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;</span>
+                }
+<span class="nc" id="L323">                return &quot;&quot;;</span>
+            } else {
+<span class="nc" id="L325">                throw new IOException(&quot;请求响应失败！&quot; + response);</span>
+            }
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        }</span>
+    }
+
+    private String sendRequestAndGetResponse3(String content, String prompt, String conversationHistory) throws IOException {
+<span class="nc" id="L331">        int maxRetries = 3; // 最大重试次数</span>
+<span class="nc" id="L332">        int retryDelayMillis = 2000; // 重试间隔时间（毫秒）</span>
+<span class="nc" id="L333">        int retryCount = 0;</span>
+
+<span class="nc bnc" id="L335" title="All 2 branches missed.">        while (retryCount &lt; maxRetries) {</span>
+<span class="nc" id="L336">            try (Response response = client.newCall(buildRequest(buildRequestBody2(content, prompt, conversationHistory))).execute()) {</span>
+<span class="nc bnc" id="L337" title="All 4 branches missed.">                if (response.isSuccessful() &amp;&amp; response.body() != null) {</span>
+<span class="nc" id="L338">                    String responseBody = response.body().string();</span>
+<span class="nc" id="L339">                    Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);</span>
+<span class="nc" id="L340">                    List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);</span>
+<span class="nc bnc" id="L341" title="All 4 branches missed.">                    if (choices != null &amp;&amp; !choices.isEmpty()) {</span>
+<span class="nc" id="L342">                        Map&lt;String, Object&gt; firstChoice = choices.get(0);</span>
+<span class="nc" id="L343">                        Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);</span>
+<span class="nc bnc" id="L344" title="All 2 branches missed.">                        return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;</span>
+                    }
+<span class="nc" id="L346">                    return &quot;&quot;;</span>
+                } else {
+<span class="nc bnc" id="L348" title="All 2 branches missed.">                    if (response.code() == 500) {</span>
+                        // 如果服务器返回500错误，关闭当前客户端并重新创建
+<span class="nc" id="L350">                        client.dispatcher().cancelAll();</span>
+<span class="nc" id="L351">                        client.connectionPool().evictAll();</span>
+<span class="nc" id="L352">                        recreateClient(); // 调用方法重新创建客户端</span>
+                    }
+<span class="nc" id="L354">                    throw new IOException(&quot;请求响应失败！状态码：&quot; + response.code());</span>
+                }
+<span class="nc bnc" id="L356" title="All 2 branches missed.">            } catch (IOException e) {</span>
+<span class="nc" id="L357">                retryCount++;</span>
+<span class="nc bnc" id="L358" title="All 2 branches missed.">                if (retryCount &gt;= maxRetries) {</span>
+<span class="nc" id="L359">                    throw e; // 如果达到最大重试次数，则抛出异常</span>
+                }
+<span class="nc" id="L361">                System.out.println(&quot;请求失败，正在进行第 &quot; + retryCount + &quot; 次重试...&quot;);</span>
+                try {
+<span class="nc" id="L363">                    Thread.sleep(retryDelayMillis); // 等待一段时间后重试</span>
+<span class="nc" id="L364">                } catch (InterruptedException ex) {</span>
+<span class="nc" id="L365">                    Thread.currentThread().interrupt();</span>
+<span class="nc" id="L366">                    throw new IOException(&quot;请求被中断&quot;, ex);</span>
+<span class="nc" id="L367">                }</span>
+<span class="nc" id="L368">            }</span>
+        }
+       // return null;
+<span class="nc" id="L371">        throw new IOException(&quot;LLM 请求失败，重试3次后仍无响应，请检查网络或API密钥。&quot;);</span>
+    }
+
+
+
+
+
+   //4.3请求切割
+   private List&lt;String&gt; divideCodeIntoSegments(String sourceCode, int maxSegmentLength) {
+<span class="nc" id="L380">       List&lt;String&gt; segments = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L381">       int codeLength = sourceCode.length();</span>
+<span class="nc bnc" id="L382" title="All 2 branches missed.">       for (int i = 0; i &lt; codeLength; i += maxSegmentLength) {</span>
+<span class="nc" id="L383">           int end = Math.min(i + maxSegmentLength, codeLength);</span>
+<span class="nc" id="L384">           segments.add(sourceCode.substring(i, end));</span>
+       }
+<span class="nc" id="L386">       return segments;</span>
+   }
+
+
+
+    //5.LLM-api响应
+    private static class ApiResponse {
+        private final String content;
+        private final int tokensUsed;
+
+<span class="nc" id="L396">        public ApiResponse(String content, int tokensUsed) {</span>
+<span class="nc" id="L397">            this.content = content;</span>
+<span class="nc" id="L398">            this.tokensUsed = tokensUsed;</span>
+<span class="nc" id="L399">        }</span>
+
+        public String getContent() {
+<span class="nc" id="L402">            return content;</span>
+        }
+
+        public int getTokensUsed() {
+<span class="nc" id="L406">            return tokensUsed;</span>
+        }
+    }
+
+    //6.LLM解析源代码
+    public String analyzeSourceCode(String sourceCodeFile) throws IOException {
+<span class="nc" id="L412">        String analyzePromt=sendRequestAndGetResponse0(sourceCodeFile, analyzeCodePromt);</span>
+<span class="nc" id="L413">        System.out.println(&quot;解析提示内容：\n&quot;+analyzePromt + &quot;over\n&quot;);</span>
+<span class="nc" id="L414">        return analyzePromt;</span>
+    }
+
+
+    //6.1 解析提取源代码信息构建测试类
+    public Map&lt;String, String&gt; extractClassInfo(String analyzeResult) {
+        //分析开始前输出分析结果
+        //System.out.println(&quot;分析结果：&quot;+ analyzeResult);
+
+<span class="nc" id="L423">        Map&lt;String, String&gt; classInfo = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L424">        String pattern = &quot;包路径：(.*)\n类名：(.*)\n方法名：(.*)\n返回类型：(.*)\n功能描述：(.*)&quot;;</span>
+<span class="nc" id="L425">        Pattern r = Pattern.compile(pattern);</span>
+<span class="nc" id="L426">        Matcher m = r.matcher(analyzeResult);</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">        if (m.find()) {</span>
+<span class="nc" id="L428">            classInfo.put(&quot;包路径&quot;, m.group(1).trim());</span>
+<span class="nc" id="L429">            classInfo.put(&quot;类名&quot;, m.group(2).trim());</span>
+<span class="nc" id="L430">            classInfo.put(&quot;方法名&quot;, m.group(3).trim());</span>
+<span class="nc" id="L431">            classInfo.put(&quot;返回类型&quot;, m.group(4).trim());</span>
+<span class="nc" id="L432">            classInfo.put(&quot;功能描述&quot;, m.group(5).trim());</span>
+        }else {
+            // 如果未找到匹配，尝试更宽松的正则表达式
+<span class="nc" id="L435">            pattern = &quot;包路径：(.*)类名：(.*)方法名：(.*)返回类型：(.*)功能描述：(.*)&quot;;</span>
+<span class="nc" id="L436">            r = Pattern.compile(pattern);</span>
+<span class="nc" id="L437">            m = r.matcher(analyzeResult.replace(&quot;\n&quot;, &quot;&quot;));</span>
+<span class="nc bnc" id="L438" title="All 2 branches missed.">            if (m.find()) {</span>
+<span class="nc" id="L439">                classInfo.put(&quot;包路径&quot;, m.group(1).trim());</span>
+<span class="nc" id="L440">                classInfo.put(&quot;类名&quot;, m.group(2).trim());</span>
+<span class="nc" id="L441">                classInfo.put(&quot;方法名&quot;, m.group(3).trim());</span>
+<span class="nc" id="L442">                classInfo.put(&quot;返回类型&quot;, m.group(4).trim());</span>
+<span class="nc" id="L443">                classInfo.put(&quot;功能描述&quot;, m.group(5).trim());</span>
+            } else {
+<span class="nc" id="L445">                System.err.println(&quot;未能从分析结果中提取包路径和类名&quot;);</span>
+            }
+        }
+<span class="nc" id="L448">        return classInfo;</span>
+    }
+
+    //6.2   类中多方法提取+解析
+    /**
+     * 从 LLM 返回的分析结果里提取
+     * 1. 包路径
+     * 2. 类名
+     * 3. 所有方法（按序号依次提取：序号、方法名、返回类型、功能描述）
+     *
+     * @param analyzeResult LLM 原始返回字符串
+     * @return Map 中 key：包路径、类名、allMethodsInfo（可直接用于 prompt 替换）
+     */
+    public Map&lt;String, String&gt; extractClassInfo3(String analyzeResult) {
+<span class="nc" id="L462">        Map&lt;String, String&gt; classInfo = new HashMap&lt;&gt;();</span>
+
+        /* ---------- 1. 提取包路径 &amp; 类名 ---------- */
+        // 单行模式，允许中间有换行
+<span class="nc" id="L466">        Pattern headerPattern = Pattern.compile(</span>
+                &quot;包路径：(.*?)\\n类名：(.*?)\\n&quot;, Pattern.DOTALL);
+<span class="nc" id="L468">        Matcher headerMatcher = headerPattern.matcher(analyzeResult);</span>
+<span class="nc bnc" id="L469" title="All 2 branches missed.">        if (headerMatcher.find()) {</span>
+<span class="nc" id="L470">            classInfo.put(&quot;包路径&quot;, headerMatcher.group(1).trim());</span>
+<span class="nc" id="L471">            classInfo.put(&quot;类名&quot;,   headerMatcher.group(2).trim());</span>
+        } else {
+<span class="nc" id="L473">            System.err.println(&quot;未能提取包路径或类名&quot;);</span>
+<span class="nc" id="L474">            return classInfo;   // 早退</span>
+        }
+
+        /* ---------- 2. 循环提取每组方法 ---------- */
+        // 正则：序号、方法名、返回类型、功能描述
+        // 允许每组之间有空行，允许字段值里出现换行（?s 开启 DOTALL）
+<span class="nc" id="L480">        Pattern methodPattern = Pattern.compile(</span>
+                &quot;序号：(.*?)\n方法名：(.*?)\n返回类型：(.*?)\n功能描述：(.*?)(?=\\n序号|\\n```|$)&quot;, Pattern.DOTALL);
+<span class="nc" id="L482">        Matcher methodMatcher = methodPattern.matcher(analyzeResult);</span>
+
+<span class="nc" id="L484">        StringBuilder allMethodsInfo = new StringBuilder(512);</span>
+<span class="nc bnc" id="L485" title="All 2 branches missed.">        while (methodMatcher.find()) {</span>
+<span class="nc" id="L486">            String index   = methodMatcher.group(1).trim();</span>
+<span class="nc" id="L487">            String method  = methodMatcher.group(2).trim();</span>
+<span class="nc" id="L488">            String returnT = methodMatcher.group(3).trim();</span>
+<span class="nc" id="L489">            String desc    = methodMatcher.group(4).replaceAll(&quot;\\s+&quot;, &quot; &quot;).trim(); // 去多余空白</span>
+
+            // 拼成一段，保持和原来 prompt 一样的格式
+<span class="nc" id="L492">            allMethodsInfo</span>
+<span class="nc" id="L493">                    .append(&quot;序号：&quot;).append(index).append('\n')</span>
+<span class="nc" id="L494">                    .append(&quot;方法名：&quot;).append(method).append('\n')</span>
+<span class="nc" id="L495">                    .append(&quot;返回类型：&quot;).append(returnT).append('\n')</span>
+<span class="nc" id="L496">                    .append(&quot;功能描述：&quot;).append(desc).append(&quot;\n\n&quot;);</span>
+<span class="nc" id="L497">        }</span>
+
+<span class="nc bnc" id="L499" title="All 2 branches missed.">        if (allMethodsInfo.length() == 0) {</span>
+<span class="nc" id="L500">            System.err.println(&quot;未能提取到任何方法信息&quot;);</span>
+        }
+<span class="nc" id="L502">        classInfo.put(&quot;allMethodsInfo&quot;, allMethodsInfo.toString());</span>
+<span class="nc" id="L503">        return classInfo;</span>
+    }
+
+
+    //7.LLM生成测试代码 out
+    public String generateTestCode(String sourceCodeFile,String analyzePromt) throws IOException {
+<span class="nc" id="L509">        String testCode=sendRequestAndGetResponse0(sourceCodeFile, analyzePromt+generatePrompt);</span>
+<span class="nc" id="L510">        System.out.println(&quot;生成测试代码：\n&quot;+testCode + &quot;over\n&quot;);</span>
+<span class="nc" id="L511">        return testCode;</span>
+    }
+
+    //7.2 LLM生成测试代码，缓存中获取代码
+    public String generateTestCode2(String sourceCodeFile, String analyzePromt, String conversationHistory) throws IOException {
+        // 调用 sendRequestAndGetResponse 方法发送请求并获取测试代码
+        // 提取分析结果中的信息
+<span class="nc" id="L518">        Map&lt;String, String&gt; classInfo = extractClassInfo3(analyzePromt);</span>
+<span class="nc" id="L519">        String packagePath = classInfo.get(&quot;包路径&quot;);</span>
+<span class="nc" id="L520">        String className = classInfo.get(&quot;类名&quot;);</span>
+<span class="nc" id="L521">        String allMethodsInfo=classInfo.get(&quot;allMethodsInfo&quot;);</span>
+<span class="nc bnc" id="L522" title="All 6 branches missed.">        if (packagePath == null || className == null || allMethodsInfo==null ) {</span>
+<span class="nc" id="L523">            System.err.println(&quot;提取的类信息不完整，无法生成测试代码。&quot;);</span>
+<span class="nc" id="L524">            return null;</span>
+        }
+        //把整个 analyzePromt 塞进 {allMethodsInfo}
+<span class="nc" id="L527">        String newGprompt = generatePrompt</span>
+<span class="nc" id="L528">                .replace(&quot;{packagePath}&quot;, packagePath)</span>
+<span class="nc" id="L529">                .replace(&quot;{className}&quot;,   className)</span>
+<span class="nc" id="L530">                .replace(&quot;{allMethodsInfo}&quot;, allMethodsInfo);   // &lt;-- 整段落入</span>
+        /*String methodName=classInfo.get(&quot;方法名&quot;);
+        String returnType=classInfo.get(&quot;返回类型&quot;);
+        String functionDescription=classInfo.get(&quot;功能描述&quot;);*/
+/*
+
+        // 构建生成测试代码的提示
+        String newGprompt = generatePrompt
+                .replace(&quot;{packagePath}&quot;, packagePath)
+                .replace(&quot;{className}&quot;, className)
+                .replace(&quot;{methodName}&quot;, methodName)
+                .replace(&quot;{returnType}&quot;, returnType)
+                .replace(&quot;{functionDescription}&quot;, functionDescription);*/
+<span class="nc" id="L543">        String testCode = sendRequestAndGetResponse3(sourceCodeFile, newGprompt, conversationHistory);</span>
+<span class="nc" id="L544">        System.out.println(&quot;生成测试代码：\n&quot; + testCode + &quot;over\n&quot;);</span>
+<span class="nc" id="L545">        return testCode;</span>
+    }
+
+    //8.LLM验证测试代码
+    public String validateTestCode(String testCode) throws IOException {
+<span class="nc" id="L550">        String validateResult=sendRequestAndGetResponse0(testCode, validatePrompt);</span>
+<span class="nc" id="L551">        System.out.println(&quot;validateTestCode测试代码验证结果：\n&quot;+validateResult + &quot;over\n&quot;);</span>
+<span class="nc" id="L552">        return validateResult;</span>
+    }
+
+    //9.LLM评估测试代码
+    public String evaluateTestCode(String testCode) throws IOException {
+<span class="nc" id="L557">        String evaluateResult=sendRequestAndGetResponse0(testCode, evaluatePrompt);</span>
+<span class="nc" id="L558">        System.out.println(&quot;测试代码评估结果：\n&quot;+evaluateResult + &quot;over\n&quot;);</span>
+<span class="nc" id="L559">        return evaluateResult;</span>
+    }
+
+    //10.LLM修复测试代码
+    public String fixTestCode(String errorPrompt, String testCode) throws IOException {
+<span class="nc" id="L564">        int fixNumber = 1;</span>
+<span class="nc" id="L565">        boolean fixSuccess = false;</span>
+<span class="nc" id="L566">        boolean validateSuccess = false;</span>
+
+<span class="nc bnc" id="L568" title="All 4 branches missed.">        while (!validateSuccess &amp;&amp; fixNumber &lt;= 3) {</span>
+            // 构建修复提示
+<span class="nc" id="L570">            String fixRequestPrompt = errorPrompt;</span>
+<span class="nc" id="L571">            String fixResult = sendRequestAndGetResponse0(testCode, fixRequestPrompt);</span>
+<span class="nc" id="L572">            System.out.println(&quot;第 &quot; + fixNumber + &quot; 次修复结果：\n&quot; + fixResult + &quot;over\n&quot;);</span>
+
+            // 检查修复是否成功
+<span class="nc bnc" id="L575" title="All 2 branches missed.">            if (fixResult.contains(&quot;修复成功&quot;)) {</span>
+                // 提取修复后的测试代码
+<span class="nc" id="L577">                testCode = fixResult.replace(&quot;修复成功&quot;, &quot;&quot;).trim();</span>
+<span class="nc" id="L578">                fixSuccess = true;</span>
+<span class="nc" id="L579">                String validateResult = validateTestCode(testCode);</span>
+<span class="nc bnc" id="L580" title="All 2 branches missed.">                if (validateResult.contains(&quot;全部验证通过&quot;)) {</span>
+<span class="nc" id="L581">                    validateSuccess = true;</span>
+<span class="nc" id="L582">                    System.out.println(&quot;修复后的代码验证成功！&quot;);</span>
+                } else {
+<span class="nc" id="L584">                    System.out.println(&quot;修复后的代码验证失败！&quot;);</span>
+<span class="nc" id="L585">                    errorPrompt = validateResult;</span>
+<span class="nc" id="L586">                    fixNumber++;</span>
+                }
+<span class="nc" id="L588">            } else {</span>
+                // 更新错误提示，包含修复失败的原因
+<span class="nc" id="L590">                errorPrompt = &quot;\n修复尝试 &quot; + fixNumber + &quot; 失败，原因是：\n&quot; + fixResult;</span>
+<span class="nc" id="L591">                fixNumber++;</span>
+            }
+<span class="nc" id="L593">        }</span>
+
+<span class="nc bnc" id="L595" title="All 2 branches missed.">        if (validateSuccess) {</span>
+<span class="nc" id="L596">            System.out.println(&quot;修复和验证成功！&quot;);</span>
+        } else {
+<span class="nc" id="L598">            System.out.println(&quot;经过 &quot; + fixNumber + &quot; 次修复尝试，仍未成功。&quot;);</span>
+<span class="nc" id="L599">            testCode=&quot;null&quot;;</span>
+        }
+
+<span class="nc" id="L602">        return testCode;</span>
+    }
+
+    //10.1-提取失败信息
+    private String extractErrorPrompt(String validateResult) {
+<span class="nc" id="L607">        String pattern = &quot;该测试代码在验证\\[(.*?)\\]时失败，错误位置：\\[(.*?)\\]，错误原因：\\[(.*?)\\]&quot;;</span>
+<span class="nc" id="L608">        Pattern r = Pattern.compile(pattern);</span>
+<span class="nc" id="L609">        Matcher m = r.matcher(validateResult);</span>
+<span class="nc bnc" id="L610" title="All 2 branches missed.">        if (m.find()) {</span>
+<span class="nc" id="L611">            String validationItem = m.group(1); // 验证项</span>
+<span class="nc" id="L612">            String errorLine = m.group(2);      // 错误行号</span>
+<span class="nc" id="L613">            String errorReason = m.group(3);    // 错误原因</span>
+<span class="nc" id="L614">            return &quot;在验证 [&quot; + validationItem + &quot;] 时失败，错误位置：第 &quot; + errorLine + &quot; 行，错误原因：&quot; + errorReason;</span>
+        } else {
+<span class="nc" id="L616">            return &quot;测试代码未通过验证，原因未知，请检查代码。&quot;;</span>
+        }
+    }
+
+    //11.提取测试代码
+    private static String extractPureCode(String response) {
+<span class="nc" id="L622">        String startTag = &quot;```java&quot;;</span>
+<span class="nc" id="L623">        String endTag = &quot;```&quot;;</span>
+
+<span class="nc" id="L625">        int start = response.indexOf(startTag);</span>
+<span class="nc" id="L626">        int end = response.lastIndexOf(endTag);</span>
+
+<span class="nc bnc" id="L628" title="All 6 branches missed.">        if (start != -1 &amp;&amp; end != -1 &amp;&amp; end &gt; start) {</span>
+            // 跳过起始标记并提取代码
+<span class="nc" id="L630">            return response.substring(start + startTag.length(), end).trim();</span>
+        }
+        // 如果未找到标记，返回原始内容
+<span class="nc" id="L633">        return response;</span>
+    }
+
+    //12.创建测试类
+    public static void createTestClass(String passTest) {
+        try {
+            // 定义测试类文件的路径和名称
+<span class="nc" id="L640">            String fileName = &quot;src/main/java/zju/cst/aces/runner/ExampleTest.java&quot;;</span>
+            // 将测试代码写入文件
+<span class="nc" id="L642">            try (FileWriter writer = new FileWriter(fileName)) {</span>
+<span class="nc" id="L643">                String pureCode = extractPureCode(passTest);</span>
+<span class="nc" id="L644">                writer.write(pureCode);</span>
+            }
+<span class="nc" id="L646">            System.out.println(&quot;测试类创建成功：&quot; + fileName);</span>
+<span class="nc" id="L647">        } catch (IOException e) {</span>
+<span class="nc" id="L648">            System.err.println(&quot;创建测试类时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L649">        }</span>
+<span class="nc" id="L650">    }</span>
+    //12.2创建测试类2
+    public static void createTestClass2(String passTest, Map&lt;String, String&gt; classInfo) {
+        try {
+            // 构造测试类的路径和文件名
+<span class="nc" id="L655">            String packagePath = classInfo.get(&quot;包路径&quot;);</span>
+<span class="nc bnc" id="L656" title="All 4 branches missed.">            if (packagePath == null || packagePath.isEmpty()) {</span>
+<span class="nc" id="L657">                throw new IllegalArgumentException(&quot;包路径不能为空&quot;);</span>
+            }
+
+            // 验证包路径是否包含非法字符
+<span class="nc bnc" id="L661" title="All 2 branches missed.">            if (packagePath.matches(&quot;.*[\\[\\]{}&lt;&gt;].*&quot;)) {</span>
+<span class="nc" id="L662">                System.err.println(&quot;警告：包路径包含非法字符 - &quot; + packagePath);</span>
+<span class="nc" id="L663">                packagePath = packagePath.replaceAll(&quot;[\\[\\]{}&lt;&gt;]&quot;, &quot;&quot;);</span>
+<span class="nc" id="L664">                System.out.println(&quot;已清理包路径为：&quot; + packagePath);</span>
+            }
+
+<span class="nc" id="L667">            String basePackagePath = packagePath.replace(&quot;.&quot;, &quot;/&quot;);</span>
+<span class="nc bnc" id="L668" title="All 2 branches missed.">            if (!basePackagePath.startsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L669">                basePackagePath = &quot;/&quot; + basePackagePath;</span>
+            }
+<span class="nc" id="L671">            String className = classInfo.get(&quot;类名&quot;);</span>
+<span class="nc" id="L672">            String fileName = &quot;src/test/java&quot; + basePackagePath + &quot;/&quot; + className + &quot;Test.java&quot;;</span>
+
+            // 创建目录（如果不存在）
+<span class="nc" id="L675">            java.nio.file.Path path = Paths.get(&quot;src/test/java&quot; + basePackagePath);</span>
+<span class="nc bnc" id="L676" title="All 2 branches missed.">            if (!Files.exists(path)) {</span>
+<span class="nc" id="L677">                Files.createDirectories(path);</span>
+            }
+
+            // 将测试代码写入文件
+<span class="nc" id="L681">            try (FileWriter writer = new FileWriter(fileName)) {</span>
+<span class="nc" id="L682">                String pureCode = extractPureCode(passTest);</span>
+<span class="nc" id="L683">                writer.write(pureCode);</span>
+            }
+<span class="nc" id="L685">            System.out.println(&quot;测试类创建成功：&quot; + fileName);</span>
+
+<span class="nc" id="L687">        } catch (IOException e) {</span>
+<span class="nc" id="L688">            System.err.println(&quot;创建测试类时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L689">        }</span>
+<span class="nc" id="L690">    }</span>
+
+    //13.关闭客户端连接
+    public void closeClient() {
+<span class="nc bnc" id="L694" title="All 2 branches missed.">        if (client != null) {</span>
+<span class="nc" id="L695">            client.dispatcher().executorService().shutdown();</span>
+<span class="nc" id="L696">            client.connectionPool().evictAll();</span>
+        }
+<span class="nc" id="L698">    }</span>
+
+    //14.日志记录
+    public void logTestCodeGenerationInfo(boolean analyzeSuccess,
+                                          boolean generateSuccess,
+                                          boolean validateSuccess,
+                                          boolean fixSuccess,
+                                          boolean evaluateSuccess,
+                                          boolean overallSuccess,
+                                          long analyzeStart,
+                                          long analyzeEndTime,
+                                          long generateEndTime,
+                                          long validateEndTime,
+                                          long fixEndTime,
+                                          long evaluateEndTime,
+                                          int analyzeTokenCount,
+                                          int generateTokenCount,
+                                          int validateTokenCount,
+                                          int fixTokenCount,
+                                          int evaluateTokenCount,
+                                          String validateFailReason,
+                                          int fixAttempt,
+                                          String fixFailReason,
+                                          String fixSuccessTimes,
+                                          String evaluateCoverageData,
+                                          String logFilename) {
+
+<span class="nc" id="L725">        endTime = System.currentTimeMillis();</span>
+<span class="nc" id="L726">        totalTime = endTime - startTime;</span>
+
+<span class="nc" id="L728">        try (FileWriter writer = new FileWriter(logFilename, true)) {</span>
+        //1 try (FileWriter writer = new FileWriter(&quot;cli_test_errorTest_5250.txt&quot;, true)) {
+<span class="nc" id="L730">            writer.write(&quot;类名：&quot; + className + &quot;\n&quot;);</span>
+<span class="nc" id="L731">            writer.write(&quot;分析阶段：\n&quot;);</span>
+<span class="nc" id="L732">            writer.write(&quot;  耗时：&quot; + (analyzeEndTime - analyzeStart) + &quot; 毫秒\n&quot;);</span>
+<span class="nc" id="L733">            writer.write(&quot;  消耗 token 数量：&quot; + analyzeTokenCount + &quot;\n&quot;);</span>
+<span class="nc" id="L734">            writer.write(&quot;  是否成功：&quot; + analyzeSuccess + &quot;\n&quot;);</span>
+<span class="nc" id="L735">            writer.write(&quot;生成阶段：\n&quot;);</span>
+<span class="nc" id="L736">            writer.write(&quot;  耗时：&quot; + (generateEndTime - analyzeEndTime) + &quot; 毫秒\n&quot;);</span>
+<span class="nc" id="L737">            writer.write(&quot;  消耗 token 数量：&quot; + generateTokenCount + &quot;\n&quot;);</span>
+<span class="nc" id="L738">            writer.write(&quot;  是否成功：&quot; + generateSuccess + &quot;\n&quot;);</span>
+<span class="nc" id="L739">            writer.write(&quot;验证阶段：\n&quot;);</span>
+<span class="nc" id="L740">            writer.write(&quot;  耗时：&quot; + (validateEndTime - generateEndTime) + &quot; 毫秒\n&quot;);</span>
+<span class="nc" id="L741">            writer.write(&quot;  消耗 token 数量：&quot; + validateTokenCount + &quot;\n&quot;);</span>
+<span class="nc" id="L742">            writer.write(&quot;  是否成功：&quot; + validateSuccess + &quot;\n&quot;);</span>
+<span class="nc" id="L743">            writer.write(&quot;  失败原因：&quot; + validateFailReason + &quot;\n&quot;);</span>
+<span class="nc" id="L744">            writer.write(&quot;修复阶段：\n&quot;);</span>
+<span class="nc" id="L745">            writer.write(&quot;  耗时：&quot; + (fixEndTime - validateEndTime) + &quot; 毫秒\n&quot;);</span>
+<span class="nc" id="L746">            writer.write(&quot;  消耗 token 数量：&quot; + fixTokenCount + &quot;\n&quot;);</span>
+<span class="nc" id="L747">            writer.write(&quot;  是否成功：&quot; + fixSuccess + &quot;\n&quot;);</span>
+<span class="nc" id="L748">            writer.write(&quot;  修复尝试次数：&quot; + fixAttempt + &quot;\n&quot;);</span>
+<span class="nc" id="L749">            writer.write(&quot;  修复失败原因：&quot; + fixFailReason + &quot;\n&quot;);</span>
+<span class="nc" id="L750">            writer.write(&quot;  修复成功次数：&quot; + fixSuccessTimes + &quot;\n&quot;);</span>
+<span class="nc" id="L751">            writer.write(&quot;评估阶段：\n&quot;);</span>
+<span class="nc" id="L752">            writer.write(&quot;  耗时：&quot; + (evaluateEndTime - fixEndTime) + &quot; 毫秒\n&quot;);</span>
+<span class="nc" id="L753">            writer.write(&quot;  消耗 token 数量：&quot; + evaluateTokenCount + &quot;\n&quot;);</span>
+<span class="nc" id="L754">            writer.write(&quot;  是否成功：&quot; + evaluateSuccess + &quot;\n&quot;);</span>
+<span class="nc" id="L755">            writer.write(&quot;  覆盖率数据：&quot; + evaluateCoverageData + &quot;\n&quot;);</span>
+<span class="nc" id="L756">            writer.write(&quot;总耗时：&quot; + totalTime + &quot; 毫秒\n&quot;);</span>
+<span class="nc" id="L757">            writer.write(&quot;总消耗 token 数量：&quot; + tokenCount + &quot;\n&quot;);</span>
+<span class="nc" id="L758">            writer.write(&quot;测试代码生成结果：&quot; + overallSuccess + &quot;\n&quot;);</span>
+<span class="nc" id="L759">            writer.write(&quot;失败原因：&quot; + String.join(&quot;, &quot;, failedClasses) + &quot;\n&quot;);</span>
+<span class="nc" id="L760">            writer.write(&quot;--------------------------------------------------------\n&quot;);</span>
+<span class="nc" id="L761">        } catch (IOException e) {</span>
+<span class="nc" id="L762">            System.err.println(&quot;写入日志文件时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L763">        }</span>
+<span class="nc" id="L764">    }</span>
+
+
+    /*//15.编译器执行验证代码
+    //测试代码类生成成功，尝试编译测试代码
+    public boolean compileTestClass(Map&lt;String, String&gt; classInfo) {
+
+        try {
+        // 构造测试类的路径
+        String basePackagePath = classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, &quot;/&quot;);
+        String className = classInfo.get(&quot;类名&quot;);
+        String testClassName = className + &quot;Test&quot;;
+        String testClassPath = &quot;src/test/java&quot; + basePackagePath + &quot;/&quot; + testClassName + &quot;.java&quot;;
+
+        // 获取项目的类路径
+        List&lt;String&gt; classpathElements = new ArrayList&lt;&gt;();
+        // 假设项目的类路径包含 target/classes 和 target/test-classes
+        classpathElements.add(&quot;target/classes&quot;);
+        classpathElements.add(&quot;target/test-classes&quot;);
+
+
+        // 添加 JUnit 依赖的类路径
+        // 假设 JUnit JAR 文件在 lib 目录下
+            classpathElements.add(&quot;lib/junit-jupiter-api-5.10.2.jar&quot;);
+            classpathElements.add(&quot;lib/junit-jupiter-engine-5.10.2.jar&quot;);
+            classpathElements.add(&quot;lib/apiguardian-api-1.1.2.jar&quot;); // JUnit 的依赖
+            classpathElements.add(&quot;lib/opentest4j-1.3.0.jar&quot;);       // JUnit 的依赖
+// 拼接 classpath（注意操作系统分隔符）
+            String classpath = String.join(System.getProperty(&quot;os.name&quot;).toLowerCase().contains(&quot;win&quot;) ? &quot;;&quot; : &quot;:&quot;, classpathElements);
+        // 设置编译选项
+        List&lt;String&gt; options = new ArrayList&lt;&gt;();
+        options.add(&quot;-classpath&quot;);
+        options.add(classpath);
+        options.add(&quot;-d&quot;);
+        options.add(&quot;target/test-classes&quot;);
+
+        // 创建编译器和文件管理器
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+
+        JavaFileObject testClassFile = fileManager.getJavaFileObjectsFromStrings(Collections.singletonList(testClassPath)).iterator().next();
+
+        // 创建编译任务
+        DiagnosticCollector&lt;JavaFileObject&gt; diagnostics = new DiagnosticCollector&lt;&gt;();
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, Arrays.asList(testClassFile));
+
+        // 执行编译任务
+        boolean result = task.call();
+
+        // 输出编译结果
+        if (result) {
+            System.out.println(&quot;测试类编译成功！&quot;);
+        } else {
+            System.out.println(&quot;测试类编译失败！&quot;);
+            diagnostics.getDiagnostics().forEach(diagnostic -&gt; {
+                System.out.println(&quot;错误: &quot; + diagnostic.getMessage(null) +
+                        &quot; 在行 &quot; + diagnostic.getLineNumber() +
+                        &quot; 列 &quot; + diagnostic.getColumnNumber());
+            });
+        }
+
+        // 关闭文件管理器
+        fileManager.close();
+
+        return result;
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.out.println(&quot;测试类编译失败！发生异常: &quot; + e.getMessage());
+        return false;
+    }
+    }*/
+
+    //16.获取测试路径运行测试代码
+
+    private static String getTestFilePath(Map&lt;String, String&gt; classInfo) {
+        // 项目根目录路径（根据实际情况调整）
+<span class="nc" id="L840">        String projectRoot = System.getProperty(&quot;user.dir&quot;);</span>
+
+        // 构建测试文件路径
+<span class="nc" id="L843">        String basePackagePath = classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, &quot;/&quot;);</span>
+<span class="nc" id="L844">        String testClassName = classInfo.get(&quot;类名&quot;) + &quot;Test&quot;;</span>
+<span class="nc" id="L845">        String testFilePath = Paths.get(projectRoot, &quot;src&quot;, &quot;test&quot;, &quot;java&quot;, basePackagePath, testClassName + &quot;.java&quot;).toString();</span>
+
+<span class="nc" id="L847">        return testFilePath;</span>
+    }
+
+    //16.读取待测试类-待实现
+    private static String extractClassName(File javaFile) {
+        try {
+<span class="nc" id="L853">            List&lt;String&gt; lines = Files.readAllLines(javaFile.toPath());</span>
+<span class="nc bnc" id="L854" title="All 2 branches missed.">            for (String line : lines) {</span>
+<span class="nc bnc" id="L855" title="All 2 branches missed.">                if (line.contains(&quot;public class&quot;)) {</span>
+<span class="nc" id="L856">                    String className = line.split(&quot;public class &quot;)[1].split(&quot;\\s+&quot;)[0].replaceAll(&quot;\\{&quot;, &quot;&quot;).trim();</span>
+<span class="nc" id="L857">                    return className;</span>
+                }
+<span class="nc" id="L859">            }</span>
+<span class="nc" id="L860">        } catch (IOException e) {</span>
+<span class="nc" id="L861">            System.err.println(&quot;读取文件时出错: &quot; + javaFile.getAbsolutePath());</span>
+<span class="nc" id="L862">            e.printStackTrace();</span>
+<span class="nc" id="L863">        }</span>
+<span class="nc" id="L864">        return null;</span>
+    }
+
+    //18.覆盖率
+    public String executeMavenCommand(String command) throws IOException {
+        // 使用你的Maven安装路径
+<span class="nc" id="L870">        String mavenPath = &quot;D:\\TopNew-SpringBoot\\maven\\apache-maven-3.9.1-bin\\apache-maven-3.9.1\\bin\\mvn.cmd&quot;;</span>
+
+        // 使用ProcessBuilder替代Runtime.exec
+<span class="nc" id="L873">        List&lt;String&gt; commandList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L874">        commandList.add(mavenPath);</span>
+
+        // 将命令参数拆分为单独的参数
+<span class="nc" id="L877">        String[] commandParts = command.split(&quot; &quot;);</span>
+<span class="nc" id="L878">        Collections.addAll(commandList, commandParts);</span>
+
+<span class="nc" id="L880">        System.out.println(&quot;执行Maven命令: &quot; + String.join(&quot; &quot;, commandList));</span>
+
+<span class="nc" id="L882">        ProcessBuilder processBuilder = new ProcessBuilder(commandList);</span>
+<span class="nc" id="L883">        processBuilder.redirectErrorStream(true); // 合并标准输出和错误输出</span>
+
+<span class="nc" id="L885">        Process process = processBuilder.start();</span>
+
+        // 读取输出
+<span class="nc" id="L888">        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));</span>
+<span class="nc" id="L889">        StringBuilder output = new StringBuilder();</span>
+        String line;
+<span class="nc bnc" id="L891" title="All 2 branches missed.">        while ((line = reader.readLine()) != null) {</span>
+<span class="nc" id="L892">            output.append(line).append(&quot;\n&quot;);</span>
+        }
+
+        // 等待进程完成并获取返回码
+        try {
+<span class="nc" id="L897">            int exitCode = process.waitFor();</span>
+<span class="nc" id="L898">            System.out.println(&quot;Maven命令返回码: &quot; + exitCode);</span>
+
+<span class="nc bnc" id="L900" title="All 2 branches missed.">            if (exitCode != 0) {</span>
+<span class="nc" id="L901">                System.err.println(&quot;Maven命令执行失败，返回码: &quot; + exitCode);</span>
+            }
+<span class="nc" id="L903">        } catch (InterruptedException e) {</span>
+<span class="nc" id="L904">            Thread.currentThread().interrupt();</span>
+<span class="nc" id="L905">            System.err.println(&quot;Maven命令执行被中断: &quot; + e.getMessage());</span>
+<span class="nc" id="L906">        }</span>
+
+<span class="nc" id="L908">        return output.toString();</span>
+    }
+
+
+    //19.优化
+    /**
+     * 优化测试代码
+     * @param testCode 测试代码
+     * @param testResults 测试结果
+     * @return 优化后的测试代码
+     * @throws IOException 如果生成过程中出现I/O错误
+     */
+  /*  public String optimizeTestCode(String testCode, String testResults) throws IOException {
+        // 构建优化提示
+        String prompt = optimizePrompt.replace(&quot;[TEST RESULTS]&quot;, testResults);
+        String optimizeResult = sendRequestAndGetResponse0(testCode, prompt);
+        System.out.println(&quot;优化后的测试代码：\n&quot; + optimizeResult + &quot;over\n&quot;);
+        return optimizeResult;
+    }*/
+    /**
+     * 提取覆盖率数据从 mvn test 结果
+     * @param mvnTestResult mvn test 结果
+     * @param coverageType 覆盖率类型（例如：&quot;Overall Coverage&quot;、&quot;Branch Coverage&quot;、&quot;Line Coverage&quot;）
+     * @return 覆盖率数值（百分比）
+     */
+    private static double extractCoverageFromMvnResult(String mvnTestResult, String coverageType) {
+<span class="nc" id="L934">        String pattern = coverageType + &quot;: (\\d+\\.\\d+)%&quot;;</span>
+<span class="nc" id="L935">        Pattern r = Pattern.compile(pattern);</span>
+<span class="nc" id="L936">        Matcher m = r.matcher(mvnTestResult);</span>
+<span class="nc bnc" id="L937" title="All 2 branches missed.">        if (m.find()) {</span>
+<span class="nc" id="L938">            return Double.parseDouble(m.group(1));</span>
+        }
+<span class="nc" id="L940">        return 0.0;</span>
+    }
+
+    /**
+     * 检查覆盖率是否满足要求
+     * @param instructionCoverage 整体代码覆盖率
+     * @param branchCoverage 分支覆盖率
+     * @param lineCoverage 行覆盖率
+     * @return 是否满足要求
+     */
+    private static boolean isCoverageSufficient(double instructionCoverage, double branchCoverage, double lineCoverage) {
+        // 根据需求设置覆盖率阈值
+<span class="nc" id="L952">        final double INSTRUCTION_COVERAGE_THRESHOLD = 50.0;</span>
+<span class="nc" id="L953">        final double BRANCH_COVERAGE_THRESHOLD = 50.0;</span>
+<span class="nc" id="L954">        final double LINE_COVERAGE_THRESHOLD = 50.0;</span>
+
+<span class="nc bnc" id="L956" title="All 6 branches missed.">        return instructionCoverage &gt;= INSTRUCTION_COVERAGE_THRESHOLD &amp;&amp;</span>
+                branchCoverage &gt;= BRANCH_COVERAGE_THRESHOLD &amp;&amp;
+                lineCoverage &gt;= LINE_COVERAGE_THRESHOLD;
+    }
+
+
+
+    private static List&lt;Map&lt;String, String&gt;&gt; extractCoverageInfo() {
+        // 调用 CoverageEvaluator 类中的方法提取覆盖率信息
+<span class="nc" id="L965">        CoverageEvaluator coverageEvaluator=new CoverageEvaluator();</span>
+
+<span class="nc" id="L967">        return coverageEvaluator.extractCoverageInfo(&quot;target/site/jacoco/index.html&quot;);</span>
+      //  return CoverageEvaluator.extractCoverageInfo(&quot;target/site/jacoco/index.html&quot;);
+    }
+
+    private static boolean checkCoverage(List&lt;Map&lt;String, String&gt;&gt; coverageInfoList) {
+        // 定义覆盖率阈值
+<span class="nc" id="L973">        final double INSTRUCTION_THRESHOLD = 80.0;</span>
+<span class="nc" id="L974">        final double BRANCH_THRESHOLD = 80.0;</span>
+<span class="nc" id="L975">        final double LINE_THRESHOLD = 80.0;</span>
+<span class="nc" id="L976">        final double METHOD_THRESHOLD = 80.0;</span>
+<span class="nc" id="L977">        final double CLASS_THRESHOLD = 80.0;</span>
+
+<span class="nc bnc" id="L979" title="All 2 branches missed.">        for (Map&lt;String, String&gt; coverageInfo : coverageInfoList) {</span>
+            // 解析覆盖率数据
+<span class="nc" id="L981">            double instructionCoverage = parseCoverageToDouble(coverageInfo.get(&quot;Instruction Coverage&quot;));</span>
+<span class="nc" id="L982">            double branchCoverage = parseCoverageToDouble(coverageInfo.get(&quot;Branch Coverage&quot;));</span>
+<span class="nc" id="L983">            double lineCoverage = parseCoverageToDouble(coverageInfo.get(&quot;Line Coverage&quot;));</span>
+<span class="nc" id="L984">            double methodCoverage = parseCoverageToDouble(coverageInfo.get(&quot;Method Coverage&quot;));</span>
+<span class="nc" id="L985">            double classCoverage = parseCoverageToDouble(coverageInfo.get(&quot;Class Coverage&quot;));</span>
+
+            // 检查覆盖率是否满足要求
+<span class="nc bnc" id="L988" title="All 10 branches missed.">            if (instructionCoverage &lt; INSTRUCTION_THRESHOLD ||</span>
+                    branchCoverage &lt; BRANCH_THRESHOLD ||
+                    lineCoverage &lt; LINE_THRESHOLD ||
+                    methodCoverage &lt; METHOD_THRESHOLD ||
+                    classCoverage &lt; CLASS_THRESHOLD) {
+                // 如果某个指标未达到要求，可以在这里记录或处理
+<span class="nc" id="L994">                System.out.println(&quot;Coverage criteria not met for element: &quot; + coverageInfo.get(&quot;Element&quot;));</span>
+<span class="nc" id="L995">                System.out.println(&quot;  Instruction Coverage: &quot; + instructionCoverage + &quot;%&quot;);</span>
+<span class="nc" id="L996">                System.out.println(&quot;  Branch Coverage: &quot; + branchCoverage + &quot;%&quot;);</span>
+<span class="nc" id="L997">                System.out.println(&quot;  Line Coverage: &quot; + lineCoverage + &quot;%&quot;);</span>
+<span class="nc" id="L998">                System.out.println(&quot;  Method Coverage: &quot; + methodCoverage + &quot;%&quot;);</span>
+<span class="nc" id="L999">                System.out.println(&quot;  Class Coverage: &quot; + classCoverage + &quot;%&quot;);</span>
+<span class="nc" id="L1000">                return false;</span>
+            }
+<span class="nc" id="L1002">        }</span>
+
+<span class="nc" id="L1004">        return true;</span>
+    }
+
+    private static double parseCoverageToDouble(String coverageText) {
+<span class="nc bnc" id="L1008" title="All 2 branches missed.">        if (coverageText.equals(&quot;-&quot;)) {</span>
+<span class="nc" id="L1009">            return 0.0;</span>
+        }
+        try {
+<span class="nc" id="L1012">            return Double.parseDouble(coverageText.replace(&quot;%&quot;, &quot;&quot;));</span>
+<span class="nc" id="L1013">        } catch (NumberFormatException e) {</span>
+<span class="nc" id="L1014">            return 0.0;</span>
+        }
+    }
+
+
+    // 20.添加 Timer 实例
+<span class="nc" id="L1020">    private final Timer timer = new Timer();</span>
+
+
+    //21.更新测试代码
+    /**
+     * 更新现有测试类的内容
+     * @param optimizedTestCode 优化后的测试代码（由LLM直接返回）
+     * @param classInfo 类信息
+     */
+    public static void updateTestClass(String optimizedTestCode, Map&lt;String, String&gt; classInfo) {
+        try {
+            // 构造测试类的路径和文件名
+<span class="nc" id="L1032">            String packagePath = classInfo.get(&quot;包路径&quot;);</span>
+<span class="nc bnc" id="L1033" title="All 4 branches missed.">            if (packagePath == null || packagePath.isEmpty()) {</span>
+<span class="nc" id="L1034">                throw new IllegalArgumentException(&quot;包路径不能为空&quot;);</span>
+            }
+<span class="nc" id="L1036">            String basePackagePath = packagePath.replace(&quot;.&quot;, &quot;/&quot;);</span>
+<span class="nc bnc" id="L1037" title="All 2 branches missed.">            if (!basePackagePath.startsWith(&quot;/&quot;)) {</span>
+<span class="nc" id="L1038">                basePackagePath = &quot;/&quot; + basePackagePath;</span>
+            }
+<span class="nc" id="L1040">            String className = classInfo.get(&quot;类名&quot;);</span>
+<span class="nc" id="L1041">            String testClassName = className + &quot;Test&quot;;</span>
+<span class="nc" id="L1042">            String testClassPath = &quot;src/test/java&quot; + basePackagePath + &quot;/&quot; + testClassName + &quot;.java&quot;;</span>
+
+            // 检查文件是否存在
+<span class="nc" id="L1045">            File testFile = new File(testClassPath);</span>
+
+            // 创建目录（如果不存在）
+<span class="nc" id="L1048">            java.nio.file.Path directory = Paths.get(testFile.getParent());</span>
+<span class="nc bnc" id="L1049" title="All 2 branches missed.">            if (!Files.exists(directory)) {</span>
+<span class="nc" id="L1050">                Files.createDirectories(directory);</span>
+            }
+
+            // 提取纯代码内容（去除可能的标记）
+<span class="nc" id="L1054">            String pureCode = extractPureCode(optimizedTestCode);</span>
+
+            // 写入优化后的测试代码
+<span class="nc" id="L1057">            try (FileWriter writer = new FileWriter(testFile)) {</span>
+<span class="nc" id="L1058">                writer.write(pureCode);</span>
+            }
+
+<span class="nc" id="L1061">            System.out.println(&quot;测试类更新成功：&quot; + testClassPath);</span>
+<span class="nc" id="L1062">        } catch (IOException e) {</span>
+<span class="nc" id="L1063">            System.err.println(&quot;更新测试类时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L1064">        }</span>
+<span class="nc" id="L1065">    }</span>
+
+
+    //规则修复
+
+
+    public static void main(String[] args) throws IOException {
+    //String apiKey = &quot;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&quot;;
+    //0526 String apiKey = &quot;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&quot;;
+    //gpt String apiKey = &quot;sk-o7C539636d3cb6ec90bc084880c104d25926fd8af0bilWd8&quot;;
+    //free2 String apiKey = &quot;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&quot;;
+    //DeepSeek: R1 R1_Cost1020
+<span class="nc" id="L1077">        String apiKey = &quot;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&quot;;</span>
+
+        //gpt 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
+<span class="nc" id="L1080">    String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\codeing&quot;;</span>
+<span class="nc" id="L1081">    String sourceCodePath = &quot;src/main/java/codeing/Add.java&quot;;</span>
+<span class="nc" id="L1082">    String targetPackage = &quot;codeing&quot;;</span>
+<span class="nc" id="L1083">    TestCore testCoreClass = new TestCore(apiKey);</span>
+<span class="nc" id="L1084">    testCoreClass.className = &quot;Add&quot;; // 设置当前处理的类名</span>
+<span class="nc" id="L1085">    String logFilename=&quot;Add_1020_MutiTestAddGuideDemo_1.txt&quot;;</span>
+<span class="nc" id="L1086">    mainM(apiKey,testCoreClass,sourceCodeDir,sourceCodePath,targetPackage,logFilename);</span>
+<span class="nc" id="L1087">    }</span>
+
+    public static void mainF(String[] args) throws IOException {
+<span class="nc" id="L1090">        String apiKey = &quot;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&quot;;</span>
+<span class="nc" id="L1091">        String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\help&quot;;</span>
+<span class="nc" id="L1092">        String testClassDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\test\\java\\help&quot;;</span>
+<span class="nc" id="L1093">        String targetPackage = &quot;help&quot;;</span>
+<span class="nc" id="L1094">        String logFilenamePrefix = &quot;cli_Help_test_errorTest_deepseek_&quot;;</span>
+
+<span class="nc" id="L1096">        TestCore testCoreClass = new TestCore(apiKey);</span>
+<span class="nc" id="L1097">        testCoreClass.className = &quot;&quot;; // 初始化为空</span>
+
+        // 遍历 cli 目录下的所有 .java 文件
+<span class="nc" id="L1100">        File cliDir = new File(sourceCodeDir);</span>
+<span class="nc bnc" id="L1101" title="All 4 branches missed.">        if (cliDir.exists() &amp;&amp; cliDir.isDirectory()) {</span>
+<span class="nc bnc" id="L1102" title="All 4 branches missed.">            File[] javaFiles = cliDir.listFiles((dir, name) -&gt; name.endsWith(&quot;.java&quot;) &amp;&amp; !name.endsWith(&quot;Test.java&quot;));</span>
+
+<span class="nc bnc" id="L1104" title="All 2 branches missed.">            if (javaFiles != null) {</span>
+<span class="nc bnc" id="L1105" title="All 2 branches missed.">                for (File javaFile : javaFiles) {</span>
+<span class="nc" id="L1106">                    String className = javaFile.getName().replaceAll(&quot;.java&quot;, &quot;&quot;);</span>
+<span class="nc" id="L1107">                    String sourceCodePath = &quot;src/main/java/help/&quot; + className + &quot;.java&quot;;</span>
+<span class="nc" id="L1108">                    String logFilename = logFilenamePrefix + className + &quot;.txt&quot;;</span>
+
+                    // 检查测试类是否已经存在
+<span class="nc" id="L1111">                    String testClassName = className + &quot;Test&quot;;</span>
+<span class="nc" id="L1112">                    File testClassFile = new File(testClassDir, testClassName + &quot;.java&quot;);</span>
+
+<span class="nc bnc" id="L1114" title="All 2 branches missed.">                    if (!testClassFile.exists()) {</span>
+                        // 如果测试类不存在，执行 mainM 函数
+<span class="nc" id="L1116">                        testCoreClass.className = className;</span>
+<span class="nc" id="L1117">                        System.out.println(&quot;当前正在为&quot;+testCoreClass.className+&quot; : &quot;+className+&quot;生成测试代码！\n&quot;);</span>
+<span class="nc" id="L1118">                        mainM(apiKey, testCoreClass, sourceCodeDir, sourceCodePath, targetPackage, logFilename);</span>
+<span class="nc" id="L1119">                        System.out.println(&quot;测试类不存在！&quot;+className);</span>
+                    }else {
+<span class="nc" id="L1121">                        System.out.println(&quot;测试类已存在：&quot; + testClassName);</span>
+                    }
+                }
+            }
+        }
+<span class="nc" id="L1126">    }</span>
+
+    public static void mainM(String apiKey,TestCore testCoreClass,String sourceCodeDir,String sourceCodePath,String targetPackage,String logFilename) throws IOException {
+    //1 public static void main(String[] args) throws IOException {
+        //1 String apiKey = &quot;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&quot;;
+        //读取待测试列表
+        //String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\cli&quot;;
+        //1 String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\codeing&quot;;
+<span class="nc" id="L1134">        List&lt;String&gt; classNames = new ArrayList&lt;&gt;();</span>
+
+
+        //输出当前待测试类名
+        //System.out.println(&quot;当前正在为&quot;+classNames+&quot;生成测试代码！\n&quot;);
+
+        // 遍历指定目录下的所有Java文件-待实现
+<span class="nc" id="L1141">        File dir = new File(sourceCodeDir);</span>
+<span class="nc bnc" id="L1142" title="All 4 branches missed.">        if (dir.exists() &amp;&amp; dir.isDirectory()) {</span>
+<span class="nc" id="L1143">            File[] files = dir.listFiles((d, name) -&gt; name.endsWith(&quot;.java&quot;));</span>
+<span class="nc bnc" id="L1144" title="All 2 branches missed.">            if (files != null) {</span>
+<span class="nc bnc" id="L1145" title="All 2 branches missed.">                for (File file : files) {</span>
+                    // 提取类名
+<span class="nc" id="L1147">                    String className = extractClassName(file);</span>
+<span class="nc bnc" id="L1148" title="All 4 branches missed.">                    if (className != null &amp;&amp; !className.isEmpty()) {</span>
+<span class="nc" id="L1149">                        classNames.add(className);</span>
+                    }
+                }
+            }
+        }
+
+          //String sourceCodePath = &quot;src/main/java/cli/AlreadySelectedException.java&quot;;
+        //1 String sourceCodePath = &quot;src/main/java/codeing/Example.java&quot;;
+        //TestCore testCoreClass = new TestCore(apiKey);
+        //testCoreClass.className = &quot;AlreadySelectedException&quot;; // 设置当前处理的类名
+        //1 testCoreClass.className = &quot;Example&quot;; // 设置当前处理的类名
+
+<span class="nc" id="L1161">        String sourceCodeFile=testCoreClass.readSourceCode(sourceCodePath);</span>
+<span class="nc" id="L1162">        String conversationHistory = &quot;&quot;; // 初始化对话历史</span>
+<span class="nc" id="L1163">        boolean analyzeSuccess = false;</span>
+<span class="nc" id="L1164">        boolean generateSuccess = false;</span>
+<span class="nc" id="L1165">        boolean validateSuccess = false;</span>
+<span class="nc" id="L1166">        boolean fixSuccess = false;</span>
+<span class="nc" id="L1167">        boolean evaluateSuccess = false;</span>
+<span class="nc" id="L1168">        boolean overallSuccess = false;</span>
+<span class="nc" id="L1169">        long analyzeEndTime = 0;</span>
+<span class="nc" id="L1170">        long generateEndTime = 0;</span>
+<span class="nc" id="L1171">        long validateEndTime = 0;</span>
+<span class="nc" id="L1172">        long fixEndTime = 0;</span>
+<span class="nc" id="L1173">        long evaluateEndTime = 0;</span>
+<span class="nc" id="L1174">        int analyzeTokenCount = 0;</span>
+<span class="nc" id="L1175">        int generateTokenCount = 0;</span>
+<span class="nc" id="L1176">        int validateTokenCount = 0;</span>
+<span class="nc" id="L1177">        int fixTokenCount = 0;</span>
+<span class="nc" id="L1178">        int evaluateTokenCount = 0;</span>
+<span class="nc" id="L1179">        String validateFailReason = &quot;&quot;;</span>
+<span class="nc" id="L1180">        int fixAttempt = 0;</span>
+<span class="nc" id="L1181">        String fixFailReason = &quot;&quot;;</span>
+<span class="nc" id="L1182">        String fixSuccessTimes = &quot;0&quot;;</span>
+<span class="nc" id="L1183">        String evaluateCoverageData = &quot;&quot;;</span>
+<span class="nc" id="L1184">        long startTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1185">        System.out.println(&quot;起始时间：&quot;+startTime+&quot;\n&quot;);</span>
+
+<span class="nc" id="L1187">        long analyzeStart = System.currentTimeMillis();</span>
+
+        // 初始化 Timer
+<span class="nc" id="L1190">        testCoreClass.timer.start(&quot;套件&quot;);</span>
+<span class="nc" id="L1191">        System.out.println(&quot;分析起始时间：&quot;+analyzeStart+&quot;\n&quot;);</span>
+        //分析开始
+<span class="nc" id="L1193">        testCoreClass.timer.start(&quot;分析&quot;);</span>
+<span class="nc" id="L1194">        String analyzePromt=testCoreClass.analyzeSourceCode(sourceCodeFile);</span>
+
+        // 从分析结果中提取类信息
+<span class="nc" id="L1197">        Map&lt;String, String&gt; classInfo = testCoreClass.extractClassInfo3(analyzePromt);</span>
+<span class="nc" id="L1198">        analyzeSuccess = true;</span>
+<span class="nc" id="L1199">        analyzeEndTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1200">        System.out.println(&quot;分析结束时间：&quot;+analyzeEndTime+&quot;\n&quot;);</span>
+<span class="nc" id="L1201">        System.out.println(&quot;分析总耗时：&quot;+(analyzeEndTime-analyzeStart));</span>
+<span class="nc" id="L1202">        analyzeTokenCount = testCoreClass.tokenCount;</span>
+<span class="nc bnc" id="L1203" title="All 4 branches missed.">        if (analyzePromt == null || analyzePromt.isEmpty()) {</span>
+<span class="nc" id="L1204">            System.out.println(&quot;分析阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1205">            return;</span>
+        }
+        //分析结束
+<span class="nc" id="L1208">        testCoreClass.timer.end(&quot;分析&quot;);</span>
+        //生成
+      //  String testCode=testCoreClass.generateTestCode(sourceCodeFile,analyzePromt);
+        //生成开始
+<span class="nc" id="L1212">        testCoreClass.timer.start(&quot;生成&quot;);</span>
+<span class="nc" id="L1213">        String testCode=testCoreClass.generateTestCode2(sourceCodeFile,analyzePromt,conversationHistory);</span>
+
+<span class="nc" id="L1215">        generateSuccess = true;</span>
+<span class="nc" id="L1216">        generateEndTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1217">        generateTokenCount = testCoreClass.tokenCount - analyzeTokenCount;</span>
+<span class="nc bnc" id="L1218" title="All 4 branches missed.">        if (testCode == null || testCode.isEmpty()) {</span>
+<span class="nc" id="L1219">            System.out.println(&quot;生成阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1220">            return;</span>
+        }
+        //生成结束
+<span class="nc" id="L1223">        testCoreClass.timer.end(&quot;生成&quot;);</span>
+        //验证开始
+<span class="nc" id="L1225">        testCoreClass.timer.start(&quot;验证&quot;);</span>
+<span class="nc" id="L1226">        String validateResult=testCoreClass.validateTestCode(testCode);</span>
+
+<span class="nc" id="L1228">        validateSuccess = validateResult.contains(&quot;全部验证通过&quot;);</span>
+<span class="nc" id="L1229">        validateEndTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1230">        validateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount;</span>
+<span class="nc bnc" id="L1231" title="All 4 branches missed.">        if (validateResult == null || validateResult.isEmpty()) {</span>
+<span class="nc" id="L1232">            System.out.println(&quot;验证阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1233">            return;</span>
+        }
+        //验证结束
+<span class="nc" id="L1236">        testCoreClass.timer.end(&quot;验证&quot;);</span>
+<span class="nc bnc" id="L1237" title="All 2 branches missed.">        if (!validateSuccess) {</span>
+<span class="nc" id="L1238">            validateFailReason = validateResult;</span>
+
+        }
+<span class="nc bnc" id="L1241" title="All 2 branches missed.">        if (validateSuccess) {</span>
+            //评估开始
+<span class="nc" id="L1243">            testCoreClass.timer.start(&quot;评估&quot;);</span>
+            //评估
+
+<span class="nc" id="L1246">            String evaluateResult=testCoreClass.evaluateTestCode(testCode);</span>
+
+<span class="nc" id="L1248">            evaluateSuccess = true;</span>
+<span class="nc" id="L1249">            evaluateEndTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1250">            evaluateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount;</span>
+<span class="nc" id="L1251">            evaluateCoverageData = evaluateResult;</span>
+<span class="nc bnc" id="L1252" title="All 4 branches missed.">            if (evaluateResult == null || evaluateResult.isEmpty()) {</span>
+<span class="nc" id="L1253">                System.out.println(&quot;评估阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1254">                return;</span>
+            }
+            //评估结束
+<span class="nc" id="L1257">            testCoreClass.timer.end(&quot;评估&quot;);</span>
+            //如果覆盖率未达到期望 优化测试代码
+
+            //创建测试类
+            //  createTestClass(testCode);
+<span class="nc" id="L1262">            System.out.println(&quot;测试类创建开始：&quot;);</span>
+<span class="nc" id="L1263">            createTestClass2(testCode, classInfo);</span>
+<span class="nc" id="L1264">            overallSuccess = true;</span>
+            try {
+<span class="nc" id="L1266">                Thread.sleep(5000); // 等待 5 秒</span>
+<span class="nc" id="L1267">            } catch (InterruptedException e) {</span>
+<span class="nc" id="L1268">                System.err.println(&quot;等待过程中被中断：&quot; + e.getMessage());</span>
+<span class="nc" id="L1269">            }</span>
+<span class="nc" id="L1270">            System.out.println(&quot;测试类编译开始：&quot;);</span>
+<span class="nc" id="L1271">            TestClassCompiler testClassCompiler=new TestClassCompiler();</span>
+<span class="nc" id="L1272">            boolean compileResult=testClassCompiler.compileTestClass(classInfo);</span>
+            // 编译测试类
+         //  boolean compileResult = testCoreClass.compileTestClass(classInfo);
+<span class="nc bnc" id="L1275" title="All 2 branches missed.">            if (compileResult) {</span>
+<span class="nc" id="L1276">                System.out.println(&quot;测试类编译成功！&quot;);</span>
+                //编译成功，尝试运行测试代码
+
+                // 运行测试
+                try {
+<span class="nc" id="L1281">                    System.out.println(&quot;测试类运行开始：&quot;);</span>
+<span class="nc" id="L1282">                    TestClassRunner runner = new TestClassRunner();</span>
+                    //获取测试代码位置
+<span class="nc" id="L1284">                    String testFilePath = Paths.get(</span>
+                            &quot;D:\\fx\\jafx\\chatunitest-core&quot;,
+                            &quot;src&quot;, &quot;test&quot;, &quot;java&quot;,
+<span class="nc" id="L1287">                            classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, File.separator),</span>
+<span class="nc" id="L1288">                            classInfo.get(&quot;类名&quot;) + &quot;Test.java&quot;</span>
+<span class="nc" id="L1289">                    ).toString();</span>
+
+<span class="nc" id="L1291">                    String testcoderunner=runner.readFileContent(testFilePath);</span>
+<span class="nc" id="L1292">                    boolean testResult = runner.runTests(testcoderunner,classInfo);</span>
+<span class="nc" id="L1293">                    System.out.println(runner.getDetailedResults());</span>
+<span class="nc" id="L1294">                    String DetailedResults=runner.getDetailedResults();</span>
+<span class="nc bnc" id="L1295" title="All 2 branches missed.">                    if (testResult) {</span>
+<span class="nc" id="L1296">                        System.out.println(&quot;测试类覆盖率计算开始：&quot;);</span>
+<span class="nc" id="L1297">                        String mvnTestResult1 = testCoreClass.executeMavenCommand(&quot;test&quot;);</span>
+<span class="nc" id="L1298">                        System.out.println(&quot;mvn test 结果1：\n&quot; + mvnTestResult1);</span>
+
+
+                        //规则修复
+                        // 把文本落盘到文件
+
+                       // Path mvnlogFile = Paths.get(&quot;target/mvn-guideFixTest.log&quot;);
+<span class="nc" id="L1305">                        Path mvnlogFile = Paths.get(&quot;target&quot;,&quot;mvn-&quot;+ classInfo.get(&quot;类名&quot;) + &quot;Test.log&quot;);</span>
+<span class="nc" id="L1306">                        Files.write(mvnlogFile,DetailedResults.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L1307">                        GuideFixHealer.fixSimpleFailures(mvnlogFile.toString());</span>
+
+
+<span class="nc" id="L1310">                        String mvnTestResult2 = testCoreClass.executeMavenCommand(&quot;test&quot;);</span>
+<span class="nc" id="L1311">                        System.out.println(&quot;mvn test 结果2：\n&quot; + mvnTestResult2);</span>
+
+
+<span class="nc" id="L1314">                        double instructionCoverage = extractCoverageFromMvnResult(mvnTestResult2, &quot;Overall Coverage&quot;);</span>
+<span class="nc" id="L1315">                        System.out.println(&quot;mvn test结果展示：&quot; + instructionCoverage);</span>
+
+
+
+                        // 提取覆盖率数据（假设 mvn test 输出中包含覆盖率信息）
+<span class="nc" id="L1320">                        List&lt;Map&lt;String, String&gt;&gt; coverageInfoList = extractCoverageInfo();</span>
+                        //String targetPackage = &quot;cli&quot;;
+                        //1 String targetPackage = &quot;codeing&quot;;
+<span class="nc" id="L1323">                        List&lt;Map&lt;String, String&gt;&gt; filteredCoverageInfoList = CoverageEvaluator.filterCoverageInfoByPackage(coverageInfoList, targetPackage);</span>
+
+                        // 检查覆盖率
+<span class="nc" id="L1326">                        boolean coverageSufficient = checkCoverage(filteredCoverageInfoList);</span>
+<span class="nc" id="L1327">                        System.out.println(&quot;Coverage sufficient: &quot; + coverageSufficient);</span>
+                        //暂时不优化
+                      /*  coverageSufficient=true;
+                        if (!coverageSufficient) {
+                            // 覆盖率不足，优化测试代码
+                            System.out.println(&quot;测试类优化开始：覆盖率不足，优化测试代码...&quot;);
+                            String optimizedTestCode = testCoreClass.optimizeTestCode(testCode, mvnTestResult);
+                            // 验证优化后的测试代码
+                            String validate2Result = testCoreClass.validateTestCode(optimizedTestCode);
+                            boolean validate2Success = validate2Result.contains(&quot;全部验证通过&quot;);
+                            if (validate2Success) {
+                                // 更新测试类内容
+                                updateTestClass(optimizedTestCode, classInfo);
+                                // 重新编译测试类
+                                TestClassCompiler testClass2Compiler = new TestClassCompiler();
+                                boolean compile2Result = testClass2Compiler.compileTestClass(classInfo);
+                                if (compile2Result) {
+                                    // 重新运行测试
+                                    TestClassRunner optimizedRunner = new TestClassRunner();
+                                    //获取测试代码位置
+                                    String testFilePath2 = Paths.get(
+                                            &quot;D:\\fx\\jafx\\chatunitest-core&quot;,
+                                            &quot;src&quot;, &quot;test&quot;, &quot;java&quot;,
+                                            classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, File.separator),
+                                            classInfo.get(&quot;类名&quot;) + &quot;Test.java&quot;
+                                    ).toString();
+                                    System.out.println(&quot;尝试读取文件: &quot; + testFilePath); // 添加调试输出
+                                    String testcoderunner2=runner.readFileContent(testFilePath2);
+                                    boolean optimizedTestResult = optimizedRunner.runTests(testcoderunner2, classInfo);
+                                    System.out.println(optimizedRunner.getDetailedResults());
+                                    if (optimizedTestResult) {
+                                        System.out.println(&quot;优化后的测试代码运行成功！&quot;);
+                                        // 重新执行 mvn test
+                                        String newMvnTestResult = testCoreClass.executeMavenCommand(&quot;test&quot;);
+                                        System.out.println(&quot;新的 mvn test 结果：\n&quot; + newMvnTestResult);
+                                    } else {
+                                        System.out.println(&quot;优化后的测试代码运行失败！&quot;);
+                                    }
+                                } else {
+                                    System.out.println(&quot;优化后的测试类编译失败！&quot;);
+                                }
+                            } else {
+                                System.out.println(&quot;优化后的测试代码验证失败！&quot;);
+                            }
+                        } else {
+                            System.out.println(&quot;覆盖率满足要求！&quot;);
+                        }*/
+
+<span class="nc" id="L1375">                    } else {</span>
+<span class="nc" id="L1376">                        System.out.println(&quot;测试未通过：&quot;);</span>
+<span class="nc" id="L1377">                        System.out.println(runner.getDetailedResults());</span>
+                    }
+<span class="nc" id="L1379">                } catch (Exception e) {</span>
+<span class="nc" id="L1380">                    System.out.println(&quot;运行测试时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L1381">                    e.printStackTrace();</span>
+<span class="nc" id="L1382">                }</span>
+
+
+            } else {
+<span class="nc" id="L1386">                System.out.println(&quot;测试类编译失败！&quot;);</span>
+            }
+<span class="nc" id="L1388">        }</span>
+        else
+            {
+<span class="nc" id="L1391">                String errorPrompt = testCoreClass.extractErrorPrompt(validateResult);</span>
+                // 构建修复提示
+<span class="nc" id="L1393">                String fixRequestPrompt = fixPrompt.replace(&quot;{errorPrompt}&quot;, errorPrompt);</span>
+                //修复开始
+<span class="nc" id="L1395">                testCoreClass.timer.start(&quot;修复&quot;);</span>
+<span class="nc" id="L1396">                fixAttempt = 1;</span>
+<span class="nc bnc" id="L1397" title="All 2 branches missed.">                while (fixAttempt &lt;= 3) {</span>
+                    //修复
+                    //String fixResult = testCoreClass.fixTestCode(validateResult, testCode);
+<span class="nc" id="L1400">                    String fixResult = testCoreClass.fixTestCode(fixRequestPrompt, testCode);</span>
+                   // fixSuccess = !fixResult.equals(&quot;null&quot;);
+<span class="nc" id="L1402">                    fixEndTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1403">                    fixTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount;</span>
+<span class="nc bnc" id="L1404" title="All 4 branches missed.">                    if (fixResult != null &amp;&amp; !fixResult.equals(&quot;null&quot;)) {fixSuccess=true;}</span>
+<span class="nc bnc" id="L1405" title="All 4 branches missed.">                    if (fixResult == null || fixResult.isEmpty()) {</span>
+<span class="nc" id="L1406">                        System.out.println(&quot;修复阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1407">                        break;</span>
+                    }
+<span class="nc bnc" id="L1409" title="All 2 branches missed.">                    if (fixSuccess) {</span>
+<span class="nc" id="L1410">                        testCode=fixResult;</span>
+<span class="nc" id="L1411">                        String evaluateResult = testCoreClass.evaluateTestCode(testCode);</span>
+<span class="nc" id="L1412">                        evaluateSuccess = true;</span>
+<span class="nc" id="L1413">                        evaluateEndTime = System.currentTimeMillis();</span>
+<span class="nc" id="L1414">                        evaluateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount - fixTokenCount;</span>
+<span class="nc bnc" id="L1415" title="All 4 branches missed.">                        if (evaluateResult == null || evaluateResult.isEmpty()) {</span>
+<span class="nc" id="L1416">                            System.out.println(&quot;评估阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1417">                            break;</span>
+                        }
+                        // 假设 evaluateResult 包含覆盖率数据，如 &quot;整体代码覆盖率：80%，分支覆盖率：70%，行覆盖率：85%&quot;
+<span class="nc" id="L1420">                        evaluateCoverageData = evaluateResult;</span>
+                     //   testCoreClass.createTestClass(testCode);
+<span class="nc" id="L1422">                        testCoreClass.createTestClass2(testCode, classInfo);;</span>
+<span class="nc" id="L1423">                        overallSuccess = true;</span>
+                        try {
+<span class="nc" id="L1425">                            Thread.sleep(5000); // 等待 5 秒</span>
+<span class="nc" id="L1426">                        } catch (InterruptedException e) {</span>
+<span class="nc" id="L1427">                            System.err.println(&quot;等待过程中被中断：&quot; + e.getMessage());</span>
+<span class="nc" id="L1428">                        }</span>
+<span class="nc" id="L1429">                        TestClassCompiler testClassCompiler=new TestClassCompiler();</span>
+<span class="nc" id="L1430">                        boolean compileResult=testClassCompiler.compileTestClass(classInfo);</span>
+                        // 编译测试类
+                        //  boolean compileResult = testCoreClass.compileTestClass(classInfo);
+<span class="nc bnc" id="L1433" title="All 2 branches missed.">                        if (compileResult) {</span>
+<span class="nc" id="L1434">                            System.out.println(&quot;测试类编译成功！&quot;);</span>
+                            //编译成功，尝试运行测试代码
+
+                            // 运行测试
+                            try {
+<span class="nc" id="L1439">                                System.out.println(&quot;运行开始：&quot;);</span>
+<span class="nc" id="L1440">                                TestClassRunner runner = new TestClassRunner();</span>
+                                //获取测试代码位置
+<span class="nc" id="L1442">                                String testFilePath = Paths.get(</span>
+                                        &quot;D:\\fx\\jafx\\chatunitest-core&quot;,
+                                        &quot;src&quot;, &quot;test&quot;, &quot;java&quot;,
+<span class="nc" id="L1445">                                        classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, File.separator),</span>
+<span class="nc" id="L1446">                                        classInfo.get(&quot;类名&quot;) + &quot;Test.java&quot;</span>
+<span class="nc" id="L1447">                                ).toString();</span>
+<span class="nc" id="L1448">                                System.out.println(&quot;尝试读取文件: &quot; + testFilePath); // 添加调试输出</span>
+<span class="nc" id="L1449">                                String testcoderunner2=runner.readFileContent(testFilePath);</span>
+<span class="nc" id="L1450">                                boolean testResult = runner.runTests(testcoderunner2,classInfo);</span>
+<span class="nc" id="L1451">                                System.out.println(&quot;运行结束,输出结果：&quot;);</span>
+<span class="nc" id="L1452">                                System.out.println(runner.getDetailedResults());</span>
+<span class="nc" id="L1453">                                String DetailedResults=runner.getDetailedResults();</span>
+<span class="nc bnc" id="L1454" title="All 2 branches missed.">                                if (testResult) {</span>
+<span class="nc" id="L1455">                                    System.out.println(&quot;所有测试通过！&quot;);</span>
+<span class="nc" id="L1456">                                    String mvnTestResult1 = testCoreClass.executeMavenCommand(&quot;test&quot;);</span>
+
+                                    //规则修复
+                                    // 把文本落盘到文件
+<span class="nc" id="L1460">                                    Path mvnlogFile = Paths.get(&quot;target&quot;,&quot;mvn-&quot;+ classInfo.get(&quot;类名&quot;) + &quot;Test.log&quot;);</span>
+<span class="nc" id="L1461">                                    Files.write(mvnlogFile, DetailedResults.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L1462">                                    GuideFixHealer.fixSimpleFailures(mvnlogFile.toString());</span>
+
+
+<span class="nc" id="L1465">                                    String mvnTestResult2 = testCoreClass.executeMavenCommand(&quot;test&quot;);</span>
+<span class="nc" id="L1466">                                    System.out.println(&quot;mvn test 结果：\n&quot; + mvnTestResult2);</span>
+
+
+
+<span class="nc" id="L1470">                                    System.out.println(&quot;mvn test 结果：\n&quot; + mvnTestResult2);</span>
+                                    // 提取覆盖率数据（假设 mvn test 输出中包含覆盖率信息）
+<span class="nc" id="L1472">                                    List&lt;Map&lt;String, String&gt;&gt; coverageInfoList = extractCoverageInfo();</span>
+                                    //String targetPackage = &quot;cli&quot;;
+                                    //1 String targetPackage = &quot;codeing&quot;;
+<span class="nc" id="L1475">                                    List&lt;Map&lt;String, String&gt;&gt; filteredCoverageInfoList = CoverageEvaluator.filterCoverageInfoByPackage(coverageInfoList, targetPackage);</span>
+
+                                    // 检查覆盖率
+<span class="nc" id="L1478">                                    boolean coverageSufficient = checkCoverage(filteredCoverageInfoList);</span>
+<span class="nc" id="L1479">                                    System.out.println(&quot;Coverage sufficient: &quot; + coverageSufficient);</span>
+                                    //暂时不优化
+                                    /*coverageSufficient=true;
+                                    if (!coverageSufficient) {
+                                        // 覆盖率不足，优化测试代码
+                                        System.out.println(&quot;覆盖率不足，优化测试代码...&quot;);
+                                        String optimizedTestCode = testCoreClass.optimizeTestCode(testCode, mvnTestResult);
+                                        // 验证优化后的测试代码
+                                        String validate2Result = testCoreClass.validateTestCode(optimizedTestCode);
+                                        boolean validate2Success = validate2Result.contains(&quot;全部验证通过&quot;);
+                                        if (validate2Success) {
+                                            // 更新测试类
+                                            updateTestClass(optimizedTestCode, classInfo);
+                                            // 重新编译测试类
+                                            TestClassCompiler testClass2Compiler = new TestClassCompiler();
+                                            boolean compile2Result = testClass2Compiler.compileTestClass(classInfo);
+                                            if (compile2Result) {
+                                                // 重新运行测试
+                                                TestClassRunner optimizedRunner = new TestClassRunner();
+                                                boolean optimizedTestResult = optimizedRunner.runTests(optimizedTestCode, classInfo);
+                                                System.out.println(optimizedRunner.getDetailedResults());
+                                                if (optimizedTestResult) {
+                                                    System.out.println(&quot;优化后的测试代码运行成功！&quot;);
+                                                    // 重新执行 mvn test
+                                                    String newMvnTestResult = testCoreClass.executeMavenCommand(&quot;test&quot;);
+                                                    System.out.println(&quot;新的 mvn test 结果：\n&quot; + newMvnTestResult);
+                                                } else {
+                                                    System.out.println(&quot;优化后的测试代码运行失败！&quot;);
+                                                }
+                                            } else {
+                                                System.out.println(&quot;优化后的测试类编译失败！&quot;);
+                                            }
+                                        } else {
+                                            System.out.println(&quot;优化后的测试代码验证失败！&quot;);
+                                        }
+                                    } else {
+                                        System.out.println(&quot;覆盖率满足要求！&quot;);
+                                    }*/
+
+<span class="nc" id="L1518">                                } else {</span>
+<span class="nc" id="L1519">                                    System.out.println(&quot;测试未通过：&quot;);</span>
+<span class="nc" id="L1520">                                    System.out.println(runner.getDetailedResults());</span>
+                                }
+<span class="nc" id="L1522">                            } catch (Exception e) {</span>
+<span class="nc" id="L1523">                                System.out.println(&quot;运行测试时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L1524">                                e.printStackTrace();</span>
+<span class="nc" id="L1525">                            }</span>
+                        }
+
+<span class="nc" id="L1528">                        fixSuccessTimes = String.valueOf(fixAttempt);</span>
+<span class="nc" id="L1529">                        break;</span>
+                    } else {
+<span class="nc" id="L1531">                        System.out.println(&quot;第 &quot; + fixAttempt + &quot; 次修复失败：&quot; + fixResult + &quot;over\n&quot;);</span>
+<span class="nc" id="L1532">                        fixFailReason += &quot;第 &quot; + fixAttempt + &quot; 次修复失败，原因是：&quot; + fixResult + &quot;\n&quot;;</span>
+<span class="nc" id="L1533">                        testCoreClass.failedClasses.add(testCoreClass.className);</span>
+<span class="nc" id="L1534">                        fixAttempt++;</span>
+                    }
+<span class="nc" id="L1536">                }</span>
+                //修复结束
+<span class="nc" id="L1538">                testCoreClass.timer.end(&quot;修复&quot;);</span>
+            }
+        // 记录测试代码生成过程的信息
+<span class="nc" id="L1541">        testCoreClass.logTestCodeGenerationInfo(analyzeSuccess, generateSuccess, validateSuccess,</span>
+                fixSuccess, evaluateSuccess, overallSuccess,analyzeStart,analyzeEndTime, generateEndTime,
+                validateEndTime, fixEndTime, evaluateEndTime, analyzeTokenCount, generateTokenCount,
+                validateTokenCount, fixTokenCount, evaluateTokenCount, validateFailReason,
+                fixAttempt, fixFailReason, fixSuccessTimes, evaluateCoverageData,logFilename);
+<span class="nc" id="L1546">        testCoreClass.closeClient();</span>
+<span class="nc" id="L1547">        testCoreClass.timer.end(&quot;套件&quot;);</span>
+
+<span class="nc" id="L1549">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PromptInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.dto</a> &gt; <span class="el_source">PromptInfo.java</span></div><h1>PromptInfo.java</h1><pre class="source lang-java linenums">package zju.cst.aces.dto;
+
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import lombok.Data;
+
+import java.nio.file.Path;
+import java.util.*;
+import zju.cst.aces.util.JsonResponseProcessor;
+
+@Data
+public class PromptInfo {
+    public boolean hasDep;
+    public String fullClassName;
+    public String className;
+    public String methodName;
+    public String methodSignature;
+    public String context; // context with only focal method.
+    public String otherMethodBrief;
+    public String otherMethodBodies;
+<span class="nc" id="L21">    public Map&lt;String, String&gt; constructorDeps = new HashMap&lt;&gt;(); // dependent classes in constructor.</span>
+<span class="nc" id="L22">    public Map&lt;String, String&gt; methodDeps = new HashMap&lt;&gt;(); // dependent classes in method parameters and body.</span>
+    public TestMessage errorMsg;
+<span class="nc" id="L24">    public String unitTest = &quot;&quot;;</span>
+    public String fullTestName;
+    public Path testPath;
+<span class="nc" id="L27">    public Map&lt;String, List&lt;MethodDeclaration&gt;&gt; correctTests = new HashMap&lt;&gt;();</span>
+    public Integer testNum;
+    public Integer round;
+<span class="nc" id="L30">    public List&lt;RoundRecord&gt; records = new ArrayList&lt;&gt;();</span>
+    public MethodInfo methodInfo;
+    public ClassInfo classInfo;
+    public Path methodSlicePath;
+    public Integer sliceNum;
+    public JsonResponseProcessor.JsonData.Step sliceStep;
+<span class="nc" id="L36">    public float coverage=0;//max_coverage</span>
+<span class="nc" id="L37">    public int coverage_improve_time=0;</span>
+    public String max_coverage_test_code;
+
+
+    public PromptInfo(boolean hasDep, String fullClassName, String methodName,
+<span class="nc" id="L42">                      String methodSignature) {</span>
+<span class="nc" id="L43">        this.hasDep = hasDep;</span>
+<span class="nc" id="L44">        this.fullClassName = fullClassName;</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        this.className = fullClassName.contains(&quot;.&quot;) ?</span>
+<span class="nc" id="L46">                fullClassName.substring(fullClassName.lastIndexOf(&quot;.&quot;) + 1) : fullClassName;</span>
+<span class="nc" id="L47">        this.methodName = methodName;</span>
+<span class="nc" id="L48">        this.methodSignature = methodSignature;</span>
+<span class="nc" id="L49">    }</span>
+
+<span class="nc" id="L51">    public PromptInfo(){}</span>
+
+<span class="nc" id="L53">    public PromptInfo(PromptInfo p) {</span>
+<span class="nc" id="L54">        this.setHasDep(p.isHasDep());</span>
+<span class="nc" id="L55">        this.setFullClassName(p.getFullClassName());</span>
+<span class="nc" id="L56">        this.setClassName(p.getClassName());</span>
+<span class="nc" id="L57">        this.setMethodName(p.getMethodName());</span>
+<span class="nc" id="L58">        this.setMethodSignature(p.getMethodSignature());</span>
+<span class="nc" id="L59">        this.setContext(p.getContext());</span>
+<span class="nc" id="L60">        this.setOtherMethodBrief(p.getOtherMethodBrief());</span>
+<span class="nc" id="L61">        this.setConstructorDeps(p.getConstructorDeps());</span>
+<span class="nc" id="L62">        this.setMethodDeps(p.getMethodDeps());</span>
+<span class="nc" id="L63">        this.setErrorMsg(p.getErrorMsg());</span>
+<span class="nc" id="L64">        this.setUnitTest(p.getUnitTest());</span>
+<span class="nc" id="L65">        this.setFullTestName(p.getFullTestName());</span>
+<span class="nc" id="L66">        this.setTestPath(p.getTestPath());</span>
+<span class="nc" id="L67">        this.setCorrectTests(p.getCorrectTests());</span>
+<span class="nc" id="L68">        this.setRecords(p.getRecords());</span>
+<span class="nc" id="L69">        this.setMethodInfo(p.getMethodInfo());</span>
+<span class="nc" id="L70">        this.setClassInfo(p.getClassInfo());</span>
+<span class="nc" id="L71">    }</span>
+
+    public void addMethodDeps(String depClassName, String methodDep) {
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (methodDep == null) {</span>
+<span class="nc" id="L75">            return;</span>
+        }
+<span class="nc" id="L77">        this.methodDeps.put(depClassName, methodDep);</span>
+<span class="nc" id="L78">    }</span>
+
+    public void addConstructorDeps(String depClassName, String constructorDep) {
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (constructorDep == null) {</span>
+<span class="nc" id="L82">            return;</span>
+        }
+<span class="nc" id="L84">        this.constructorDeps.put(depClassName, constructorDep);</span>
+<span class="nc" id="L85">    }</span>
+
+    public void addCorrectTest(MethodDeclaration m) {
+<span class="nc" id="L88">        ClassOrInterfaceDeclaration c = (ClassOrInterfaceDeclaration) m.getParentNode()</span>
+<span class="nc" id="L89">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;Parent node not found&quot;));</span>
+<span class="nc" id="L90">        String className = c.getNameAsString();</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">        if (this.correctTests.containsKey(className)) {</span>
+<span class="nc" id="L92">            this.correctTests.get(className).add(m);</span>
+<span class="nc" id="L93">            return;</span>
+        } else {
+<span class="nc" id="L95">            List&lt;MethodDeclaration&gt; methods = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L96">            methods.add(m);</span>
+<span class="nc" id="L97">            this.correctTests.put(className, methods);</span>
+        }
+<span class="nc" id="L99">    }</span>
+
+    public void addRecord(RoundRecord r) {
+<span class="nc" id="L102">        this.records.add(r);</span>
+<span class="nc" id="L103">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

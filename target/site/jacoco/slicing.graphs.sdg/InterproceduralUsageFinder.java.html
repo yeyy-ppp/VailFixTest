@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InterproceduralUsageFinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.sdg</a> &gt; <span class="el_source">InterproceduralUsageFinder.java</span></div><h1>InterproceduralUsageFinder.java</h1><pre class="source lang-java linenums">package slicing.graphs.sdg;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import slicing.graphs.CallGraph;
+import slicing.graphs.ExpressionObjectTreeFinder;
+import slicing.graphs.cfg.CFG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+import slicing.nodes.VariableAction.Movable;
+import slicing.nodes.VariableAction.Usage;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.FormalIONode;
+import slicing.utils.ASTUtils;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/** An interprocedural usage finder, which adds the associated actions to formal and actual nodes in the CFGs. */
+<span class="nc" id="L26">public class InterproceduralUsageFinder extends InterproceduralActionFinder&lt;Usage&gt; {</span>
+    public InterproceduralUsageFinder(CallGraph callGraph, Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap) {
+<span class="nc" id="L28">        super(callGraph, cfgMap);</span>
+<span class="nc" id="L29">    }</span>
+
+    @Override
+    protected void saveDeclarationActualNodes(CallGraph.Vertex vertex) {
+<span class="nc" id="L33">        super.saveDeclarationActualNodes(vertex);</span>
+<span class="nc" id="L34">        graph.incomingEdgesOf(vertex).forEach(this::markTransferenceToRoot);</span>
+<span class="nc" id="L35">    }</span>
+
+    /** For every variable action -scope-in- or -arg-in- in the graph,
+     *  runs {@link ExpressionObjectTreeFinder#locateAndMarkTransferenceToRoot(Expression, VariableAction)}. */
+    protected void markTransferenceToRoot(CallGraph.Edge&lt;?&gt; edge) {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        for (ActualIONode actualIn : locateActualInNode(edge)) {</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">            for (VariableAction va : edge.getGraphNode().getVariableActions()) {</span>
+<span class="nc bnc" id="L42" title="All 4 branches missed.">                if (va instanceof Movable &amp;&amp; ((Movable) va).getRealNode().equals(actualIn)) {</span>
+<span class="nc" id="L43">                    ExpressionObjectTreeFinder finder = new ExpressionObjectTreeFinder(edge.getGraphNode());</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">                    if (va.getName().equals(&quot;-scope-in-&quot;)) {</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                        if (actualIn.getArgument() == null)</span>
+<span class="nc" id="L46">                            finder.locateAndMarkTransferenceToRoot(edge.getCall(), va);</span>
+                        else
+<span class="nc" id="L48">                            finder.locateAndMarkTransferenceToRoot(actualIn.getArgument(), va);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">                    } else if (va.getName().equals(&quot;-arg-in-&quot;)) {</span>
+<span class="nc" id="L50">                        finder.locateAndMarkTransferenceToRoot(actualIn.getArgument(), va);</span>
+                    }
+                }
+<span class="nc" id="L53">            }</span>
+<span class="nc" id="L54">        }</span>
+<span class="nc" id="L55">    }</span>
+
+    @Override
+    protected void handleFormalAction(CallGraph.Vertex vertex, Usage use) {
+<span class="nc" id="L59">        CFG cfg = cfgMap.get(vertex.getDeclaration());</span>
+<span class="nc" id="L60">        FormalIONode formalIn = FormalIONode.createFormalIn(vertex.getDeclaration(), use.getName());</span>
+<span class="nc" id="L61">        Movable movable = new Movable(use.toDefinition(cfg.getRootNode()), formalIn);</span>
+<span class="nc" id="L62">        cfg.getRootNode().addVariableAction(movable);</span>
+<span class="nc" id="L63">    }</span>
+
+    @Override
+    protected void handleActualAction(CallGraph.Edge&lt;?&gt; edge, Usage use) {
+<span class="nc" id="L67">        GraphNode&lt;?&gt; graphNode = edge.getGraphNode();</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (use.isParameter()) {</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            if (!use.isPrimitive()) {</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">                assert use.hasObjectTree();</span>
+<span class="nc" id="L71">                int index = ASTUtils.getMatchingParameterIndex(graph.getEdgeTarget(edge).getDeclaration(), use.getName());</span>
+<span class="nc" id="L72">                VariableAction argIn = locateArgIn(graphNode, edge.getCall(), index);</span>
+<span class="nc" id="L73">                argIn.getObjectTree().addAll(use.getObjectTree());</span>
+<span class="nc" id="L74">            }</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        } else if (use.isField()) {</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            if (use.isStatic()) {</span>
+                // Known limitation: static fields
+            } else {
+                // An object creation expression input an existing object via actual-in because it creates it.
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                assert !(edge.getCall() instanceof ObjectCreationExpr);</span>
+<span class="nc" id="L81">                VariableAction scopeIn = locateScopeIn(graphNode, edge.getCall());</span>
+<span class="nc" id="L82">                scopeIn.getObjectTree().addAll(use.getObjectTree());</span>
+<span class="nc" id="L83">            }</span>
+        } else {
+<span class="nc" id="L85">            throw new IllegalStateException(&quot;Definition must be either from a parameter or a field!&quot;);</span>
+        }
+<span class="nc" id="L87">    }</span>
+
+    /** Find all actual in nodes in the given call. */
+    protected Set&lt;ActualIONode&gt; locateActualInNode(CallGraph.Edge&lt;?&gt; edge) {
+<span class="nc" id="L91">        return edge.getGraphNode().getSyntheticNodesInMovables().stream()</span>
+<span class="nc" id="L92">                .filter(ActualIONode.class::isInstance)</span>
+<span class="nc" id="L93">                .map(ActualIONode.class::cast)</span>
+<span class="nc" id="L94">                .filter(ActualIONode::isInput)</span>
+<span class="nc" id="L95">                .filter(actual -&gt; ASTUtils.equalsWithRange(actual.getAstNode(), edge.getCall()))</span>
+<span class="nc" id="L96">                .collect(Collectors.toSet());</span>
+    }
+
+    /** Find the -arg-in- variable action that corresponds to the given node, call and index. */
+    protected VariableAction locateArgIn(GraphNode&lt;?&gt; graphNode, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, int index) {
+<span class="nc" id="L101">        return locateActionIn(graphNode, call, index, &quot;-arg-in-&quot;);</span>
+    }
+
+    /** Find the -scope-in- variable action that corresponds to the given node and call. */
+    protected VariableAction locateScopeIn(GraphNode&lt;?&gt; graphNode, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L106">        return locateActionIn(graphNode, call, 0, &quot;-scope-in-&quot;);</span>
+    }
+
+    /** Find the nth variable action from the given node and call that matches the given name. 0 represents the first occurrence. */
+    protected VariableAction locateActionIn(GraphNode&lt;?&gt; graphNode, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, int index, String actionName) {
+<span class="nc" id="L111">        boolean inCall = false;</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        for (VariableAction va : graphNode.getVariableActions()) {</span>
+<span class="nc bnc" id="L113" title="All 4 branches missed.">            if (va instanceof VariableAction.CallMarker &amp;&amp; ASTUtils.equalsWithRange(((VariableAction.CallMarker) va).getCall(), call)) {</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">                if (((VariableAction.CallMarker) va).isEnter())</span>
+<span class="nc" id="L115">                    inCall = true;</span>
+                else
+                    break; // The call has ended, can't find the action now
+            }
+<span class="nc bnc" id="L119" title="All 6 branches missed.">            if (inCall &amp;&amp; va.isDefinition() &amp;&amp; va.getName().equals(actionName)) {</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                if (index == 0)</span>
+<span class="nc" id="L121">                    return va;</span>
+                else
+<span class="nc" id="L123">                    index--;</span>
+            }
+<span class="nc" id="L125">        }</span>
+<span class="nc" id="L126">        throw new IllegalStateException(&quot;Could not locate &quot; + actionName + &quot; for call &quot; + call + &quot; in node &quot; + graphNode);</span>
+    }
+
+    @Override
+    protected Stream&lt;Usage&gt; mapAndFilterActionStream(Stream&lt;VariableAction&gt; stream, CFG cfg) {
+<span class="nc" id="L131">        return stream.filter(VariableAction::isUsage)</span>
+<span class="nc" id="L132">                .map(VariableAction::asUsage)</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">                .filter(v -&gt; !cfg.isCompletelyDefined(v));</span>
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

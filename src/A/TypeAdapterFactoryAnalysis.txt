@@ -1,0 +1,11 @@
+```
+包路径：gson
+类名：TypeAdapterFactory
+父类：无
+依赖类：TypeToken,Gson,TypeAdapter
+---
+序号：1
+方法名：create(Gson,TypeToken)
+返回类型：TypeAdapter
+功能描述：根据指定类型创建对应的TypeAdapter实例
+```

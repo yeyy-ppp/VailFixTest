@@ -1,0 +1,19 @@
+```
+包路径：gson
+类名：JsonSyntaxException
+父类：JsonParseException
+依赖类：JsonParseException
+---
+序号：1
+方法名：JsonSyntaxException(String)
+返回类型：void
+功能描述：使用指定错误消息创建异常
+序号：2
+方法名：JsonSyntaxException(String, Throwable)
+返回类型：void
+功能描述：使用指定错误消息和原因创建异常
+序号：3
+方法名：JsonSyntaxException(Throwable)
+返回类型：void
+功能描述：使用指定原因创建异常
+```

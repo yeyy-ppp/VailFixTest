@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Range.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">Range.java</span></div><h1>Range.java</h1><pre class="source lang-java linenums">package lang3;
+import java.io.Serializable;
+import java.util.Comparator;
+import java.util.Objects;
+public class Range&lt;T&gt; implements Serializable {
+<span class="fc" id="L6">    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})</span>
+    private enum ComparableComparator implements Comparator {
+<span class="fc" id="L8">        INSTANCE;</span>
+        @Override
+        public int compare(final Object obj1, final Object obj2) {
+<span class="fc" id="L11">            return ((Comparable) obj1).compareTo(obj2);</span>
+        }
+    }
+    private static final long serialVersionUID = 2L;
+    @Deprecated
+    public static &lt;T extends Comparable&lt;? super T&gt;&gt; Range&lt;T&gt; between(final T fromInclusive, final T toInclusive) {
+<span class="fc" id="L17">        return of(fromInclusive, toInclusive, null);</span>
+    }
+    @Deprecated
+    public static &lt;T&gt; Range&lt;T&gt; between(final T fromInclusive, final T toInclusive, final Comparator&lt;T&gt; comparator) {
+<span class="fc" id="L21">        return new Range&lt;&gt;(fromInclusive, toInclusive, comparator);</span>
+    }
+    public static &lt;T extends Comparable&lt;? super T&gt;&gt; Range&lt;T&gt; is(final T element) {
+<span class="fc" id="L24">        return of(element, element, null);</span>
+    }
+    public static &lt;T&gt; Range&lt;T&gt; is(final T element, final Comparator&lt;T&gt; comparator) {
+<span class="fc" id="L27">        return of(element, element, comparator);</span>
+    }
+    public static &lt;T extends Comparable&lt;? super T&gt;&gt; Range&lt;T&gt; of(final T fromInclusive, final T toInclusive) {
+<span class="fc" id="L30">        return of(fromInclusive, toInclusive, null);</span>
+    }
+    public static &lt;T&gt; Range&lt;T&gt; of(final T fromInclusive, final T toInclusive, final Comparator&lt;T&gt; comparator) {
+<span class="fc" id="L33">        return new Range&lt;&gt;(fromInclusive, toInclusive, comparator);</span>
+    }
+    private final Comparator&lt;T&gt; comparator;
+    private final int hashCode;
+    private final T maximum;
+    private final T minimum;
+    private transient String toString;
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L41">    Range(final T element1, final T element2, final Comparator&lt;T&gt; comp) {</span>
+<span class="fc" id="L42">        Objects.requireNonNull(element1, &quot;element1&quot;);</span>
+<span class="fc" id="L43">        Objects.requireNonNull(element2, &quot;element2&quot;);</span>
+<span class="fc bfc" id="L44" title="All 2 branches covered.">        if (comp == null) {</span>
+<span class="fc" id="L45">            this.comparator = ComparableComparator.INSTANCE;</span>
+        } else {
+<span class="fc" id="L47">            this.comparator = comp;</span>
+        }
+<span class="fc bfc" id="L49" title="All 2 branches covered.">        if (this.comparator.compare(element1, element2) &lt; 1) {</span>
+<span class="fc" id="L50">            this.minimum = element1;</span>
+<span class="fc" id="L51">            this.maximum = element2;</span>
+        } else {
+<span class="fc" id="L53">            this.minimum = element2;</span>
+<span class="fc" id="L54">            this.maximum = element1;</span>
+        }
+<span class="fc" id="L56">        this.hashCode = Objects.hash(minimum, maximum);</span>
+<span class="fc" id="L57">    }</span>
+    public boolean contains(final T element) {
+<span class="pc bpc" id="L59" title="1 of 2 branches missed.">        if (element == null) {</span>
+<span class="nc" id="L60">            return false;</span>
+        }
+<span class="fc bfc" id="L62" title="All 4 branches covered.">        return comparator.compare(element, minimum) &gt; -1 &amp;&amp; comparator.compare(element, maximum) &lt; 1;</span>
+    }
+    public boolean containsRange(final Range&lt;T&gt; otherRange) {
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">        if (otherRange == null) {</span>
+<span class="nc" id="L66">            return false;</span>
+        }
+<span class="fc bfc" id="L68" title="All 2 branches covered.">        return contains(otherRange.minimum)</span>
+<span class="fc bfc" id="L69" title="All 2 branches covered.">            &amp;&amp; contains(otherRange.maximum);</span>
+    }
+    public int elementCompareTo(final T element) {
+<span class="fc" id="L72">        Objects.requireNonNull(element, &quot;element&quot;);</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (isAfter(element)) {</span>
+<span class="fc" id="L74">            return -1;</span>
+        }
+<span class="fc bfc" id="L76" title="All 2 branches covered.">        if (isBefore(element)) {</span>
+<span class="fc" id="L77">            return 1;</span>
+        }
+<span class="fc" id="L79">        return 0;</span>
+    }
+    @Override
+    public boolean equals(final Object obj) {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">        if (obj == this) {</span>
+<span class="nc" id="L84">            return true;</span>
+        }
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">        if (obj == null || obj.getClass() != getClass()) {</span>
+<span class="fc" id="L87">            return false;</span>
+        }
+        @SuppressWarnings(&quot;unchecked&quot;)
+        final
+<span class="fc" id="L91">        Range&lt;T&gt; range = (Range&lt;T&gt;) obj;</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">        return minimum.equals(range.minimum) &amp;&amp;</span>
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">               maximum.equals(range.maximum);</span>
+    }
+    public T fit(final T element) {
+<span class="fc" id="L96">        Objects.requireNonNull(element, &quot;element&quot;);</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (isAfter(element)) {</span>
+<span class="fc" id="L98">            return minimum;</span>
+        }
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (isBefore(element)) {</span>
+<span class="fc" id="L101">            return maximum;</span>
+        }
+<span class="fc" id="L103">        return element;</span>
+    }
+    public Comparator&lt;T&gt; getComparator() {
+<span class="fc" id="L106">        return comparator;</span>
+    }
+    public T getMaximum() {
+<span class="fc" id="L109">        return maximum;</span>
+    }
+    public T getMinimum() {
+<span class="fc" id="L112">        return minimum;</span>
+    }
+    @Override
+    public int hashCode() {
+<span class="fc" id="L116">        return hashCode;</span>
+    }
+    public Range&lt;T&gt; intersectionWith(final Range&lt;T&gt; other) {
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">        if (!this.isOverlappedBy(other)) {</span>
+<span class="nc" id="L120">            throw new IllegalArgumentException(String.format(</span>
+                &quot;Cannot calculate intersection with non-overlapping range %s&quot;, other));
+        }
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">        if (this.equals(other)) {</span>
+<span class="nc" id="L124">            return this;</span>
+        }
+<span class="pc bpc" id="L126" title="1 of 2 branches missed.">        final T min = getComparator().compare(minimum, other.minimum) &lt; 0 ? other.minimum : minimum;</span>
+<span class="pc bpc" id="L127" title="1 of 2 branches missed.">        final T max = getComparator().compare(maximum, other.maximum) &lt; 0 ? maximum : other.maximum;</span>
+<span class="fc" id="L128">        return of(min, max, getComparator());</span>
+    }
+    public boolean isAfter(final T element) {
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        if (element == null) {</span>
+<span class="nc" id="L132">            return false;</span>
+        }
+<span class="fc bfc" id="L134" title="All 2 branches covered.">        return comparator.compare(element, minimum) &lt; 0;</span>
+    }
+    public boolean isAfterRange(final Range&lt;T&gt; otherRange) {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (otherRange == null) {</span>
+<span class="nc" id="L138">            return false;</span>
+        }
+<span class="fc" id="L140">        return isAfter(otherRange.maximum);</span>
+    }
+    public boolean isBefore(final T element) {
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">        if (element == null) {</span>
+<span class="nc" id="L144">            return false;</span>
+        }
+<span class="fc bfc" id="L146" title="All 2 branches covered.">        return comparator.compare(element, maximum) &gt; 0;</span>
+    }
+    public boolean isBeforeRange(final Range&lt;T&gt; otherRange) {
+<span class="pc bpc" id="L149" title="1 of 2 branches missed.">        if (otherRange == null) {</span>
+<span class="nc" id="L150">            return false;</span>
+        }
+<span class="fc" id="L152">        return isBefore(otherRange.minimum);</span>
+    }
+    public boolean isEndedBy(final T element) {
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">        if (element == null) {</span>
+<span class="nc" id="L156">            return false;</span>
+        }
+<span class="fc bfc" id="L158" title="All 2 branches covered.">        return comparator.compare(element, maximum) == 0;</span>
+    }
+    public boolean isNaturalOrdering() {
+<span class="fc bfc" id="L161" title="All 2 branches covered.">        return comparator == ComparableComparator.INSTANCE;</span>
+    }
+    public boolean isOverlappedBy(final Range&lt;T&gt; otherRange) {
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">        if (otherRange == null) {</span>
+<span class="nc" id="L165">            return false;</span>
+        }
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        return otherRange.contains(minimum)</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            || otherRange.contains(maximum)</span>
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">            || contains(otherRange.minimum);</span>
+    }
+    public boolean isStartedBy(final T element) {
+<span class="pc bpc" id="L172" title="1 of 2 branches missed.">        if (element == null) {</span>
+<span class="nc" id="L173">            return false;</span>
+        }
+<span class="fc bfc" id="L175" title="All 2 branches covered.">        return comparator.compare(element, minimum) == 0;</span>
+    }
+    @Override
+    public String toString() {
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">        if (toString == null) {</span>
+<span class="fc" id="L180">            toString = &quot;[&quot; + minimum + &quot;..&quot; + maximum + &quot;]&quot;;</span>
+        }
+<span class="fc" id="L182">        return toString;</span>
+    }
+    public String toString(final String format) {
+<span class="nc" id="L185">        return String.format(format, minimum, maximum, comparator);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

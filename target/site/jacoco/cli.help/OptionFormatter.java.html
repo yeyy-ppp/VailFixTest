@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>OptionFormatter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli.help</a> &gt; <span class="el_source">OptionFormatter.java</span></div><h1>OptionFormatter.java</h1><pre class="source lang-java linenums">package cli.help;
+
+import cli.DeprecatedAttributes;
+import cli.Option;
+
+import java.util.Arrays;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+public final class OptionFormatter {
+    public static final class Builder implements Supplier&lt;OptionFormatter&gt; {
+        private final String[] argNameDelimiters;
+        private String defaultArgName;
+        private Function&lt;Option, String&gt; deprecatedFormatFunction;
+        private String longOptPrefix;
+        private String optPrefix;
+        private String optSeparator;
+        private String optArgSeparator;
+        private final String[] optionalDelimiters;
+        private BiFunction&lt;OptionFormatter, Boolean, String&gt; syntaxFormatFunction;
+<span class="fc" id="L22">        private Builder() {</span>
+<span class="fc" id="L23">            argNameDelimiters = Arrays.copyOf(DEFAULT_ARG_NAME_DELIMITERS, 2);</span>
+<span class="fc" id="L24">            defaultArgName = DEFAULT_ARG_NAME;</span>
+<span class="fc" id="L25">            deprecatedFormatFunction = NO_DEPRECATED_FORMAT;</span>
+<span class="fc" id="L26">            longOptPrefix = DEFAULT_LONG_OPT_PREFIX;</span>
+<span class="fc" id="L27">            optPrefix = DEFAULT_OPT_PREFIX;</span>
+<span class="fc" id="L28">            optSeparator = DEFAULT_OPT_SEPARATOR;</span>
+<span class="fc" id="L29">            optArgSeparator = DEFAULT_OPT_ARG_SEPARATOR;</span>
+<span class="fc" id="L30">            optionalDelimiters = Arrays.copyOf(DEFAULT_OPTIONAL_DELIMITERS, 2);</span>
+<span class="fc" id="L31">        }</span>
+<span class="fc" id="L32">        public Builder(final OptionFormatter optionFormatter) {</span>
+<span class="fc" id="L33">            optionalDelimiters = Arrays.copyOf(optionFormatter.optionalDelimiters, 2);</span>
+<span class="fc" id="L34">            argNameDelimiters = Arrays.copyOf(optionFormatter.argNameDelimiters, 2);</span>
+<span class="fc" id="L35">            defaultArgName = optionFormatter.defaultArgName;</span>
+<span class="fc" id="L36">            optPrefix = optionFormatter.optPrefix;</span>
+<span class="fc" id="L37">            longOptPrefix = optionFormatter.longOptPrefix;</span>
+<span class="fc" id="L38">            optSeparator = optionFormatter.optSeparator;</span>
+<span class="fc" id="L39">            deprecatedFormatFunction = optionFormatter.deprecatedFormatFunction;</span>
+<span class="fc" id="L40">            syntaxFormatFunction = optionFormatter.syntaxFormatFunction;</span>
+<span class="fc" id="L41">        }</span>
+        public OptionFormatter build(final Option option) {
+<span class="fc" id="L43">            return new OptionFormatter(option, this);</span>
+        }
+        @Override
+        public OptionFormatter get() {
+<span class="fc" id="L47">            return null;</span>
+        }
+        public Builder setArgumentNameDelimiters(final String begin, final String end) {
+<span class="fc" id="L50">            this.argNameDelimiters[0] = Util.defaultValue(begin, &quot;&quot;);</span>
+<span class="fc" id="L51">            this.argNameDelimiters[1] = Util.defaultValue(end, &quot;&quot;);</span>
+<span class="fc" id="L52">            return this;</span>
+        }
+        public Builder setDefaultArgName(final String name) {
+<span class="fc" id="L55">            this.defaultArgName = Util.defaultValue(name, DEFAULT_ARG_NAME);</span>
+<span class="fc" id="L56">            return this;</span>
+        }
+        public Builder setDeprecatedFormatFunction(
+                final Function&lt;Option, String&gt; deprecatedFormatFunction) {
+<span class="fc" id="L60">            this.deprecatedFormatFunction = deprecatedFormatFunction;</span>
+<span class="fc" id="L61">            return this;</span>
+        }
+        public Builder setLongOptPrefix(final String prefix) {
+<span class="fc" id="L64">            this.longOptPrefix = Util.defaultValue(prefix, &quot;&quot;);</span>
+<span class="fc" id="L65">            return this;</span>
+        }
+        public Builder setOptArgSeparator(final String optArgSeparator) {
+<span class="nc" id="L68">            this.optArgSeparator = Util.defaultValue(optArgSeparator, &quot;&quot;);</span>
+<span class="nc" id="L69">            return this;</span>
+        }
+        public Builder setOptionalDelimiters(final String begin, final String end) {
+<span class="fc" id="L72">            this.optionalDelimiters[0] = Util.defaultValue(begin, &quot;&quot;);</span>
+<span class="fc" id="L73">            this.optionalDelimiters[1] = Util.defaultValue(end, &quot;&quot;);</span>
+<span class="fc" id="L74">            return this;</span>
+        }
+        public Builder setOptPrefix(final String optPrefix) {
+<span class="fc" id="L77">            this.optPrefix = Util.defaultValue(optPrefix, &quot;&quot;);</span>
+<span class="fc" id="L78">            return this;</span>
+        }
+        public Builder setOptSeparator(final String optSeparator) {
+<span class="fc" id="L81">            this.optSeparator = Util.defaultValue(optSeparator, &quot;&quot;);</span>
+<span class="fc" id="L82">            return this;</span>
+        }
+        public Builder setSyntaxFormatFunction(
+                final BiFunction&lt;OptionFormatter, Boolean, String&gt; syntaxFormatFunction) {
+<span class="fc" id="L86">            this.syntaxFormatFunction = syntaxFormatFunction;</span>
+<span class="fc" id="L87">            return this;</span>
+        }
+        public String toArgName(final String argName) {
+<span class="fc" id="L90">            return argNameDelimiters[0] + Util.defaultValue(argName, &quot;&quot;) + argNameDelimiters[1];</span>
+        }
+
+    }
+<span class="fc" id="L94">    private static final String[] DEFAULT_OPTIONAL_DELIMITERS = {&quot;[&quot;, &quot;]&quot;};</span>
+<span class="fc" id="L95">    private static final String[] DEFAULT_ARG_NAME_DELIMITERS = {&quot;&lt;&quot;, &quot;&gt;&quot;};</span>
+    public static final String DEFAULT_ARG_NAME = &quot;arg&quot;;
+<span class="fc" id="L97">    public static final Function&lt;Option, String&gt; SIMPLE_DEPRECATED_FORMAT =</span>
+<span class="fc" id="L98">            o -&gt; &quot;[Deprecated] &quot; + Util.defaultValue(o.getDescription(), &quot;&quot;);</span>
+<span class="fc" id="L99">    public static final Function&lt;Option, String&gt; COMPLEX_DEPRECATED_FORMAT =</span>
+            o -&gt; {
+<span class="nc" id="L101">                final StringBuilder sb = new StringBuilder(&quot;[Deprecated&quot;);</span>
+<span class="nc" id="L102">                final DeprecatedAttributes attr = o.getDeprecated();</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">                if (attr.isForRemoval()) {</span>
+<span class="nc" id="L104">                    sb.append(&quot; for removal&quot;);</span>
+                }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                if (!Util.isEmpty(attr.getSince())) {</span>
+<span class="nc" id="L107">                    sb.append(&quot; since &quot;).append(attr.getSince());</span>
+                }
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                if (!Util.isEmpty(attr.getDescription())) {</span>
+<span class="nc" id="L110">                    sb.append(&quot;. &quot;).append(attr.getDescription());</span>
+                }
+<span class="nc" id="L112">                sb.append(&quot;]&quot;);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                if (!Util.isEmpty(o.getDescription())) {</span>
+<span class="nc" id="L114">                    sb.append(&quot; &quot;).append(o.getDescription());</span>
+                }
+<span class="nc" id="L116">                return sb.toString();</span>
+            };
+<span class="fc" id="L118">    public static final Function&lt;Option, String&gt; NO_DEPRECATED_FORMAT =</span>
+<span class="nc" id="L119">            o -&gt; Util.defaultValue(o.getDescription(), &quot;&quot;);</span>
+    public static final String DEFAULT_SYNTAX_PREFIX = &quot;usage: &quot;;
+    public static final String DEFAULT_OPT_PREFIX = &quot;-&quot;;
+    public static final String DEFAULT_LONG_OPT_PREFIX = &quot;--&quot;;
+    public static final String DEFAULT_OPT_SEPARATOR = &quot;, &quot;;
+    public static final String DEFAULT_OPT_ARG_SEPARATOR = &quot; &quot;;
+    public static Builder builder() {
+<span class="fc" id="L126">        return new Builder();</span>
+    }
+    public static OptionFormatter from(final Option option) {
+<span class="fc" id="L129">        return new Builder().build(option);</span>
+    }
+    private final String[] argNameDelimiters;
+    private final String defaultArgName;
+    private final Function&lt;Option, String&gt; deprecatedFormatFunction;
+    private final String longOptPrefix;
+    private final String optPrefix;
+    private final String optSeparator;
+    private final String optArgSeparator;
+    private final String[] optionalDelimiters;
+    private final BiFunction&lt;OptionFormatter, Boolean, String&gt; syntaxFormatFunction;
+    private final Option option;
+<span class="fc" id="L141">    private OptionFormatter(final Option option, final Builder builder) {</span>
+<span class="fc" id="L142">        this.optionalDelimiters = builder.optionalDelimiters;</span>
+<span class="fc" id="L143">        this.argNameDelimiters = builder.argNameDelimiters;</span>
+<span class="fc" id="L144">        this.defaultArgName = builder.defaultArgName;</span>
+<span class="fc" id="L145">        this.optPrefix = builder.optPrefix;</span>
+<span class="fc" id="L146">        this.longOptPrefix = builder.longOptPrefix;</span>
+<span class="fc" id="L147">        this.optSeparator = builder.optSeparator;</span>
+<span class="fc" id="L148">        this.optArgSeparator = builder.optArgSeparator;</span>
+<span class="fc" id="L149">        this.deprecatedFormatFunction = builder.deprecatedFormatFunction;</span>
+<span class="fc" id="L150">        this.option = option;</span>
+<span class="fc" id="L151">        this.syntaxFormatFunction =</span>
+<span class="fc bfc" id="L152" title="All 2 branches covered.">                builder.syntaxFormatFunction != null</span>
+<span class="fc" id="L153">                        ? builder.syntaxFormatFunction</span>
+<span class="fc" id="L154">                        : (o, required) -&gt; {</span>
+<span class="fc" id="L155">                    final StringBuilder buff = new StringBuilder();</span>
+<span class="fc" id="L156">                    final String argName = o.getArgName();</span>
+<span class="fc" id="L157">                    buff.append(Util.defaultValue(o.getOpt(), o.getLongOpt()));</span>
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">                    if (!Util.isEmpty(argName)) {</span>
+<span class="nc" id="L159">                        buff.append(optArgSeparator).append(argName);</span>
+                    }
+<span class="pc bpc" id="L161" title="1 of 2 branches missed.">                    final boolean requiredFlg = required == null ? o.isRequired() : required;</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">                    return requiredFlg ? buff.toString() : o.toOptional(buff.toString());</span>
+                };
+<span class="fc" id="L164">    }</span>
+    public String getArgName() {
+<span class="fc bfc" id="L166" title="All 2 branches covered.">        return option.hasArg()</span>
+                ? argNameDelimiters[0]
+<span class="fc" id="L168">                + Util.defaultValue(option.getArgName(), defaultArgName)</span>
+<span class="fc" id="L169">                + argNameDelimiters[1]</span>
+<span class="fc" id="L170">                : &quot;&quot;;</span>
+    }
+    public String getBothOpt() {
+<span class="fc" id="L173">        final String lOpt = getLongOpt();</span>
+
+<span class="fc" id="L175">        final StringBuilder sb = new StringBuilder(getOpt());</span>
+<span class="fc bfc" id="L176" title="All 4 branches covered.">        if (sb.length() &gt; 0 &amp;&amp; !Util.isEmpty(lOpt)) {</span>
+<span class="fc" id="L177">            sb.append(optSeparator);</span>
+        }
+<span class="fc" id="L179">        return sb.append(getLongOpt()).toString();</span>
+    }
+    public String getDescription() {
+<span class="pc bpc" id="L182" title="1 of 2 branches missed.">        return option.isDeprecated()</span>
+<span class="fc" id="L183">                ? deprecatedFormatFunction.apply(option)</span>
+<span class="nc" id="L184">                : Util.defaultValue(option.getDescription(), &quot;&quot;);</span>
+    }
+    public String getLongOpt() {
+<span class="fc bfc" id="L187" title="All 2 branches covered.">        return Util.isEmpty(option.getLongOpt()) ? &quot;&quot; : longOptPrefix + option.getLongOpt();</span>
+    }
+    public String getOpt() {
+<span class="fc bfc" id="L190" title="All 2 branches covered.">        return Util.isEmpty(option.getOpt()) ? &quot;&quot; : optPrefix + option.getOpt();</span>
+    }
+    public String getSince() {
+<span class="nc" id="L193">        return Util.defaultValue(option.getSince(), &quot;--&quot;);</span>
+    }
+    public boolean isRequired() {
+<span class="fc" id="L196">        return option.isRequired();</span>
+    }
+    public String toOptional(final String text) {
+<span class="fc bfc" id="L199" title="All 2 branches covered.">        if (Util.isEmpty(text)) {</span>
+<span class="fc" id="L200">            return &quot;&quot;;</span>
+        }
+<span class="fc" id="L202">        return optionalDelimiters[0] + text + optionalDelimiters[1];</span>
+    }
+    public String toSyntaxOption() {
+<span class="fc" id="L205">        return toSyntaxOption(isRequired());</span>
+    }
+    public String toSyntaxOption(final boolean isRequired) {
+<span class="fc" id="L208">        return syntaxFormatFunction.apply(this, isRequired);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

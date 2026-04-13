@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">JsonParser.java</span></div><h1>JsonParser.java</h1><pre class="source lang-java linenums">package gson;
+import com.google.errorprone.annotations.InlineMe;
+import gson.internal.Streams;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.MalformedJsonException;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+public final class JsonParser {
+  @Deprecated
+<span class="fc" id="L12">  public JsonParser() {}</span>
+  public static JsonElement parseString(String json) throws JsonSyntaxException {
+<span class="fc" id="L14">    return parseReader(new StringReader(json));</span>
+  }
+  public static JsonElement parseReader(Reader reader) throws JsonIOException, JsonSyntaxException {
+    try {
+<span class="fc" id="L18">      JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc" id="L19">      JsonElement element = parseReader(jsonReader);</span>
+<span class="pc bpc" id="L20" title="2 of 4 branches missed.">      if (!element.isJsonNull() &amp;&amp; jsonReader.peek() != JsonToken.END_DOCUMENT) {</span>
+<span class="nc" id="L21">        throw new JsonSyntaxException(&quot;Did not consume the entire document.&quot;);</span>
+      }
+<span class="fc" id="L23">      return element;</span>
+<span class="fc" id="L24">    } catch (MalformedJsonException | NumberFormatException e) {</span>
+<span class="fc" id="L25">      throw new JsonSyntaxException(e);</span>
+<span class="nc" id="L26">    } catch (IOException e) {</span>
+<span class="nc" id="L27">      throw new JsonIOException(e);</span>
+    }
+  }
+  public static JsonElement parseReader(JsonReader reader)
+      throws JsonIOException, JsonSyntaxException {
+<span class="fc" id="L32">    Strictness strictness = reader.getStrictness();</span>
+<span class="fc bfc" id="L33" title="All 2 branches covered.">    if (strictness == Strictness.LEGACY_STRICT) {</span>
+<span class="fc" id="L34">      reader.setStrictness(Strictness.LENIENT);</span>
+    }
+    try {
+<span class="fc" id="L37">      return Streams.parse(reader);</span>
+<span class="nc" id="L38">    } catch (StackOverflowError | OutOfMemoryError e) {</span>
+<span class="nc" id="L39">      throw new JsonParseException(&quot;Failed parsing JSON source: &quot; + reader + &quot; to Json&quot;, e);</span>
+    } finally {
+<span class="fc" id="L41">      reader.setStrictness(strictness);</span>
+    }
+  }
+  @Deprecated
+  @InlineMe(replacement = &quot;JsonParser.parseString(json)&quot;, imports = &quot;gson.JsonParser&quot;)
+  public JsonElement parse(String json) throws JsonSyntaxException {
+<span class="nc" id="L47">    return parseString(json);</span>
+  }
+  @Deprecated
+  @InlineMe(replacement = &quot;JsonParser.parseReader(json)&quot;, imports = &quot;gson.JsonParser&quot;)
+  public JsonElement parse(Reader json) throws JsonIOException, JsonSyntaxException {
+<span class="nc" id="L52">    return parseReader(json);</span>
+  }
+  @Deprecated
+  @InlineMe(replacement = &quot;JsonParser.parseReader(json)&quot;, imports = &quot;gson.JsonParser&quot;)
+  public JsonElement parse(JsonReader json) throws JsonIOException, JsonSyntaxException {
+<span class="nc" id="L57">    return parseReader(json);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,15 @@
+```
+包路径：cli
+类名：BasicParser
+父类：Parser
+依赖类：Options
+---
+序号：1
+方法名：BasicParser()
+返回类型：void
+功能描述：创建BasicParser实例
+序号：2
+方法名：flatten(Options, String[], boolean)
+返回类型：String[]
+功能描述：原样返回输入的arguments数组
+```

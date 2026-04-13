@@ -1,0 +1,72 @@
+[2026-01-19 18:00:35] 修复结果
+修复类型: 致命错误修复
+修复前错误: 编译错误 - 直接访问私有属性optSeparator；该测试代码在验证[编译错误]时失败，错误位置：[141]，错误原因：OptionFormatter类无toArgName方法
+修复后状态: 仍有问题 - 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后方法覆盖: 未覆盖: OptionFormatter, getBothOpt, getDescription, getLongOpt, getSince, isRequired, toOptional, from, setDeprecatedFormatFunction, toArgName
+修复后代码:
+```java
+package cli.help;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class OptionFormatterTest {
+
+    @Test
+    void testBuilderMethods() {
+        OptionFormatter.Builder builder = OptionFormatter.builder();
+        builder.setArgumentNameDelimiters("{", "}")
+               .setDefaultArgName("param")
+               .setLongOptPrefix("++")
+               .setOptPrefix("+")
+               .setOptSeparator(" | ")
+               .setOptArgSeparator("=")
+               .setOptionalDelimiters("{", "}")
+               .setSyntaxFormatFunction((o, r) -> "custom");
+
+        Option option = new Option();
+        option.setOpt("f");
+        OptionFormatter formatter = builder.build(option);
+
+        assertEquals("+f", formatter.getOpt());
+        assertEquals(" | ", formatter.optSeparator);
+        assertEquals("{param}", formatter.getArgName());
+        assertEquals("custom", formatter.toSyntaxOption());
+    }
+}
+
+```
+
+[2026-01-19 18:05:47] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli.help;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import cli.Option;
+import cli.OptionFormatter;
+
+public class OptionFormatterTest {
+
+    @Test
+    void testBuilderMethods() {
+        OptionFormatter.Builder builder = OptionFormatter.builder();
+        builder.setArgumentNameDelimiters("{", "}")
+               .setDefaultArgName("param")
+               .setLongOptPrefix("++")
+               .setOptPrefix("+")
+               .setOptSeparator(" | ")
+               .setOptionalDelimiters("{", "}");
+
+        Option option = Option.builder("f").build();
+        OptionFormatter formatter = builder.build();
+
+        assertEquals("+f", formatter.getOpt());
+        assertEquals("{param}", formatter.getArgName());
+    }
+
+}
+```
+

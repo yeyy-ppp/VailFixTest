@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>HITSRunner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner.solution_runner</a> &gt; <span class="el_source">HITSRunner.java</span></div><h1>HITSRunner.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner.solution_runner;
+
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.impl.obfuscator.Obfuscator;
+import zju.cst.aces.api.phase.PhaseImpl;
+import zju.cst.aces.api.phase.solution.HITS;
+import zju.cst.aces.dto.MethodInfo;
+import zju.cst.aces.dto.PromptInfo;
+import zju.cst.aces.util.JsonResponseProcessor;
+
+import java.io.IOException;
+
+public class HITSRunner extends MethodRunner {
+    public HITSRunner(Config config, String fullClassName, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L16">        super(config, fullClassName, methodInfo);</span>
+<span class="nc" id="L17">    }</span>
+
+    /**
+     * Main process of HITS, including:
+     * @param num
+     * @return If the generation process is successful
+     */
+    @Override
+    public boolean startRounds(final int num) {
+<span class="nc" id="L26">        PhaseImpl phase = PhaseImpl.createPhase(config);</span>
+<span class="nc" id="L27">        config.useSlice = true;</span>
+
+        // Prompt Construction Phase
+<span class="nc" id="L30">        PromptConstructorImpl pc = phase.generatePrompt(classInfo, methodInfo,num);</span>
+<span class="nc" id="L31">        PromptInfo promptInfo = pc.getPromptInfo();</span>
+<span class="nc" id="L32">        promptInfo.setRound(0);</span>
+
+<span class="nc" id="L34">        HITS phase_hits = (HITS) phase;</span>
+
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (config.isEnableObfuscate()) {</span>
+<span class="nc" id="L37">            Obfuscator obfuscator = new Obfuscator(config);</span>
+<span class="nc" id="L38">            PromptInfo obfuscatedPromptInfo = new PromptInfo(promptInfo);</span>
+<span class="nc" id="L39">            obfuscator.obfuscatePromptInfo(obfuscatedPromptInfo);</span>
+
+<span class="nc" id="L41">            phase_hits.generateMethodSlice(pc);</span>
+<span class="nc" id="L42">        } else {</span>
+<span class="nc" id="L43">            phase_hits.generateMethodSlice(pc);</span>
+        }
+<span class="nc" id="L45">        JsonResponseProcessor.JsonData methodSliceInfo = JsonResponseProcessor.readJsonFromFile(promptInfo.getMethodSlicePath().resolve(&quot;slice.json&quot;));</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (methodSliceInfo != null) {</span>
+            // Accessing the steps
+<span class="nc" id="L48">            boolean hasErrors = false;</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            for (int i = 0; i &lt; methodSliceInfo.getSteps().size(); i++) {</span>
+                // Test Generation Phase
+<span class="nc" id="L51">                hasErrors = false;</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">                if (methodSliceInfo.getSteps().get(i) == null) continue;</span>
+<span class="nc" id="L53">                promptInfo.setSliceNum(i);</span>
+<span class="nc" id="L54">                promptInfo.setSliceStep(methodSliceInfo.getSteps().get(i)); // todo 存储切片信息到promptInfo</span>
+<span class="nc" id="L55">                phase_hits.generateSliceTest(pc); //todo 改成新的hits对切片生成单元测试方法</span>
+                // Validation
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                if (phase_hits.validateTest(pc)) {</span>
+<span class="nc" id="L58">                    exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L59">                    continue;</span>
+                } else {
+<span class="nc" id="L61">                    hasErrors = true;</span>
+                }
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                if (hasErrors) {</span>
+                    // Validation and Repair Phase
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                    for (int rounds = 1; rounds &lt; config.getMaxRounds(); rounds++) {</span>
+
+<span class="nc" id="L67">                        promptInfo.setRound(rounds);</span>
+
+                        // Repair
+<span class="nc" id="L70">                        phase_hits.generateSliceTest(pc);</span>
+                        // Validation and process
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                        if (phase_hits.validateTest(pc)) { // if passed validation</span>
+<span class="nc" id="L73">                            exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L74">                            hasErrors = false;</span>
+<span class="nc" id="L75">                            break; // successfully</span>
+                        }
+
+                    }
+                }
+
+<span class="nc" id="L81">                exportSliceRecord(pc.getPromptInfo(), classInfo, num, i); //todo 检测是否顺利生成信息</span>
+            }
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            return !hasErrors;</span>
+        }
+<span class="nc" id="L85">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

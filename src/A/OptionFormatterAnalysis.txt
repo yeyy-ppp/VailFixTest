@@ -1,0 +1,121 @@
+```
+包路径：cli.help
+类名：OptionFormatter
+父类：无
+依赖类：Option,DeprecatedAttributes,Util
+---
+序号：1
+方法名：OptionFormatter(Option option, Builder builder)
+返回类型：无
+功能描述：构造OptionFormatter实例
+序号：2
+方法名：getArgName()
+返回类型：String
+功能描述：获取格式化后的选项参数名称
+序号：3
+方法名：getBothOpt()
+返回类型：String
+功能描述：组合短选项和长选项的格式化字符串
+序号：4
+方法名：getDescription()
+返回类型：String
+功能描述：获取选项描述（处理废弃状态）
+序号：5
+方法名：getLongOpt()
+返回类型：String
+功能描述：获取带前缀的长选项名称
+序号：6
+方法名：getOpt()
+返回类型：String
+功能描述：获取带前缀的短选项名称
+序号：7
+方法名：getSince()
+返回类型：String
+功能描述：获取选项的since信息
+序号：8
+方法名：isRequired()
+返回类型：boolean
+功能描述：判断选项是否必填
+序号：9
+方法名：toOptional(String text)
+返回类型：String
+功能描述：将文本包裹为可选格式
+序号：10
+方法名：toSyntaxOption()
+返回类型：String
+功能描述：生成语法选项字符串（默认必填状态）
+序号：11
+方法名：toSyntaxOption(boolean isRequired)
+返回类型：String
+功能描述：生成语法选项字符串（指定必填状态）
+序号：12
+方法名：builder()
+返回类型：Builder
+功能描述：创建Builder实例
+序号：13
+方法名：from(Option option)
+返回类型：OptionFormatter
+功能描述：通过选项创建格式化实例
+---
+包路径：cli.help
+类名：OptionFormatter.Builder
+父类：无
+依赖类：Option,OptionFormatter,Util
+---
+序号：1
+方法名：Builder()
+返回类型：无
+功能描述：构造Builder实例（默认配置）
+序号：2
+方法名：Builder(OptionFormatter optionFormatter)
+返回类型：无
+功能描述：通过现有Formatter构造Builder
+序号：3
+方法名：build(Option option)
+返回类型：OptionFormatter
+功能描述：构建OptionFormatter实例
+序号：4
+方法名：get()
+返回类型：OptionFormatter
+功能描述：实现Supplier接口的获取方法
+序号：5
+方法名：setArgumentNameDelimiters(String begin, String end)
+返回类型：Builder
+功能描述：设置参数名称包裹分隔符
+序号：6
+方法名：setDefaultArgName(String name)
+返回类型：Builder
+功能描述：设置默认参数名称
+序号：7
+方法名：setDeprecatedFormatFunction(Function<Option, String> deprecatedFormatFunction)
+返回类型：Builder
+功能描述：设置废弃选项格式化函数
+序号：8
+方法名：setLongOptPrefix(String prefix)
+返回类型：Builder
+功能描述：设置长选项前缀
+序号：9
+方法名：setOptArgSeparator(String optArgSeparator)
+返回类型：Builder
+功能描述：设置选项与参数间分隔符
+序号：10
+方法名：setOptionalDelimiters(String begin, String end)
+返回类型：Builder
+功能描述：设置可选标记分隔符
+序号：11
+方法名：setOptPrefix(String optPrefix)
+返回类型：Builder
+功能描述：设置短选项前缀
+序号：12
+方法名：setOptSeparator(String optSeparator)
+返回类型：Builder
+功能描述：设置选项间分隔符
+序号：13
+方法名：setSyntaxFormatFunction(BiFunction<OptionFormatter, Boolean, String> syntaxFormatFunction)
+返回类型：Builder
+功能描述：设置语法格式化函数
+序号：14
+方法名：toArgName(String argName)
+返回类型：String
+功能描述：格式化参数名称
+```

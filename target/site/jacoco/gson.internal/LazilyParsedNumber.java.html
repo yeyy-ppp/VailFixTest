@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LazilyParsedNumber.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal</a> &gt; <span class="el_source">LazilyParsedNumber.java</span></div><h1>LazilyParsedNumber.java</h1><pre class="source lang-java linenums">package gson.internal;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamException;
+import java.math.BigDecimal;
+@SuppressWarnings(&quot;serial&quot;)
+public final class LazilyParsedNumber extends Number {
+  private final String value;
+<span class="fc" id="L10">  public LazilyParsedNumber(String value) {</span>
+<span class="fc" id="L11">    this.value = value;</span>
+<span class="fc" id="L12">  }</span>
+  private BigDecimal asBigDecimal() {
+<span class="fc" id="L14">    return NumberLimits.parseBigDecimal(value);</span>
+  }
+  @Override
+  public int intValue() {
+    try {
+<span class="fc" id="L19">      return Integer.parseInt(value);</span>
+<span class="fc" id="L20">    } catch (NumberFormatException e) {</span>
+      try {
+<span class="fc" id="L22">        return (int) Long.parseLong(value);</span>
+<span class="fc" id="L23">      } catch (NumberFormatException nfe) {</span>
+<span class="fc" id="L24">        return asBigDecimal().intValue();</span>
+      }
+    }
+  }
+  @Override
+  public long longValue() {
+    try {
+<span class="fc" id="L31">      return Long.parseLong(value);</span>
+<span class="fc" id="L32">    } catch (NumberFormatException e) {</span>
+<span class="fc" id="L33">      return asBigDecimal().longValue();</span>
+    }
+  }
+  @Override
+  public float floatValue() {
+<span class="fc" id="L38">    return Float.parseFloat(value);</span>
+  }
+  @Override
+  public double doubleValue() {
+<span class="fc" id="L42">    return Double.parseDouble(value);</span>
+  }
+  @Override
+  public String toString() {
+<span class="fc" id="L46">    return value;</span>
+  }
+  private Object writeReplace() throws ObjectStreamException {
+<span class="fc" id="L49">    return asBigDecimal();</span>
+  }
+  private void readObject(ObjectInputStream in) throws IOException {
+<span class="nc" id="L52">    throw new InvalidObjectException(&quot;Deserialization is unsupported&quot;);</span>
+  }
+  @Override
+  public int hashCode() {
+<span class="fc" id="L56">    return value.hashCode();</span>
+  }
+  @Override
+  public boolean equals(Object obj) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L61">      return true;</span>
+    }
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (obj instanceof LazilyParsedNumber) {</span>
+<span class="fc" id="L64">      LazilyParsedNumber other = (LazilyParsedNumber) obj;</span>
+<span class="fc" id="L65">      return value.equals(other.value);</span>
+    }
+<span class="fc" id="L67">    return false;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

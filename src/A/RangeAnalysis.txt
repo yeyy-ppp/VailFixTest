@@ -1,0 +1,119 @@
+```
+包路径：lang3
+类名：Range
+父类：无
+依赖类：无
+---
+序号：1
+方法名：compare(Object obj1, Object obj2)
+返回类型：int
+功能描述：比较两个对象的大小
+序号：2
+方法名：between(T fromInclusive, T toInclusive)
+返回类型：Range<T>
+功能描述：创建自然顺序范围（已过时）
+序号：3
+方法名：between(T fromInclusive, T toInclusive, Comparator<T> comparator)
+返回类型：Range<T>
+功能描述：创建指定比较器的范围（已过时）
+序号：4
+方法名：is(T element)
+返回类型：Range<T>
+功能描述：创建自然顺序的单元素范围
+序号：5
+方法名：is(T element, Comparator<T> comparator)
+返回类型：Range<T>
+功能描述：创建指定比较器的单元素范围
+序号：6
+方法名：of(T fromInclusive, T toInclusive)
+返回类型：Range<T>
+功能描述：创建自然顺序范围
+序号：7
+方法名：of(T fromInclusive, T toInclusive, Comparator<T> comparator)
+返回类型：Range<T>
+功能描述：创建指定比较器的范围
+序号：8
+方法名：Range(T element1, T element2, Comparator<T> comp)
+返回类型：无
+功能描述：构造范围实例并初始化边界
+序号：9
+方法名：contains(T element)
+返回类型：boolean
+功能描述：检查元素是否在范围内
+序号：10
+方法名：containsRange(Range<T> otherRange)
+返回类型：boolean
+功能描述：检查当前范围是否包含另一个范围
+序号：11
+方法名：elementCompareTo(T element)
+返回类型：int
+功能描述：比较元素与范围的位置关系
+序号：12
+方法名：equals(Object obj)
+返回类型：boolean
+功能描述：比较两个范围是否相等
+序号：13
+方法名：fit(T element)
+返回类型：T
+功能描述：将元素适配到范围内
+序号：14
+方法名：getComparator()
+返回类型：Comparator<T>
+功能描述：获取范围使用的比较器
+序号：15
+方法名：getMaximum()
+返回类型：T
+功能描述：获取范围最大值
+序号：16
+方法名：getMinimum()
+返回类型：T
+功能描述：获取范围最小值
+序号：17
+方法名：hashCode()
+返回类型：int
+功能描述：返回范围哈希码
+序号：18
+方法名：intersectionWith(Range<T> other)
+返回类型：Range<T>
+功能描述：计算与另一个范围的交集
+序号：19
+方法名：isAfter(T element)
+返回类型：boolean
+功能描述：检查元素是否在范围之前
+序号：20
+方法名：isAfterRange(Range<T> otherRange)
+返回类型：boolean
+功能描述：检查另一个范围是否在当前范围之后
+序号：21
+方法名：isBefore(T element)
+返回类型：boolean
+功能描述：检查元素是否在范围之后
+序号：22
+方法名：isBeforeRange(Range<T> otherRange)
+返回类型：boolean
+功能描述：检查另一个范围是否在当前范围之前
+序号：23
+方法名：isEndedBy(T element)
+返回类型：boolean
+功能描述：检查元素是否为范围结束点
+序号：24
+方法名：isNaturalOrdering()
+返回类型：boolean
+功能描述：检查是否使用自然顺序
+序号：25
+方法名：isOverlappedBy(Range<T> otherRange)
+返回类型：boolean
+功能描述：检查与另一个范围是否重叠
+序号：26
+方法名：isStartedBy(T element)
+返回类型：boolean
+功能描述：检查元素是否为范围起始点
+序号：27
+方法名：toString()
+返回类型：String
+功能描述：返回范围字符串表示
+序号：28
+方法名：toString(String format)
+返回类型：String
+功能描述：格式化返回范围字符串表示
+```

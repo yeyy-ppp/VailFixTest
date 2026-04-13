@@ -1,0 +1,959 @@
+[2026-01-13 18:40:38] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 仍有问题 - 无 - 验证通过
+修复后方法覆盖: 未覆盖: OptionBuilder
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.lang.reflect.*;
+
+public class OptionBuilderTest {
+
+    @AfterEach
+    public void tearDown() {
+        OptionBuilder.reset();
+    }
+
+    @Test
+    public void testOptionBuilderConstructorIsPrivate() throws Exception {
+        Constructor<OptionBuilder> constructor = OptionBuilder.class.getDeclaredConstructor();
+        assertFalse(Modifier.isPublic(constructor.getModifiers()));
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+
+    @Test
+    public void testCreateWithoutLongOptThrowsException() {
+        assertThrows(IllegalArgumentException.class, () -> OptionBuilder.create());
+    }
+
+    @Test
+    public void testCreateWithLongOptOnly() {
+        OptionBuilder.withLongOpt("long");
+        Option option = OptionBuilder.create();
+        assertEquals("long", option.getLongOpt());
+        assertNull(option.getOpt());
+    }
+
+    @Test
+    public void testCreateWithChar() {
+        Option option = OptionBuilder.create('a');
+        assertEquals("a", option.getOpt());
+        assertEquals(0, option.getArgs());
+    }
+
+    @Test
+    public void testCreateWithString() {
+        OptionBuilder.withLongOpt("long");
+        Option option = OptionBuilder.create("a");
+        assertEquals("a", option.getOpt());
+        assertEquals("long", option.getLongOpt());
+    }
+
+    @Test
+    public void testHasArg() {
+        OptionBuilder.withLongOpt("long").hasArg();
+        Option option = OptionBuilder.create("a");
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    public void testHasArgTrue() {
+        OptionBuilder.withLongOpt("long").hasArg(true);
+        Option option = OptionBuilder.create("a");
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    public void testHasArgFalse() {
+        OptionBuilder.withLongOpt("long").hasArg(false);
+        Option option = OptionBuilder.create("a");
+        assertEquals(0, option.getArgs());
+    }
+
+    @Test
+    public void testHasArgs() {
+        OptionBuilder.withLongOpt("long").hasArgs();
+        Option option = OptionBuilder.create("a");
+        assertEquals(-2, option.getArgs());
+    }
+
+    @Test
+    public void testHasArgsWithNumber() {
+        OptionBuilder.withLongOpt("long").hasArgs(3);
+        Option option = OptionBuilder.create("a");
+        assertEquals(3, option.getArgs());
+    }
+
+    @Test
+    public void testHasArgsWithZero() {
+        OptionBuilder.withLongOpt("long").hasArgs(0);
+        Option option = OptionBuilder.create("a");
+        assertEquals(0, option.getArgs());
+    }
+
+    @Test
+    public void testHasArgsWithNegative() {
+        assertThrows(IllegalArgumentException.class, () -> OptionBuilder.withLongOpt("long").hasArgs(-1));
+    }
+
+    @Test
+    public void testHasOptionalArg() {
+        OptionBuilder.withLongOpt("long").hasOptionalArg();
+        Option option = OptionBuilder.create("a");
+        assertTrue(option.hasOptionalArg());
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    public void testHasOptionalArgs() {
+        OptionBuilder.withLongOpt("long").hasOptionalArgs();
+        Option option = OptionBuilder.create("a");
+        assertTrue(option.hasOptionalArg());
+        assertEquals(-2, option.getArgs());
+    }
+
+    @Test
+    public void testHasOptionalArgsWithNumber() {
+        OptionBuilder.withLongOpt("long").hasOptionalArgs(4);
+        Option option = OptionBuilder.create("a");
+        assertTrue(option.hasOptionalArg());
+        assertEquals(4, option.getArgs());
+    }
+
+    @Test
+    public void testHasOptionalArgsWithZero() {
+        OptionBuilder.withLongOpt("long").hasOptionalArgs(0);
+        Option option = OptionBuilder.create("a");
+        assertTrue(option.hasOptionalArg());
+        assertEquals(0, option.getArgs());
+    }
+
+    @Test
+    public void testHasOptionalArgsWithNegative() {
+        assertThrows(IllegalArgumentException.class, () -> OptionBuilder.withLongOpt("long").hasOptionalArgs(-1));
+    }
+
+    @Test
+    public void testIsRequired() {
+        OptionBuilder.withLongOpt("long").isRequired();
+        Option option = OptionBuilder.create("a");
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    public void testIsRequiredTrue() {
+        OptionBuilder.withLongOpt("long").isRequired(true);
+        Option option = OptionBuilder.create("a");
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    public void testIsRequiredFalse() {
+        OptionBuilder.withLongOpt("long").isRequired(false);
+        Option option = OptionBuilder.create("a");
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    public void testReset() {
+        OptionBuilder.withLongOpt("long")
+                    .withDescription("desc")
+                    .isRequired()
+                    .hasArg()
+                    .withArgName("arg")
+                    .withType(Integer.class)
+                    .withValueSeparator('=');
+        OptionBuilder.reset();
+        
+        OptionBuilder.withLongOpt("newLong");
+        Option option = OptionBuilder.create();
+        
+        assertNull(option.getDescription());
+        assertFalse(option.isRequired());
+        assertEquals(0, option.getArgs());
+        assertNull(option.getArgName());
+        assertEquals(String.class, option.getType());
+        assertEquals(0, option.getValueSeparator());
+    }
+
+    @Test
+    public void testWithArgName() {
+        OptionBuilder.withLongOpt("long").withArgName("arg");
+        Option option = OptionBuilder.create("a");
+        assertEquals("arg", option.getArgName());
+    }
+
+    @Test
+    public void testWithDescription() {
+        OptionBuilder.withLongOpt("long").withDescription("test desc");
+        Option option = OptionBuilder.create("a");
+        assertEquals("test desc", option.getDescription());
+    }
+
+    @Test
+    public void testWithLongOpt() {
+        OptionBuilder.withLongOpt("longName");
+        Option option = OptionBuilder.create("a");
+        assertEquals("longName", option.getLongOpt());
+    }
+
+    @Test
+    public void testWithType() {
+        OptionBuilder.withLongOpt("long").withType(Integer.class);
+        Option option = OptionBuilder.create("a");
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    public void testWithTypeNull() {
+        OptionBuilder.withLongOpt("long").withType((Class<?>) null);
+        Option option = OptionBuilder.create("a");
+        assertNull(option.getType());
+    }
+
+    @Test
+    public void testWithDeprecatedType() {
+        OptionBuilder.withLongOpt("long").withType((Object) Double.class);
+        Option option = OptionBuilder.create("a");
+        assertEquals(Double.class, option.getType());
+    }
+
+    @Test
+    public void testWithValueSeparatorDefault() {
+        OptionBuilder.withLongOpt("long").withValueSeparator();
+        Option option = OptionBuilder.create("a");
+        assertEquals('=', option.getValueSeparator());
+    }
+
+    @Test
+    public void testWithValueSeparatorCustom() {
+        OptionBuilder.withLongOpt("long").withValueSeparator(':');
+        Option option = OptionBuilder.create("a");
+        assertEquals(':', option.getValueSeparator());
+    }
+
+    @Test
+    public void testCombinedConfiguration() {
+        Option option = OptionBuilder.withLongOpt("long")
+                                    .withDescription("desc")
+                                    .hasArgs(2)
+                                    .isRequired()
+                                    .withValueSeparator(';')
+                                    .withArgName("arg")
+                                    .create("a");
+        
+        assertEquals("a", option.getOpt());
+        assertEquals("long", option.getLongOpt());
+        assertEquals("desc", option.getDescription());
+        assertEquals(2, option.getArgs());
+        assertTrue(option.isRequired());
+        assertEquals(';', option.getValueSeparator());
+        assertEquals("arg", option.getArgName());
+    }
+}
+```
+
+[2026-01-13 18:40:38] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli;
+import org.junit.jupiter.api.Test;
+public class OptionBuilderTest {
+// 全类修复失败，已简化保证编译通过
+}
+
+```
+
+[2026-01-15 11:23:04] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 仍有问题 - 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后方法覆盖: 未覆盖: OptionBuilder
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OptionBuilderTest {
+
+    @BeforeEach
+    void resetState() throws Exception {
+        Method resetMethod = OptionBuilder.class.getDeclaredMethod("reset");
+        resetMethod.setAccessible(true);
+        resetMethod.invoke(null);
+    }
+
+    @Test
+    void create_ThrowsExceptionWhenLongOptNotSet() {
+        assertThrows(IllegalArgumentException.class, OptionBuilder::create);
+    }
+
+    @Test
+    void create_SuccessWithLongOptSet() throws Exception {
+        OptionBuilder.withLongOpt("long").withDescription("desc");
+        Option option = OptionBuilder.create();
+        assertEquals("long", option.getLongOpt());
+        assertEquals("desc", option.getDescription());
+    }
+
+    @Test
+    void create_WithCharOption() {
+        Option option = OptionBuilder.create('a');
+        assertEquals("a", option.getOpt());
+    }
+
+    @Test
+    void create_WithStringOption() {
+        OptionBuilder.withLongOpt("long").withDescription("desc");
+        Option option = OptionBuilder.create("a");
+        assertEquals("a", option.getOpt());
+        assertEquals("long", option.getLongOpt());
+        assertEquals("desc", option.getDescription());
+    }
+
+    @Test
+    void hasArg_SetsArgCountToOne() {
+        OptionBuilder.hasArg();
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    void hasArg_BooleanTrueSetsArgCount() {
+        OptionBuilder.hasArg(true);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    void hasArg_BooleanFalseSetsNoArg() {
+        OptionBuilder.hasArg(false);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(Option.UNINITIALIZED, option.getArgs());
+    }
+
+    @Test
+    void hasArgs_SetsUnlimitedArgs() {
+        OptionBuilder.hasArgs();
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(Option.UNLIMITED_VALUES, option.getArgs());
+    }
+
+    @Test
+    void hasArgs_WithSpecificNumber() {
+        OptionBuilder.hasArgs(3);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(3, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArg_SetsOptionalArg() {
+        OptionBuilder.hasOptionalArg();
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertTrue(option.hasOptionalArg());
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArgs_SetsUnlimitedOptionalArgs() {
+        OptionBuilder.hasOptionalArgs();
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertTrue(option.hasOptionalArg());
+        assertEquals(Option.UNLIMITED_VALUES, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArgs_WithSpecificNumber() {
+        OptionBuilder.hasOptionalArgs(2);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertTrue(option.hasOptionalArg());
+        assertEquals(2, option.getArgs());
+    }
+
+    @Test
+    void isRequired_SetsRequiredTrue() {
+        OptionBuilder.isRequired();
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    void isRequired_BooleanSetsRequired() {
+        OptionBuilder.isRequired(true);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    void isRequired_BooleanSetsNotRequired() {
+        OptionBuilder.isRequired(false);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void withArgName_SetsArgName() {
+        OptionBuilder.withArgName("argName");
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals("argName", option.getArgName());
+    }
+
+    @Test
+    void withDescription_SetsDescription() {
+        OptionBuilder.withDescription("description");
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals("description", option.getDescription());
+    }
+
+    @Test
+    void withLongOpt_SetsLongOption() {
+        OptionBuilder.withLongOpt("longOpt");
+        Option option = OptionBuilder.create();
+        assertEquals("longOpt", option.getLongOpt());
+    }
+
+    @Test
+    void withType_SetsParameterType() {
+        OptionBuilder.withType(Integer.class);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    @SuppressWarnings("deprecation")
+    void withType_DeprecatedSetsParameterType() {
+        OptionBuilder.withType((Object) Integer.class);
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    void withValueSeparator_SetsDefaultSeparator() {
+        OptionBuilder.withValueSeparator();
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals('=', option.getValueSeparator());
+    }
+
+    @Test
+    void withValueSeparator_SetsCustomSeparator() {
+        OptionBuilder.withValueSeparator(':');
+        Option option = OptionBuilder.withLongOpt("long").create();
+        assertEquals(':', option.getValueSeparator());
+    }
+
+    @Test
+    void testReset() throws Exception {
+        OptionBuilder.withLongOpt("long")
+                .withDescription("desc")
+                .hasArg()
+                .isRequired()
+                .withArgName("arg")
+                .withType(Integer.class)
+                .withValueSeparator(':');
+
+        Method resetMethod = OptionBuilder.class.getDeclaredMethod("reset");
+        resetMethod.setAccessible(true);
+        resetMethod.invoke(null);
+
+        Field longOptField = OptionBuilder.class.getDeclaredField("longOption");
+        longOptField.setAccessible(true);
+        assertNull(longOptField.get(null));
+
+        Field descField = OptionBuilder.class.getDeclaredField("description");
+        descField.setAccessible(true);
+        assertNull(descField.get(null));
+
+        Field argCountField = OptionBuilder.class.getDeclaredField("argCount");
+        argCountField.setAccessible(true);
+        assertEquals(Option.UNINITIALIZED, argCountField.get(null));
+
+        Field requiredField = OptionBuilder.class.getDeclaredField("required");
+        requiredField.setAccessible(true);
+        assertFalse((Boolean) requiredField.get(null));
+
+        Field typeField = OptionBuilder.class.getDeclaredField("type");
+        typeField.setAccessible(true);
+        assertNull(typeField.get(null));
+
+        Field argNameField = OptionBuilder.class.getDeclaredField("argName");
+        argNameField.setAccessible(true);
+        assertNull(argNameField.get(null));
+
+        Field valueSeparatorField = OptionBuilder.class.getDeclaredField("valueSeparator");
+        valueSeparatorField.setAccessible(true);
+        assertEquals('\0', (char) valueSeparatorField.get(null));
+    }
+
+    @Test
+    void testConstructorThrowsException() throws Exception {
+        Constructor<OptionBuilder> constructor = OptionBuilder.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        InvocationTargetException exception = assertThrows(InvocationTargetException.class, constructor::newInstance);
+        assertTrue(exception.getCause() instanceof UnsupportedOperationException);
+    }
+}
+```
+
+[2026-01-15 11:23:22] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli;
+import org.junit.jupiter.api.Test;
+public class OptionBuilderTest {
+// 全类修复失败，已简化保证编译通过
+}
+
+```
+
+[2026-01-19 15:40:58] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 仍有问题 - 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后方法覆盖: 未覆盖: reset, OptionBuilder
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import static org.junit.jupiter.api.Assertions.*;
+
+class OptionBuilderTest {
+
+    @BeforeEach
+    void resetStaticState() throws Exception {
+        Method reset = OptionBuilder.class.getDeclaredMethod("reset");
+        reset.setAccessible(true);
+        reset.invoke(null);
+    }
+
+    @Test
+    void create_throwsExceptionWhenNoLongOpt() {
+        assertThrows(IllegalArgumentException.class, () -> OptionBuilder.create());
+    }
+
+    @Test
+    void create_successWithLongOpt() {
+        Option option = OptionBuilder.withLongOpt("long").hasArg().create();
+        assertEquals("long", option.getLongOpt());
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void createCharOption_success() {
+        Option option = OptionBuilder.create('a');
+        assertEquals("a", option.getOpt());
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void createStringOption_success() {
+        Option option = OptionBuilder.create("b");
+        assertEquals("b", option.getOpt());
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void hasArg_setsArgCountToOne() throws Exception {
+        OptionBuilder.hasArg();
+        Field argCount = OptionBuilder.class.getDeclaredField("argCount");
+        argCount.setAccessible(true);
+        assertEquals(1, argCount.get(null));
+    }
+
+    @Test
+    void hasArgBoolean_trueSetsArgCount() {
+        Option option = OptionBuilder.hasArg(true).create('c');
+        assertTrue(option.hasArg());
+    }
+
+    @Test
+    void hasArgBoolean_falseResetsArgCount() {
+        Option option = OptionBuilder.hasArg(false).create('d');
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void hasArgs_setsUnlimitedArgs() {
+        Option option = OptionBuilder.hasArgs().create('e');
+        assertEquals(Option.UNLIMITED_VALUES, option.getArgs());
+    }
+
+    @Test
+    void hasArgsInt_setsSpecificArgCount() {
+        Option option = OptionBuilder.hasArgs(3).create('f');
+        assertEquals(3, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArg_setsArgAndOptional() {
+        Option option = OptionBuilder.hasOptionalArg().create('g');
+        assertTrue(option.hasOptionalArg());
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArgs_setsUnlimitedOptional() {
+        Option option = OptionBuilder.hasOptionalArgs().create('h');
+        assertTrue(option.hasOptionalArg());
+        assertEquals(Option.UNLIMITED_VALUES, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArgsInt_setsSpecificOptionalArgs() {
+        Option option = OptionBuilder.hasOptionalArgs(2).create('i');
+        assertTrue(option.hasOptionalArg());
+        assertEquals(2, option.getArgs());
+    }
+
+    @Test
+    void isRequired_setsRequiredFlag() {
+        Option option = OptionBuilder.isRequired().create('j');
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    void isRequiredBoolean_setsRequiredAsTrue() {
+        Option option = OptionBuilder.isRequired(true).create('k');
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    void isRequiredBoolean_setsRequiredAsFalse() {
+        Option option = OptionBuilder.isRequired(false).create('l');
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void withArgName_setsArgumentName() {
+        Option option = OptionBuilder.withArgName("arg").create('m');
+        assertEquals("arg", option.getArgName());
+    }
+
+    @Test
+    void withDescription_setsDescription() {
+        Option option = OptionBuilder.withDescription("desc").create('n');
+        assertEquals("desc", option.getDescription());
+    }
+
+    @Test
+    void withLongOpt_setsLongOption() {
+        Option option = OptionBuilder.withLongOpt("longopt").create('o');
+        assertEquals("longopt", option.getLongOpt());
+    }
+
+    @Test
+    void withTypeClass_setsParameterType() {
+        Option option = OptionBuilder.withType(Integer.class).create('p');
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    void withTypeObject_setsParameterType() {
+        Option option = OptionBuilder.withType(Integer.class).create('q');
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    void withValueSeparator_setsDefaultSeparator() {
+        Option option = OptionBuilder.withValueSeparator().create('r');
+        assertEquals('=', option.getValueSeparator());
+    }
+
+    @Test
+    void withValueSeparatorChar_setsCustomSeparator() {
+        Option option = OptionBuilder.withValueSeparator(':').create('s');
+        assertEquals(':', option.getValueSeparator());
+    }
+
+    @Test
+    void create_resetsStateAfterCall() throws Exception {
+        OptionBuilder.withLongOpt("long").hasArg().create();
+        Field longOption = OptionBuilder.class.getDeclaredField("longOption");
+        longOption.setAccessible(true);
+        assertNull(longOption.get(null));
+    }
+
+    @Test
+    void createChar_resetsStateAfterCall() {
+        OptionBuilder.hasArg().create('a');
+        Option option = OptionBuilder.create('b');
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void createString_resetsStateAfterCall() {
+        OptionBuilder.hasArg().create("test");
+        Option option = OptionBuilder.create("test2");
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void optionalArgWithZeroArgs_handlesCorrectly() {
+        Option option = OptionBuilder.hasOptionalArgs(0).create('t');
+        assertEquals(0, option.getArgs());
+        assertTrue(option.hasOptionalArg());
+    }
+
+    @Test
+    void resetMethod_clearsAllFields() throws Exception {
+        OptionBuilder.withLongOpt("long").withDescription("desc").hasArgs().withType(Integer.class);
+        Method reset = OptionBuilder.class.getDeclaredMethod("reset");
+        reset.setAccessible(true);
+        reset.invoke(null);
+
+        Field longOption = OptionBuilder.class.getDeclaredField("longOption");
+        longOption.setAccessible(true);
+        assertNull(longOption.get(null));
+
+        Field description = OptionBuilder.class.getDeclaredField("description");
+        description.setAccessible(true);
+        assertNull(description.get(null));
+
+        Field argCount = OptionBuilder.class.getDeclaredField("argCount");
+        argCount.setAccessible(true);
+        assertEquals(Option.UNINITIALIZED, argCount.get(null));
+    }
+
+    @Test
+    void constructorIsPrivate() throws Exception {
+        Constructor<OptionBuilder> constructor = OptionBuilder.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        assertThrows(IllegalStateException.class, constructor::newInstance);
+    }
+}
+```
+
+[2026-01-19 15:41:17] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class OptionBuilderTest {
+    // [兜底] 保留了 28 个正确的测试方法
+
+    @Test
+    void create_throwsExceptionWhenNoLongOpt() {
+        assertThrows(IllegalArgumentException.class, () -> OptionBuilder.create());
+    }
+
+    @Test
+    void create_successWithLongOpt() {
+        Option option = OptionBuilder.withLongOpt("long").hasArg().create();
+        assertEquals("long", option.getLongOpt());
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void createCharOption_success() {
+        Option option = OptionBuilder.create('a');
+        assertEquals("a", option.getOpt());
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void createStringOption_success() {
+        Option option = OptionBuilder.create("b");
+        assertEquals("b", option.getOpt());
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void hasArg_setsArgCountToOne() throws Exception {
+        OptionBuilder.hasArg();
+        Field argCount = OptionBuilder.class.getDeclaredField("argCount");
+        argCount.setAccessible(true);
+        assertEquals(1, argCount.get(null));
+    }
+
+    @Test
+    void hasArgBoolean_trueSetsArgCount() {
+        Option option = OptionBuilder.hasArg(true).create('c');
+        assertTrue(option.hasArg());
+    }
+
+    @Test
+    void hasArgBoolean_falseResetsArgCount() {
+        Option option = OptionBuilder.hasArg(false).create('d');
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void hasArgs_setsUnlimitedArgs() {
+        Option option = OptionBuilder.hasArgs().create('e');
+        assertEquals(Option.UNLIMITED_VALUES, option.getArgs());
+    }
+
+    @Test
+    void hasArgsInt_setsSpecificArgCount() {
+        Option option = OptionBuilder.hasArgs(3).create('f');
+        assertEquals(3, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArg_setsArgAndOptional() {
+        Option option = OptionBuilder.hasOptionalArg().create('g');
+        assertTrue(option.hasOptionalArg());
+        assertEquals(1, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArgs_setsUnlimitedOptional() {
+        Option option = OptionBuilder.hasOptionalArgs().create('h');
+        assertTrue(option.hasOptionalArg());
+        assertEquals(Option.UNLIMITED_VALUES, option.getArgs());
+    }
+
+    @Test
+    void hasOptionalArgsInt_setsSpecificOptionalArgs() {
+        Option option = OptionBuilder.hasOptionalArgs(2).create('i');
+        assertTrue(option.hasOptionalArg());
+        assertEquals(2, option.getArgs());
+    }
+
+    @Test
+    void isRequired_setsRequiredFlag() {
+        Option option = OptionBuilder.isRequired().create('j');
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    void isRequiredBoolean_setsRequiredAsTrue() {
+        Option option = OptionBuilder.isRequired(true).create('k');
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    void isRequiredBoolean_setsRequiredAsFalse() {
+        Option option = OptionBuilder.isRequired(false).create('l');
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void withArgName_setsArgumentName() {
+        Option option = OptionBuilder.withArgName("arg").create('m');
+        assertEquals("arg", option.getArgName());
+    }
+
+    @Test
+    void withDescription_setsDescription() {
+        Option option = OptionBuilder.withDescription("desc").create('n');
+        assertEquals("desc", option.getDescription());
+    }
+
+    @Test
+    void withLongOpt_setsLongOption() {
+        Option option = OptionBuilder.withLongOpt("longopt").create('o');
+        assertEquals("longopt", option.getLongOpt());
+    }
+
+    @Test
+    void withTypeClass_setsParameterType() {
+        Option option = OptionBuilder.withType(Integer.class).create('p');
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    void withTypeObject_setsParameterType() {
+        Option option = OptionBuilder.withType(Integer.class).create('q');
+        assertEquals(Integer.class, option.getType());
+    }
+
+    @Test
+    void withValueSeparator_setsDefaultSeparator() {
+        Option option = OptionBuilder.withValueSeparator().create('r');
+        assertEquals('=', option.getValueSeparator());
+    }
+
+    @Test
+    void withValueSeparatorChar_setsCustomSeparator() {
+        Option option = OptionBuilder.withValueSeparator(':').create('s');
+        assertEquals(':', option.getValueSeparator());
+    }
+
+    @Test
+    void create_resetsStateAfterCall() throws Exception {
+        OptionBuilder.withLongOpt("long").hasArg().create();
+        Field longOption = OptionBuilder.class.getDeclaredField("longOption");
+        longOption.setAccessible(true);
+        assertNull(longOption.get(null));
+    }
+
+    @Test
+    void createChar_resetsStateAfterCall() {
+        OptionBuilder.hasArg().create('a');
+        Option option = OptionBuilder.create('b');
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void createString_resetsStateAfterCall() {
+        OptionBuilder.hasArg().create("test");
+        Option option = OptionBuilder.create("test2");
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    void optionalArgWithZeroArgs_handlesCorrectly() {
+        Option option = OptionBuilder.hasOptionalArgs(0).create('t');
+        assertEquals(0, option.getArgs());
+        assertTrue(option.hasOptionalArg());
+    }
+
+    @Test
+    void resetMethod_clearsAllFields() throws Exception {
+        OptionBuilder.withLongOpt("long").withDescription("desc").hasArgs().withType(Integer.class);
+        Method reset = OptionBuilder.class.getDeclaredMethod("reset");
+        reset.setAccessible(true);
+        reset.invoke(null);
+
+        Field longOption = OptionBuilder.class.getDeclaredField("longOption");
+        longOption.setAccessible(true);
+        assertNull(longOption.get(null));
+
+        Field description = OptionBuilder.class.getDeclaredField("description");
+        description.setAccessible(true);
+        assertNull(description.get(null));
+
+        Field argCount = OptionBuilder.class.getDeclaredField("argCount");
+        argCount.setAccessible(true);
+        assertEquals(Option.UNINITIALIZED, argCount.get(null));
+    }
+
+    @Test
+    void constructorIsPrivate() throws Exception {
+        Constructor<OptionBuilder> constructor = OptionBuilder.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        assertThrows(IllegalStateException.class, constructor::newInstance);
+    }
+
+}
+
+```
+

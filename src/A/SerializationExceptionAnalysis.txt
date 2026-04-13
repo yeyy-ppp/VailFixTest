@@ -1,0 +1,21 @@
+包路径：lang3
+类名：SerializationException
+父类：RuntimeException
+依赖类：[无]
+---
+序号：1
+方法名：SerializationException()
+返回类型：SerializationException
+功能描述：创建一个无消息和原因的序列化异常实例
+序号：2
+方法名：SerializationException(final String msg)
+返回类型：SerializationException
+功能描述：创建一个带有指定消息的序列化异常实例
+序号：3
+方法名：SerializationException(final String msg, final Throwable cause)
+返回类型：SerializationException
+功能描述：创建一个带有指定消息和内部原因的序列化异常实例
+序号：4
+方法名：SerializationException(final Throwable cause)
+返回类型：SerializationException
+功能描述：创建一个带有指定内部原因的序列化异常实例

@@ -1,0 +1,21 @@
+[2026-01-09 14:25:28] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: countChar, reverse, charAt, maxLength
+  未覆盖: 全部覆盖
+优化建议: **：; 1. **边界情况增强**：; `countChar` 方法缺少对超长字符串（如 10 万字符）的性能/边界测试; `charAt` 方法未测试索引值等于字符串长度边界（如 `str.length()`）的场景; 2. **分支覆盖补充**：; `maxLength` 方法缺少对**全空字符串数组**中非空字符串但长度为 0 的场景显式测试（现有用例 `testMaxLength_AllEmptyStrings` 已覆盖，但可更明确）; 3. **断言完整性优化**：; `charAt` 的异常测试可增加异常消息验证（如 `assertThrows` 结合 `getMessage()` 检查）; `maxLength` 的反射调用可封装为辅助方法，避免重复反射代码（不影响功能，但提升可维护性）; --; ### 详细说明; #### 1. 致命错误检查（无问题）; **语法/编译错误**：无缺失分号、括号不匹配或类型错误; **运行时错误**：; 空指针安全：`countChar(null)`、`reverse(null)`、`charAt(null)` 均正确处理; 索引越界：`charAt` 对非常规索引（0/-1/超长）抛出预期异常; **断言值正确性**：; 所有断言值与业务逻辑一致（如 `banana` 中 `'a'` 出现 3 次，反转 `abc→cba` 等）; #### 2. 方法覆盖（100% 覆盖）; | 待测方法           | 测试用例数 | 覆盖关键场景 |; |--------------------|------------|--------------|; | `countChar`        | 8 个       | 空值/大小写/特殊字符/无匹配 |; | `reverse`          | 5 个       | 空值/单字符/奇偶长度 |; | `charAt`           | 8 个       | 异常索引/Unicode/首尾位置 |; | `maxLength`        | 7 个       | 空数组/全 null/混合 null/等长字符串 |; #### 3. 优化建议（不影响通过）; **边界覆盖**：增加超长字符串测试可验证内存/性能表现; **异常消息**：强化 `charAt` 的异常断言可提升错误定位能力; **反射封装**：提取 `invokeMaxLength` 方法简化 `maxLength` 测试代码（示例）：; ```java; private int invokeMaxLength(String[] arr) throws Exception {; Method method = Add.class.getDeclaredMethod("maxLength", String[].class);; method.setAccessible(true);; return (int) method.invoke(add, (Object) arr);; }; ```
+
+[2026-01-09 14:47:05] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: countChar, reverse, charAt, maxLength
+  未覆盖: 全部覆盖
+优化建议: 建议增加reverse方法对Unicode字符串的测试; 建议增加maxLength方法对单个元素数组的边界测试
+
+[2026-01-09 15:05:05] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: countChar, reverse, charAt, maxLength
+  未覆盖: 全部覆盖
+优化建议: 增加测试用例覆盖countChar方法中字符出现在连续位置的场景（如"aaa"统计'a'）; 增加测试用例覆盖maxLength方法中仅含单个非空字符串的场景
+

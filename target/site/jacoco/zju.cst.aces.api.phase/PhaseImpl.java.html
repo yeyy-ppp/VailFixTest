@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PhaseImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.phase</a> &gt; <span class="el_source">PhaseImpl.java</span></div><h1>PhaseImpl.java</h1><pre class="source lang-java linenums">
+package zju.cst.aces.api.phase;
+
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.phase.solution.*;
+import zju.cst.aces.api.phase.step.*;
+import zju.cst.aces.dto.ClassInfo;
+import zju.cst.aces.dto.MethodInfo;
+
+public class PhaseImpl implements Phase {
+<span class="nc" id="L12">    public enum PhaseType {</span>
+<span class="nc" id="L13">        TELPA,</span>
+<span class="nc" id="L14">        TESTPILOT,</span>
+<span class="nc" id="L15">        COVERUP,</span>
+<span class="nc" id="L16">        HITS,</span>
+<span class="nc" id="L17">        SYMPROMPT,</span>
+<span class="nc" id="L18">        CHATTESTER,</span>
+<span class="nc" id="L19">        MUTAP</span>
+    }
+
+    protected final Config config;
+
+<span class="nc" id="L24">    public PhaseImpl(Config config) {</span>
+<span class="nc" id="L25">        this.config = config;</span>
+<span class="nc" id="L26">    }</span>
+
+    public void prepare() {
+<span class="nc" id="L29">        createPreparation().execute();</span>
+<span class="nc" id="L30">    }</span>
+
+    public PromptConstructorImpl generatePrompt(ClassInfo classInfo, MethodInfo methodInfo, int num) {
+<span class="nc" id="L33">        return createPromptGeneration(classInfo, methodInfo).execute(num);</span>
+    }
+
+    @Override
+    public void generateTest(PromptConstructorImpl pc) {
+<span class="nc" id="L38">        createTestGeneration().execute(pc);</span>
+<span class="nc" id="L39">    }</span>
+
+
+    public boolean validateTest(PromptConstructorImpl pc) {
+
+<span class="nc" id="L44">        return createValidation().execute(pc);</span>
+    }
+
+    public void repairTest(PromptConstructorImpl pc) {
+<span class="nc" id="L48">        createRepairTask().execute(pc);</span>
+<span class="nc" id="L49">    }</span>
+    // Factory methods to create task instances
+    protected Preparation createPreparation() {
+<span class="nc" id="L52">        return new Preparation(config);</span>
+    }
+
+    protected PromptGeneration createPromptGeneration(ClassInfo classInfo, MethodInfo methodInfo) {
+<span class="nc" id="L56">        return new PromptGeneration(config, classInfo, methodInfo);</span>
+    }
+
+    protected TestGeneration  createTestGeneration() {
+<span class="nc" id="L60">        return new TestGeneration(config);</span>
+    }
+
+    protected Validation createValidation() {
+<span class="nc" id="L64">        return new Validation(config);</span>
+    }
+
+    protected Repair createRepairTask() {
+<span class="nc" id="L68">        return new Repair(config);</span>
+    }
+
+
+    // Factory method to select the appropriate Phase subclass based on config
+    public static PhaseImpl createPhase(Config config) {
+        // Example logic to select Phase subclass based on config properties
+<span class="nc" id="L75">        String phaseTypeString = config.getPhaseType();</span>
+
+        try {
+<span class="nc" id="L78">            PhaseType phaseType = PhaseType.valueOf(phaseTypeString); // todo 这里似乎如果没有找到枚举对象会直接崩溃</span>
+<span class="nc bnc" id="L79" title="All 8 branches missed.">            switch (phaseType) {</span>
+                case TELPA:
+<span class="nc" id="L81">                    return new TELPA(config);</span>
+                case TESTPILOT:
+<span class="nc" id="L83">                    return new TESTPILOT(config);</span>
+                case COVERUP:
+<span class="nc" id="L85">                    return new COVERUP(config);</span>
+                case HITS:
+<span class="nc" id="L87">                    return new HITS(config);</span>
+                case SYMPROMPT:
+<span class="nc" id="L89">                    return new SYMPROMPT(config);</span>
+                case CHATTESTER:
+<span class="nc" id="L91">                    return new CHATTESTER(config);</span>
+                case MUTAP:
+<span class="nc" id="L93">                    return new MUTAP(config);</span>
+                default:
+<span class="nc" id="L95">                    return new PhaseImpl(config); // Default or fallback Phase</span>
+            }
+<span class="nc" id="L97">        }catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L98">            return new PhaseImpl(config); // Default or fallback Phase</span>
+        }
+
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

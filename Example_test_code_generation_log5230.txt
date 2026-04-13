@@ -1,0 +1,147 @@
+类名：Example
+分析阶段：
+  耗时：6873 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：47535 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：13146 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  失败原因：
+修复阶段：
+  耗时：-1747963723901 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：0
+  修复失败原因：
+  修复成功次数：0
+评估阶段：
+  耗时：1747963771530 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【整体代码覆盖率】：【100%】  
+【分支覆盖率】：【100%】  
+【行覆盖率】：【100%】  
+【语句覆盖率】：【100%】  
+【路径覆盖率】：【100%】
+总耗时：117031 毫秒
+总消耗 token 数量：0
+测试代码生成成功：true
+失败原因：
+--------------------------------------------------------
+起始时间：1747963656346
+
+整体 开始时间: 1747963656347
+分析起始时间：1747963656347
+
+分析 开始时间: 1747963656347
+解析提示内容：
+```
+包路径：codeing
+类名：Example
+方法名：add
+返回类型：int
+功能描述：将两个整数参数相加并返回其和
+```over
+
+分析结束时间：1747963663220
+
+分析总耗时：6873
+分析 结束时间: 1747963663220
+分析 耗时: 6.873 秒
+生成 开始时间: 1747963663221
+生成测试代码：
+package codeing;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+public class ExampleTest {
+
+    @Test
+    void addTest1() {
+        Example example = new Example();
+        assertEquals(8, example.add(3, 5));
+    }
+
+    @Test
+    void addTest2() {
+        Example example = new Example();
+        assertEquals(-5, example.add(-2, -3));
+    }
+
+    @Test
+    void addTest3() {
+        Example example = new Example();
+        assertEquals(2, example.add(5, -3));
+    }
+
+    @Test
+    void addTest4() {
+        Example example = new Example();
+        assertEquals(7, example.add(0, 7));
+    }
+
+    @Test
+    void addTest5() {
+        Example example = new Example();
+        assertEquals(-4, example.add(0, -4));
+    }
+
+    @Test
+    void addTest6() {
+        Example example = new Example();
+        assertEquals(0, example.add(0, 0));
+    }
+
+    @Test
+    void addTest7() {
+        Example example = new Example();
+        assertEquals(Integer.MIN_VALUE, example.add(Integer.MAX_VALUE, 1));
+    }
+
+    @Test
+    void addTest8() {
+        Example example = new Example();
+        assertEquals(Integer.MAX_VALUE, example.add(Integer.MIN_VALUE, -1));
+    }
+}over
+
+生成 结束时间: 1747963710755
+生成 耗时: 47.534 秒
+验证 开始时间: 1747963710755
+测试代码验证结果：
+全部验证通过over
+
+验证 结束时间: 1747963723901
+验证 耗时: 13.146 秒
+评估 开始时间: 1747963723902
+测试代码评估结果：
+【整体代码覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【行覆盖率】：【100%】
+【语句覆盖率】：【100%】
+【路径覆盖率】：【100%】over
+
+评估 结束时间: 1747963771530
+评估 耗时: 47.628 秒
+测试类创建成功：src/test/java/codeing/ExampleTest.java
+测试类编译成功！
+测试类编译成功！
+运行开始1：
+运行测试时出错：D:\fx\jafx\chatunitest-coresrc\test\java\codeing\ExampleTest.java (系统找不到指定的路径。)
+java.io.FileNotFoundException: D:\fx\jafx\chatunitest-coresrc\test\java\codeing\ExampleTest.java (系统找不到指定的路径。)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:219)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+	at java.base/java.io.FileInputStream.<init>(FileInputStream.java:112)
+	at java.base/java.io.FileReader.<init>(FileReader.java:60)
+	at zju.cst.aces.runner.TestClassRunner.readFileContent(TestClassRunner.java:300)
+	at zju.cst.aces.runner.TestCore.main(TestCore.java:812)
+
+Process finished with exit code 0

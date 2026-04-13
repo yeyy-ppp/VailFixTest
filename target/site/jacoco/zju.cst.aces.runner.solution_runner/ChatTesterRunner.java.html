@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatTesterRunner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner.solution_runner</a> &gt; <span class="el_source">ChatTesterRunner.java</span></div><h1>ChatTesterRunner.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner.solution_runner;
+
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.ChatGenerator;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.impl.RepairImpl;
+import zju.cst.aces.api.phase.Phase;
+import zju.cst.aces.api.phase.PhaseImpl;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.prompt.template.PromptTemplate;
+import zju.cst.aces.util.CodeExtractor;
+import zju.cst.aces.util.chattester.TesterValidator;
+
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+<span class="nc" id="L22">public class ChatTesterRunner extends MethodRunner {</span>
+    public ChatTesterRunner(Config config, String fullClassName, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L24">        super(config, fullClassName, methodInfo);</span>
+<span class="nc" id="L25">    }</span>
+
+    /**
+     * Main process of CHATTESTER, including:
+     * 1. Generate intention for focal method, then
+     * 2. Use intention and focal context to generate test, and
+     * 3. Iteratively repair the test until it passes.
+     * @param num
+     * @return If the generation process is successful
+     */
+    @Override
+    public boolean startRounds(final int num) throws IOException {
+<span class="nc" id="L37">        String testName = className + separator + methodInfo.methodName + separator</span>
+<span class="nc" id="L38">                + classInfo.methodSigs.get(methodInfo.methodSignature) + separator + num + separator + &quot;Test&quot;;</span>
+<span class="nc" id="L39">        String fullTestName = fullClassName + separator + methodInfo.methodName + separator</span>
+<span class="nc" id="L40">                + classInfo.methodSigs.get(methodInfo.methodSignature) + separator + num + separator + &quot;Test&quot;;</span>
+<span class="nc" id="L41">         config.getLogger().info(&quot;\n==========================\n[ChatUniTest] Generating test for method &lt; &quot;</span>
+                + methodInfo.methodName + &quot; &gt; number &quot; + num + &quot;...\n&quot;);
+
+<span class="nc" id="L44">        config.setValidator(new TesterValidator(config.getTestOutput(), config.getCompileOutputPath(),  config.getProject().getBasedir().toPath().resolve(&quot;target&quot;), config.getClassPaths())); // 设置chattester的专属验证器</span>
+
+<span class="nc" id="L46">        Phase phase = PhaseImpl.createPhase(config);</span>
+
+<span class="nc" id="L48">        ChatGenerator generator = new ChatGenerator(config);</span>
+//        PromptConstructorImpl pc = new PromptConstructorImpl(config);
+<span class="nc" id="L50">        PromptConstructorImpl pc = phase.generatePrompt(classInfo, methodInfo,num);</span>
+<span class="nc" id="L51">        RepairImpl repair = new RepairImpl(config, pc);</span>
+        //prompt generation里面的
+<span class="nc" id="L53">        pc.setFullTestName(fullTestName);</span>
+<span class="nc" id="L54">        pc.setTestName(testName);</span>
+
+<span class="nc" id="L56">        PromptInfo promptInfo = pc.getPromptInfo();</span>
+<span class="nc" id="L57">        promptInfo.setFullTestName(fullTestName);</span>
+<span class="nc" id="L58">        Path savePath = config.getTestOutput().resolve(fullTestName.replace(&quot;.&quot;, File.separator) + &quot;.java&quot;);</span>
+<span class="nc" id="L59">        promptInfo.setTestPath(savePath);</span>
+
+<span class="nc" id="L61">        int errorNum = Integer.MAX_VALUE;</span>
+<span class="nc" id="L62">        int invalidRefinementCount = 0;</span>
+<span class="nc" id="L63">        config.useExtra = true;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        for (int rounds = 0; rounds &lt; config.getMaxRounds(); rounds++) {</span>
+<span class="nc" id="L65">            promptInfo.addRecord(new RoundRecord(rounds));</span>
+<span class="nc" id="L66">            RoundRecord record = promptInfo.getRecords().get(rounds);</span>
+<span class="nc" id="L67">            record.setAttempt(num);</span>
+            List&lt;ChatMessage&gt; prompt;
+<span class="nc" id="L69">            PromptTemplate pt = this.promptGenerator.promptTemplate;</span>
+<span class="nc" id="L70">            pt.buildDataModel(config, promptInfo);</span>
+
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (rounds == 0) {</span>
+                // generate method intention
+<span class="nc" id="L74">                 config.getLogger().info(&quot;Creating intention for method &lt; &quot; + methodInfo.methodName + &quot; &gt; ...&quot;);</span>
+<span class="nc" id="L75">                List&lt;ChatMessage&gt; intentionPrompt = this.promptGenerator.generateMessages(promptInfo, &quot;CHATTESTER&quot;);</span>
+<span class="nc" id="L76">                config.useExtra = false;</span>
+<span class="nc" id="L77">                ChatResponse response = ChatGenerator.chat(config, intentionPrompt);</span>
+<span class="nc" id="L78">                String intention = ChatGenerator.getContentByResponse(response);</span>
+
+                // set intention in user prompt
+<span class="nc" id="L81">                prompt = promptGenerator.generateMessages(promptInfo, &quot;CHATTESTER&quot;);</span>
+<span class="nc" id="L82">                ChatMessage userChatMessage = prompt.get(1);</span>
+<span class="nc" id="L83">                String oldContent = userChatMessage.getContent();</span>
+<span class="nc" id="L84">                int lastBraceIndex = oldContent.lastIndexOf(&quot;}&quot;);</span>
+<span class="nc" id="L85">                userChatMessage.setContent(</span>
+<span class="nc" id="L86">                        new StringBuilder(oldContent).insert(lastBraceIndex + 1, &quot;\n//Method intention\n&quot; + intention).toString()</span>
+                );
+
+<span class="nc" id="L89">                 config.getLogger().info(&quot;Generating test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">            } else if (promptInfo.getErrorMsg() != null) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                assert(!promptInfo.getErrorMsg().getErrorMessage().isEmpty());</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">                if (promptInfo.getErrorMsg().getErrorMessage().size() &gt;= errorNum) { //todo 这里errorNum为int max,基本触发不了吧</span>
+<span class="nc" id="L93">                    invalidRefinementCount++;</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">                    if (invalidRefinementCount &gt;= 3) {</span>
+<span class="nc" id="L95">                         config.getLogger().info(&quot;Exceeding maximum invalid refinement count, break.&quot;);</span>
+<span class="nc" id="L96">                        break;</span>
+                    }
+                }
+<span class="nc" id="L99">                errorNum = promptInfo.getErrorMsg().getErrorMessage().size();</span>
+                // iterate repair process
+<span class="nc" id="L101">                 config.getLogger().info(&quot;Fixing test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+<span class="nc" id="L102">                prompt = promptGenerator.generateMessages(promptInfo, &quot;CHATTESTER&quot;);</span>
+<span class="nc" id="L103">                TestMessage errorMsg = promptInfo.getErrorMsg();</span>
+<span class="nc bnc" id="L104" title="All 2 branches missed.">                if (errorMsg.getErrorType().equals(TestMessage.ErrorType.COMPILE_ERROR)) {</span>
+<span class="nc" id="L105">                    List&lt;CompilerError&gt; compilerErrors = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                    for (String error : errorMsg.getErrorMessage()) {</span>
+<span class="nc" id="L107">                        compilerErrors.addAll(parseCompilerErrors(error));</span>
+<span class="nc" id="L108">                    }</span>
+<span class="nc" id="L109">                    Set&lt;String&gt; classInError = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L110">                    Map&lt;String, String&gt; methodInError = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                    for (CompilerError error : compilerErrors) {</span>
+<span class="nc bnc" id="L112" title="All 4 branches missed.">                        if (error.symbolType != null &amp;&amp; error.symbolType.equals(&quot;class&quot;)) {</span>
+<span class="nc" id="L113">                            classInError.add(error.symbolName);</span>
+<span class="nc bnc" id="L114" title="All 4 branches missed.">                        } else if (error.symbolType != null &amp;&amp; error.symbolType.equals(&quot;method&quot;)) {</span>
+<span class="nc" id="L115">                            methodInError.put(error.symbolName, error.variableType);</span>
+                        }
+<span class="nc" id="L117">                    }</span>
+
+<span class="nc" id="L119">                    String repairPrompt = prompt.get(0).getContent();</span>
+<span class="nc" id="L120">                    StringBuilder deps = new StringBuilder();</span>
+
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                    for (String className : classInError) {</span>
+<span class="nc" id="L123">                        ClassInfo depInfo = AbstractRunner.getClassInfo(config, className);</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">                        if (depInfo != null) {</span>
+<span class="nc" id="L125">                            deps.append(&quot;// &quot;).append(className).append(&quot; class\n&quot;);</span>
+<span class="nc" id="L126">                            deps.append(depInfo.getClassSignature()).append(&quot;{\n&quot;);</span>
+<span class="nc" id="L127">                            deps.append(joinLines(depInfo.getConstructorSigs())).append(&quot;\n}&quot;);</span>
+                        }
+<span class="nc" id="L129">                    }</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                    for (String methodName : methodInError.keySet()) {</span>
+<span class="nc" id="L131">                        String methodType = methodInError.get(methodName);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">                        if (deps.toString().contains(methodType)) {</span>
+<span class="nc" id="L133">                            continue;</span>
+                        }
+<span class="nc" id="L135">                        ClassInfo typeInfo = AbstractRunner.getClassInfo(config, methodType);</span>
+<span class="nc" id="L136">                        deps.append(&quot;// &quot;).append(methodType).append(&quot; class\n&quot;);</span>
+<span class="nc" id="L137">                        deps.append(typeInfo.getClassSignature()).append(&quot;{\n&quot;);</span>
+<span class="nc" id="L138">                        MethodInfo depInfo = null;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                        for (String mSig : typeInfo.getMethodSigs().keySet()) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                            if (mSig.split(&quot;\\(&quot;)[0].equals(methodName.split(&quot;\\(&quot;)[0])) {</span>
+<span class="nc" id="L141">                                depInfo = AbstractRunner.getMethodInfo(config, typeInfo, mSig);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                                if (depInfo != null) {</span>
+<span class="nc" id="L143">                                    deps.append(depInfo.methodSignature).append(&quot;;\n&quot;);</span>
+                                }
+                            }
+<span class="nc" id="L146">                        }</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">                        if (depInfo == null) {</span>
+<span class="nc" id="L148">                            deps.append(joinLines(typeInfo.getMethodsBrief()));</span>
+                        }
+<span class="nc" id="L150">                        deps.append(&quot;}&quot;);</span>
+<span class="nc" id="L151">                    }</span>
+
+<span class="nc bnc" id="L153" title="All 2 branches missed.">                    if (!deps.toString().isEmpty()) {</span>
+//                         config.getLogger().info(&quot;==================================================&quot;);
+//                         config.getLogger().info(&quot;[CHATTESTER Deps in Repair Process]: \n&quot; + deps);
+//                         config.getLogger().info(&quot;==================================================&quot;);
+<span class="nc" id="L157">                        int lastBraceIndex = repairPrompt.lastIndexOf(&quot;}&quot;);</span>
+<span class="nc" id="L158">                        prompt.get(0).setContent(</span>
+<span class="nc" id="L159">                                new StringBuilder(repairPrompt).insert(lastBraceIndex + 1, deps).toString()</span>
+                        );
+                    }
+                }
+<span class="nc" id="L163">            } else {</span>
+<span class="nc" id="L164">                prompt = promptGenerator.generateMessages(promptInfo, &quot;CHATTESTER&quot;);</span>
+            }
+
+            // start generate test
+<span class="nc" id="L168">            String code = generateTest(prompt, record);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (!record.isHasCode()) {</span>
+<span class="nc" id="L170">                continue;</span>
+            }
+
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (CodeExtractor.isTestMethod(code)) {</span>
+<span class="nc" id="L174">                TestSkeleton skeleton = new TestSkeleton(promptInfo); // test skeleton to wrap a test method</span>
+<span class="nc" id="L175">                code = skeleton.build(code);</span>
+<span class="nc" id="L176">            } else {</span>
+<span class="nc" id="L177">                code = repair.ruleBasedRepair(code);</span>
+            }
+<span class="nc" id="L179">            promptInfo.setUnitTest(code);</span>
+
+<span class="nc" id="L181">            record.setCode(code);</span>
+<span class="nc" id="L182">            repair.LLMBasedRepair(code, record.getRound());</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if (repair.isSuccess()) {</span>
+<span class="nc" id="L184">                record.setHasError(false);</span>
+<span class="nc" id="L185">                exportRecord(promptInfo, classInfo, record.getAttempt());</span>
+<span class="nc" id="L186">                return true;</span>
+            }
+<span class="nc" id="L188">            record.setHasError(true);</span>
+<span class="nc" id="L189">            record.setErrorMsg(promptInfo.getErrorMsg());</span>
+        }
+<span class="nc" id="L191">        exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L192">        return false;</span>
+    }
+
+    public String generateTest(List&lt;ChatMessage&gt; prompt, RoundRecord record) {
+
+<span class="nc bnc" id="L197" title="All 2 branches missed.">        if (MethodRunner.isExceedMaxTokens(config.getMaxPromptTokens(), prompt)) {</span>
+<span class="nc" id="L198">            config.getLogger().error(&quot;Exceed max prompt tokens: &quot; + methodInfo.methodName + &quot; Skipped.&quot;);</span>
+<span class="nc" id="L199">            record.setPromptToken(-1);</span>
+<span class="nc" id="L200">            record.setHasCode(false);</span>
+<span class="nc" id="L201">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L203">        config.getLogger().debug(&quot;[Prompt]:\n&quot; + prompt);</span>
+
+<span class="nc" id="L205">        ChatResponse response = ChatGenerator.chat(config, prompt);</span>
+<span class="nc" id="L206">        String content = ChatGenerator.getContentByResponse(response);</span>
+<span class="nc" id="L207">        config.getLogger().debug(&quot;[Response]:\n&quot; + content);</span>
+<span class="nc" id="L208">        String code = ChatGenerator.extractCodeByContent(content);</span>
+
+<span class="nc" id="L210">        record.setPromptToken(response.getUsage().getPromptTokens());</span>
+<span class="nc" id="L211">        record.setResponseToken(response.getUsage().getCompletionTokens());</span>
+<span class="nc" id="L212">        record.setPrompt(prompt);</span>
+<span class="nc" id="L213">        record.setResponse(content);</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (code.isEmpty()) {</span>
+<span class="nc" id="L215">            config.getLogger().info(&quot;Test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; extract code failed&quot;);</span>
+<span class="nc" id="L216">            record.setHasCode(false);</span>
+<span class="nc" id="L217">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L219">        record.setHasCode(true);</span>
+<span class="nc" id="L220">        return code;</span>
+    }
+
+<span class="nc" id="L223">    public static class CompilerError {</span>
+        public String testName;
+        public int lineNumber;
+        public String symbolType;
+        public String symbolName;
+        public String variableType;
+        public String variableName;
+        public String locationDetail;
+
+        @Override
+        public String toString() {
+<span class="nc" id="L234">            return &quot;ErrorLocation: &quot; + testName + &quot;, LineNumber: &quot; + lineNumber</span>
+                    + &quot;, SymbolType: &quot; + symbolType + &quot;, SymbolName: &quot; + symbolName
+                    + &quot;, VariableType: &quot; + variableType + &quot;, VariableName: &quot; + variableName;
+        }
+    }
+
+    public static List&lt;CompilerError&gt; parseCompilerErrors(String errorChatMessages) {
+<span class="nc" id="L241">        List&lt;CompilerError&gt; errors = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L242">        String pattern = &quot;Error in (.+?): line (\\d+) : (cannot find symbol|找不到符号)\\n\\s+(符号|symbol):\\s+(方法|变量|类|method|variable|class) ([^\\n]+)\\n\\s+(位置|location): ([^\\n]+)&quot;;</span>
+<span class="nc" id="L243">        Pattern r = Pattern.compile(pattern);</span>
+<span class="nc" id="L244">        Matcher m = r.matcher(errorChatMessages);</span>
+
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        while (m.find()) {</span>
+<span class="nc" id="L247">            CompilerError error = new CompilerError();</span>
+<span class="nc" id="L248">            error.testName = m.group(1);</span>
+<span class="nc" id="L249">            error.lineNumber = Integer.parseInt(m.group(2));</span>
+<span class="nc" id="L250">            error.symbolType = m.group(5);</span>
+<span class="nc" id="L251">            error.symbolName = m.group(6).trim();</span>
+
+<span class="nc bnc" id="L253" title="All 2 branches missed.">            if (error.symbolType.equals(&quot;类&quot;)) {</span>
+<span class="nc" id="L254">                error.symbolType = &quot;class&quot;;</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            } else if (error.symbolType.equals(&quot;方法&quot;)) {</span>
+<span class="nc" id="L256">                error.symbolType = &quot;method&quot;;</span>
+<span class="nc bnc" id="L257" title="All 2 branches missed.">            } else if (error.symbolType.equals(&quot;变量&quot;)) {</span>
+<span class="nc" id="L258">                error.symbolType = &quot;variable&quot;;</span>
+            }
+
+<span class="nc" id="L261">            error.locationDetail = m.group(8).trim();</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">            if (error.symbolType.equals(&quot;method&quot;)) {</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">                if (error.locationDetail.contains(&quot;类型为 &quot;)) {</span>
+                    // 解析中文错误信息中的位置信息
+<span class="nc" id="L265">                    Pattern locationPattern = Pattern.compile(&quot;类型为 (\\S+)的变量 (\\S+)&quot;);</span>
+<span class="nc" id="L266">                    Matcher locationMatcher = locationPattern.matcher(error.locationDetail);</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                    if (locationMatcher.find()) {</span>
+<span class="nc" id="L268">                        error.variableType = locationMatcher.group(1);</span>
+<span class="nc" id="L269">                        error.variableName = locationMatcher.group(2);</span>
+                    }
+<span class="nc bnc" id="L271" title="All 2 branches missed.">                } else if (error.locationDetail.contains(&quot;类 &quot;)) {</span>
+                    // 如果是类错误，我们将解析出类的全限定名
+<span class="nc" id="L273">                    Pattern locationPattern = Pattern.compile(&quot;类 (\\S+)&quot;);</span>
+<span class="nc" id="L274">                    Matcher locationMatcher = locationPattern.matcher(error.locationDetail);</span>
+<span class="nc bnc" id="L275" title="All 2 branches missed.">                    if (locationMatcher.find()) {</span>
+<span class="nc" id="L276">                        error.variableType = locationMatcher.group(1);</span>
+                        // 如果是类错误，则没有可获取的变量名
+<span class="nc" id="L278">                        error.variableName = &quot;&quot;;</span>
+                    }
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                } else if (error.locationDetail.contains(&quot;class &quot;)) {</span>
+                    // 如果是类错误，我们将解析出类的全限定名
+<span class="nc" id="L282">                    Pattern locationPattern = Pattern.compile(&quot;class (\\S+)&quot;);</span>
+<span class="nc" id="L283">                    Matcher locationMatcher = locationPattern.matcher(error.locationDetail);</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">                    if (locationMatcher.find()) {</span>
+<span class="nc" id="L285">                        error.variableType = locationMatcher.group(1);</span>
+                        // 如果是类错误，则没有可获取的变量名
+<span class="nc" id="L287">                        error.variableName = &quot;&quot;;</span>
+                    }
+<span class="nc bnc" id="L289" title="All 2 branches missed.">                } else if (error.locationDetail.contains(&quot;variable &quot;)) {</span>
+                    // 如果错误与变量相关，我们同时解析变量的名称和类型。
+<span class="nc" id="L291">                    Pattern locationPattern = Pattern.compile(&quot;variable (\\S+) of type (\\S+)&quot;);</span>
+<span class="nc" id="L292">                    Matcher locationMatcher = locationPattern.matcher(error.locationDetail);</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">                    if (locationMatcher.find()) {</span>
+<span class="nc" id="L294">                        error.variableName = locationMatcher.group(1);</span>
+<span class="nc" id="L295">                        error.variableType = locationMatcher.group(2);</span>
+                    }
+                }
+            }
+
+<span class="nc" id="L300">            errors.add(error);</span>
+<span class="nc" id="L301">        }</span>
+
+<span class="nc" id="L303">        return errors;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

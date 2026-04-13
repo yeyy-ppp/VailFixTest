@@ -1,0 +1,12 @@
+[2026-01-24 01:50:20] 验证结果
+错误类型: 编译错误, 错误行: 87, 错误原因: 使用了未定义的类JsonPrimitive, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: JsonArray, JsonArray, deepCopy, add, add, add, add, add, addAll, set, remove, remove, contains, size, isEmpty, iterator, get, getAsNumber, getAsString, getAsDouble, getAsBigDecimal, getAsBigInteger, getAsFloat, getAsLong, getAsInt, getAsByte, getAsCharacter, getAsShort, getAsBoolean, asList, equals, hashCode
+  未覆盖: getAsSingleElement
+
+[2026-01-24 01:59:10] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: JsonArray, JsonArray, deepCopy, add, add, add, add, add, addAll, set, remove, remove, contains, size, isEmpty, iterator, get, getAsSingleElement, getAsNumber, getAsString, getAsDouble, getAsBigDecimal, getAsBigInteger, getAsFloat, getAsLong, getAsInt, getAsByte, getAsCharacter, getAsShort, getAsBoolean, asList, equals, hashCode
+  未覆盖: 全部覆盖
+

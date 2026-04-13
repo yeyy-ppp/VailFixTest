@@ -1,0 +1,12 @@
+[2026-01-24 01:22:44] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: parse, write, writerForAppendable, AppendableWriter, write, flush, close, write, write, append, append, setChars, length, charAt, subSequence, toString
+  未覆盖: Streams
+
+[2026-01-24 01:27:13] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: parse, write, writerForAppendable, AppendableWriter, write, flush, close, write, write, append, append, setChars, length, charAt, subSequence, toString
+  未覆盖: Streams
+

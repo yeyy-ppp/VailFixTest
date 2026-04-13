@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SnippetAnalyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.testpilot</a> &gt; <span class="el_source">SnippetAnalyzer.java</span></div><h1>SnippetAnalyzer.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util.testpilot;
+
+import java.io.IOException;
+import java.nio.file.*;
+import java.util.*;
+import java.util.regex.*;
+
+<span class="nc" id="L8">public class SnippetAnalyzer {</span>
+
+
+    public List&lt;String&gt; getDocSnippets(String dirName, String method) {
+<span class="nc" id="L12">        Set&lt;Path&gt; mdFiles = findMdFiles(dirName);</span>
+<span class="nc" id="L13">        List&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L15" title="All 2 branches missed.">        for (Path mdFile : mdFiles) {</span>
+<span class="nc" id="L16">            Set&lt;String&gt; snippets = findCodeSnippets(mdFile);</span>
+<span class="nc bnc" id="L17" title="All 2 branches missed.">            for (String snippet : snippets) {</span>
+<span class="nc" id="L18">                List&lt;String&gt; tokens = tokenize(snippet);</span>
+<span class="nc bnc" id="L19" title="All 6 branches missed.">                if (tokens.contains(method) &amp;&amp; nrLinesInSnippet(snippet) &gt;= 1 &amp;&amp; callsAPIMethod(snippet, method)) {</span>
+<span class="nc" id="L20">                    result.add(snippet);</span>
+                }
+<span class="nc" id="L22">            }</span>
+<span class="nc" id="L23">        }</span>
+
+<span class="nc" id="L25">        return result;</span>
+    }
+
+    private Set&lt;Path&gt; findMdFiles(String dirName) {
+<span class="nc" id="L29">        Set&lt;Path&gt; mdFiles = new HashSet&lt;&gt;();</span>
+        try {
+<span class="nc" id="L31">            Files.walk(Paths.get(dirName))</span>
+<span class="nc" id="L32">                    .filter(Files::isRegularFile)</span>
+<span class="nc" id="L33">                    .filter(path -&gt; path.toString().endsWith(&quot;.md&quot;))</span>
+<span class="nc" id="L34">                    .forEach(mdFiles::add);</span>
+<span class="nc" id="L35">        } catch (IOException e) {</span>
+<span class="nc" id="L36">            e.printStackTrace();</span>
+<span class="nc" id="L37">        }</span>
+<span class="nc" id="L38">        return mdFiles;</span>
+    }
+
+    private Set&lt;String&gt; findCodeSnippets(Path file) {
+<span class="nc" id="L42">        Set&lt;String&gt; snippets = new HashSet&lt;&gt;();</span>
+        try {
+<span class="nc" id="L44">            String content = new String(Files.readAllBytes(file));</span>
+            // Match code blocks in markdown, capturing blocks regardless of language specified
+<span class="nc" id="L46">            Matcher matcher = Pattern.compile(&quot;(?s)```.*?\\n(.*?)```&quot;).matcher(content);</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            while (matcher.find()) {</span>
+<span class="nc" id="L48">                snippets.add(matcher.group(1));</span>
+            }
+<span class="nc" id="L50">        } catch (IOException e) {</span>
+<span class="nc" id="L51">            e.printStackTrace();</span>
+<span class="nc" id="L52">        }</span>
+<span class="nc" id="L53">        return snippets;</span>
+    }
+
+    private List&lt;String&gt; tokenize(String code) {
+<span class="nc" id="L57">        return Arrays.asList(code.split(&quot;\\W+&quot;));</span>
+    }
+
+    private int nrLinesInSnippet(String snippet) {
+<span class="nc" id="L61">        return snippet.split(&quot;\n&quot;).length;</span>
+    }
+
+    private boolean callsAPIMethod(String snippet, String methodName) {
+<span class="nc" id="L65">        Pattern pattern = Pattern.compile(&quot;\\b&quot; + Pattern.quote(methodName) + &quot;\\(&quot;);</span>
+<span class="nc" id="L66">        Matcher matcher = pattern.matcher(snippet);</span>
+<span class="nc" id="L67">        return matcher.find();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,254 @@
+类名：Example
+分析阶段：
+  耗时：7379 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：98378 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：23341 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  失败原因：```java
+该测试代码在验证导入语句时存在警告，建议优化导入，但未导致失败。其他所有验证项均通过。具体如下：
+
+1. 导入语句：通过验证（建议使用通配符导入`org.junit.jupiter.api.*`以包含所有必要类）。
+2. 测试方法逻辑：通过验证，覆盖了多种场景包括边界值。
+3. 语法错误：通过验证，无错误。
+4. 编译错误：通过验证（假设`Example`类正确实现）。
+5. 运行时错误：通过验证，处理了整数溢出。
+
+所有关键验证通过，无失败项。
+修复阶段：
+  耗时：64068 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  修复尝试次数：1
+  修复失败原因：
+  修复成功次数：1
+评估阶段：
+  耗时：21737 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【整体代码覆盖率】：【100%】  
+【分支覆盖率】：【100%】  
+【行覆盖率】：【100%】  
+【语句覆盖率】：【100%】  
+【路径覆盖率】：【100%】
+总耗时：215791 毫秒
+总消耗 token 数量：0
+测试代码生成成功：true
+失败原因：
+--------------------------------------------------------
+起始时间：1747900406358
+
+整体 开始时间: 1747900406358
+分析起始时间：1747900406358
+
+分析 开始时间: 1747900406358
+解析提示内容：
+```
+包路径：codeing
+类名：Example
+方法名：add
+返回类型：int
+功能描述：实现两个整数的加法运算，接收两个int类型参数a和b，返回它们的和
+```over
+
+分析结束时间：1747900413737
+
+分析总耗时：7379
+分析 结束时间: 1747900413737
+分析 耗时: 7.379 秒
+生成 开始时间: 1747900413738
+生成测试代码：
+```java
+package codeing;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
+
+public class ExampleTest {
+
+    @Test
+    void testAddPositiveNumbers() {
+        Example example = new Example();
+        assertEquals(8, example.add(3, 5));
+    }
+
+    @Test
+    void testAddNegativeNumbers() {
+        Example example = new Example();
+        assertEquals(-9, example.add(-4, -5));
+    }
+
+    @Test
+    void testAddPositiveAndNegative() {
+        Example example = new Example();
+        assertEquals(1, example.add(-2, 3));
+    }
+
+    @Test
+    void testAddZeros() {
+        Example example = new Example();
+        assertEquals(0, example.add(0, 0));
+    }
+
+    @Test
+    void testAddZeroAndPositive() {
+        Example example = new Example();
+        assertEquals(5, example.add(5, 0));
+    }
+
+    @Test
+    void testAddZeroAndNegative() {
+        Example example = new Example();
+        assertEquals(-3, example.add(0, -3));
+    }
+
+    @Test
+    void testAddMaxIntAndOne() {
+        Example example = new Example();
+        assertEquals(-2147483648, example.add(2147483647, 1));
+    }
+
+    @Test
+    void testAddMinIntAndNegativeOne() {
+        Example example = new Example();
+        assertEquals(2147483647, example.add(-2147483648, -1));
+    }
+
+    @Test
+    void testAddPositiveAndNegativeResultZero() {
+        Example example = new Example();
+        assertEquals(0, example.add(5, -5));
+    }
+
+    @Test
+    void testAddMaxIntAndZero() {
+        Example example = new Example();
+        assertEquals(2147483647, example.add(2147483647, 0));
+    }
+
+    @Test
+    void testAddMinIntAndZero() {
+        Example example = new Example();
+        assertEquals(-2147483648, example.add(-2147483648, 0));
+    }
+}
+```over
+
+生成 结束时间: 1747900512115
+生成 耗时: 98.377 秒
+验证 开始时间: 1747900512115
+测试代码验证结果：
+```java
+该测试代码在验证导入语句时存在警告，建议优化导入，但未导致失败。其他所有验证项均通过。具体如下：
+
+1. 导入语句：通过验证（建议使用通配符导入`org.junit.jupiter.api.*`以包含所有必要类）。
+2. 测试方法逻辑：通过验证，覆盖了多种场景包括边界值。
+3. 语法错误：通过验证，无错误。
+4. 编译错误：通过验证（假设`Example`类正确实现）。
+5. 运行时错误：通过验证，处理了整数溢出。
+
+所有关键验证通过，无失败项。over
+
+验证 结束时间: 1747900535456
+验证 耗时: 23.341 秒
+修复 开始时间: 1747900535456
+第 1 次修复结果：
+【修复成功】
+```java
+package codeing;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.jupiter.api.*;
+
+public class ExampleTest {
+
+    @Test
+    void testAddPositiveNumbers() {
+        Example example = new Example();
+        assertEquals(8, example.add(3, 5));
+    }
+
+    @Test
+    void testAddNegativeNumbers() {
+        Example example = new Example();
+        assertEquals(-9, example.add(-4, -5));
+    }
+
+    @Test
+    void testAddPositiveAndNegative() {
+        Example example = new Example();
+        assertEquals(1, example.add(-2, 3));
+    }
+
+    @Test
+    void testAddZeros() {
+        Example example = new Example();
+        assertEquals(0, example.add(0, 0));
+    }
+
+    @Test
+    void testAddZeroAndPositive() {
+        Example example = new Example();
+        assertEquals(5, example.add(5, 0));
+    }
+
+    @Test
+    void testAddZeroAndNegative() {
+        Example example = new Example();
+        assertEquals(-3, example.add(0, -3));
+    }
+
+    @Test
+    void testAddMaxIntAndOne() {
+        Example example = new Example();
+        assertEquals(-2147483648, example.add(2147483647, 1));
+    }
+
+    @Test
+    void testAddMinIntAndNegativeOne() {
+        Example example = new Example();
+        assertEquals(2147483647, example.add(-2147483648, -1));
+    }
+
+    @Test
+    void testAddPositiveAndNegativeResultZero() {
+        Example example = new Example();
+        assertEquals(0, example.add(5, -5));
+    }
+
+    @Test
+    void testAddMaxIntAndZero() {
+        Example example = new Example();
+        assertEquals(2147483647, example.add(2147483647, 0));
+    }
+
+    @Test
+    void testAddMinIntAndZero() {
+        Example example = new Example();
+        assertEquals(-2147483648, example.add(-2147483648, 0));
+    }
+}
+```over
+
+测试代码验证结果：
+全部验证通过。over
+
+修复后的代码验证成功！
+修复和验证成功！
+测试代码评估结果：
+【整体代码覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【行覆盖率】：【100%】
+【语句覆盖率】：【100%】
+【路径覆盖率】：【100%】over
+
+测试类创建成功：src/test/java/codeing/ExampleTest.java
+修复 结束时间: 1747900621264
+修复 耗时: 85.808 秒

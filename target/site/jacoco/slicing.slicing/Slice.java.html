@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Slice.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.slicing</a> &gt; <span class="el_source">Slice.java</span></div><h1>Slice.java</h1><pre class="source lang-java linenums">package slicing.slicing;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.visitor.CloneVisitor;
+import slicing.nodes.GraphNode;
+import slicing.utils.ASTUtils;
+import slicing.utils.NodeHashSet;
+
+import java.util.*;
+
+/** The representation of a slice, or a subset of a graph's nodes.
+ *  A slice can be obtained from any {@link Sliceable} object, and converted
+ *  to code with {@link #toAst()}. */
+<span class="nc" id="L16">public class Slice {</span>
+    /** Nodes contained in this slice, mapped by id. */
+<span class="nc" id="L18">    private final Map&lt;Long, GraphNode&lt;?&gt;&gt; map = new HashMap&lt;&gt;();</span>
+    /** The nodes that conform the slicing criterion. */
+    private final Set&lt;GraphNode&lt;?&gt;&gt; immutableSC;
+
+<span class="nc" id="L22">    public Slice(Set&lt;GraphNode&lt;?&gt;&gt; slicingCriterion) {</span>
+<span class="nc" id="L23">        immutableSC = Collections.unmodifiableSet(new HashSet&lt;&gt;(slicingCriterion));</span>
+<span class="nc" id="L24">        addAll(slicingCriterion);</span>
+<span class="nc" id="L25">    }</span>
+
+
+    public Set&lt;GraphNode&lt;?&gt;&gt; getCriterion() {
+<span class="nc" id="L29">        return immutableSC;</span>
+    }
+
+    /** Add a node to this slice. */
+    public void add(GraphNode&lt;?&gt; node) {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        assert !map.containsKey(node.getId());</span>
+<span class="nc" id="L35">        map.put(node.getId(), node);</span>
+<span class="nc" id="L36">    }</span>
+
+    /** Add multiple nodes to this slice. */
+    public void addAll(Collection&lt;GraphNode&lt;?&gt;&gt; nodes) {
+<span class="nc" id="L40">        nodes.forEach(this::add);</span>
+<span class="nc" id="L41">    }</span>
+
+    /** Whether the slice contains the given node. */
+    public boolean contains(GraphNode&lt;?&gt; node) {
+<span class="nc" id="L45">        return map.containsKey(node.getId());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L50">        return map.hashCode();</span>
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+<span class="nc bnc" id="L55" title="All 4 branches missed.">        return obj instanceof Slice &amp;&amp; map.equals(((Slice) obj).map);</span>
+    }
+
+    /** Obtain the nodes from this slice. */
+    public Set&lt;GraphNode&lt;?&gt;&gt; getGraphNodes() {
+<span class="nc" id="L60">        return Collections.unmodifiableSet(new HashSet&lt;&gt;(map.values()));</span>
+    }
+
+
+    /** Organize all nodes pertaining to this slice in one or more CompilationUnits. CompilationUnits
+     *  themselves need not be part of the slice to be included if any of their components are present. */
+    public NodeList&lt;CompilationUnit&gt; toAst() {
+<span class="nc" id="L67">        Map&lt;CompilationUnit, NodeHashSet&lt;Node&gt;&gt; cuMap = ASTUtils.newIdentityHashMap();</span>
+        // Add each node to the corresponding bucket of the map
+        // Nodes may not belong to a compilation unit (fictional nodes), and they are skipped for the slice.
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (GraphNode&lt;?&gt; graphNode : map.values()) {</span>
+<span class="nc bnc" id="L71" title="All 4 branches missed.">            if (graphNode.isImplicitInstruction() || graphNode.getAstNode() == null)</span>
+<span class="nc" id="L72">                continue;</span>
+<span class="nc" id="L73">            Optional&lt;CompilationUnit&gt; cu = graphNode.getAstNode().findCompilationUnit();</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (!cu.isPresent()) continue;</span>
+<span class="nc" id="L75">            cuMap.computeIfAbsent(cu.get(), compilationUnit -&gt; new NodeHashSet&lt;&gt;());</span>
+<span class="nc" id="L76">            cuMap.get(cu.get()).add(graphNode.getAstNode());</span>
+<span class="nc" id="L77">        }</span>
+        // Traverse the AST of each compilation unit, creating a copy and
+        // removing any element not present in the slice.
+<span class="nc" id="L80">        NodeList&lt;CompilationUnit&gt; cus = new NodeList&lt;&gt;();</span>
+<span class="nc" id="L81">        SlicePruneVisitor sliceVisitor = new SlicePruneVisitor();</span>
+<span class="nc" id="L82">        CloneVisitor cloneVisitor = new CloneVisitor();</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        for (Map.Entry&lt;CompilationUnit, NodeHashSet&lt;Node&gt;&gt; entry : cuMap.entrySet()) {</span>
+<span class="nc" id="L84">            CompilationUnit clone = (CompilationUnit) entry.getKey().accept(cloneVisitor, null);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">            if (entry.getKey().getStorage().isPresent())</span>
+<span class="nc" id="L86">                clone.setStorage(entry.getKey().getStorage().get().getPath(),</span>
+<span class="nc" id="L87">                        entry.getKey().getStorage().get().getEncoding());</span>
+<span class="nc" id="L88">            clone.accept(sliceVisitor, entry.getValue());</span>
+<span class="nc" id="L89">            clone.removePackageDeclaration();</span>
+<span class="nc" id="L90">            clone.getImports().clear();</span>
+<span class="nc" id="L91">            cus.add(clone);</span>
+<span class="nc" id="L92">        }</span>
+<span class="nc" id="L93">        return cus;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

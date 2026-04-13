@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FailableFunction.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.function</a> &gt; <span class="el_source">FailableFunction.java</span></div><h1>FailableFunction.java</h1><pre class="source lang-java linenums">package lang3.function;
+import java.util.Objects;
+@FunctionalInterface
+public interface FailableFunction&lt;T, R, E extends Throwable&gt; {
+    @SuppressWarnings(&quot;rawtypes&quot;)
+<span class="fc" id="L6">    FailableFunction NOP = t -&gt; null;</span>
+    static &lt;T, R, E extends Throwable&gt; FailableFunction&lt;T, R, E&gt; function(final FailableFunction&lt;T, R, E&gt; function) {
+<span class="fc" id="L8">        return function;</span>
+    }
+    static &lt;T, E extends Throwable&gt; FailableFunction&lt;T, T, E&gt; identity() {
+<span class="fc" id="L11">        return t -&gt; t;</span>
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+    static &lt;T, R, E extends Throwable&gt; FailableFunction&lt;T, R, E&gt; nop() {
+<span class="fc" id="L15">        return NOP;</span>
+    }
+    default &lt;V&gt; FailableFunction&lt;T, V, E&gt; andThen(final FailableFunction&lt;? super R, ? extends V, E&gt; after) {
+<span class="fc" id="L18">        Objects.requireNonNull(after);</span>
+<span class="fc" id="L19">        return (final T t) -&gt; after.apply(apply(t));</span>
+    }
+    R apply(T input) throws E;
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

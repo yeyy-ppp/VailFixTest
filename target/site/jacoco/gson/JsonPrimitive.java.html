@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonPrimitive.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">JsonPrimitive.java</span></div><h1>JsonPrimitive.java</h1><pre class="source lang-java linenums">package gson;
+import gson.internal.LazilyParsedNumber;
+import gson.internal.NumberLimits;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Objects;
+public final class JsonPrimitive extends JsonElement {
+  private final Object value;
+  @SuppressWarnings({&quot;deprecation&quot;, &quot;UnnecessaryBoxedVariable&quot;})
+<span class="fc" id="L10">  public JsonPrimitive(Boolean bool) {</span>
+<span class="fc" id="L11">    value = Objects.requireNonNull(bool);</span>
+<span class="fc" id="L12">  }</span>
+  @SuppressWarnings(&quot;deprecation&quot;)
+<span class="fc" id="L14">  public JsonPrimitive(Number number) {</span>
+<span class="fc" id="L15">    value = Objects.requireNonNull(number);</span>
+<span class="fc" id="L16">  }</span>
+  @SuppressWarnings(&quot;deprecation&quot;)
+<span class="fc" id="L18">  public JsonPrimitive(String string) {</span>
+<span class="fc" id="L19">    value = Objects.requireNonNull(string);</span>
+<span class="fc" id="L20">  }</span>
+  @SuppressWarnings({&quot;deprecation&quot;, &quot;UnnecessaryBoxedVariable&quot;})
+<span class="fc" id="L22">  public JsonPrimitive(Character c) {</span>
+<span class="fc" id="L23">    value = Objects.requireNonNull(c).toString();</span>
+<span class="fc" id="L24">  }</span>
+  @Override
+  public JsonPrimitive deepCopy() {
+<span class="fc" id="L27">    return this;</span>
+  }
+  public boolean isBoolean() {
+<span class="fc" id="L30">    return value instanceof Boolean;</span>
+  }
+  @Override
+  public boolean getAsBoolean() {
+<span class="pc bpc" id="L34" title="1 of 2 branches missed.">    if (isBoolean()) {</span>
+<span class="fc" id="L35">      return (Boolean) value;</span>
+    }
+<span class="nc" id="L37">    return Boolean.parseBoolean(getAsString());</span>
+  }
+  public boolean isNumber() {
+<span class="fc" id="L40">    return value instanceof Number;</span>
+  }
+  @Override
+  public Number getAsNumber() {
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">    if (value instanceof Number) {</span>
+<span class="fc" id="L45">      return (Number) value;</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">    } else if (value instanceof String) {</span>
+<span class="nc" id="L47">      return new LazilyParsedNumber((String) value);</span>
+    }
+<span class="nc" id="L49">    throw new UnsupportedOperationException(&quot;Primitive is neither a number nor a string&quot;);</span>
+  }
+  public boolean isString() {
+<span class="fc" id="L52">    return value instanceof String;</span>
+  }
+  @Override
+  public String getAsString() {
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">    if (value instanceof String) {</span>
+<span class="fc" id="L57">      return (String) value;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">    } else if (isNumber()) {</span>
+<span class="nc" id="L59">      return getAsNumber().toString();</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">    } else if (isBoolean()) {</span>
+<span class="nc" id="L61">      return ((Boolean) value).toString();</span>
+    }
+<span class="nc" id="L63">    throw new AssertionError(&quot;Unexpected value type: &quot; + value.getClass());</span>
+  }
+  @Override
+  public double getAsDouble() {
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    return isNumber() ? getAsNumber().doubleValue() : Double.parseDouble(getAsString());</span>
+  }
+  @Override
+  public BigDecimal getAsBigDecimal() {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">    return value instanceof BigDecimal</span>
+<span class="fc" id="L72">        ? (BigDecimal) value</span>
+<span class="nc" id="L73">        : NumberLimits.parseBigDecimal(getAsString());</span>
+  }
+  @Override
+  public BigInteger getAsBigInteger() {
+<span class="pc bpc" id="L77" title="1 of 2 branches missed.">    return value instanceof BigInteger</span>
+<span class="fc" id="L78">        ? (BigInteger) value</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">        : isIntegral(this)</span>
+<span class="nc" id="L80">            ? BigInteger.valueOf(this.getAsNumber().longValue())</span>
+<span class="nc" id="L81">            : NumberLimits.parseBigInteger(this.getAsString());</span>
+  }
+  @Override
+  public float getAsFloat() {
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">    return isNumber() ? getAsNumber().floatValue() : Float.parseFloat(getAsString());</span>
+  }
+  @Override
+  public long getAsLong() {
+<span class="pc bpc" id="L89" title="1 of 2 branches missed.">    return isNumber() ? getAsNumber().longValue() : Long.parseLong(getAsString());</span>
+  }
+  @Override
+  public short getAsShort() {
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">    return isNumber() ? getAsNumber().shortValue() : Short.parseShort(getAsString());</span>
+  }
+  @Override
+  public int getAsInt() {
+<span class="pc bpc" id="L97" title="1 of 2 branches missed.">    return isNumber() ? getAsNumber().intValue() : Integer.parseInt(getAsString());</span>
+  }
+  @Override
+  public byte getAsByte() {
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">    return isNumber() ? getAsNumber().byteValue() : Byte.parseByte(getAsString());</span>
+  }
+  @Deprecated
+  @Override
+  public char getAsCharacter() {
+<span class="fc" id="L106">    String s = getAsString();</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">    if (s.isEmpty()) {</span>
+<span class="nc" id="L108">      throw new UnsupportedOperationException(&quot;String value is empty&quot;);</span>
+    } else {
+<span class="fc" id="L110">      return s.charAt(0);</span>
+    }
+  }
+  @Override
+  public int hashCode() {
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">    if (value == null) {</span>
+<span class="nc" id="L116">      return 31;</span>
+    }
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if (isIntegral(this)) {</span>
+<span class="nc" id="L119">      long value = getAsNumber().longValue();</span>
+<span class="nc" id="L120">      return (int) (value ^ (value &gt;&gt;&gt; 32));</span>
+    }
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">    if (value instanceof Number) {</span>
+<span class="nc" id="L123">      long value = Double.doubleToLongBits(getAsNumber().doubleValue());</span>
+<span class="nc" id="L124">      return (int) (value ^ (value &gt;&gt;&gt; 32));</span>
+    }
+<span class="fc" id="L126">    return value.hashCode();</span>
+  }
+  @Override
+  public boolean equals(Object obj) {
+<span class="fc bfc" id="L130" title="All 2 branches covered.">    if (this == obj) {</span>
+<span class="fc" id="L131">      return true;</span>
+    }
+<span class="pc bpc" id="L133" title="1 of 4 branches missed.">    if (obj == null || getClass() != obj.getClass()) {</span>
+<span class="fc" id="L134">      return false;</span>
+    }
+<span class="fc" id="L136">    JsonPrimitive other = (JsonPrimitive) obj;</span>
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">    if (value == null) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">      return other.value == null;</span>
+    }
+<span class="pc bpc" id="L140" title="1 of 4 branches missed.">    if (isIntegral(this) &amp;&amp; isIntegral(other)) {</span>
+<span class="pc bpc" id="L141" title="2 of 4 branches missed.">      return (this.value instanceof BigInteger || other.value instanceof BigInteger)</span>
+<span class="nc" id="L142">          ? this.getAsBigInteger().equals(other.getAsBigInteger())</span>
+<span class="pc bpc" id="L143" title="1 of 2 branches missed.">          : this.getAsNumber().longValue() == other.getAsNumber().longValue();</span>
+    }
+<span class="pc bpc" id="L145" title="3 of 4 branches missed.">    if (value instanceof Number &amp;&amp; other.value instanceof Number) {</span>
+<span class="nc bnc" id="L146" title="All 4 branches missed.">      if (value instanceof BigDecimal &amp;&amp; other.value instanceof BigDecimal) {</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        return this.getAsBigDecimal().compareTo(other.getAsBigDecimal()) == 0;</span>
+      }
+<span class="nc" id="L149">      double thisAsDouble = this.getAsDouble();</span>
+<span class="nc" id="L150">      double otherAsDouble = other.getAsDouble();</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">      return (thisAsDouble == otherAsDouble)</span>
+<span class="nc bnc" id="L152" title="All 4 branches missed.">          || (Double.isNaN(thisAsDouble) &amp;&amp; Double.isNaN(otherAsDouble));</span>
+    }
+<span class="fc" id="L154">    return value.equals(other.value);</span>
+  }
+  private static boolean isIntegral(JsonPrimitive primitive) {
+<span class="fc bfc" id="L157" title="All 2 branches covered.">    if (primitive.value instanceof Number) {</span>
+<span class="fc" id="L158">      Number number = (Number) primitive.value;</span>
+<span class="pc bpc" id="L159" title="7 of 10 branches missed.">      return number instanceof BigInteger</span>
+          || number instanceof Long
+          || number instanceof Integer
+          || number instanceof Short
+          || number instanceof Byte;
+    }
+<span class="fc" id="L165">    return false;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

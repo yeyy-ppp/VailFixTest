@@ -1,0 +1,43 @@
+```
+包路径：gson.internal
+类名：ReflectionAccessFilterHelper
+父类：无
+依赖类：ReflectionAccessFilter, ReflectionAccessFilter.FilterResult, JavaVersion
+---
+序号：1
+方法名：ReflectionAccessFilterHelper()
+返回类型：void
+功能描述：私有构造方法，防止类实例化
+序号：2
+方法名：isJavaType(Class<?> c)
+返回类型：boolean
+功能描述：检查类是否属于Java类型（包名前缀java.或javax.）
+序号：3
+方法名：isJavaType(String className)
+返回类型：boolean
+功能描述：根据类名字符串检查是否为Java类型
+序号：4
+方法名：isAndroidType(Class<?> c)
+返回类型：boolean
+功能描述：检查类是否属于Android类型（包名前缀android.、androidx.或Java类型）
+序号：5
+方法名：isAndroidType(String className)
+返回类型：boolean
+功能描述：根据类名字符串检查是否为Android类型
+序号：6
+方法名：isAnyPlatformType(Class<?> c)
+返回类型：boolean
+功能描述：检查类是否属于任何平台类型（Android、Kotlin、Scala等）
+序号：7
+方法名：getFilterResult(List<ReflectionAccessFilter> reflectionFilters, Class<?> c)
+返回类型：FilterResult
+功能描述：应用反射访问过滤器列表，返回首个非INDECISIVE的过滤结果
+序号：8
+方法名：canAccess(AccessibleObject accessibleObject, Object object)
+返回类型：boolean
+功能描述：检查指定对象是否可访问AccessibleObject
+序号：9
+方法名：canAccess(AccessibleObject accessibleObject, Object object)
+返回类型：boolean
+功能描述：抽象方法，检查对象对AccessibleObject的访问权限
+```

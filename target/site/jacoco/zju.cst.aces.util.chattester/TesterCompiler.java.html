@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TesterCompiler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.chattester</a> &gt; <span class="el_source">TesterCompiler.java</span></div><h1>TesterCompiler.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util.chattester;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.comments.LineComment;
+import zju.cst.aces.dto.PromptInfo;
+import zju.cst.aces.dto.TestMessage;
+import zju.cst.aces.util.TestCompiler;
+
+import javax.tools.*;
+import java.net.URI;
+import java.nio.CharBuffer;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+public class TesterCompiler extends TestCompiler {
+
+    public TesterCompiler(Path testOutputPath, Path compileOutputPath, Path targetPath, List&lt;String&gt; classpathElements) {
+<span class="nc" id="L23">        super(testOutputPath, compileOutputPath, targetPath, classpathElements);</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    public boolean compileTest(String className, Path outputPath, PromptInfo promptInfo) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (this.code.isEmpty()) {</span>
+<span class="nc" id="L29">            throw new RuntimeException(&quot;In TestCompiler.compileTest: code is empty&quot;);</span>
+        }
+<span class="nc" id="L31">        this.testName = className;</span>
+        boolean result;
+        try {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            if (!outputPath.toAbsolutePath().getParent().toFile().exists()) {</span>
+<span class="nc" id="L35">                outputPath.toAbsolutePath().getParent().toFile().mkdirs();</span>
+            }
+<span class="nc" id="L37">            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();</span>
+<span class="nc" id="L38">            StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);</span>
+
+<span class="nc" id="L40">            SimpleJavaFileObject sourceJavaFileObject = new SimpleJavaFileObject(URI.create(className + &quot;.java&quot;),</span>
+<span class="nc" id="L41">                    JavaFileObject.Kind.SOURCE){</span>
+                public CharBuffer getCharContent(boolean b) {
+<span class="nc" id="L43">                    return CharBuffer.wrap(code);</span>
+                }
+            };
+
+<span class="nc" id="L47">            Iterable&lt;? extends JavaFileObject&gt; compilationUnits = Arrays.asList(sourceJavaFileObject);</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">            Iterable&lt;String&gt; options = Arrays.asList(&quot;-classpath&quot;, String.join(OS.contains(&quot;win&quot;) ? &quot;;&quot; : &quot;:&quot;, this.classpathElements),</span>
+<span class="nc" id="L49">                    &quot;-d&quot;, buildFolder.toPath().toString());</span>
+
+<span class="nc" id="L51">            DiagnosticCollector&lt;JavaFileObject&gt; diagnostics = new DiagnosticCollector&lt;&gt;();</span>
+<span class="nc" id="L52">            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, compilationUnits);</span>
+
+<span class="nc" id="L54">            result = task.call();</span>
+<span class="nc bnc" id="L55" title="All 4 branches missed.">            if (!result &amp;&amp; promptInfo != null) {</span>
+<span class="nc" id="L56">                TestMessage testMessage = new TestMessage();</span>
+<span class="nc" id="L57">                List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L58">                diagnostics.getDiagnostics().forEach(diagnostic -&gt; {</span>
+<span class="nc" id="L59">                    errors.add(&quot;Error in &quot; + testName +</span>
+<span class="nc" id="L60">                            &quot;: line &quot; + diagnostic.getLineNumber() + &quot; : &quot;</span>
+<span class="nc" id="L61">                            + diagnostic.getMessage(null));</span>
+<span class="nc" id="L62">                    promptInfo.setUnitTest(addBuggyPrompt(promptInfo.getUnitTest(),&quot;&lt;Buggy Line&gt;: &quot; + diagnostic.getMessage(null), (int) diagnostic.getLineNumber()));</span>
+<span class="nc" id="L63">                });</span>
+<span class="nc" id="L64">                promptInfo.setUnitTest(promptInfo.getUnitTest().replace(&quot;//&lt;Buggy Line&gt;&quot;, &quot;&lt;Buggy Line&gt;&quot;));</span>
+<span class="nc" id="L65">                testMessage.setErrorType(TestMessage.ErrorType.COMPILE_ERROR);</span>
+<span class="nc" id="L66">                testMessage.setErrorMessage(errors);</span>
+<span class="nc" id="L67">                promptInfo.setErrorMsg(testMessage);</span>
+
+<span class="nc" id="L69">                exportError(errors, outputPath);</span>
+            }
+<span class="nc" id="L71">        } catch (Exception e) {</span>
+<span class="nc" id="L72">            throw new RuntimeException(&quot;In TestCompiler.compileTest: &quot; + e);</span>
+<span class="nc" id="L73">        }</span>
+<span class="nc" id="L74">        return result;</span>
+    }
+
+    public String addBuggyPrompt(String code, String errorMsg, int lineNum) {
+<span class="nc" id="L78">        CompilationUnit cu = StaticJavaParser.parse(code);</span>
+
+<span class="nc" id="L80">        Optional&lt;Node&gt; firstNodeAfterLine = cu.findFirst(Node.class, node -&gt;</span>
+<span class="nc bnc" id="L81" title="All 4 branches missed.">                node.getBegin().isPresent() &amp;&amp; node.getBegin().get().line &gt;= lineNum);</span>
+
+<span class="nc" id="L83">        firstNodeAfterLine.ifPresent(node -&gt; {</span>
+<span class="nc" id="L84">            node.setComment(new LineComment(errorMsg));</span>
+<span class="nc" id="L85">        });</span>
+<span class="nc" id="L86">        return cu.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

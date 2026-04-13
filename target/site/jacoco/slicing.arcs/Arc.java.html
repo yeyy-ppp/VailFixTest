@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Arc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.arcs</a> &gt; <span class="el_source">Arc.java</span></div><h1>Arc.java</h1><pre class="source lang-java linenums">package slicing.arcs;
+
+import org.jgrapht.graph.DefaultEdge;
+import slicing.arcs.cfg.ControlFlowArc;
+import slicing.arcs.pdg.ConditionalControlDependencyArc;
+import slicing.arcs.pdg.ControlDependencyArc;
+import slicing.arcs.pdg.DataDependencyArc;
+import slicing.arcs.sdg.CallArc;
+import slicing.arcs.sdg.ParameterInOutArc;
+import slicing.arcs.sdg.SummaryArc;
+import slicing.graphs.cfg.CFG;
+import slicing.graphs.pdg.PDG;
+import slicing.graphs.sdg.SDG;
+import slicing.nodes.GraphNode;
+
+import java.util.Objects;
+
+/** The root class from which all arcs in the {@link CFG CFG}, {@link PDG PDG}
+ * and {@link SDG SDG} inherit. */
+public abstract class Arc extends DefaultEdge {
+    protected final String label;
+
+    protected Arc() {
+<span class="nc" id="L24">        this(null);</span>
+<span class="nc" id="L25">    }</span>
+
+<span class="nc" id="L27">    protected Arc(String label) {</span>
+<span class="nc" id="L28">        this.label = label;</span>
+<span class="nc" id="L29">    }</span>
+
+    public String getLabel() {
+<span class="nc" id="L32">        return label;</span>
+    }
+
+    // =========================== CFG ===========================
+
+    /** @see ControlFlowArc */
+    public final boolean isControlFlowArc() {
+<span class="nc" id="L39">        return this instanceof ControlFlowArc;</span>
+    }
+
+    /** @see ControlFlowArc.NonExecutable */
+    public final boolean isExecutableControlFlowArc() {
+<span class="nc bnc" id="L44" title="All 4 branches missed.">        return isControlFlowArc() &amp;&amp; !isNonExecutableControlFlowArc();</span>
+    }
+
+    /** @see ControlFlowArc.NonExecutable */
+    public final boolean isNonExecutableControlFlowArc() {
+<span class="nc" id="L49">        return this instanceof ControlFlowArc.NonExecutable;</span>
+    }
+
+    // ======================== PDG &amp; SDG ========================
+
+    /** @see ControlDependencyArc */
+    public final boolean isControlDependencyArc() {
+<span class="nc" id="L56">        return this instanceof ControlDependencyArc;</span>
+    }
+
+    public final ControlDependencyArc asControlDependencyArc() {
+<span class="nc bnc" id="L60" title="All 2 branches missed.">        if (isControlDependencyArc()) return (ControlDependencyArc) this;</span>
+<span class="nc" id="L61">        throw new UnsupportedOperationException(&quot;Not a ControlDependencyArc&quot;);</span>
+    }
+
+    /** @see ConditionalControlDependencyArc */
+    public final boolean isConditionalControlDependencyArc() {
+<span class="nc" id="L66">        return this instanceof ConditionalControlDependencyArc;</span>
+    }
+
+    /** @see ConditionalControlDependencyArc */
+    public final boolean isUnconditionalControlDependencyArc() {
+<span class="nc bnc" id="L71" title="All 4 branches missed.">        return isControlDependencyArc() &amp;&amp; !isConditionalControlDependencyArc();</span>
+    }
+
+    public final ControlDependencyArc asConditionalControlDependencyArc() {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (isConditionalControlDependencyArc()) return (ConditionalControlDependencyArc) this;</span>
+<span class="nc" id="L76">        throw new UnsupportedOperationException(&quot;Not a ConditionalControlDependencyArc&quot;);</span>
+    }
+
+    /** @see DataDependencyArc */
+    public final boolean isDataDependencyArc() {
+<span class="nc" id="L81">        return this instanceof DataDependencyArc;</span>
+    }
+
+    public final DataDependencyArc asDataDependencyArc() {
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (isDataDependencyArc()) return (DataDependencyArc) this;</span>
+<span class="nc" id="L86">        throw new UnsupportedOperationException(&quot;Not a DataDependencyArc&quot;);</span>
+    }
+
+    public boolean isObjectFlow() {
+<span class="nc" id="L90">        return false;</span>
+    }
+
+    // =========================== SDG ===========================
+
+    /** Whether or not this is an interprocedural arc that connects a call site to its declaration. */
+    public boolean isInterproceduralInputArc() {
+<span class="nc" id="L97">        return false;</span>
+    }
+
+    /** Whether or not this is an interprocedural arc that connects a declaration to a matching call site. */
+    public boolean isInterproceduralOutputArc() {
+<span class="nc" id="L102">        return false;</span>
+    }
+
+    /** @see CallArc */
+    public final boolean isCallArc() {
+<span class="nc" id="L107">        return this instanceof CallArc;</span>
+    }
+
+    public final CallArc asCallArc() {
+<span class="nc bnc" id="L111" title="All 2 branches missed.">        if (isCallArc()) return (CallArc) this;</span>
+<span class="nc" id="L112">        throw new UnsupportedOperationException(&quot;Not a CallArc&quot;);</span>
+    }
+
+    /** @see ParameterInOutArc */
+    public final boolean isParameterInOutArc() {
+<span class="nc" id="L117">        return this instanceof ParameterInOutArc;</span>
+    }
+
+    public final ParameterInOutArc asParameterInOutArc() {
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (isParameterInOutArc()) return (ParameterInOutArc) this;</span>
+<span class="nc" id="L122">        throw new UnsupportedOperationException(&quot;Not a ParameterInOutArc&quot;);</span>
+    }
+
+    /** @see SummaryArc */
+    public final boolean isSummaryArc() {
+<span class="nc" id="L127">        return this instanceof SummaryArc;</span>
+    }
+
+    public final SummaryArc asSummaryArcArc() {
+<span class="nc bnc" id="L131" title="All 2 branches missed.">        if (isSummaryArc()) return (SummaryArc) this;</span>
+<span class="nc" id="L132">        throw new UnsupportedOperationException(&quot;Not a SummaryArc&quot;);</span>
+    }
+
+    @Override
+    public String toString() {
+<span class="nc" id="L137">        return String.format(&quot;%s{%d -&gt; %d}&quot;, getClass().getName(),</span>
+<span class="nc" id="L138">                ((GraphNode&lt;?&gt;) super.getSource()).getId(), ((GraphNode&lt;?&gt;) super.getTarget()).getId());</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (this == o)</span>
+<span class="nc" id="L144">            return true;</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">        if (o == null)</span>
+<span class="nc" id="L146">            return false;</span>
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        if (!o.getClass().equals(this.getClass()))</span>
+<span class="nc" id="L148">            return false;</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        return Objects.equals(getSource(), ((Arc) o).getSource())</span>
+<span class="nc bnc" id="L150" title="All 2 branches missed.">                &amp;&amp; Objects.equals(getTarget(), ((Arc) o).getTarget())</span>
+<span class="nc bnc" id="L151" title="All 2 branches missed.">                &amp;&amp; Objects.equals(getLabel(), ((Arc) o).getLabel());</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L156">        return Objects.hash(getClass(), getLabel(), getSource(), getTarget());</span>
+    }
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

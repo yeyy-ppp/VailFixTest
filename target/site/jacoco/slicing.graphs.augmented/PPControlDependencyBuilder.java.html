@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PPControlDependencyBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.augmented</a> &gt; <span class="el_source">PPControlDependencyBuilder.java</span></div><h1>PPControlDependencyBuilder.java</h1><pre class="source lang-java linenums">package slicing.graphs.augmented;
+
+import slicing.arcs.Arc;
+import slicing.graphs.pdg.ControlDependencyBuilder;
+import slicing.nodes.GraphNode;
+
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/** A builder for control dependencies in graphs based on the {@link PPDG}.
+ *  @see ControlDependencyBuilder */
+public class PPControlDependencyBuilder extends ControlDependencyBuilder {
+    public PPControlDependencyBuilder(ACFG cfg, PPDG pdg) {
+<span class="nc" id="L14">        super(cfg, pdg);</span>
+<span class="nc" id="L15">    }</span>
+
+    @Override
+    protected boolean postDominates(GraphNode&lt;?&gt; a, GraphNode&lt;?&gt; b, Set&lt;GraphNode&lt;?&gt;&gt; visited) {
+        // Stop w/ success if a == b or a has already been visited
+<span class="nc bnc" id="L20" title="All 4 branches missed.">        if (a.equals(b) || visited.contains(a))</span>
+<span class="nc" id="L21">            return true;</span>
+<span class="nc" id="L22">        Set&lt;Arc&gt; outgoing = cfg.outgoingEdgesOf(a);</span>
+        // Limit the traversal if it is a PPDG
+<span class="nc" id="L24">        outgoing = outgoing.stream().filter(Arc::isExecutableControlFlowArc).collect(Collectors.toSet());</span>
+        // Stop w/ failure if there are no edges to traverse from a
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        if (outgoing.isEmpty())</span>
+<span class="nc" id="L27">            return false;</span>
+        // Find all possible paths starting from a, if ALL find b, then true, else false
+<span class="nc" id="L29">        visited.add(a);</span>
+<span class="nc bnc" id="L30" title="All 2 branches missed.">        for (Arc out : outgoing) {</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">            if (!postDominates(cfg.getEdgeTarget(out), b, visited))</span>
+<span class="nc" id="L32">                return false;</span>
+<span class="nc" id="L33">        }</span>
+<span class="nc" id="L34">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

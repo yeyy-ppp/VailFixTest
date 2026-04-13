@@ -1,0 +1,340 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CSVParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">csv</a> &gt; <span class="el_source">CSVParser.java</span></div><h1>CSVParser.java</h1><pre class="source lang-java linenums">package csv;
+import static csv.Token.Type.TOKEN;
+import java.io.Closeable;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.UncheckedIOException;
+import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+public final class CSVParser implements Iterable&lt;CSVRecord&gt;, Closeable {
+    public static class Builder extends AbstractStreamBuilder&lt;CSVParser, Builder&gt; {
+        private CSVFormat format;
+        private long characterOffset;
+<span class="fc" id="L34">        private long recordNumber = 1;</span>
+        private boolean trackBytes;
+<span class="fc" id="L36">        protected Builder() {</span>
+<span class="fc" id="L37">        }</span>
+        @SuppressWarnings(&quot;resource&quot;)
+        @Override
+        public CSVParser get() throws IOException {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            return new CSVParser(getReader(), format != null ? format : CSVFormat.DEFAULT, characterOffset, recordNumber, getCharset(), trackBytes);</span>
+        }
+        public Builder setCharacterOffset(final long characterOffset) {
+<span class="fc" id="L44">            this.characterOffset = characterOffset;</span>
+<span class="fc" id="L45">            return asThis();</span>
+        }
+        public Builder setFormat(final CSVFormat format) {
+<span class="fc" id="L48">            this.format = CSVFormat.copy(format);</span>
+<span class="fc" id="L49">            return asThis();</span>
+        }
+        public Builder setRecordNumber(final long recordNumber) {
+<span class="fc" id="L52">            this.recordNumber = recordNumber;</span>
+<span class="fc" id="L53">            return asThis();</span>
+        }
+        public Builder setTrackBytes(final boolean trackBytes) {
+<span class="nc" id="L56">            this.trackBytes = trackBytes;</span>
+<span class="nc" id="L57">            return asThis();</span>
+        }
+    }
+<span class="fc" id="L60">    final class CSVRecordIterator implements Iterator&lt;CSVRecord&gt; {</span>
+        private CSVRecord current;
+        private CSVRecord getNextRecord() {
+<span class="fc" id="L63">            CSVRecord record = null;</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">            if (format.useRow(recordNumber + 1)) {</span>
+<span class="fc" id="L65">                record = Uncheck.get(CSVParser.this::nextRecord);</span>
+            }
+<span class="fc" id="L67">            return record;</span>
+        }
+        @Override
+        public boolean hasNext() {
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">            if (isClosed()) {</span>
+<span class="nc" id="L72">                return false;</span>
+            }
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">            if (current == null) {</span>
+<span class="fc" id="L75">                current = getNextRecord();</span>
+            }
+<span class="fc bfc" id="L77" title="All 2 branches covered.">            return current != null;</span>
+        }
+        @Override
+        public CSVRecord next() {
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">            if (isClosed()) {</span>
+<span class="nc" id="L82">                throw new NoSuchElementException(&quot;CSVParser has been closed&quot;);</span>
+            }
+<span class="fc" id="L84">            CSVRecord next = current;</span>
+<span class="fc" id="L85">            current = null;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">            if (next == null) {</span>
+<span class="fc" id="L87">                next = getNextRecord();</span>
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">                if (next == null) {</span>
+<span class="nc" id="L89">                    throw new NoSuchElementException(&quot;No more CSV records available&quot;);</span>
+                }
+            }
+<span class="fc" id="L92">            return next;</span>
+        }
+        @Override
+        public void remove() {
+<span class="nc" id="L96">            throw new UnsupportedOperationException();</span>
+        }
+    }
+    private static final class Headers {
+        final Map&lt;String, Integer&gt; headerMap;
+        final List&lt;String&gt; headerNames;
+<span class="fc" id="L102">        Headers(final Map&lt;String, Integer&gt; headerMap, final List&lt;String&gt; headerNames) {</span>
+<span class="fc" id="L103">            this.headerMap = headerMap;</span>
+<span class="fc" id="L104">            this.headerNames = headerNames;</span>
+<span class="fc" id="L105">        }</span>
+    }
+    public static Builder builder() {
+<span class="fc" id="L108">        return new Builder();</span>
+    }
+    public static CSVParser parse(final File file, final Charset charset, final CSVFormat format) throws IOException {
+<span class="fc" id="L111">        Objects.requireNonNull(file, &quot;file&quot;);</span>
+<span class="fc" id="L112">        return parse(file.toPath(), charset, format);</span>
+    }
+    public static CSVParser parse(final InputStream inputStream, final Charset charset, final CSVFormat format)
+            throws IOException {
+<span class="fc" id="L116">        return parse(new InputStreamReader(inputStream, Charsets.toCharset(charset)), format);</span>
+    }
+    @SuppressWarnings(&quot;resource&quot;)
+    public static CSVParser parse(final Path path, final Charset charset, final CSVFormat format) throws IOException {
+<span class="fc" id="L120">        Objects.requireNonNull(path, &quot;path&quot;);</span>
+<span class="fc" id="L121">        return parse(Files.newInputStream(path), charset, format);</span>
+    }
+    public static CSVParser parse(final Reader reader, final CSVFormat format) throws IOException {
+<span class="fc" id="L124">        return builder().setReader(reader).setFormat(format).get();</span>
+    }
+    public static CSVParser parse(final String string, final CSVFormat format) throws IOException {
+<span class="fc" id="L127">        Objects.requireNonNull(string, &quot;string&quot;);</span>
+<span class="fc" id="L128">        return parse(new StringReader(string), format);</span>
+    }
+    @SuppressWarnings(&quot;resource&quot;)
+    public static CSVParser parse(final URL url, final Charset charset, final CSVFormat format) throws IOException {
+<span class="nc" id="L132">        Objects.requireNonNull(url, &quot;url&quot;);</span>
+<span class="nc" id="L133">        return parse(url.openStream(), charset, format);</span>
+    }
+    private String headerComment;
+    private String trailerComment;
+    private final CSVFormat format;
+    private final Headers headers;
+    private final Lexer lexer;
+    private final CSVRecordIterator csvRecordIterator;
+<span class="fc" id="L141">    private final List&lt;String&gt; recordList = new ArrayList&lt;&gt;();</span>
+    private long recordNumber;
+    private final long characterOffset;
+<span class="fc" id="L144">    private final Token reusableToken = new Token();</span>
+    @Deprecated
+    public CSVParser(final Reader reader, final CSVFormat format) throws IOException {
+<span class="fc" id="L147">        this(reader, format, 0, 1);</span>
+<span class="fc" id="L148">    }</span>
+    @Deprecated
+    public CSVParser(final Reader reader, final CSVFormat format, final long characterOffset, final long recordNumber) throws IOException {
+<span class="fc" id="L151">        this(reader, format, characterOffset, recordNumber, null, false);</span>
+<span class="fc" id="L152">    }</span>
+    @SuppressWarnings(&quot;resource&quot;)
+    private CSVParser(final Reader reader, final CSVFormat format, final long characterOffset, final long recordNumber, final Charset charset,
+<span class="fc" id="L155">            final boolean trackBytes) throws IOException {</span>
+<span class="fc" id="L156">        Objects.requireNonNull(reader, &quot;reader&quot;);</span>
+<span class="fc" id="L157">        Objects.requireNonNull(format, &quot;format&quot;);</span>
+<span class="fc" id="L158">        this.format = format.copy();</span>
+<span class="fc" id="L159">        this.lexer = new Lexer(format, new ExtendedBufferedReader(reader, charset, trackBytes));</span>
+<span class="fc" id="L160">        this.csvRecordIterator = new CSVRecordIterator();</span>
+<span class="fc" id="L161">        this.headers = createHeaders();</span>
+<span class="fc" id="L162">        this.characterOffset = characterOffset;</span>
+<span class="fc" id="L163">        this.recordNumber = recordNumber - 1;</span>
+<span class="fc" id="L164">    }</span>
+    private void addRecordValue(final boolean lastRecord) {
+<span class="fc" id="L166">        final String input = format.trim(reusableToken.content.toString());</span>
+<span class="pc bpc" id="L167" title="1 of 6 branches missed.">        if (lastRecord &amp;&amp; input.isEmpty() &amp;&amp; format.getTrailingDelimiter()) {</span>
+<span class="nc" id="L168">            return;</span>
+        }
+<span class="fc" id="L170">        recordList.add(handleNull(input));</span>
+<span class="fc" id="L171">    }</span>
+    @Override
+    public void close() throws IOException {
+<span class="fc" id="L174">        lexer.close();</span>
+<span class="fc" id="L175">    }</span>
+    private Map&lt;String, Integer&gt; createEmptyHeaderMap() {
+<span class="pc bpc" id="L177" title="1 of 2 branches missed.">        return format.getIgnoreHeaderCase() ?</span>
+<span class="nc" id="L178">                new TreeMap&lt;&gt;(String.CASE_INSENSITIVE_ORDER) :</span>
+<span class="fc" id="L179">                new LinkedHashMap&lt;&gt;();</span>
+    }
+    private Headers createHeaders() throws IOException {
+<span class="fc" id="L182">        Map&lt;String, Integer&gt; headerMap = null;</span>
+<span class="fc" id="L183">        List&lt;String&gt; headerNames = null;</span>
+<span class="fc" id="L184">        final String[] formatHeader = format.getHeader();</span>
+<span class="fc bfc" id="L185" title="All 2 branches covered.">        if (formatHeader != null) {</span>
+<span class="fc" id="L186">            headerMap = createEmptyHeaderMap();</span>
+<span class="fc" id="L187">            String[] headerRecord = null;</span>
+<span class="pc bpc" id="L188" title="1 of 2 branches missed.">            if (formatHeader.length == 0) {</span>
+<span class="nc" id="L189">                final CSVRecord nextRecord = nextRecord();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">                if (nextRecord != null) {</span>
+<span class="nc" id="L191">                    headerRecord = nextRecord.values();</span>
+<span class="nc" id="L192">                    headerComment = nextRecord.getComment();</span>
+                }
+<span class="nc" id="L194">            } else {</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">                if (format.getSkipHeaderRecord()) {</span>
+<span class="nc" id="L196">                    final CSVRecord nextRecord = nextRecord();</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                    if (nextRecord != null) {</span>
+<span class="nc" id="L198">                        headerComment = nextRecord.getComment();</span>
+                    }
+                }
+<span class="fc" id="L201">                headerRecord = formatHeader;</span>
+            }
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">            if (headerRecord != null) {</span>
+<span class="fc" id="L204">                boolean observedMissing = false;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">                for (int i = 0; i &lt; headerRecord.length; i++) {</span>
+<span class="fc" id="L206">                    final String header = headerRecord[i];</span>
+<span class="fc" id="L207">                    final boolean blankHeader = CSVFormat.isBlank(header);</span>
+<span class="pc bpc" id="L208" title="3 of 4 branches missed.">                    if (blankHeader &amp;&amp; !format.getAllowMissingColumnNames()) {</span>
+<span class="nc" id="L209">                        throw new IllegalArgumentException(&quot;A header name is missing in &quot; + Arrays.toString(headerRecord));</span>
+                    }
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">                    final boolean containsHeader = blankHeader ? observedMissing : headerMap.containsKey(header);</span>
+<span class="fc" id="L212">                    final DuplicateHeaderMode headerMode = format.getDuplicateHeaderMode();</span>
+<span class="pc bpc" id="L213" title="1 of 2 branches missed.">                    final boolean duplicatesAllowed = headerMode == DuplicateHeaderMode.ALLOW_ALL;</span>
+<span class="pc bpc" id="L214" title="1 of 2 branches missed.">                    final boolean emptyDuplicatesAllowed = headerMode == DuplicateHeaderMode.ALLOW_EMPTY;</span>
+<span class="pc bpc" id="L215" title="7 of 8 branches missed.">                    if (containsHeader &amp;&amp; !duplicatesAllowed &amp;&amp; !(blankHeader &amp;&amp; emptyDuplicatesAllowed)) {</span>
+<span class="nc" id="L216">                        throw new IllegalArgumentException(String.format(</span>
+                                &quot;The header contains a duplicate name: \&quot;%s\&quot; in %s. If this is valid then use CSVFormat.Builder.setDuplicateHeaderMode().&quot;,
+<span class="nc" id="L218">                                header, Arrays.toString(headerRecord)));</span>
+                    }
+<span class="fc" id="L220">                    observedMissing |= blankHeader;</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">                    if (header != null) {</span>
+<span class="fc" id="L222">                        headerMap.put(header, Integer.valueOf(i));</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">                        if (headerNames == null) {</span>
+<span class="fc" id="L224">                            headerNames = new ArrayList&lt;&gt;(headerRecord.length);</span>
+                        }
+<span class="fc" id="L226">                        headerNames.add(header);</span>
+                    }
+                }
+            }
+        }
+<span class="fc bfc" id="L231" title="All 2 branches covered.">        return new Headers(headerMap, headerNames == null ? Collections.emptyList() : Collections.unmodifiableList(headerNames));</span>
+    }
+    public long getCurrentLineNumber() {
+<span class="fc" id="L234">        return lexer.getCurrentLineNumber();</span>
+    }
+    public String getFirstEndOfLine() {
+<span class="fc" id="L237">        return lexer.getFirstEol();</span>
+    }
+    public String getHeaderComment() {
+<span class="nc" id="L240">        return headerComment;</span>
+    }
+    public Map&lt;String, Integer&gt; getHeaderMap() {
+<span class="pc bpc" id="L243" title="1 of 2 branches missed.">        if (headers.headerMap == null) {</span>
+<span class="nc" id="L244">            return null;</span>
+        }
+<span class="fc" id="L246">        final Map&lt;String, Integer&gt; map = createEmptyHeaderMap();</span>
+<span class="fc" id="L247">        map.putAll(headers.headerMap);</span>
+<span class="fc" id="L248">        return map;</span>
+    }
+    Map&lt;String, Integer&gt; getHeaderMapRaw() {
+<span class="fc" id="L251">        return headers.headerMap;</span>
+    }
+    public List&lt;String&gt; getHeaderNames() {
+<span class="fc" id="L254">        return Collections.unmodifiableList(headers.headerNames);</span>
+    }
+    public long getRecordNumber() {
+<span class="fc" id="L257">        return recordNumber;</span>
+    }
+    public List&lt;CSVRecord&gt; getRecords() {
+<span class="fc" id="L260">        return stream().collect(Collectors.toList());</span>
+    }
+    public String getTrailerComment() {
+<span class="nc" id="L263">        return trailerComment;</span>
+    }
+    private String handleNull(final String input) {
+<span class="fc" id="L266">        final boolean isQuoted = reusableToken.isQuoted;</span>
+<span class="fc" id="L267">        final String nullString = format.getNullString();</span>
+<span class="fc" id="L268">        final boolean strictQuoteMode = isStrictQuoteMode();</span>
+<span class="fc bfc" id="L269" title="All 2 branches covered.">        if (input.equals(nullString)) {</span>
+<span class="pc bpc" id="L270" title="2 of 4 branches missed.">            return strictQuoteMode &amp;&amp; isQuoted ? input : null;</span>
+        }
+<span class="pc bpc" id="L272" title="5 of 8 branches missed.">        return strictQuoteMode &amp;&amp; nullString == null &amp;&amp; input.isEmpty() &amp;&amp; !isQuoted ? null : input;</span>
+    }
+    public boolean hasHeaderComment() {
+<span class="pc bpc" id="L275" title="1 of 2 branches missed.">        return headerComment != null;</span>
+    }
+    public boolean hasTrailerComment() {
+<span class="pc bpc" id="L278" title="1 of 2 branches missed.">        return trailerComment != null;</span>
+    }
+    public boolean isClosed() {
+<span class="fc" id="L281">        return lexer.isClosed();</span>
+    }
+    private boolean isStrictQuoteMode() {
+<span class="fc bfc" id="L284" title="All 2 branches covered.">        return format.getQuoteMode() == QuoteMode.ALL_NON_NULL ||</span>
+<span class="pc bpc" id="L285" title="1 of 2 branches missed.">               format.getQuoteMode() == QuoteMode.NON_NUMERIC;</span>
+    }
+    @Override
+    public Iterator&lt;CSVRecord&gt; iterator() {
+<span class="fc" id="L289">        return csvRecordIterator;</span>
+    }
+    CSVRecord nextRecord() throws IOException {
+<span class="fc" id="L292">        CSVRecord result = null;</span>
+<span class="fc" id="L293">        recordList.clear();</span>
+<span class="fc" id="L294">        StringBuilder sb = null;</span>
+<span class="fc" id="L295">        final long startCharPosition = lexer.getCharacterPosition() + characterOffset;</span>
+<span class="fc" id="L296">        final long startBytePosition = lexer.getBytesRead() + characterOffset;</span>
+        do {
+<span class="fc" id="L298">            reusableToken.reset();</span>
+<span class="fc" id="L299">            lexer.nextToken(reusableToken);</span>
+<span class="pc bpc" id="L300" title="2 of 6 branches missed.">            switch (reusableToken.type) {</span>
+            case TOKEN:
+<span class="fc" id="L302">                addRecordValue(false);</span>
+<span class="fc" id="L303">                break;</span>
+            case EORECORD:
+<span class="fc" id="L305">                addRecordValue(true);</span>
+<span class="fc" id="L306">                break;</span>
+            case EOF:
+<span class="fc bfc" id="L308" title="All 2 branches covered.">                if (reusableToken.isReady) {</span>
+<span class="fc" id="L309">                    addRecordValue(true);</span>
+<span class="pc bpc" id="L310" title="1 of 2 branches missed.">                } else if (sb != null) {</span>
+<span class="nc" id="L311">                    trailerComment = sb.toString();</span>
+                }
+                break;
+            case INVALID:
+<span class="nc" id="L315">                throw new CSVException(&quot;(line %,d) invalid parse sequence&quot;, getCurrentLineNumber());</span>
+            case COMMENT:
+<span class="pc bpc" id="L317" title="1 of 2 branches missed.">                if (sb == null) {</span>
+<span class="fc" id="L318">                    sb = new StringBuilder();</span>
+                } else {
+<span class="nc" id="L320">                    sb.append(Constants.LF);</span>
+                }
+<span class="fc" id="L322">                sb.append(reusableToken.content);</span>
+<span class="fc" id="L323">                reusableToken.type = TOKEN;</span>
+<span class="fc" id="L324">                break;</span>
+            default:
+<span class="nc" id="L326">                throw new CSVException(&quot;Unexpected Token type: %s&quot;, reusableToken.type);</span>
+            }
+<span class="fc bfc" id="L328" title="All 2 branches covered.">        } while (reusableToken.type == TOKEN);</span>
+<span class="fc bfc" id="L329" title="All 2 branches covered.">        if (!recordList.isEmpty()) {</span>
+<span class="fc" id="L330">            recordNumber++;</span>
+<span class="fc" id="L331">            result = new CSVRecord(this, recordList.toArray(Constants.EMPTY_STRING_ARRAY), Objects.toString(sb, null), recordNumber, startCharPosition,</span>
+                    startBytePosition);
+        }
+<span class="fc" id="L334">        return result;</span>
+    }
+    public Stream&lt;CSVRecord&gt; stream() {
+<span class="fc" id="L337">        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(iterator(), Spliterator.ORDERED), false);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

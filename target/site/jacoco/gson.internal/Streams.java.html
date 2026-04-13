@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Streams.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal</a> &gt; <span class="el_source">Streams.java</span></div><h1>Streams.java</h1><pre class="source lang-java linenums">package gson.internal;
+import gson.JsonElement;
+import gson.JsonIOException;
+import gson.JsonNull;
+import gson.JsonParseException;
+import gson.JsonSyntaxException;
+import gson.internal.bind.JsonElementTypeAdapter;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import gson.stream.MalformedJsonException;
+import java.io.Closeable;
+import java.io.EOFException;
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Objects;
+public final class Streams {
+<span class="fc" id="L19">  private Streams() {</span>
+<span class="fc" id="L20">    throw new UnsupportedOperationException();</span>
+  }
+  public static JsonElement parse(JsonReader reader) throws JsonParseException {
+<span class="fc" id="L23">    boolean isEmpty = true;</span>
+    try {
+<span class="fc" id="L25">      JsonToken unused = reader.peek();</span>
+<span class="fc" id="L26">      isEmpty = false;</span>
+<span class="fc" id="L27">      return JsonElementTypeAdapter.ADAPTER.read(reader);</span>
+<span class="fc" id="L28">    } catch (EOFException e) {</span>
+<span class="pc bpc" id="L29" title="1 of 2 branches missed.">      if (isEmpty) {</span>
+<span class="fc" id="L30">        return JsonNull.INSTANCE;</span>
+      }
+<span class="nc" id="L32">      throw new JsonSyntaxException(e);</span>
+<span class="fc" id="L33">    } catch (MalformedJsonException e) {</span>
+<span class="fc" id="L34">      throw new JsonSyntaxException(e);</span>
+<span class="fc" id="L35">    } catch (IOException e) {</span>
+<span class="fc" id="L36">      throw new JsonIOException(e);</span>
+<span class="nc" id="L37">    } catch (NumberFormatException e) {</span>
+<span class="nc" id="L38">      throw new JsonSyntaxException(e);</span>
+    }
+  }
+  public static void write(JsonElement element, JsonWriter writer) throws IOException {
+<span class="fc" id="L42">    JsonElementTypeAdapter.ADAPTER.write(writer, element);</span>
+<span class="fc" id="L43">  }</span>
+  public static Writer writerForAppendable(Appendable appendable) {
+<span class="fc bfc" id="L45" title="All 2 branches covered.">    return appendable instanceof Writer ? (Writer) appendable : new AppendableWriter(appendable);</span>
+  }
+  static final class AppendableWriter extends Writer {
+    private final Appendable appendable;
+<span class="fc" id="L49">    private final CurrentWrite currentWrite = new CurrentWrite();</span>
+<span class="fc" id="L50">    AppendableWriter(Appendable appendable) {</span>
+<span class="fc" id="L51">      this.appendable = appendable;</span>
+<span class="fc" id="L52">    }</span>
+    @SuppressWarnings(&quot;UngroupedOverloads&quot;)
+    @Override
+    public void write(char[] chars, int offset, int length) throws IOException {
+<span class="fc" id="L56">      currentWrite.setChars(chars);</span>
+<span class="fc" id="L57">      appendable.append(currentWrite, offset, offset + length);</span>
+<span class="fc" id="L58">    }</span>
+    @Override
+    public void flush() throws IOException {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">      if (appendable instanceof Flushable) {</span>
+<span class="fc" id="L62">        ((Flushable) appendable).flush();</span>
+      }
+<span class="fc" id="L64">    }</span>
+    @Override
+    public void close() throws IOException {
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">      if (appendable instanceof Closeable) {</span>
+<span class="fc" id="L68">        ((Closeable) appendable).close();</span>
+      }
+<span class="fc" id="L70">    }</span>
+    @Override
+    public void write(int i) throws IOException {
+<span class="fc" id="L73">      appendable.append((char) i);</span>
+<span class="fc" id="L74">    }</span>
+    @Override
+    public void write(String str, int off, int len) throws IOException {
+<span class="fc" id="L77">      Objects.requireNonNull(str);</span>
+<span class="fc" id="L78">      appendable.append(str, off, off + len);</span>
+<span class="fc" id="L79">    }</span>
+    @Override
+    public Writer append(CharSequence csq) throws IOException {
+<span class="fc" id="L82">      appendable.append(csq);</span>
+<span class="fc" id="L83">      return this;</span>
+    }
+    @Override
+    public Writer append(CharSequence csq, int start, int end) throws IOException {
+<span class="fc" id="L87">      appendable.append(csq, start, end);</span>
+<span class="fc" id="L88">      return this;</span>
+    }
+<span class="fc" id="L90">    static class CurrentWrite implements CharSequence {</span>
+      private char[] chars;
+      private String cachedString;
+      void setChars(char[] chars) {
+<span class="fc" id="L94">        this.chars = chars;</span>
+<span class="fc" id="L95">        this.cachedString = null;</span>
+<span class="fc" id="L96">      }</span>
+      @Override
+      public int length() {
+<span class="fc" id="L99">        return chars.length;</span>
+      }
+      @Override
+      public char charAt(int i) {
+<span class="fc" id="L103">        return chars[i];</span>
+      }
+      @Override
+      public CharSequence subSequence(int start, int end) {
+<span class="fc" id="L107">        return new String(chars, start, end - start);</span>
+      }
+      @Override
+      public String toString() {
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">        if (cachedString == null) {</span>
+<span class="fc" id="L112">          cachedString = new String(chars);</span>
+        }
+<span class="fc" id="L114">        return cachedString;</span>
+      }
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Util.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">help</a> &gt; <span class="el_source">Util.java</span></div><h1>Util.java</h1><pre class="source lang-java linenums">package help;
+import java.util.Arrays;
+public final class Util {
+    private static final int NOT_FOUND = -1;
+    public static &lt;T extends CharSequence&gt; T defaultValue(final T str, final T defaultValue) {
+<span class="nc bnc" id="L6" title="All 2 branches missed.">        return isEmpty(str) ? defaultValue : str;</span>
+    }
+    public static int indexOfNonWhitespace(final CharSequence text, final int startPos) {
+<span class="nc bnc" id="L9" title="All 2 branches missed.">        if (isEmpty(text)) {</span>
+<span class="nc" id="L10">            return NOT_FOUND;</span>
+        }
+<span class="nc" id="L12">        int idx = startPos;</span>
+<span class="nc bnc" id="L13" title="All 4 branches missed.">        while (idx &lt; text.length() &amp;&amp; isWhitespace(text.charAt(idx))) {</span>
+<span class="nc" id="L14">            idx++;</span>
+        }
+<span class="nc bnc" id="L16" title="All 2 branches missed.">        return idx &lt; text.length() ? idx : NOT_FOUND;</span>
+    }
+    public static boolean isEmpty(final CharSequence str) {
+<span class="nc bnc" id="L19" title="All 4 branches missed.">        return str == null || str.length() == 0;</span>
+    }
+    public static boolean isWhitespace(final char c) {
+<span class="nc bnc" id="L22" title="All 4 branches missed.">        return Character.isWhitespace(c) || Character.PARAGRAPH_SEPARATOR == c;</span>
+    }
+    public static String ltrim(final String s) {
+<span class="nc" id="L25">        final int pos = indexOfNonWhitespace(s, 0);</span>
+<span class="nc bnc" id="L26" title="All 2 branches missed.">        return pos == NOT_FOUND ? &quot;&quot; : s.substring(pos);</span>
+    }
+    public static String repeat(final int len, final char fillChar) {
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (len &lt; 0) {</span>
+<span class="nc" id="L30">            throw new IllegalArgumentException(&quot;Length cannot be negative: &quot; + len);</span>
+        }
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        if (len == 0) {</span>
+<span class="nc" id="L33">            return &quot;&quot;;</span>
+        }
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (len &gt; 100000) {</span>
+<span class="nc" id="L36">            throw new IllegalArgumentException(&quot;Length too large (max 100000): &quot; + len);</span>
+        }
+<span class="nc" id="L38">        final char[] padding = new char[len];</span>
+<span class="nc" id="L39">        Arrays.fill(padding, fillChar);</span>
+<span class="nc" id="L40">        return new String(padding);</span>
+    }
+    public static String repeatSpace(final int len) {
+<span class="nc" id="L43">        return repeat(len, ' ');</span>
+    }
+    public static String rtrim(final String s) {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (isEmpty(s)) {</span>
+<span class="nc" id="L47">            return s;</span>
+        }
+<span class="nc" id="L49">        int pos = s.length();</span>
+<span class="nc bnc" id="L50" title="All 4 branches missed.">        while (pos &gt; 0 &amp;&amp; isWhitespace(s.charAt(pos - 1))) {</span>
+<span class="nc" id="L51">            --pos;</span>
+        }
+<span class="nc" id="L53">        return s.substring(0, pos);</span>
+    }
+    private Util() {
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

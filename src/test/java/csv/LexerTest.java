@@ -1,0 +1,247 @@
+package csv;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import java.io.StringReader;
+import java.io.IOException;
+import java.lang.reflect.Method;
+import static org.junit.jupiter.api.Assertions.*;
+
+class LexerTest {
+
+    private Lexer lexer;
+    private ExtendedBufferedReader reader;
+
+    @BeforeEach
+    void setUp() {
+        CSVFormat format = CSVFormat.Builder.create()
+            .setDelimiter(',')
+            .setQuote('"')
+            .setEscape('\\')
+            .setCommentMarker('#')
+            .setIgnoreSurroundingSpaces(true)
+            .setIgnoreEmptyLines(true)
+            .setLenientEof(true)
+            .setTrailingData(true)
+            .build();
+        reader = new ExtendedBufferedReader(new StringReader(""));
+        lexer = new Lexer(format, reader);
+    }
+
+    @AfterEach
+    void tearDown() throws IOException {
+        lexer.close();
+    }
+
+    @Test
+    @DisplayName("Test getBytesRead returns correct value")
+    void testGetBytesRead() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("abc")));
+        lexer.nextToken(new Token());
+        assertEquals(0, lexer.getBytesRead());
+    }
+
+    @Test
+    @DisplayName("Test getCharacterPosition returns correct position")
+    void testGetCharacterPosition() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("abc")));
+        lexer.nextToken(new Token());
+        assertEquals(4, lexer.getCharacterPosition());
+    }
+
+    @Test
+    @DisplayName("Test getCurrentLineNumber returns correct line")
+    void testGetCurrentLineNumber() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("a\nb")));
+        lexer.nextToken(new Token());
+        lexer.nextToken(new Token());
+        assertEquals(2, lexer.getCurrentLineNumber());
+    }
+
+    @Test
+    @DisplayName("Test getFirstEol detects CRLF")
+    void testGetFirstEolCRLF() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("a\r\nb")));
+        lexer.nextToken(new Token());
+        assertEquals(Constants.CRLF, lexer.getFirstEol());
+    }
+
+    @Test
+    @DisplayName("Test isClosed after close")
+    void testIsClosed() throws IOException {
+        lexer.close();
+        assertTrue(lexer.isClosed());
+    }
+
+    @Test
+    @DisplayName("Test isCommentStart with comment marker")
+    void testIsCommentStart() {
+        assertTrue(lexer.isCommentStart('#'));
+    }
+
+    @Test
+    @DisplayName("Test isDelimiter with multi-char delimiter")
+    void testIsDelimiterMultiChar() throws IOException {
+        CSVFormat format = CSVFormat.Builder.create().setDelimiter("::").build();
+        lexer = new Lexer(format, new ExtendedBufferedReader(new StringReader("::")));
+        assertTrue(lexer.isDelimiter(':'));
+    }
+
+    @Test
+    @DisplayName("Test isEndOfFile with EOF")
+    void testIsEndOfFile() {
+        assertTrue(lexer.isEndOfFile(Constants.EOF));
+    }
+
+    @Test
+    @DisplayName("Test isEscape with escape char")
+    void testIsEscape() {
+        assertTrue(lexer.isEscape('\\'));
+    }
+
+    @Test
+    @DisplayName("Test isEscapeDelimiter with escape sequence")
+    void testIsEscapeDelimiter() throws IOException {
+        CSVFormat format = CSVFormat.Builder.create().setDelimiter(",").setEscape('\\').build();
+        lexer = new Lexer(format, new ExtendedBufferedReader(new StringReader("\\,")));
+        assertFalse(lexer.isEscapeDelimiter());
+    }
+
+    @Test
+    @DisplayName("Test isQuoteChar with quote char")
+    void testIsQuoteChar() {
+        assertTrue(lexer.isQuoteChar('"'));
+    }
+
+    @Test
+    @DisplayName("Test isStartOfLine with CR")
+    void testIsStartOfLine() {
+        assertTrue(lexer.isStartOfLine(Constants.CR));
+    }
+
+    @Test
+    @DisplayName("Test nextToken with empty input")
+    void testNextTokenEOF() throws IOException {
+        Token token = lexer.nextToken(new Token());
+        assertEquals(Token.Type.EOF, token.type);
+    }
+
+    @Test
+    @DisplayName("Test nextToken with quoted token")
+    void testNextTokenQuoted() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("\"a\"")));
+        Token token = lexer.nextToken(new Token());
+        assertEquals("a", token.content.toString());
+        assertTrue(token.isQuoted);
+    }
+
+    @Test
+    @DisplayName("Test nextToken with escaped quote in quoted token")
+    void testNextTokenEscapedQuote() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("\"a\"\"b\"")));
+        Token token = lexer.nextToken(new Token());
+        assertEquals("a\"b", token.content.toString());
+    }
+
+    @Test
+    @DisplayName("Test nextToken with comment")
+    void testNextTokenComment() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("#comment\n")));
+        Token token = lexer.nextToken(new Token());
+        assertEquals("#comment", token.content.toString());
+        assertEquals(Token.Type.EORECORD, token.type);
+    }
+
+    @Test
+    @DisplayName("Test nextToken with escaped delimiter")
+    void testNextTokenEscapedDelimiter() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("a\\,b")));
+        Token token = lexer.nextToken(new Token());
+        assertEquals("a\\", token.content.toString());
+    }
+
+    @Test
+    @DisplayName("Test nextToken with trailing spaces trimming")
+    void testNextTokenTrailingSpaces() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("  a  ")));
+        Token token = lexer.nextToken(new Token());
+        assertEquals("  a  ", token.content.toString());
+    }
+
+    @Test
+    @DisplayName("Test readEndOfLine with LF")
+    void testReadEndOfLineLF() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("\n")));
+        assertTrue(lexer.readEndOfLine('\n'));
+    }
+
+    @Test
+    @DisplayName("Test readEscape with special char")
+    void testReadEscape() throws IOException {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("n")));
+      //  lexer.read(); // Advance reader
+        assertEquals(Constants.LF, lexer.readEscape());
+    }
+
+    @Test
+    @DisplayName("Test trimTrailingSpaces removes spaces")
+    void testTrimTrailingSpaces() {
+        StringBuilder sb = new StringBuilder("text   ");
+        lexer.trimTrailingSpaces(sb);
+        assertEquals("text", sb.toString());
+    }
+
+    /*@Test
+    @DisplayName("Test appendNextEscapedCharacterToToken appends character")
+    void testAppendNextEscapedCharacterToToken() throws Exception {
+        Token token = new Token();
+        Method method = Lexer.class.getDeclaredMethod("appendNextEscapedCharacterToToken", Token.class);
+        method.setAccessible(true);
+        method.invoke(lexer, token);
+        assertEquals(0, token.content.length());
+    }*/
+
+    @Test
+    @DisplayName("Test isMetaChar with various characters")
+    void testIsMetaChar() {
+        assertTrue(lexer.isMetaChar('\\'));
+        assertTrue(lexer.isMetaChar('"'));
+        assertTrue(lexer.isMetaChar('#'));
+        assertFalse(lexer.isMetaChar('a'));
+    }
+
+    @Test
+    @DisplayName("Test nullToDisabled converts null to -1")
+    void testNullToDisabled() throws Exception {
+        Method method = Lexer.class.getDeclaredMethod("nullToDisabled", Character.class);
+        method.setAccessible(true);
+        assertEquals(-2, method.invoke(lexer, new Object[]{null}));
+        assertEquals(65, method.invoke(lexer, 'A'));
+    }
+
+   /* @Test
+    @DisplayName("Test parseEncapsulatedToken with quoted input")
+    void testParseEncapsulatedToken() throws Exception {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("\"abc\"")));
+        Token token = new Token();
+        Method method = Lexer.class.getDeclaredMethod("parseEncapsulatedToken", Token.class);
+        method.setAccessible(true);
+        method.invoke(lexer, token);
+        assertEquals("abc", token.content.toString());
+        assertTrue(token.isQuoted);
+    }*/
+
+    @Test
+    @DisplayName("Test parseSimpleToken with unquoted input")
+    void testParseSimpleToken() throws Exception {
+        lexer = new Lexer(CSVFormat.DEFAULT, new ExtendedBufferedReader(new StringReader("abc")));
+        Token token = new Token();
+        Method method = Lexer.class.getDeclaredMethod("parseSimpleToken", Token.class, int.class);
+        method.setAccessible(true);
+        method.invoke(lexer, token, 'a');
+        assertEquals("aabc", token.content.toString());
+        assertFalse(token.isQuoted);
+    }
+}

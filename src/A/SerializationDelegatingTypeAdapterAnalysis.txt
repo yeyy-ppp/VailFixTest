@@ -1,0 +1,11 @@
+```
+包路径：gson.internal.bind
+类名：SerializationDelegatingTypeAdapter
+父类：TypeAdapter
+依赖类：TypeAdapter
+---
+序号：1
+方法名：getSerializationDelegate()
+返回类型：TypeAdapter
+功能描述：获取序列化代理的TypeAdapter
+```

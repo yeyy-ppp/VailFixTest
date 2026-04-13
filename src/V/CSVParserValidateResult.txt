@@ -1,0 +1,12 @@
+[2026-01-21 16:51:19] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: builder, parse, parse, parse, parse, parse, parse, close, getHeaderComment, getHeaderMap, getRecordNumber, getTrailerComment, hasHeaderComment, hasTrailerComment, isClosed, iterator, nextRecord, stream
+  未覆盖: CSVParser, CSVParser, CSVParser, addRecordValue, createEmptyHeaderMap, createHeaders, getCurrentLineNumber, getFirstEndOfLine, getHeaderMapRaw, getHeaderNames, getRecords, handleNull, isStrictQuoteMode
+
+[2026-01-21 16:57:18] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: builder, parse, parse, parse, parse, parse, parse, CSVParser, CSVParser, CSVParser, close, getCurrentLineNumber, getFirstEndOfLine, getHeaderComment, getHeaderMap, getHeaderMapRaw, getHeaderNames, getRecordNumber, getRecords, getTrailerComment, handleNull, hasHeaderComment, hasTrailerComment, isClosed, isStrictQuoteMode, iterator, nextRecord, stream
+  未覆盖: addRecordValue, createEmptyHeaderMap, createHeaders
+

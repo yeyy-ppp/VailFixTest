@@ -1,0 +1,6 @@
+[2026-01-24 00:37:05] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: MutableInt, MutableInt, MutableInt, MutableInt, add, add, addAndGet, addAndGet, compareTo, decrement, decrementAndGet, doubleValue, equals, floatValue, getAndAdd, getAndAdd, getAndDecrement, getAndIncrement, getValue, hashCode, increment, incrementAndGet, intValue, longValue, setValue, setValue, subtract, subtract, toInteger, toString
+  未覆盖: 全部覆盖
+

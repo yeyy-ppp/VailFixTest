@@ -1,0 +1,12 @@
+[2026-01-24 00:59:16] 验证结果
+错误类型: 断言值错误, 错误行: 191, 错误原因: 当random.nextInt(62)返回0时应生成"00000"而非"aaaaa", 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: insecure, random, random, random, random, random, random, random, secure, secureStrong, next, next, next, next, next, next, nextAlphabetic, nextAlphabetic, nextAlphanumeric, nextAlphanumeric, nextAscii, nextAscii, nextGraph, nextGraph, nextNumeric, nextNumeric, nextPrint, nextPrint, random, toString
+  未覆盖: randomAlphabetic, randomAlphabetic, randomAlphanumeric, randomAlphanumeric, randomAscii, randomAscii, randomGraph, randomGraph, randomNumeric, randomNumeric, randomPrint, randomPrint, RandomStringUtils, RandomStringUtils, randomUtils
+
+[2026-01-24 01:07:42] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: insecure, secure, secureStrong
+  未覆盖: 全部覆盖
+

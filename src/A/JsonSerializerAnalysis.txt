@@ -1,0 +1,9 @@
+包路径：gson
+类名：JsonSerializer
+父类：无
+依赖类：JsonElement,JsonSerializationContext
+---
+序号：1
+方法名：serialize(T src, Type typeOfSrc, JsonSerializationContext context)
+返回类型：JsonElement
+功能描述：序列化源对象为JSON元素

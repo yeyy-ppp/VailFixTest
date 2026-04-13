@@ -1,0 +1,153 @@
+包路径：cli  
+类名：DefaultParser  
+父类：无  
+依赖类：CommandLineParser,Option,CommandLine,Options,ParseException,MissingArgumentException,MissingOptionException,Util,Char,AmbiguousOptionException,UnrecognizedOptionException,OptionGroup,AlreadySelectedException  
+---  
+序号：1  
+方法名：Builder()  
+返回类型：void  
+功能描述：构造一个新的Builder实例  
+序号：2  
+方法名：build()  
+返回类型：DefaultParser  
+功能描述：构建DefaultParser实例（已弃用）  
+序号：3  
+方法名：get()  
+返回类型：DefaultParser  
+功能描述：构建DefaultParser实例  
+序号：4  
+方法名：setAllowPartialMatching(boolean allowPartialMatching)  
+返回类型：Builder  
+功能描述：设置是否允许部分匹配  
+序号：5  
+方法名：setDeprecatedHandler(Consumer<Option> deprecatedHandler)  
+返回类型：Builder  
+功能描述：设置已弃用选项的处理程序  
+序号：6  
+方法名：setStripLeadingAndTrailingQuotes(Boolean stripLeadingAndTrailingQuotes)  
+返回类型：Builder  
+功能描述：设置是否去除参数值的前后引号  
+序号：7  
+方法名：builder()  
+返回类型：Builder  
+功能描述：创建Builder实例  
+序号：8  
+方法名：indexOfEqual(String token)  
+返回类型：int  
+功能描述：查找token中第一个等号的位置  
+序号：9  
+方法名：DefaultParser()  
+返回类型：void  
+功能描述：构造一个允许部分匹配的解析器  
+序号：10  
+方法名：DefaultParser(boolean allowPartialMatching)  
+返回类型：void  
+功能描述：构造一个指定是否允许部分匹配的解析器  
+序号：11  
+方法名：DefaultParser(boolean allowPartialMatching, Boolean stripLeadingAndTrailingQuotes, Consumer<Option> deprecatedHandler)  
+返回类型：void  
+功能描述：构造一个具有指定配置的解析器  
+序号：12  
+方法名：checkRequiredArgs()  
+返回类型：void  
+功能描述：检查当前选项是否需要参数  
+序号：13  
+方法名：checkRequiredOptions()  
+返回类型：void  
+功能描述：检查所有必选选项是否已提供  
+序号：14  
+方法名：getLongPrefix(String token)  
+返回类型：String  
+功能描述：获取token中可能的长选项前缀  
+序号：15  
+方法名：getMatchingLongOptions(String token)  
+返回类型：List<String>  
+功能描述：获取与token匹配的长选项列表  
+序号：16  
+方法名：handleConcatenatedOptions(String token)  
+返回类型：void  
+功能描述：处理连在一起的短选项  
+序号：17  
+方法名：handleLongOption(String token)  
+返回类型：void  
+功能描述：处理长选项  
+序号：18  
+方法名：handleLongOptionWithEqual(String token)  
+返回类型：void  
+功能描述：处理带等号的长选项  
+序号：19  
+方法名：handleLongOptionWithoutEqual(String token)  
+返回类型：void  
+功能描述：处理不带等号的长选项  
+序号：20  
+方法名：handleOption(Option option)  
+返回类型：void  
+功能描述：处理一个选项  
+序号：21  
+方法名：handleProperties(Properties properties)  
+返回类型：void  
+功能描述：处理属性中的选项  
+序号：22  
+方法名：handleShortAndLongOption(String hyphenToken)  
+返回类型：void  
+功能描述：处理短选项和长选项  
+序号：23  
+方法名：handleToken(String token)  
+返回类型：void  
+功能描述：处理一个命令行参数token  
+序号：24  
+方法名：handleUnknownToken(String token)  
+返回类型：void  
+功能描述：处理无法识别的token  
+序号：25  
+方法名：isArgument(String token)  
+返回类型：boolean  
+功能描述：判断token是否是参数  
+序号：26  
+方法名：isJavaProperty(String token)  
+返回类型：boolean  
+功能描述：判断token是否是Java属性  
+序号：27  
+方法名：isLongOption(String token)  
+返回类型：boolean  
+功能描述：判断token是否是长选项  
+序号：28  
+方法名：isNegativeNumber(String token)  
+返回类型：boolean  
+功能描述：判断token是否是负数  
+序号：29  
+方法名：isOption(String token)  
+返回类型：boolean  
+功能描述：判断token是否是选项  
+序号：30  
+方法名：isShortOption(String token)  
+返回类型：boolean  
+功能描述：判断token是否是短选项  
+序号：31  
+方法名：parse(Options options, String[] arguments)  
+返回类型：CommandLine  
+功能描述：解析命令行参数  
+序号：32  
+方法名：parse(Options options, String[] arguments, boolean stopAtNonOption)  
+返回类型：CommandLine  
+功能描述：解析命令行参数并设置是否在非选项处停止  
+序号：33  
+方法名：parse(Options options, String[] arguments, Properties properties)  
+返回类型：CommandLine  
+功能描述：解析命令行参数并处理属性  
+序号：34  
+方法名：parse(Options options, String[] arguments, Properties properties, boolean stopAtNonOption)  
+返回类型：CommandLine  
+功能描述：解析命令行参数，处理属性并设置是否在非选项处停止  
+序号：35  
+方法名：stripLeadingAndTrailingQuotesDefaultOff(String token)  
+返回类型：String  
+功能描述：默认关闭去除引号  
+序号：36  
+方法名：stripLeadingAndTrailingQuotesDefaultOn(String token)  
+返回类型：String  
+功能描述：默认开启去除引号  
+序号：37  
+方法名：updateRequiredOptions(Option option)  
+返回类型：void  
+功能描述：更新必选选项列表

@@ -1,0 +1,20 @@
+```包路径：lang3.function
+类名：FailableBiPredicate
+父类：无
+依赖类：无
+---
+序号：1
+方法名：and(FailableBiPredicate<? super T, ? super U, E>)
+返回类型：FailableBiPredicate<T, U, E>
+功能描述：组合当前谓词与另一个谓词，返回逻辑与运算的新谓词
+---
+序号：2
+方法名：or(FailableBiPredicate<? super T, ? super U, E>)
+返回类型：FailableBiPredicate<T, U, E>
+功能描述：组合当前谓词与另一个谓词，返回逻辑或运算的新谓词
+---
+序号：3
+方法名：test(T, U)
+返回类型：boolean
+功能描述：测试两个输入对象是否满足条件
+```

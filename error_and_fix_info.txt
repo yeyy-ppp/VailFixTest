@@ -1,0 +1,55 @@
+错误代码：
+===错误原因：断言预期值为2，但实际3 + 4的正确结果应为7
+===修复成功代码：
+package codeing;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class AddExampleTest {
+    private final AddExample addExample = new AddExample();
+class AddExampleTest {
+    private final AddExample addExample = new AddExample();
+
+    @Test
+    void testAddTwoPositiveNumbers() {
+
+    @Test
+    void testAddTwoNegativeNumbers() {
+        assertEquals(-11, addExample.add(-5, -6));
+    }
+
+    @Test
+    void testAddPositiveAndNegativeNumber() {
+        assertEquals(1, addExample.add(-4, 5));
+    }
+
+    @Test
+    void testAddZeroToPositiveNumber() {
+        assertEquals(9, addExample.add(9, 0));
+    }
+
+    @Test
+    void testAddZeroToNegativeNumber() {
+        assertEquals(-7, addExample.add(-7, 0));
+    }
+
+    @Test
+    void testAddZeroToZero() {
+        assertEquals(0, addExample.add(0, 0));
+    }
+
+    @Test
+    void testAddMaxIntValues() {
+        assertEquals(-2, addExample.add(Integer.MAX_VALUE, Integer.MAX_VALUE));
+    }
+
+    @Test
+    void testAddMaxAndMinInt() {
+        assertEquals(-1, addExample.add(Integer.MAX_VALUE, Integer.MIN_VALUE));
+    }
+}
+====================================
+

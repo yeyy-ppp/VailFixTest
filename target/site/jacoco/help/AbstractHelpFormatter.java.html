@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractHelpFormatter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">help</a> &gt; <span class="el_source">AbstractHelpFormatter.java</span></div><h1>AbstractHelpFormatter.java</h1><pre class="source lang-java linenums">package help;
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
+import java.util.function.Supplier;
+public abstract class AbstractHelpFormatter {
+    public abstract static class Builder&lt;B extends Builder&lt;B, T&gt;, T extends AbstractHelpFormatter&gt;
+            implements Supplier&lt;T&gt; {
+<span class="nc" id="L17">        private Comparator&lt;Option&gt; comparator = DEFAULT_COMPARATOR;</span>
+<span class="nc" id="L18">        private HelpAppendable helpAppendable = TextHelpAppendable.systemOut();</span>
+<span class="nc" id="L19">        private OptionFormatter.Builder optionFormatBuilder = OptionFormatter.builder();</span>
+<span class="nc" id="L20">        private String optionGroupSeparator = DEFAULT_OPTION_GROUP_SEPARATOR;</span>
+<span class="nc" id="L21">        protected Builder() {</span>
+<span class="nc" id="L22">        }</span>
+        @SuppressWarnings(&quot;unchecked&quot;)
+        protected B asThis() {
+<span class="nc" id="L25">            return (B) this;</span>
+        }
+        protected Comparator&lt;Option&gt; getComparator() {
+<span class="nc" id="L28">            return comparator;</span>
+        }
+        protected HelpAppendable getHelpAppendable() {
+<span class="nc" id="L31">            return helpAppendable;</span>
+        }
+        protected OptionFormatter.Builder getOptionFormatBuilder() {
+<span class="nc" id="L34">            return optionFormatBuilder;</span>
+        }
+        protected String getOptionGroupSeparator() {
+<span class="nc" id="L37">            return optionGroupSeparator;</span>
+        }
+        public B setComparator(final Comparator&lt;Option&gt; comparator) {
+<span class="nc" id="L40">            this.comparator = comparator;</span>
+<span class="nc" id="L41">            return asThis();</span>
+        }
+        public B setHelpAppendable(final HelpAppendable helpAppendable) {
+<span class="nc" id="L44">            this.helpAppendable =</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                    helpAppendable != null ? helpAppendable : TextHelpAppendable.systemOut();</span>
+<span class="nc" id="L46">            return asThis();</span>
+        }
+        public B setOptionFormatBuilder(final OptionFormatter.Builder optionFormatBuilder) {
+<span class="nc" id="L49">            this.optionFormatBuilder =</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">                    optionFormatBuilder != null ? optionFormatBuilder : OptionFormatter.builder();</span>
+<span class="nc" id="L51">            return asThis();</span>
+        }
+        public B setOptionGroupSeparator(final String optionGroupSeparator) {
+<span class="nc" id="L54">            this.optionGroupSeparator = Util.defaultValue(optionGroupSeparator, &quot;&quot;);</span>
+<span class="nc" id="L55">            return asThis();</span>
+        }
+    }
+<span class="nc" id="L58">    public static final Comparator&lt;Option&gt; DEFAULT_COMPARATOR =</span>
+<span class="nc" id="L59">            (opt1, opt2) -&gt; opt1.getKey().compareToIgnoreCase(opt2.getKey());</span>
+    public static final String DEFAULT_OPTION_GROUP_SEPARATOR = &quot; | &quot;;
+    public static final String DEFAULT_SYNTAX_PREFIX = &quot;usage: &quot;;
+    private final Comparator&lt;Option&gt; comparator;
+    private final HelpAppendable helpAppendable;
+    private final OptionFormatter.Builder optionFormatBuilder;
+    private final String optionGroupSeparator;
+<span class="nc" id="L66">    private String syntaxPrefix = DEFAULT_SYNTAX_PREFIX;</span>
+<span class="nc" id="L67">    protected AbstractHelpFormatter(final Builder&lt;?, ?&gt; builder) {</span>
+<span class="nc" id="L68">        this.helpAppendable = Objects.requireNonNull(builder.getHelpAppendable(), &quot;helpAppendable&quot;);</span>
+<span class="nc" id="L69">        this.optionFormatBuilder =</span>
+<span class="nc" id="L70">                Objects.requireNonNull(builder.getOptionFormatBuilder(), &quot;optionFormatBuilder&quot;);</span>
+<span class="nc" id="L71">        this.comparator = Objects.requireNonNull(builder.getComparator(), &quot;comparator&quot;);</span>
+<span class="nc" id="L72">        this.optionGroupSeparator = Util.defaultValue(builder.getOptionGroupSeparator(), &quot;&quot;);</span>
+<span class="nc" id="L73">    }</span>
+    protected Comparator&lt;Option&gt; getComparator() {
+<span class="nc" id="L75">        return comparator;</span>
+    }
+    protected HelpAppendable getHelpAppendable() {
+<span class="nc" id="L78">        return helpAppendable;</span>
+    }
+    protected OptionFormatter.Builder getOptionFormatBuilder() {
+<span class="nc" id="L81">        return optionFormatBuilder;</span>
+    }
+    public final OptionFormatter getOptionFormatter(final Option option) {
+<span class="nc" id="L84">        return optionFormatBuilder.build(option);</span>
+    }
+    protected String getOptionGroupSeparator() {
+<span class="nc" id="L87">        return optionGroupSeparator;</span>
+    }
+    public final HelpAppendable getSerializer() {
+<span class="nc" id="L90">        return helpAppendable;</span>
+    }
+    public final String getSyntaxPrefix() {
+<span class="nc" id="L93">        return syntaxPrefix;</span>
+    }
+    protected abstract TableDefinition getTableDefinition(Iterable&lt;Option&gt; options);
+    public void printHelp(
+            final String cmdLineSyntax,
+            final String header,
+            final Iterable&lt;Option&gt; options,
+            final String footer,
+            final boolean autoUsage)
+            throws IOException {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (Util.isEmpty(cmdLineSyntax)) {</span>
+<span class="nc" id="L104">            throw new IllegalArgumentException(&quot;cmdLineSyntax not provided&quot;);</span>
+        }
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (autoUsage) {</span>
+<span class="nc" id="L107">            helpAppendable.appendParagraphFormat(</span>
+<span class="nc" id="L108">                    &quot;%s %s %s&quot;, syntaxPrefix, cmdLineSyntax, toSyntaxOptions(options));</span>
+        } else {
+<span class="nc" id="L110">            helpAppendable.appendParagraphFormat(&quot;%s %s&quot;, syntaxPrefix, cmdLineSyntax);</span>
+        }
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (!Util.isEmpty(header)) {</span>
+<span class="nc" id="L113">            helpAppendable.appendParagraph(header);</span>
+        }
+<span class="nc" id="L115">        helpAppendable.appendTable(getTableDefinition(options));</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        if (!Util.isEmpty(footer)) {</span>
+<span class="nc" id="L117">            helpAppendable.appendParagraph(footer);</span>
+        }
+<span class="nc" id="L119">    }</span>
+    public final void printHelp(
+            final String cmdLineSyntax,
+            final String header,
+            final Options options,
+            final String footer,
+            final boolean autoUsage)
+            throws IOException {
+<span class="nc" id="L127">        printHelp(cmdLineSyntax, header, options.getOptions(), footer, autoUsage);</span>
+<span class="nc" id="L128">    }</span>
+    public final void printOptions(final Iterable&lt;Option&gt; options) throws IOException {
+<span class="nc" id="L130">        printOptions(getTableDefinition(options));</span>
+<span class="nc" id="L131">    }</span>
+    public final void printOptions(final Options options) throws IOException {
+<span class="nc" id="L133">        printOptions(options.getOptions());</span>
+<span class="nc" id="L134">    }</span>
+    public final void printOptions(final TableDefinition tableDefinition) throws IOException {
+<span class="nc" id="L136">        helpAppendable.appendTable(tableDefinition);</span>
+<span class="nc" id="L137">    }</span>
+    public final void setSyntaxPrefix(final String prefix) {
+<span class="nc" id="L139">        this.syntaxPrefix = prefix;</span>
+<span class="nc" id="L140">    }</span>
+    public List&lt;Option&gt; sort(final Iterable&lt;Option&gt; options) {
+<span class="nc" id="L142">        final List&lt;Option&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (options != null) {</span>
+<span class="nc" id="L144">            options.forEach(result::add);</span>
+<span class="nc" id="L145">            result.sort(comparator);</span>
+        }
+<span class="nc" id="L147">        return result;</span>
+    }
+    public List&lt;Option&gt; sort(final Options options) {
+<span class="nc bnc" id="L150" title="All 2 branches missed.">        return sort(options == null ? null : options.getOptions());</span>
+    }
+    public final String toArgName(final String argName) {
+<span class="nc" id="L153">        return optionFormatBuilder.toArgName(argName);</span>
+    }
+    public String toSyntaxOptions(final Iterable&lt;Option&gt; options) {
+<span class="nc" id="L156">        return toSyntaxOptions(options, o -&gt; null);</span>
+    }
+    protected String toSyntaxOptions(
+            final Iterable&lt;Option&gt; options, final Function&lt;Option, OptionGroup&gt; lookup) {
+<span class="nc" id="L160">        final Collection&lt;OptionGroup&gt; processedGroups = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L161">        final List&lt;Option&gt; optList = sort(options);</span>
+<span class="nc" id="L162">        final StringBuilder buff = new StringBuilder();</span>
+<span class="nc" id="L163">        String prefix = &quot;&quot;;</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">        for (final Option option : optList) {</span>
+<span class="nc" id="L165">            final OptionGroup group = lookup.apply(option);</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            if (group != null) {</span>
+<span class="nc bnc" id="L167" title="All 2 branches missed.">                if (!processedGroups.contains(group)) {</span>
+<span class="nc" id="L168">                    processedGroups.add(group);</span>
+<span class="nc" id="L169">                    buff.append(prefix).append(toSyntaxOptions(group));</span>
+<span class="nc" id="L170">                    prefix = &quot; &quot;;</span>
+                }
+            }
+            else {
+<span class="nc" id="L174">                buff.append(prefix).append(optionFormatBuilder.build(option).toSyntaxOption());</span>
+<span class="nc" id="L175">                prefix = &quot; &quot;;</span>
+            }
+<span class="nc" id="L177">        }</span>
+<span class="nc" id="L178">        return buff.toString();</span>
+    }
+    public String toSyntaxOptions(final OptionGroup group) {
+<span class="nc" id="L181">        final StringBuilder buff = new StringBuilder();</span>
+<span class="nc" id="L182">        final List&lt;Option&gt; optList = sort(group.getOptions());</span>
+<span class="nc" id="L183">        OptionFormatter formatter = null;</span>
+<span class="nc" id="L184">        final Iterator&lt;Option&gt; iter = optList.iterator();</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">        while (iter.hasNext()) {</span>
+<span class="nc" id="L186">            formatter = optionFormatBuilder.build(iter.next());</span>
+<span class="nc" id="L187">            buff.append(formatter.toSyntaxOption(true));</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            if (iter.hasNext()) {</span>
+<span class="nc" id="L189">                buff.append(optionGroupSeparator);</span>
+            }
+        }
+<span class="nc bnc" id="L192" title="All 2 branches missed.">        if (formatter != null) {</span>
+<span class="nc bnc" id="L193" title="All 2 branches missed.">            return group.isRequired() ? buff.toString() : formatter.toOptional(buff.toString());</span>
+        }
+<span class="nc" id="L195">        return &quot;&quot;;</span>
+    }
+    public String toSyntaxOptions(final Options options) {
+<span class="nc" id="L198">        return toSyntaxOptions(options.getOptions(), options::getOptionGroup);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

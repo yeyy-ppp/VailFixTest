@@ -1,0 +1,18 @@
+[2026-01-19 17:44:17] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: appendFormat, appendHeader, appendList, appendParagraph, appendParagraphFormat, appendTable, appendTitle
+  未覆盖: 全部覆盖
+
+[2026-01-20 09:46:22] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: appendFormat, appendHeader, appendList, appendParagraph, appendParagraphFormat, appendTable, appendTitle
+  未覆盖: 全部覆盖
+
+[2026-01-20 10:45:56] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: appendFormat, appendHeader, appendList, appendParagraph, appendParagraphFormat, appendTable, appendTitle
+  未覆盖: 全部覆盖
+

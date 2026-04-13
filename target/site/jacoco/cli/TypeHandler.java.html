@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeHandler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">TypeHandler.java</span></div><h1>TypeHandler.java</h1><pre class="source lang-java linenums">package cli;
+import java.io.File;
+import java.io.FileInputStream;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.net.URL;
+import java.nio.file.Path;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+public class TypeHandler {
+<span class="fc" id="L13">    private static final TypeHandler DEFAULT = new TypeHandler();</span>
+    private static final int HEX_RADIX = 16;
+    public static Class&lt;?&gt; createClass(final String className) throws ParseException {
+<span class="fc" id="L16">        return createValue(className, Class.class);</span>
+    }
+    public static Date createDate(final String string) {
+<span class="nc" id="L19">        return createValueUnchecked(string, Date.class);</span>
+    }
+    public static Map&lt;Class&lt;?&gt;, Converter&lt;?, ? extends Throwable&gt;&gt; createDefaultMap() {
+<span class="fc" id="L22">        return putDefaultMap(new HashMap&lt;&gt;());</span>
+    }
+    public static File createFile(final String string) {
+<span class="fc" id="L25">        return createValueUnchecked(string, File.class);</span>
+    }
+    @Deprecated
+    public static File[] createFiles(final String string) {
+<span class="nc" id="L29">        throw new UnsupportedOperationException(&quot;Not yet implemented&quot;);</span>
+    }
+    @Deprecated
+    public static Number createNumber(final String string) throws ParseException {
+<span class="nc" id="L33">        return createValue(string, Number.class);</span>
+    }
+    @Deprecated
+    public static Object createObject(final String className) throws ParseException {
+<span class="nc" id="L37">        return createValue(className, Object.class);</span>
+    }
+    public static URL createURL(final String string) throws ParseException {
+<span class="fc" id="L40">        return createValue(string, URL.class);</span>
+    }
+    public static &lt;T&gt; T createValue(final String string, final Class&lt;T&gt; clazz) throws ParseException {
+        try {
+<span class="fc" id="L44">            return getDefault().getConverter(clazz).apply(string);</span>
+<span class="fc" id="L45">        } catch (final Exception e) {</span>
+<span class="fc" id="L46">            throw ParseException.wrap(e);</span>
+        }
+    }
+    @Deprecated
+    public static Object createValue(final String string, final Object obj) throws ParseException {
+<span class="nc" id="L51">        return createValue(string, (Class&lt;?&gt;) obj);</span>
+    }
+    private static &lt;T&gt; T createValueUnchecked(final String string, final Class&lt;T&gt; clazz) {
+        try {
+<span class="fc" id="L55">            return createValue(string, clazz);</span>
+<span class="fc" id="L56">        } catch (final ParseException e) {</span>
+<span class="fc" id="L57">            throw new IllegalArgumentException(e);</span>
+        }
+    }
+    public static TypeHandler getDefault() {
+<span class="fc" id="L61">        return DEFAULT;</span>
+    }
+    @Deprecated
+    public static FileInputStream openFile(final String string) throws ParseException {
+<span class="nc" id="L65">        return createValue(string, FileInputStream.class);</span>
+    }
+    private static Map&lt;Class&lt;?&gt;, Converter&lt;?, ? extends Throwable&gt;&gt; putDefaultMap(
+            final Map&lt;Class&lt;?&gt;, Converter&lt;?, ? extends Throwable&gt;&gt; map) {
+<span class="fc" id="L69">        map.put(Object.class, Converter.OBJECT);</span>
+<span class="fc" id="L70">        map.put(Class.class, Converter.CLASS);</span>
+<span class="fc" id="L71">        map.put(Date.class, Converter.DATE);</span>
+<span class="fc" id="L72">        map.put(File.class, Converter.FILE);</span>
+<span class="fc" id="L73">        map.put(Path.class, Converter.PATH);</span>
+<span class="fc" id="L74">        map.put(Number.class, Converter.NUMBER);</span>
+<span class="fc" id="L75">        map.put(URL.class, Converter.URL);</span>
+<span class="fc" id="L76">        map.put(FileInputStream.class, FileInputStream::new);</span>
+<span class="fc" id="L77">        map.put(Long.class, Long::parseLong);</span>
+<span class="fc" id="L78">        map.put(Integer.class, Integer::parseInt);</span>
+<span class="fc" id="L79">        map.put(Short.class, Short::parseShort);</span>
+<span class="fc" id="L80">        map.put(Byte.class, Byte::parseByte);</span>
+<span class="fc" id="L81">        map.put(</span>
+                Character.class,
+                s -&gt;
+<span class="fc bfc" id="L84" title="All 2 branches covered.">                        s.startsWith(&quot;\\u&quot;)</span>
+<span class="fc" id="L85">                                ? Character.toChars(Integer.parseInt(s.substring(2), HEX_RADIX))[0]</span>
+<span class="fc" id="L86">                                : s.charAt(0));</span>
+<span class="fc" id="L87">        map.put(Double.class, Double::parseDouble);</span>
+<span class="fc" id="L88">        map.put(Float.class, Float::parseFloat);</span>
+<span class="fc" id="L89">        map.put(BigInteger.class, BigInteger::new);</span>
+<span class="fc" id="L90">        map.put(BigDecimal.class, BigDecimal::new);</span>
+<span class="fc" id="L91">        return map;</span>
+    }
+    private final Map&lt;Class&lt;?&gt;, Converter&lt;?, ? extends Throwable&gt;&gt; converterMap;
+    public TypeHandler() {
+<span class="fc" id="L95">        this(createDefaultMap());</span>
+<span class="fc" id="L96">    }</span>
+<span class="fc" id="L97">    public TypeHandler(final Map&lt;Class&lt;?&gt;, Converter&lt;?, ? extends Throwable&gt;&gt; converterMap) {</span>
+<span class="fc" id="L98">        this.converterMap = Objects.requireNonNull(converterMap, &quot;converterMap&quot;);</span>
+<span class="fc" id="L99">    }</span>
+    @SuppressWarnings(&quot;unchecked&quot;) // returned value will have type T because it is fixed by clazz
+    public &lt;T&gt; Converter&lt;T, ?&gt; getConverter(final Class&lt;T&gt; clazz) {
+<span class="fc" id="L102">        return (Converter&lt;T, ?&gt;) converterMap.getOrDefault(clazz, Converter.DEFAULT);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

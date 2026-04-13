@@ -1,0 +1,35 @@
+```
+包路径：cli
+类名：PosixParser
+父类：Parser
+依赖类：Option,Options,ParseException,DefaultParser,AmbiguousOptionException,Util
+---
+序号：1
+方法名：PosixParser()
+返回类型：无
+功能描述：构造一个PosixParser实例
+序号：2
+方法名：burstToken(String, boolean)
+返回类型：void
+功能描述：将短选项令牌拆分为单个选项
+序号：3
+方法名：flatten(Options, String[], boolean)
+返回类型：String[]
+功能描述：将命令行参数数组解析为令牌数组
+序号：4
+方法名：gobble(Iterator<String>)
+返回类型：void
+功能描述：消耗剩余所有参数（当eatTheRest标志为true时）
+序号：5
+方法名：init()
+返回类型：void
+功能描述：初始化解析器状态
+序号：6
+方法名：processNonOptionToken(String, boolean)
+返回类型：void
+功能描述：处理非选项令牌
+序号：7
+方法名：processOptionToken(String, boolean)
+返回类型：void
+功能描述：处理选项令牌
+```

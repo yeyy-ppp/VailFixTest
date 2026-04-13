@@ -1,0 +1,49 @@
+包路径：lang3
+类名：ArrayFill
+父类：无
+依赖类：lang3.function.FailableIntFunction
+---
+序号：1
+方法名：fill(boolean[], boolean)
+返回类型：boolean[]
+功能描述：用指定值填充布尔数组
+序号：2
+方法名：fill(byte[], byte)
+返回类型：byte[]
+功能描述：用指定值填充字节数组
+序号：3
+方法名：fill(char[], char)
+返回类型：char[]
+功能描述：用指定值填充字符数组
+序号：4
+方法名：fill(double[], double)
+返回类型：double[]
+功能描述：用指定值填充双精度浮点数数组
+序号：5
+方法名：fill(float[], float)
+返回类型：float[]
+功能描述：用指定值填充单精度浮点数数组
+序号：6
+方法名：fill(int[], int)
+返回类型：int[]
+功能描述：用指定值填充整数数组
+序号：7
+方法名：fill(long[], long)
+返回类型：long[]
+功能描述：用指定值填充长整数数组
+序号：8
+方法名：fill(short[], short)
+返回类型：short[]
+功能描述：用指定值填充短整数数组
+序号：9
+方法名：fill(T[], FailableIntFunction)
+返回类型：T[]
+功能描述：用生成器函数填充数组的每个元素
+序号：10
+方法名：fill(T[], T)
+返回类型：T[]
+功能描述：用指定值填充对象数组
+序号：11
+方法名：ArrayFill()
+返回类型：void
+功能描述：私有构造函数

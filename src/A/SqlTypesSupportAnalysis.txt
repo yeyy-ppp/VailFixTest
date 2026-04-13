@@ -1,0 +1,11 @@
+```
+包路径：gson.internal.sql
+类名：SqlTypesSupport
+父类：无
+依赖类：TypeAdapterFactory,DateType,SqlDateTypeAdapter,SqlTimeTypeAdapter,SqlTimestampTypeAdapter
+---
+序号：1
+方法名：SqlTypesSupport()
+返回类型：void
+功能描述：私有构造方法，防止类实例化
+```

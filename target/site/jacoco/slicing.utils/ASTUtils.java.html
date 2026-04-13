@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ASTUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.utils</a> &gt; <span class="el_source">ASTUtils.java</span></div><h1>ASTUtils.java</h1><pre class="source lang-java linenums">package slicing.utils;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.SwitchNode;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.type.PrimitiveType;
+import com.github.javaparser.ast.type.Type;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedConstructorDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedMethodDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedReferenceTypeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
+import com.github.javaparser.symbolsolver.model.typesystem.ReferenceTypeImpl;
+import lombok.var;
+import slicing.graphs.ClassGraph;
+import slicing.nodes.GraphNode;
+
+import java.util.*;
+
+/** JavaParser-related utility functions. */
+public class ASTUtils {
+<span class="nc" id="L26">    private ASTUtils() {</span>
+<span class="nc" id="L27">        throw new UnsupportedOperationException(&quot;This is a static, utility class&quot;);</span>
+    }
+
+    public static boolean switchHasDefaultCase(SwitchNode switchNode) {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        return switchGetDefaultCase(switchNode) != null;</span>
+    }
+
+    public static SwitchEntry switchGetDefaultCase(SwitchNode switchNode) {
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (SwitchEntry entry : switchNode.getEntries())</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            if (entry.getLabels().isEmpty())</span>
+<span class="nc" id="L37">                return entry;</span>
+<span class="nc" id="L38">        return null;</span>
+    }
+
+    /** @see #equalsWithRange(Node, Node) */
+    public static boolean equalsWithRange(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; n1, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; n2) {
+<span class="nc" id="L43">        return equalsWithRange((Node) n1, (Node) n2);</span>
+    }
+
+    /** @see #equalsWithRange(Node, Node) */
+    public static boolean equalsWithRange(Node n1, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; n2) {
+<span class="nc" id="L48">        return equalsWithRange(n1, (Node) n2);</span>
+    }
+
+    /** Compares two JavaParser nodes and their ranges (position in the file). If you need to compare between nodes
+     *  from different files, you may want to use {@link #equalsWithRangeInCU(Node, Node)} */
+    public static boolean equalsWithRange(Node n1, Node n2) {
+<span class="nc bnc" id="L54" title="All 4 branches missed.">        if (n1 == null || n2 == null)</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">            return n1 == n2;</span>
+<span class="nc bnc" id="L56" title="All 4 branches missed.">        return Objects.equals(n1.getRange(), n2.getRange()) &amp;&amp; Objects.equals(n1, n2);</span>
+    }
+
+    /** Compares two JavaParser nodes, their ranges (position in the file) and compilation units (file they're in).
+     *  If the nodes belong to the same CU or have no CU, you can use {@link #equalsWithRange(Node, Node)}*/
+    public static boolean equalsWithRangeInCU(Node n1, Node n2) {
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        if (n1 == null || n2 == null)</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            return n1 == n2;</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        return n1.findCompilationUnit().equals(n2.findCompilationUnit())</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                &amp;&amp; equalsWithRange(n1, n2);</span>
+    }
+
+    public static boolean resolvableIsVoid(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L69">        var resolved = call.resolve();</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (resolved instanceof ResolvedMethodDeclaration)</span>
+<span class="nc" id="L71">            return ((ResolvedMethodDeclaration) resolved).getReturnType().isVoid();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        if (resolved instanceof ResolvedConstructorDeclaration)</span>
+<span class="nc" id="L73">            return false;</span>
+<span class="nc" id="L74">        throw new IllegalArgumentException(&quot;Call didn't resolve to either method or constructor!&quot;);</span>
+    }
+
+    public static boolean declarationReturnIsObject(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (declaration.isMethodDeclaration())</span>
+<span class="nc" id="L79">            return declaration.asMethodDeclaration().getType().isClassOrInterfaceType();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        if (declaration.isConstructorDeclaration())</span>
+<span class="nc" id="L81">            return true;</span>
+<span class="nc" id="L82">        throw new IllegalArgumentException(&quot;Declaration wasn't method or constructor&quot;);</span>
+    }
+
+    public static int getMatchingParameterIndex(CallableDeclaration&lt;?&gt; declaration, String paramName) {
+<span class="nc" id="L86">        var parameters = declaration.getParameters();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (int i = 0; i &lt; parameters.size(); i++)</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (parameters.get(i).getNameAsString().equals(paramName))</span>
+<span class="nc" id="L89">                return i;</span>
+<span class="nc" id="L90">        throw new IllegalArgumentException(&quot;Expression resolved to a parameter, but could not be found!&quot;);</span>
+    }
+
+    public static List&lt;Expression&gt; getResolvableArgs(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (call instanceof MethodCallExpr)</span>
+<span class="nc" id="L95">            return ((MethodCallExpr) call).getArguments();</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (call instanceof ObjectCreationExpr)</span>
+<span class="nc" id="L97">            return ((ObjectCreationExpr) call).getArguments();</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (call instanceof ExplicitConstructorInvocationStmt)</span>
+<span class="nc" id="L99">            return ((ExplicitConstructorInvocationStmt) call).getArguments();</span>
+<span class="nc" id="L100">        throw new IllegalArgumentException(&quot;Call wasn't of a compatible type!&quot;);</span>
+    }
+
+    public static boolean hasBody(CallableDeclaration&lt;?&gt; callableDeclaration) {
+<span class="nc bnc" id="L104" title="All 2 branches missed.">        if (callableDeclaration instanceof MethodDeclaration)</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">            return ((MethodDeclaration) callableDeclaration).getBody().isPresent()</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                    &amp;&amp; !((MethodDeclaration) callableDeclaration).getBody().get().isEmptyStmt();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (callableDeclaration instanceof ConstructorDeclaration)</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            return !((ConstructorDeclaration) callableDeclaration).getBody().isEmptyStmt();</span>
+<span class="nc" id="L109">        throw new IllegalStateException(&quot;Invalid type of callable declaration&quot;);</span>
+    }
+
+    public static BlockStmt getCallableBody(CallableDeclaration&lt;?&gt; callableDeclaration) {
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (callableDeclaration instanceof MethodDeclaration)</span>
+<span class="nc" id="L114">            return ((MethodDeclaration) callableDeclaration).getBody().orElseThrow(() -&gt; new IllegalStateException(&quot;Graph creation is not allowed for abstract or native methods!&quot;));</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (callableDeclaration instanceof ConstructorDeclaration)</span>
+<span class="nc" id="L116">            return ((ConstructorDeclaration) callableDeclaration).getBody();</span>
+<span class="nc" id="L117">        throw new IllegalStateException(&quot;Invalid type of callable declaration!&quot;);</span>
+    }
+
+    /** Compute the resolved type that is returned from a given method call. */
+    public static ResolvedType getCallResolvedType(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc bnc" id="L122" title="All 2 branches missed.">        if (call instanceof MethodCallExpr)</span>
+<span class="nc" id="L123">            return ((MethodCallExpr) call).calculateResolvedType();</span>
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        if (call instanceof ObjectCreationExpr)</span>
+<span class="nc" id="L125">            return ((ObjectCreationExpr) call).calculateResolvedType();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (call instanceof ExplicitConstructorInvocationStmt)</span>
+<span class="nc" id="L127">            return resolvedTypeDeclarationToResolvedType(((ExplicitConstructorInvocationStmt) call).resolve().declaringType());</span>
+<span class="nc" id="L128">        throw new IllegalArgumentException(&quot;Call wasn't of a compatible type!&quot;);</span>
+    }
+
+    public static Optional&lt;Expression&gt; getResolvableScope(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (call instanceof MethodCallExpr)</span>
+<span class="nc" id="L133">            return ((MethodCallExpr) call).getScope();</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">        if (call instanceof ObjectCreationExpr)</span>
+<span class="nc" id="L135">            return ((ObjectCreationExpr) call).getScope();</span>
+<span class="nc bnc" id="L136" title="All 2 branches missed.">        if (call instanceof ExplicitConstructorInvocationStmt)</span>
+<span class="nc" id="L137">            return Optional.empty();</span>
+<span class="nc" id="L138">        throw new IllegalArgumentException(&quot;Call wasn't of a compatible type!&quot;);</span>
+    }
+
+    public static Optional&lt;? extends CallableDeclaration&lt;?&gt;&gt; getResolvedAST(ResolvedMethodLikeDeclaration resolvedDeclaration) {
+<span class="nc bnc" id="L142" title="All 2 branches missed.">        if (resolvedDeclaration instanceof ResolvedMethodDeclaration)</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (!((ResolvedMethodDeclaration) resolvedDeclaration).toAst().isPresent()) {</span>
+<span class="nc" id="L144">                return Optional.ofNullable(ClassGraph.getInstance().getMethodDeclarationBySig(processSignature(resolvedDeclaration.getQualifiedSignature())));</span>
+            } else {
+<span class="nc" id="L146">                return ((ResolvedMethodDeclaration) resolvedDeclaration).toAst();</span>
+            }
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        if (resolvedDeclaration instanceof ResolvedConstructorDeclaration)</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            if (!((ResolvedConstructorDeclaration) resolvedDeclaration).toAst().isPresent()) {</span>
+<span class="nc" id="L150">                return Optional.ofNullable(ClassGraph.getInstance().getMethodDeclarationBySig(processSignature(resolvedDeclaration.getQualifiedSignature())));</span>
+            } else {
+<span class="nc" id="L152">                return ((ResolvedConstructorDeclaration) resolvedDeclaration).toAst();</span>
+            }
+<span class="nc" id="L154">        throw new IllegalStateException(&quot;AST node of invalid type&quot;);</span>
+    }
+
+    public static boolean shouldVisitArgumentsForMethodCalls(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+        try {
+<span class="nc bnc" id="L159" title="All 2 branches missed.">            return !getResolvedAST(call.resolve()).isPresent();</span>
+<span class="nc" id="L160">        } catch (Exception e) {</span>
+<span class="nc" id="L161">            return false;</span>
+        }
+    }
+
+    public static boolean shouldVisitArgumentsForMethodCalls(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, GraphNode&lt;?&gt; graphNode) {
+<span class="nc bnc" id="L166" title="All 4 branches missed.">        return shouldVisitArgumentsForMethodCalls(call) || graphNode == null;</span>
+    }
+
+    public static boolean shouldInsertExplicitConstructorInvocation(ConstructorDeclaration declaration) {
+<span class="nc" id="L170">        NodeList&lt;Statement&gt; statements = declaration.getBody().getStatements();</span>
+<span class="nc" id="L171">        TypeDeclaration&lt;?&gt; typeDeclaration = declaration.findAncestor(TypeDeclaration.class)</span>
+<span class="nc" id="L172">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No TypeDeclaration found in ancestors&quot;));</span>
+
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        if (typeDeclaration.isEnumDeclaration())</span>
+<span class="nc" id="L175">            return false;</span>
+
+<span class="nc bnc" id="L177" title="All 4 branches missed.">        return statements.isEmpty() || !statements.get(0).isExplicitConstructorInvocationStmt();</span>
+    }
+
+    public static boolean shouldInsertDynamicInitInEnum(ConstructorDeclaration declaration) {
+<span class="nc" id="L181">        NodeList&lt;Statement&gt; statements = declaration.getBody().getStatements();</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        return statements.isEmpty() ||</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                !statements.get(0).isExplicitConstructorInvocationStmt() ||</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                !statements.get(0).asExplicitConstructorInvocationStmt().isThis();</span>
+    }
+
+    /**
+     * Creates a new set that is suitable for JavaParser nodes. This
+     * set behaves by comparing by identity (==) instead of equality (equals()).
+     * Thus, multiple objects representing the same node will not be identified as
+     * equal, and duplicates will be inserted. For this use-case, you may use
+     * {@link NodeHashSet}.
+     */
+    public static &lt;T&gt; Set&lt;T&gt; newIdentityHashSet() {
+<span class="nc" id="L195">        return Collections.newSetFromMap(new IdentityHashMap&lt;&gt;());</span>
+    }
+
+    /**
+     * Creates a new map that is suitable for JavaParser nodes as keys. This
+     * map behaves by comparing by identity (==) instead of equality (equals()).
+     * Thus, multiple objects representing the same node will not be identified as
+     * equal, and duplicates will be inserted.
+     */
+    public static &lt;K, V&gt; Map&lt;K, V&gt; newIdentityHashMap() {
+<span class="nc" id="L205">        return new IdentityHashMap&lt;&gt;();</span>
+    }
+
+    /** Converts a type declaration into just a type. */
+    public static ResolvedType resolvedTypeDeclarationToResolvedType(ResolvedReferenceTypeDeclaration decl) {
+<span class="nc" id="L210">        return new ReferenceTypeImpl(decl, StaticTypeSolver.getTypeSolver());</span>
+    }
+
+    /**
+     * Whether a cast of reference type is a downcast; which means
+     * that the type of the cast is strictly more specific than the expression's static type.
+     * This method should only be called with cast expressions of reference type (no primitives).
+     * Otherwise it will fail.
+     * &lt;br/&gt;
+     * Examples:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@code (Object) new String()}: false.&lt;/li&gt;
+     *     &lt;li&gt;{@code (String) new String()}: false&lt;/li&gt;
+     *     &lt;li&gt;{@code (String) object}: true.&lt;/li&gt;
+     * &lt;/ul&gt;
+     */
+    public static boolean isDownCast(CastExpr castExpr) {
+<span class="nc" id="L227">        ResolvedType castType = castExpr.getType().resolve();</span>
+<span class="nc" id="L228">        ResolvedType exprType = castExpr.getExpression().calculateResolvedType();</span>
+<span class="nc bnc" id="L229" title="All 4 branches missed.">        if (castType.isReferenceType() &amp;&amp; exprType.isReferenceType()) {</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">            if (castType.equals(exprType))</span>
+<span class="nc" id="L231">                return false;</span>
+<span class="nc" id="L232">            return castType.asReferenceType().getAllAncestors().contains(exprType.asReferenceType());</span>
+        }
+<span class="nc" id="L234">        throw new IllegalArgumentException(&quot;This operation is only valid for reference type cast operations.&quot;);</span>
+    }
+
+    /** Generates the default initializer, given a field. In Java, reference types
+     *  default to null, booleans to false and all other primitives to 0. */
+    public static Expression initializerForField(FieldDeclaration field) {
+<span class="nc" id="L240">        Type type = field.getVariables().getFirst()</span>
+<span class="nc" id="L241">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No variable present in the list&quot;))</span>
+<span class="nc" id="L242">                .getType();</span>
+
+<span class="nc bnc" id="L244" title="All 2 branches missed.">        if (type.isReferenceType())</span>
+<span class="nc" id="L245">            return new NullLiteralExpr();</span>
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (type.isPrimitiveType()) {</span>
+<span class="nc" id="L247">            PrimitiveType primitive = type.asPrimitiveType();</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">            if (primitive.equals(PrimitiveType.booleanType()))</span>
+<span class="nc" id="L249">                return new BooleanLiteralExpr();</span>
+            else
+<span class="nc" id="L251">                return new IntegerLiteralExpr();</span>
+        }
+<span class="nc" id="L253">        throw new IllegalArgumentException(&quot;Invalid typing for a field&quot;);</span>
+    }
+
+    /** Returns a list with field declaration and initializers, which initialize statically or dynamically the type. */
+    public static List&lt;BodyDeclaration&lt;?&gt;&gt; getTypeInit(TypeDeclaration&lt;?&gt; type, boolean isStatic) {
+<span class="nc" id="L258">        List&lt;BodyDeclaration&lt;?&gt;&gt; typeInit = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L259" title="All 2 branches missed.">        for (BodyDeclaration&lt;?&gt; member : type.getMembers()) {</span>
+<span class="nc bnc" id="L260" title="All 4 branches missed.">            if (member.isFieldDeclaration() &amp;&amp; member.asFieldDeclaration().isStatic() == isStatic)</span>
+<span class="nc" id="L261">                typeInit.add(member);</span>
+<span class="nc bnc" id="L262" title="All 4 branches missed.">            if (member.isInitializerDeclaration() &amp;&amp; member.asInitializerDeclaration().isStatic() == isStatic)</span>
+<span class="nc" id="L263">                typeInit.add(member);</span>
+<span class="nc" id="L264">        }</span>
+<span class="nc" id="L265">        return typeInit;</span>
+    }
+
+    public static ResolvedType resolvedTypeOfCurrentClass(Node n) {
+<span class="nc" id="L269">        TypeDeclaration&lt;?&gt; typeDeclaration = n.findAncestor(TypeDeclaration.class).orElseThrow(() -&gt;</span>
+<span class="nc" id="L270">                new NoSuchElementException(&quot;No TypeDeclaration found in ancestors&quot;));</span>
+
+<span class="nc" id="L272">        return resolvedTypeDeclarationToResolvedType(typeDeclaration.resolve());</span>
+
+    }
+    public static String processSignature(String signature) {
+        // 找到参数列表的开始和结束位置
+<span class="nc" id="L277">        int start = signature.indexOf('(');</span>
+<span class="nc" id="L278">        int end = signature.indexOf(')');</span>
+
+        // 提取参数列表
+<span class="nc" id="L281">        String params = signature.substring(start + 1, end);</span>
+        // 分割参数
+<span class="nc" id="L283">        String[] paramTypes = params.split(&quot;,&quot;);</span>
+
+        // 处理每个参数，去除包名
+<span class="nc bnc" id="L286" title="All 2 branches missed.">        for (int i = 0; i &lt; paramTypes.length; i++) {</span>
+<span class="nc" id="L287">            String param = paramTypes[i].trim();</span>
+<span class="nc bnc" id="L288" title="All 2 branches missed.">            if (param.contains(&quot;.&quot;)) {</span>
+                // 找到最后一个点的位置
+<span class="nc" id="L290">                int lastDot = param.lastIndexOf('.');</span>
+                // 去除包名
+<span class="nc" id="L292">                paramTypes[i] = param.substring(lastDot + 1);</span>
+            }
+        }
+
+        // 重新组合参数列表
+<span class="nc" id="L297">        String newParams = String.join(&quot;, &quot;, paramTypes);</span>
+
+        // 组合最终的签名
+<span class="nc" id="L300">        String newSignature = signature.substring(0, start + 1) + newParams + signature.substring(end);</span>
+<span class="nc" id="L301">        return newSignature;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

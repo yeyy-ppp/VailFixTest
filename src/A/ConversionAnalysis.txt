@@ -1,0 +1,179 @@
+```
+包路径：lang3
+类名：Conversion
+父类：无
+依赖类：无
+---
+序号：1
+方法名：binaryBeMsb0ToHexDigit(boolean[] src)
+返回类型：char
+功能描述：将大端序布尔数组转换为十六进制字符
+序号：2
+方法名：binaryBeMsb0ToHexDigit(boolean[] src, int srcPos)
+返回类型：char
+功能描述：从指定位置将大端序布尔数组转换为十六进制字符
+序号：3
+方法名：binaryToByte(boolean[] src, int srcPos, byte dstInit, int dstPos, int nBools)
+返回类型：byte
+功能描述：将布尔数组片段转换为字节
+序号：4
+方法名：binaryToHexDigit(boolean[] src)
+返回类型：char
+功能描述：将布尔数组转换为十六进制字符
+序号：5
+方法名：binaryToHexDigit(boolean[] src, int srcPos)
+返回类型：char
+功能描述：从指定位置将布尔数组转换为十六进制字符
+序号：6
+方法名：binaryToHexDigitMsb0_4bits(boolean[] src)
+返回类型：char
+功能描述：将4位MSB0布尔数组转换为十六进制字符
+序号：7
+方法名：binaryToHexDigitMsb0_4bits(boolean[] src, int srcPos)
+返回类型：char
+功能描述：从指定位置将4位MSB0布尔数组转换为十六进制字符
+序号：8
+方法名：binaryToInt(boolean[] src, int srcPos, int dstInit, int dstPos, int nBools)
+返回类型：int
+功能描述：将布尔数组片段转换为整数
+序号：9
+方法名：binaryToLong(boolean[] src, int srcPos, long dstInit, int dstPos, int nBools)
+返回类型：long
+功能描述：将布尔数组片段转换为长整数
+序号：10
+方法名：binaryToShort(boolean[] src, int srcPos, short dstInit, int dstPos, int nBools)
+返回类型：short
+功能描述：将布尔数组片段转换为短整数
+序号：11
+方法名：byteArrayToInt(byte[] src, int srcPos, int dstInit, int dstPos, int nBytes)
+返回类型：int
+功能描述：将字节数组片段转换为整数
+序号：12
+方法名：byteArrayToLong(byte[] src, int srcPos, long dstInit, int dstPos, int nBytes)
+返回类型：long
+功能描述：将字节数组片段转换为长整数
+序号：13
+方法名：byteArrayToShort(byte[] src, int srcPos, short dstInit, int dstPos, int nBytes)
+返回类型：short
+功能描述：将字节数组片段转换为短整数
+序号：14
+方法名：byteArrayToUuid(byte[] src, int srcPos)
+返回类型：UUID
+功能描述：将字节数组转换为UUID
+序号：15
+方法名：byteToBinary(byte src, int srcPos, boolean[] dst, int dstPos, int nBools)
+返回类型：boolean[]
+功能描述：将字节片段转换为布尔数组
+序号：16
+方法名：byteToHex(byte src, int srcPos, String dstInit, int dstPos, int nHexs)
+返回类型：String
+功能描述：将字节片段转换为十六进制字符串
+序号：17
+方法名：hexDigitMsb0ToBinary(char hexChar)
+返回类型：boolean[]
+功能描述：将MSB0十六进制字符转换为布尔数组
+序号：18
+方法名：hexDigitMsb0ToInt(char hexChar)
+返回类型：int
+功能描述：将MSB0十六进制字符转换为整数值
+序号：19
+方法名：hexDigitToBinary(char hexChar)
+返回类型：boolean[]
+功能描述：将十六进制字符转换为布尔数组
+序号：20
+方法名：hexDigitToInt(char hexChar)
+返回类型：int
+功能描述：将十六进制字符转换为整数值
+序号：21
+方法名：hexToByte(String src, int srcPos, byte dstInit, int dstPos, int nHex)
+返回类型：byte
+功能描述：将十六进制字符串片段转换为字节
+序号：22
+方法名：hexToInt(String src, int srcPos, int dstInit, int dstPos, int nHex)
+返回类型：int
+功能描述：将十六进制字符串片段转换为整数
+序号：23
+方法名：hexToLong(String src, int srcPos, long dstInit, int dstPos, int nHex)
+返回类型：long
+功能描述：将十六进制字符串片段转换为长整数
+序号：24
+方法名：hexToShort(String src, int srcPos, short dstInit, int dstPos, int nHex)
+返回类型：short
+功能描述：将十六进制字符串片段转换为短整数
+序号：25
+方法名：intArrayToLong(int[] src, int srcPos, long dstInit, int dstPos, int nInts)
+返回类型：long
+功能描述：将整数数组片段转换为长整数
+序号：26
+方法名：intToBinary(int src, int srcPos, boolean[] dst, int dstPos, int nBools)
+返回类型：boolean[]
+功能描述：将整数片段转换为布尔数组
+序号：27
+方法名：intToByteArray(int src, int srcPos, byte[] dst, int dstPos, int nBytes)
+返回类型：byte[]
+功能描述：将整数片段转换为字节数组
+序号：28
+方法名：intToHex(int src, int srcPos, String dstInit, int dstPos, int nHexs)
+返回类型：String
+功能描述：将整数片段转换为十六进制字符串
+序号：29
+方法名：intToHexDigit(int nibble)
+返回类型：char
+功能描述：将4位值转换为十六进制字符
+序号：30
+方法名：intToHexDigitMsb0(int nibble)
+返回类型：char
+功能描述：将4位值按MSB0顺序转换为十六进制字符
+序号：31
+方法名：intToShortArray(int src, int srcPos, short[] dst, int dstPos, int nShorts)
+返回类型：short[]
+功能描述：将整数片段转换为短整数数组
+序号：32
+方法名：longToBinary(long src, int srcPos, boolean[] dst, int dstPos, int nBools)
+返回类型：boolean[]
+功能描述：将长整数片段转换为布尔数组
+序号：33
+方法名：longToByteArray(long src, int srcPos, byte[] dst, int dstPos, int nBytes)
+返回类型：byte[]
+功能描述：将长整数片段转换为字节数组
+序号：34
+方法名：longToHex(long src, int srcPos, String dstInit, int dstPos, int nHexs)
+返回类型：String
+功能描述：将长整数片段转换为十六进制字符串
+序号：35
+方法名：longToIntArray(long src, int srcPos, int[] dst, int dstPos, int nInts)
+返回类型：int[]
+功能描述：将长整数片段转换为整数数组
+序号：36
+方法名：longToShortArray(long src, int srcPos, short[] dst, int dstPos, int nShorts)
+返回类型：short[]
+功能描述：将长整数片段转换为短整数数组
+序号：37
+方法名：shortArrayToInt(short[] src, int srcPos, int dstInit, int dstPos, int nShorts)
+返回类型：int
+功能描述：将短整数数组片段转换为整数
+序号：38
+方法名：shortArrayToLong(short[] src, int srcPos, long dstInit, int dstPos, int nShorts)
+返回类型：long
+功能描述：将短整数数组片段转换为长整数
+序号：39
+方法名：shortToBinary(short src, int srcPos, boolean[] dst, int dstPos, int nBools)
+返回类型：boolean[]
+功能描述：将短整数片段转换为布尔数组
+序号：40
+方法名：shortToByteArray(short src, int srcPos, byte[] dst, int dstPos, int nBytes)
+返回类型：byte[]
+功能描述：将短整数片段转换为字节数组
+序号：41
+方法名：shortToHex(short src, int srcPos, String dstInit, int dstPos, int nHexs)
+返回类型：String
+功能描述：将短整数片段转换为十六进制字符串
+序号：42
+方法名：uuidToByteArray(UUID src, byte[] dst, int dstPos, int nBytes)
+返回类型：byte[]
+功能描述：将UUID转换为字节数组
+序号：43
+方法名：Conversion()
+返回类型：void
+功能描述：已弃用的构造函数
+```

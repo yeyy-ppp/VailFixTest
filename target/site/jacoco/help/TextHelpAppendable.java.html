@@ -1,0 +1,282 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TextHelpAppendable.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">help</a> &gt; <span class="el_source">TextHelpAppendable.java</span></div><h1>TextHelpAppendable.java</h1><pre class="source lang-java linenums">package help;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Set;
+public class TextHelpAppendable extends FilterHelpAppendable {
+    public static final int DEFAULT_WIDTH = 74;
+    public static final int DEFAULT_LEFT_PAD = 1;
+    public static final int DEFAULT_INDENT = 3;
+    public static final int DEFAULT_LIST_INDENT = 7;
+    private static final String BLANK_LINE = &quot;&quot;;
+<span class="nc" id="L18">    private static final Set&lt;Character&gt; BREAK_CHAR_SET =</span>
+<span class="nc" id="L19">            Collections.unmodifiableSet(</span>
+                    new HashSet&lt;&gt;(
+<span class="nc" id="L21">                            Arrays.asList(</span>
+<span class="nc" id="L22">                                    '\t',</span>
+<span class="nc" id="L23">                                    '\n',</span>
+<span class="nc" id="L24">                                    '\f',</span>
+<span class="nc" id="L25">                                    '\r',</span>
+<span class="nc" id="L26">                                    (char) Character.LINE_SEPARATOR,</span>
+<span class="nc" id="L27">                                    (char) Character.PARAGRAPH_SEPARATOR,</span>
+<span class="nc" id="L28">                                    '\u000b',</span>
+<span class="nc" id="L29">                                    '\u001c',</span>
+<span class="nc" id="L30">                                    '\u001d',</span>
+<span class="nc" id="L31">                                    '\u001e',</span>
+<span class="nc" id="L32">                                    '\u001f'</span>
+                            )));
+    public static int indexOfWrap(final CharSequence text, final int width, final int startPos) {
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        if (width &lt; 1) {</span>
+<span class="nc" id="L36">            throw new IllegalArgumentException(&quot;Width must be greater than 0&quot;);</span>
+        }
+<span class="nc" id="L38">        final int limit = Math.min(startPos + width, text.length() - 1);</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        for (int idx = startPos; idx &lt; limit; idx++) {</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">            if (BREAK_CHAR_SET.contains(text.charAt(idx))) {</span>
+<span class="nc" id="L41">                return idx;</span>
+            }
+        }
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (startPos + width &gt;= text.length()) {</span>
+<span class="nc" id="L45">            return text.length();</span>
+        }
+        int pos;
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        for (pos = limit; pos &gt;= startPos; --pos) {</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">            if (Util.isWhitespace(text.charAt(pos))) {</span>
+<span class="nc" id="L50">                break;</span>
+            }
+        }
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        return pos &gt; startPos ? pos : limit - 1;</span>
+    }
+    protected static TextHelpAppendable systemOut() {
+<span class="nc" id="L56">        return new TextHelpAppendable(System.out);</span>
+    }
+    private final TextStyle.Builder textStyleBuilder;
+    public TextHelpAppendable(final Appendable output) {
+<span class="nc" id="L60">        super(output);</span>
+<span class="nc" id="L61">        textStyleBuilder =</span>
+<span class="nc" id="L62">                TextStyle.builder()</span>
+<span class="nc" id="L63">                        .setMaxWidth(DEFAULT_WIDTH)</span>
+<span class="nc" id="L64">                        .setLeftPad(DEFAULT_LEFT_PAD)</span>
+<span class="nc" id="L65">                        .setIndent(DEFAULT_INDENT);</span>
+<span class="nc" id="L66">    }</span>
+    protected TableDefinition adjustTableFormat(final TableDefinition table) {
+<span class="nc" id="L68">        final List&lt;TextStyle.Builder&gt; styleBuilders = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        for (int i = 0; i &lt; table.columnTextStyles().size(); i++) {</span>
+<span class="nc" id="L70">            final TextStyle style = table.columnTextStyles().get(i);</span>
+<span class="nc" id="L71">            final TextStyle.Builder builder = TextStyle.builder().setTextStyle(style);</span>
+<span class="nc" id="L72">            styleBuilders.add(builder);</span>
+<span class="nc" id="L73">            final String header = table.headers().get(i);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (style.getMaxWidth() &lt; header.length()</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                    || style.getMaxWidth() == TextStyle.UNSET_MAX_WIDTH) {</span>
+<span class="nc" id="L76">                builder.setMaxWidth(header.length());</span>
+            }
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            if (style.getMinWidth() &lt; header.length()) {</span>
+<span class="nc" id="L79">                builder.setMinWidth(header.length());</span>
+            }
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            for (final List&lt;String&gt; row : table.rows()) {</span>
+<span class="nc" id="L82">                final String cell = row.get(i);</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                if (cell.length() &gt; builder.getMaxWidth()) {</span>
+<span class="nc" id="L84">                    builder.setMaxWidth(cell.length());</span>
+                }
+<span class="nc" id="L86">            }</span>
+        }
+<span class="nc" id="L88">        int calcWidth = 0;</span>
+<span class="nc" id="L89">        int adjustedMaxWidth = textStyleBuilder.getMaxWidth();</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        for (final TextStyle.Builder builder : styleBuilders) {</span>
+<span class="nc" id="L91">            adjustedMaxWidth -= builder.getLeftPad();</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            if (builder.isScalable()) {</span>
+<span class="nc" id="L93">                calcWidth += builder.getMaxWidth();</span>
+            } else {
+<span class="nc" id="L95">                adjustedMaxWidth -= builder.getMaxWidth();</span>
+            }
+<span class="nc" id="L97">        }</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        if (calcWidth &gt; adjustedMaxWidth) {</span>
+<span class="nc" id="L99">            final double fraction = adjustedMaxWidth * 1.0 / calcWidth;</span>
+<span class="nc bnc" id="L100" title="All 2 branches missed.">            for (int i = 0; i &lt; styleBuilders.size(); i++) {</span>
+<span class="nc" id="L101">                final TextStyle.Builder builder = styleBuilders.get(i);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">                if (builder.isScalable()) {</span>
+<span class="nc" id="L103">                    styleBuilders.set(i, resize(builder, fraction));</span>
+                }
+            }
+        }
+<span class="nc" id="L107">        final List&lt;TextStyle&gt; styles = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        for (final TextStyle.Builder builder : styleBuilders) {</span>
+<span class="nc" id="L109">            styles.add(builder.get());</span>
+<span class="nc" id="L110">        }</span>
+<span class="nc" id="L111">        return TableDefinition.from(table.caption(), styles, table.headers(), table.rows());</span>
+    }
+    @Override
+    public void appendHeader(final int level, final CharSequence text) throws IOException {
+<span class="nc bnc" id="L115" title="All 2 branches missed.">        if (!Util.isEmpty(text)) {</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">            if (level &lt; 1) {</span>
+<span class="nc" id="L117">                throw new IllegalArgumentException(&quot;level must be at least 1&quot;);</span>
+            }
+<span class="nc" id="L119">            final char[] fillChars = {'=', '%', '+', '_'};</span>
+<span class="nc" id="L120">            final int idx = Math.min(level, fillChars.length) - 1;</span>
+<span class="nc" id="L121">            final TextStyle style = textStyleBuilder.get();</span>
+<span class="nc" id="L122">            final Queue&lt;String&gt; queue = makeColumnQueue(text, style);</span>
+<span class="nc" id="L123">            queue.add(</span>
+<span class="nc" id="L124">                    Util.repeatSpace(style.getLeftPad())</span>
+<span class="nc" id="L125">                            + Util.repeat(Math.min(text.length(), style.getMaxWidth()), fillChars[idx]));</span>
+<span class="nc" id="L126">            queue.add(BLANK_LINE);</span>
+<span class="nc" id="L127">            printQueue(queue);</span>
+        }
+<span class="nc" id="L129">    }</span>
+    @Override
+    public void appendList(final boolean ordered, final Collection&lt;CharSequence&gt; list)
+            throws IOException {
+<span class="nc bnc" id="L133" title="All 4 branches missed.">        if (list != null &amp;&amp; !list.isEmpty()) {</span>
+            final TextStyle.Builder builder =
+<span class="nc" id="L135">                    TextStyle.builder()</span>
+<span class="nc" id="L136">                            .setLeftPad(textStyleBuilder.getLeftPad())</span>
+<span class="nc" id="L137">                            .setIndent(DEFAULT_LIST_INDENT);</span>
+<span class="nc" id="L138">            int i = 1;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            for (final CharSequence line : list) {</span>
+                final String entry =
+<span class="nc bnc" id="L141" title="All 2 branches missed.">                        ordered</span>
+<span class="nc" id="L142">                                ? String.format(&quot; %s. %s&quot;, i++, Util.defaultValue(line, BLANK_LINE))</span>
+<span class="nc" id="L143">                                : String.format(&quot; * %s&quot;, Util.defaultValue(line, BLANK_LINE));</span>
+<span class="nc" id="L144">                builder.setMaxWidth(Math.min(textStyleBuilder.getMaxWidth(), entry.length()));</span>
+<span class="nc" id="L145">                printQueue(makeColumnQueue(entry, builder.get()));</span>
+<span class="nc" id="L146">            }</span>
+<span class="nc" id="L147">            output.append(System.lineSeparator());</span>
+        }
+<span class="nc" id="L149">    }</span>
+    @Override
+    public void appendParagraph(final CharSequence paragraph) throws IOException {
+<span class="nc bnc" id="L152" title="All 2 branches missed.">        if (!Util.isEmpty(paragraph)) {</span>
+<span class="nc" id="L153">            final Queue&lt;String&gt; queue = makeColumnQueue(paragraph, textStyleBuilder.get());</span>
+<span class="nc" id="L154">            queue.add(BLANK_LINE);</span>
+<span class="nc" id="L155">            printQueue(queue);</span>
+        }
+<span class="nc" id="L157">    }</span>
+    @Override
+    public void appendTable(final TableDefinition rawTable) throws IOException {
+<span class="nc" id="L160">        final TableDefinition table = adjustTableFormat(rawTable);</span>
+<span class="nc" id="L161">        appendParagraph(table.caption());</span>
+<span class="nc" id="L162">        final List&lt;TextStyle&gt; headerStyles = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L163" title="All 2 branches missed.">        for (final TextStyle style : table.columnTextStyles()) {</span>
+<span class="nc" id="L164">            headerStyles.add(</span>
+<span class="nc" id="L165">                    TextStyle.builder().setTextStyle(style).setAlignment(TextStyle.Alignment.CENTER).get());</span>
+<span class="nc" id="L166">        }</span>
+<span class="nc" id="L167">        writeColumnQueues(makeColumnQueues(table.headers(), headerStyles), headerStyles);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        for (final List&lt;String&gt; row : table.rows()) {</span>
+<span class="nc" id="L169">            writeColumnQueues(makeColumnQueues(row, table.columnTextStyles()), table.columnTextStyles());</span>
+<span class="nc" id="L170">        }</span>
+<span class="nc" id="L171">        output.append(System.lineSeparator());</span>
+<span class="nc" id="L172">    }</span>
+    @Override
+    public void appendTitle(final CharSequence title) throws IOException {
+<span class="nc bnc" id="L175" title="All 2 branches missed.">        if (!Util.isEmpty(title)) {</span>
+<span class="nc" id="L176">            final TextStyle style = textStyleBuilder.get();</span>
+<span class="nc" id="L177">            final Queue&lt;String&gt; queue = makeColumnQueue(title, style);</span>
+<span class="nc" id="L178">            queue.add(</span>
+<span class="nc" id="L179">                    Util.repeatSpace(style.getLeftPad())</span>
+<span class="nc" id="L180">                            + Util.repeat(Math.min(title.length(), style.getMaxWidth()), '#'));</span>
+<span class="nc" id="L181">            queue.add(BLANK_LINE);</span>
+<span class="nc" id="L182">            printQueue(queue);</span>
+        }
+<span class="nc" id="L184">    }</span>
+    public int getIndent() {
+<span class="nc" id="L186">        return textStyleBuilder.getIndent();</span>
+    }
+    public int getLeftPad() {
+<span class="nc" id="L189">        return textStyleBuilder.getLeftPad();</span>
+    }
+    public int getMaxWidth() {
+<span class="nc" id="L192">        return textStyleBuilder.getMaxWidth();</span>
+    }
+    public TextStyle.Builder getTextStyleBuilder() {
+<span class="nc" id="L195">        return textStyleBuilder;</span>
+    }
+    protected Queue&lt;String&gt; makeColumnQueue(final CharSequence columnData, final TextStyle style) {
+<span class="nc" id="L198">        final String lpad = Util.repeatSpace(style.getLeftPad());</span>
+<span class="nc" id="L199">        final String indent = Util.repeatSpace(style.getIndent());</span>
+<span class="nc" id="L200">        final Queue&lt;String&gt; result = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L201">        int wrapPos = 0;</span>
+        int nextPos;
+<span class="nc" id="L203">        final int wrappedMaxWidth = style.getMaxWidth() - indent.length();</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">        while (wrapPos &lt; columnData.length()) {</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            final int workingWidth = wrapPos == 0 ? style.getMaxWidth() : wrappedMaxWidth;</span>
+<span class="nc" id="L206">            nextPos = indexOfWrap(columnData, workingWidth, wrapPos);</span>
+<span class="nc" id="L207">            final CharSequence working = columnData.subSequence(wrapPos, nextPos);</span>
+<span class="nc bnc" id="L208" title="All 2 branches missed.">            result.add(lpad + style.pad(wrapPos &gt; 0, working));</span>
+<span class="nc" id="L209">            wrapPos = Util.indexOfNonWhitespace(columnData, nextPos);</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">            wrapPos = wrapPos == -1 ? nextPos : wrapPos;</span>
+<span class="nc" id="L211">        }</span>
+<span class="nc" id="L212">        return result;</span>
+    }
+    protected List&lt;Queue&lt;String&gt;&gt; makeColumnQueues(
+            final List&lt;String&gt; columnData, final List&lt;TextStyle&gt; styles) {
+<span class="nc" id="L216">        final List&lt;Queue&lt;String&gt;&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        for (int i = 0; i &lt; columnData.size(); i++) {</span>
+<span class="nc" id="L218">            result.add(makeColumnQueue(columnData.get(i), styles.get(i)));</span>
+        }
+<span class="nc" id="L220">        return result;</span>
+    }
+    private void printQueue(final Queue&lt;String&gt; queue) throws IOException {
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        for (final String s : queue) {</span>
+<span class="nc" id="L224">            appendFormat(&quot;%s%n&quot;, Util.rtrim(s));</span>
+<span class="nc" id="L225">        }</span>
+<span class="nc" id="L226">    }</span>
+    public void printWrapped(final String text) throws IOException {
+<span class="nc" id="L228">        printQueue(makeColumnQueue(text, this.textStyleBuilder.get()));</span>
+<span class="nc" id="L229">    }</span>
+    public void printWrapped(final String text, final TextStyle style) throws IOException {
+<span class="nc" id="L231">        printQueue(makeColumnQueue(text, style));</span>
+<span class="nc" id="L232">    }</span>
+    private int resize(final int orig, final double fraction) {
+<span class="nc" id="L234">        return (int) (orig * fraction);</span>
+    }
+    protected TextStyle.Builder resize(final TextStyle.Builder builder, final double fraction) {
+<span class="nc" id="L237">        final double indentFrac = builder.getIndent() * 1.0 / builder.getMaxWidth();</span>
+<span class="nc" id="L238">        builder.setMaxWidth(Math.max(resize(builder.getMaxWidth(), fraction), builder.getMinWidth()));</span>
+<span class="nc" id="L239">        final int maxAdjust = builder.getMaxWidth() / 3;</span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">        int newIndent = builder.getMaxWidth() == 1 ? 0 : builder.getIndent();</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">        if (newIndent &gt; maxAdjust) {</span>
+<span class="nc" id="L242">            newIndent = Math.min(resize(builder.getIndent(), indentFrac), maxAdjust);</span>
+        }
+<span class="nc" id="L244">        builder.setIndent(newIndent);</span>
+<span class="nc" id="L245">        return builder;</span>
+    }
+    public void setIndent(final int indent) {
+<span class="nc" id="L248">        textStyleBuilder.setIndent(indent);</span>
+<span class="nc" id="L249">    }</span>
+    public void setLeftPad(final int leftPad) {
+<span class="nc" id="L251">        textStyleBuilder.setLeftPad(leftPad);</span>
+<span class="nc" id="L252">    }</span>
+    public void setMaxWidth(final int maxWidth) {
+<span class="nc" id="L254">        textStyleBuilder.setMaxWidth(maxWidth);</span>
+<span class="nc" id="L255">    }</span>
+    protected void writeColumnQueues(
+            final List&lt;Queue&lt;String&gt;&gt; columnQueues, final List&lt;TextStyle&gt; styles) throws IOException {
+<span class="nc" id="L258">        boolean moreData = true;</span>
+<span class="nc" id="L259">        final String lPad = Util.repeatSpace(textStyleBuilder.get().getLeftPad());</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        while (moreData) {</span>
+<span class="nc" id="L261">            output.append(lPad);</span>
+<span class="nc" id="L262">            moreData = false;</span>
+<span class="nc bnc" id="L263" title="All 2 branches missed.">            for (int i = 0; i &lt; columnQueues.size(); i++) {</span>
+<span class="nc" id="L264">                final TextStyle style = styles.get(i);</span>
+<span class="nc" id="L265">                final Queue&lt;String&gt; columnQueue = columnQueues.get(i);</span>
+<span class="nc" id="L266">                final String line = columnQueue.poll();</span>
+<span class="nc bnc" id="L267" title="All 2 branches missed.">                if (Util.isEmpty(line)) {</span>
+<span class="nc" id="L268">                    int maxWidth = style.getMaxWidth();</span>
+<span class="nc bnc" id="L269" title="All 4 branches missed.">                    if (maxWidth == TextStyle.UNSET_MAX_WIDTH || maxWidth &lt; 0) {</span>
+<span class="nc" id="L270">                        maxWidth = 0;</span>
+                    }
+<span class="nc" id="L272">                    output.append(Util.repeatSpace(maxWidth + style.getLeftPad()));</span>
+<span class="nc" id="L273">                } else {</span>
+<span class="nc" id="L274">                    output.append(line);</span>
+                }
+<span class="nc bnc" id="L276" title="All 2 branches missed.">                moreData |= !columnQueue.isEmpty();</span>
+            }
+<span class="nc" id="L278">            output.append(System.lineSeparator());</span>
+        }
+<span class="nc" id="L280">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

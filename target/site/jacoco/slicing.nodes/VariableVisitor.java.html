@@ -1,0 +1,745 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>VariableVisitor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes</a> &gt; <span class="el_source">VariableVisitor.java</span></div><h1>VariableVisitor.java</h1><pre class="source lang-java linenums">package slicing.nodes;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.nodeTypes.NodeWithArguments;
+import com.github.javaparser.ast.stmt.*;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.AssociableToAST;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
+import com.github.javaparser.resolution.types.ResolvedType;
+import lombok.var;
+import slicing.graphs.ClassGraph;
+import slicing.graphs.ExpressionObjectTreeFinder;
+import slicing.graphs.GraphNodeContentVisitor;
+import slicing.nodes.VariableAction.DeclarationType;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.CallNode;
+import slicing.utils.ASTUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static slicing.graphs.cfg.CFGBuilder.VARIABLE_NAME_OUTPUT;
+import static slicing.graphs.exceptionsensitive.ESCFG.ACTIVE_EXCEPTION_VARIABLE;
+import static slicing.nodes.ObjectTree.ROOT_NODE;
+import static slicing.nodes.VariableAction.DeclarationType.*;
+import static slicing.nodes.VariableVisitor.Action.*;
+import static slicing.utils.Utils.arrayJoin;
+
+/** A graph node visitor that extracts the actions performed in a given GraphNode. An initial action mode can
+ *  be set, to consider variables found a declaration, definition or usage (default).
+ *  @see GraphNodeContentVisitor */
+<span class="nc" id="L37">public class VariableVisitor extends GraphNodeContentVisitor&lt;VariableVisitor.Action&gt; {</span>
+    /** The default action that a found variable performs. */
+<span class="nc" id="L39">    public enum Action {</span>
+<span class="nc" id="L40">        DECLARATION(true),</span>
+<span class="nc" id="L41">        DEFINITION(true),</span>
+<span class="nc" id="L42">        USE(true),</span>
+<span class="nc" id="L43">        OPT_DEFINITION(false),</span>
+<span class="nc" id="L44">        OPT_USE(false);</span>
+
+        /** Whether the action is performed in all executions of the node. */
+        private final boolean always;
+
+<span class="nc" id="L49">        Action(boolean always) {</span>
+<span class="nc" id="L50">            this.always = always;</span>
+<span class="nc" id="L51">        }</span>
+
+        /** Join multiple actions into one. */
+        public Action or(Action action) {
+<span class="nc bnc" id="L55" title="All 4 branches missed.">            if (action == DECLARATION || this == DECLARATION)</span>
+<span class="nc" id="L56">                return DECLARATION;</span>
+<span class="nc bnc" id="L57" title="All 6 branches missed.">            if (action == DEFINITION || this == DEFINITION || this == OPT_DEFINITION)</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                return always ? DEFINITION : OPT_DEFINITION;</span>
+<span class="nc" id="L59">            return this;</span>
+        }
+
+        public Action andUse() {
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            return always ? USE : OPT_USE;</span>
+        }
+
+        public boolean isUse() {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">            return this == USE || this == OPT_USE;</span>
+        }
+
+        public boolean isDefinition() {
+<span class="nc bnc" id="L71" title="All 4 branches missed.">            return this == DEFINITION || this == OPT_DEFINITION;</span>
+        }
+
+        public boolean isDeclaration() {
+<span class="nc bnc" id="L75" title="All 2 branches missed.">            return this == DECLARATION;</span>
+        }
+
+        public boolean isOptional() {
+<span class="nc bnc" id="L79" title="All 2 branches missed.">            return !always;</span>
+        }
+
+        public Action optional() {
+<span class="nc bnc" id="L83" title="All 4 branches missed.">            switch (this) {</span>
+                case OPT_DEFINITION:
+                case OPT_USE:
+<span class="nc" id="L86">                    return this;</span>
+                case USE:
+<span class="nc" id="L88">                    return OPT_USE;</span>
+                case DEFINITION:
+<span class="nc" id="L90">                    return OPT_DEFINITION;</span>
+                case DECLARATION:
+                default:
+<span class="nc" id="L93">                    throw new UnsupportedOperationException(&quot;Action unsupported&quot;);</span>
+            }
+        }
+    }
+
+    /** A stack with the last definition expression, to provide it when a variable definition is found. */
+<span class="nc" id="L99">    protected final Deque&lt;Expression&gt; definitionStack = new LinkedList&lt;&gt;();</span>
+    /** If this stack is non-empty, every action created must be of type Movable, and its real node must be
+     *  the top of this stack. Used for actual-in nodes. */
+<span class="nc" id="L102">    protected final Deque&lt;SyntheticNode&lt;?&gt;&gt; realNodeStack = new LinkedList&lt;&gt;();</span>
+
+    public void visitAsDefinition(Node node, Expression value, Action action) {
+<span class="nc" id="L105">        definitionStack.push(value);</span>
+<span class="nc" id="L106">        node.accept(this, action.or(DEFINITION));</span>
+<span class="nc" id="L107">        definitionStack.pop();</span>
+<span class="nc" id="L108">    }</span>
+
+    @Override
+    public void startVisit(GraphNode&lt;?&gt; node) {
+<span class="nc" id="L112">        startVisit(node, USE);</span>
+<span class="nc" id="L113">        generatePolyTrees(node);</span>
+<span class="nc" id="L114">    }</span>
+
+    @Override
+    public void visit(NameExpr n, Action action) {
+<span class="nc" id="L118">        String[] realName = getRealName(n);</span>
+<span class="nc bnc" id="L119" title="All 4 branches missed.">        if (realName.length == 1 &amp;&amp; realName[0].equals(n.toString())) {</span>
+<span class="nc" id="L120">            acceptAction(n, action);</span>
+        } else {
+<span class="nc" id="L122">            VariableAction va = acceptAction(DeclarationType.valueOf(n), realName, action);</span>
+<span class="nc" id="L123">            va.addExpression(n);</span>
+<span class="nc" id="L124">            va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass(n));</span>
+        }
+<span class="nc" id="L126">    }</span>
+
+    @Override
+    public void visit(ThisExpr n, Action arg) {
+<span class="nc" id="L130">        acceptAction(n, arg);</span>
+<span class="nc" id="L131">    }</span>
+
+    @Override
+    public void visit(SuperExpr n, Action arg) {
+<span class="nc" id="L135">        acceptAction(n, arg);</span>
+<span class="nc" id="L136">    }</span>
+
+    @Override
+    public void visit(FieldAccessExpr n, Action action) {
+        // Register the field access as action
+<span class="nc" id="L141">        Expression scope = n.getScope();</span>
+<span class="nc" id="L142">        boolean traverse = true;</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        while (traverse) {</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">            if (scope.isFieldAccessExpr())</span>
+<span class="nc" id="L145">                scope = scope.asFieldAccessExpr().getScope();</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            else if (scope.isEnclosedExpr())</span>
+<span class="nc" id="L147">                scope = scope.asEnclosedExpr().getInner();</span>
+<span class="nc bnc" id="L148" title="All 2 branches missed.">            else if (scope.isCastExpr())</span>
+<span class="nc" id="L149">                scope = scope.asCastExpr().getExpression();</span>
+            else
+<span class="nc" id="L151">                traverse = false;</span>
+        }
+        // Only accept the field access as action if it is a sequence of names (a.b.c.d, this.a.b.c)
+        // Otherwise, we traverse the scope to handle other structures (calls, arrays, etc).
+<span class="nc bnc" id="L155" title="All 4 branches missed.">        if (scope.isNameExpr() || scope.isThisExpr()) {</span>
+<span class="nc" id="L156">            String[] realName = getRealName(n);</span>
+            VariableAction va;
+<span class="nc bnc" id="L158" title="All 4 branches missed.">            if (realName.length == 1 &amp;&amp; realName[0].equals(n.toString())) {</span>
+<span class="nc" id="L159">                va = acceptAction(n, action);</span>
+                try {
+<span class="nc" id="L161">                    va.setStaticType(scope.calculateResolvedType());</span>
+<span class="nc" id="L162">                } catch (RuntimeException ignored) {}</span>
+            } else {
+<span class="nc" id="L164">                va = acceptAction(DeclarationType.valueOf(n), realName, action);</span>
+<span class="nc" id="L165">                va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass(n));</span>
+            }
+            // Register both expressions, as ExpressionObjectTreeFinder will search based on scope.
+<span class="nc" id="L168">            va.addExpression(scope);</span>
+<span class="nc" id="L169">            va.addExpression(n);</span>
+<span class="nc" id="L170">        } else {</span>
+<span class="nc" id="L171">            n.getScope().accept(this, action); // this.call().c.d</span>
+        }
+<span class="nc" id="L173">    }</span>
+
+    protected VariableAction acceptAction(Expression n, Action action) {
+<span class="nc" id="L176">        VariableAction va = acceptAction(DeclarationType.valueOf(n), getRealName(n), action, false);</span>
+        try {
+<span class="nc" id="L178">            va.setStaticType(n.calculateResolvedType());</span>
+<span class="nc" id="L179">        } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L180">        va.addExpression(n);</span>
+<span class="nc" id="L181">        return va;</span>
+    }
+
+    protected VariableAction acceptAction(DeclarationType declarationType, String[] realName, Action action) {
+<span class="nc" id="L185">        return acceptAction(declarationType, realName, action, false);</span>
+    }
+
+    protected VariableAction acceptAction(Expression n, String[] realName, Action action) {
+<span class="nc" id="L189">        VariableAction va = acceptAction(DeclarationType.valueOf(n), realName, action, false);</span>
+        try {
+<span class="nc" id="L191">            va.setStaticType(n.calculateResolvedType());</span>
+<span class="nc" id="L192">        } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L193">        va.addExpression(n);</span>
+<span class="nc" id="L194">        return va;</span>
+    }
+
+    protected VariableAction acceptActionNullDefinition(DeclarationType declarationType, String[] realName) {
+<span class="nc" id="L198">        return acceptAction(declarationType, realName, DEFINITION, true);</span>
+    }
+
+    protected VariableAction acceptAction(DeclarationType declarationType, String[] realName, Action action, boolean canDefBeNull) {
+        VariableAction va;
+
+        // Check whether the previous variable action is compatible with this one.
+<span class="nc" id="L205">        List&lt;VariableAction&gt; nodeVAs = graphNode.getVariableActions();</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">        VariableAction prev = nodeVAs.isEmpty() ? null : nodeVAs.get(nodeVAs.size() - 1);</span>
+<span class="nc" id="L207">        String nameRoot = arrayJoin(ObjectTree.removeFields(realName), &quot;.&quot;);</span>
+
+<span class="nc bnc" id="L209" title="All 4 branches missed.">        boolean matches = prev != null &amp;&amp; // must have a previous VA</span>
+                !(prev instanceof VariableAction.CallMarker) &amp;&amp; // CallMarkers can't be combined
+<span class="nc bnc" id="L211" title="All 2 branches missed.">                !prev.isDeclaration() &amp;&amp; // declarations are never combined</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                !prev.isRootAction() &amp;&amp;  // Can't combine with root actions</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                Objects.equals(nameRoot, prev.getName()) &amp;&amp; // Name must match</span>
+                // Type must match: DEF-DEF or USE-USE (DEC never combines)
+<span class="nc bnc" id="L215" title="All 4 branches missed.">                ((prev.isDefinition() &amp;&amp; action.isDefinition()) ||</span>
+<span class="nc bnc" id="L216" title="All 4 branches missed.">                        (prev.isUsage() &amp;&amp; action.isUse()));</span>
+
+<span class="nc bnc" id="L218" title="All 2 branches missed.">        if (matches) {</span>
+<span class="nc" id="L219">            va = prev;</span>
+<span class="nc bnc" id="L220" title="All 2 branches missed.">        } else if (action.isDeclaration()) {</span>
+<span class="nc" id="L221">            va = new VariableAction.Declaration(declarationType, nameRoot, graphNode);</span>
+<span class="nc bnc" id="L222" title="All 2 branches missed.">        } else if (action.isDefinition()) {</span>
+<span class="nc bnc" id="L223" title="All 4 branches missed.">            assert !definitionStack.isEmpty() || canDefBeNull;</span>
+<span class="nc" id="L224">            va = new VariableAction.Definition(declarationType, nameRoot, graphNode, definitionStack.peek());</span>
+<span class="nc bnc" id="L225" title="All 2 branches missed.">        } else if (action.isUse()) {</span>
+<span class="nc" id="L226">            va = new VariableAction.Usage(declarationType, nameRoot, graphNode);</span>
+        } else {
+<span class="nc" id="L228">            throw new UnsupportedOperationException();</span>
+        }
+
+<span class="nc bnc" id="L231" title="All 2 branches missed.">        if (ObjectTree.removeRoot(realName).length &gt; 0)</span>
+<span class="nc" id="L232">            va.getObjectTree().addField(realName);</span>
+
+<span class="nc" id="L234">        va.setOptional(action.isOptional());</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        if (!realNodeStack.isEmpty()) {</span>
+<span class="nc" id="L236">            va = new VariableAction.Movable(va, realNodeStack.peek());</span>
+        }
+<span class="nc" id="L238">        graphNode.addVariableAction(va);</span>
+<span class="nc" id="L239">        return va;</span>
+    }
+
+    // Partially traversed (only expressions that may contain variables are traversed)
+    @Override
+    public void visit(CastExpr n, Action action) {
+<span class="nc" id="L245">        n.getExpression().accept(this, action);</span>
+<span class="nc" id="L246">    }</span>
+
+    // Modified traversal (there may be variable definitions or declarations)
+    @Override
+    public void visit(ArrayAccessExpr n, Action arg) {
+<span class="nc bnc" id="L251" title="All 2 branches missed.">        if (arg.isDefinition()) {</span>
+<span class="nc" id="L252">            n.getName().accept(this, arg);</span>
+<span class="nc" id="L253">            n.getIndex().accept(this, arg.andUse());</span>
+<span class="nc bnc" id="L254" title="All 2 branches missed.">        } else if (arg.isUse()) {</span>
+<span class="nc" id="L255">            super.visit(n, arg);</span>
+        } else {
+<span class="nc" id="L257">            throw new IllegalStateException(&quot;Array accesses cannot be declared&quot;);</span>
+        }
+<span class="nc" id="L259">    }</span>
+
+    @Override
+    public void visit(ReturnStmt n, Action arg) {
+<span class="nc" id="L263">        super.visit(n, arg);</span>
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        if (n.getExpression().isPresent()) {</span>
+<span class="nc" id="L265">            definitionStack.push(n.getExpression().get());</span>
+<span class="nc" id="L266">            VariableAction va = acceptAction(SYNTHETIC, new String[]{ VARIABLE_NAME_OUTPUT }, DEFINITION);</span>
+            try {
+<span class="nc" id="L268">                va.setStaticType(n.getExpression().get().calculateResolvedType());</span>
+<span class="nc" id="L269">            } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L270">            definitionStack.pop();</span>
+<span class="nc" id="L271">            va.asDefinition().setTotallyDefinedMember(ROOT_NODE);</span>
+        }
+<span class="nc" id="L273">    }</span>
+
+    @Override
+    public void visit(ThrowStmt n, Action arg) {
+<span class="nc" id="L277">        super.visit(n, arg);</span>
+<span class="nc" id="L278">        definitionStack.push(n.getExpression());</span>
+<span class="nc" id="L279">        VariableAction va = acceptAction(SYNTHETIC, new String[]{ ACTIVE_EXCEPTION_VARIABLE }, DEFINITION);</span>
+        try {
+<span class="nc" id="L281">            ResolvedReferenceType type = n.getExpression().calculateResolvedType().asReferenceType();</span>
+<span class="nc" id="L282">            va.setStaticType(type);</span>
+<span class="nc" id="L283">            definitionStack.pop();</span>
+<span class="nc" id="L284">            va.getObjectTree().addAll(ClassGraph.getInstance().generateObjectTreeFor(type));</span>
+<span class="nc" id="L285">            new ExpressionObjectTreeFinder(graphNode).locateAndMarkTransferenceToRoot(n.getExpression(), -1);</span>
+<span class="nc" id="L286">        } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L287">    }</span>
+
+    @Override
+    public void visit(ForEachStmt n, Action action) {
+<span class="nc" id="L291">        n.getIterable().accept(this, USE);</span>
+<span class="nc bnc" id="L292" title="All 2 branches missed.">        for (VariableDeclarator variable : n.getVariable().getVariables()) {</span>
+<span class="nc" id="L293">            VariableAction vaDec = acceptAction(LOCAL_VARIABLE, new String[]{ variable.getNameAsString() }, DECLARATION);</span>
+            try {
+<span class="nc" id="L295">                vaDec.setStaticType(variable.getType().resolve());</span>
+<span class="nc" id="L296">            } catch (RuntimeException ignored) {}</span>
+            // ForEach initializes to each value of the iterable, but that expression is not available.
+<span class="nc" id="L298">            VariableAction vaDef = acceptActionNullDefinition(LOCAL_VARIABLE, new String[]{ variable.getNameAsString() });</span>
+            try {
+<span class="nc" id="L300">                vaDef.setStaticType(variable.getType().resolve());</span>
+<span class="nc" id="L301">            } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L302">        }</span>
+<span class="nc" id="L303">    }</span>
+
+    @Override
+    public void visit(ConditionalExpr n, Action arg) {
+<span class="nc" id="L307">        n.getCondition().accept(this, arg);</span>
+<span class="nc" id="L308">        n.getThenExpr().accept(this, arg.optional());</span>
+<span class="nc" id="L309">        n.getElseExpr().accept(this, arg.optional());</span>
+<span class="nc" id="L310">    }</span>
+
+    @Override
+    public void visit(BinaryExpr n, Action arg) {
+<span class="nc" id="L314">        n.getLeft().accept(this, arg);</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        switch (n.getOperator()) {</span>
+            case OR:
+            case AND:
+<span class="nc" id="L318">                n.getRight().accept(this, arg.optional());</span>
+<span class="nc" id="L319">                break;</span>
+            default:
+<span class="nc" id="L321">                n.getRight().accept(this, arg);</span>
+                break;
+        }
+<span class="nc" id="L324">    }</span>
+
+    @Override
+    public void visit(AssignExpr n, Action action) {
+        // Value is always visited first since uses occur before definitions
+<span class="nc" id="L329">        n.getValue().accept(this, action);</span>
+        // Target will be used if operator is not '='
+<span class="nc bnc" id="L331" title="All 2 branches missed.">        if (n.getOperator() != AssignExpr.Operator.ASSIGN)</span>
+<span class="nc" id="L332">            n.getTarget().accept(this, action);</span>
+<span class="nc" id="L333">        List&lt;String&gt; realNameWithoutRootList = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L334">        List&lt;Boolean&gt; foundArray = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L335">        n.getTarget().accept(new VoidVisitorAdapter&lt;Void&gt;() {</span>
+            @Override
+            public void visit(NameExpr nameExpr, Void arg) {
+<span class="nc" id="L338">                String[] realName = getRealName(nameExpr);</span>
+<span class="nc" id="L339">                definitionStack.push(n.getValue());</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">                if (realName.length &lt; 2) {</span>
+<span class="nc" id="L341">                    VariableAction va = acceptAction(nameExpr, realName, action.or(DEFINITION));</span>
+<span class="nc" id="L342">                    va.asDefinition().setTotallyDefinedMember(realName);</span>
+<span class="nc" id="L343">                    realNameWithoutRootList.add(&quot;&quot;);</span>
+<span class="nc" id="L344">                } else {</span>
+<span class="nc" id="L345">                    String[] root = ObjectTree.removeFields(realName);</span>
+<span class="nc" id="L346">                    VariableAction va = acceptAction(DeclarationType.valueOf(nameExpr), root, action.or(DEFINITION));</span>
+<span class="nc" id="L347">                    va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass(nameExpr));</span>
+<span class="nc" id="L348">                    va.getObjectTree().addField(realName);</span>
+<span class="nc" id="L349">                    va.asDefinition().setTotallyDefinedMember(realName);</span>
+<span class="nc" id="L350">                    va.addExpression(nameExpr);</span>
+<span class="nc" id="L351">                    realNameWithoutRootList.add(arrayJoin(ObjectTree.removeRoot(realName), &quot;.&quot;));</span>
+                }
+<span class="nc" id="L353">                definitionStack.pop();</span>
+<span class="nc" id="L354">            }</span>
+
+            @Override
+            public void visit(FieldAccessExpr fieldAccessExpr, Void arg) {
+<span class="nc" id="L358">                Expression scope = fieldAccessExpr.getScope();</span>
+<span class="nc" id="L359">                ArrayList&lt;String&gt; tail = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L360">                tail.add(fieldAccessExpr.getNameAsString());</span>
+<span class="nc" id="L361">                boolean traverse = true;</span>
+<span class="nc bnc" id="L362" title="All 2 branches missed.">                while (traverse) {</span>
+<span class="nc bnc" id="L363" title="All 2 branches missed.">                    if (scope.isFieldAccessExpr()) {</span>
+<span class="nc" id="L364">                        tail.add(scope.asFieldAccessExpr().getNameAsString());</span>
+<span class="nc" id="L365">                        scope = scope.asFieldAccessExpr().getScope();</span>
+<span class="nc bnc" id="L366" title="All 2 branches missed.">                    } else if (scope.isEnclosedExpr())</span>
+<span class="nc" id="L367">                        scope = scope.asEnclosedExpr().getInner();</span>
+<span class="nc bnc" id="L368" title="All 2 branches missed.">                    else if (scope.isCastExpr())</span>
+<span class="nc" id="L369">                        scope = scope.asCastExpr().getExpression();</span>
+                    else
+<span class="nc" id="L371">                        traverse = false;</span>
+                }
+                String[] realName, root;
+<span class="nc bnc" id="L374" title="All 4 branches missed.">                if (scope.isMethodCallExpr() || scope.isObjectCreationExpr()) {</span>
+<span class="nc" id="L375">                    scope.accept(VariableVisitor.this, action);</span>
+<span class="nc" id="L376">                    tail.add(VARIABLE_NAME_OUTPUT);</span>
+<span class="nc" id="L377">                    realName = tail.toArray(new String[0]);</span>
+<span class="nc" id="L378">                    root = new String[]{VARIABLE_NAME_OUTPUT};</span>
+<span class="nc bnc" id="L379" title="All 4 branches missed.">                } else if (scope.isNameExpr() || scope.isThisExpr()) {</span>
+<span class="nc" id="L380">                    realName = getRealName(fieldAccessExpr);</span>
+<span class="nc" id="L381">                    root = ObjectTree.removeFields(realName);</span>
+                } else {
+<span class="nc" id="L383">                    throw new IllegalStateException(&quot;only valid assignments are this[.&lt;field&gt;]+ =, and &lt;var&gt;[.&lt;field&gt;]+&quot;);</span>
+                }
+<span class="nc" id="L385">                definitionStack.push(n.getValue());</span>
+                VariableAction va;
+<span class="nc bnc" id="L387" title="All 4 branches missed.">                if (root.length == 1 &amp;&amp; root[0].equals(scope.toString()))</span>
+<span class="nc" id="L388">                    va = acceptAction(scope, root, action.or(DEFINITION));</span>
+                else {
+<span class="nc" id="L390">                    va = acceptAction(FIELD, root, action.or(DEFINITION));</span>
+<span class="nc" id="L391">                    va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass(fieldAccessExpr));</span>
+                }
+                // Register both expressions, as ExpressionObjectTreeFinder will search based on scope.
+<span class="nc" id="L394">                va.addExpression(fieldAccessExpr);</span>
+<span class="nc" id="L395">                va.addExpression(scope);</span>
+<span class="nc" id="L396">                definitionStack.pop();</span>
+<span class="nc" id="L397">                va.asDefinition().setTotallyDefinedMember(realName);</span>
+<span class="nc" id="L398">                va.getObjectTree().addField(realName);</span>
+<span class="nc" id="L399">                realNameWithoutRootList.add(arrayJoin(ObjectTree.removeRoot(realName), &quot;.&quot;));</span>
+<span class="nc" id="L400">            }</span>
+
+            @Override
+            public void visit(ArrayAccessExpr n, Void arg) {
+<span class="nc" id="L404">                n.getName().accept(this, arg);</span>
+<span class="nc" id="L405">                n.getIndex().accept(VariableVisitor.this, action.andUse());</span>
+<span class="nc" id="L406">                foundArray.add(true);</span>
+<span class="nc" id="L407">            }</span>
+        }, null);
+<span class="nc bnc" id="L409" title="All 4 branches missed.">        assert realNameWithoutRootList.size() == 1 || !foundArray.isEmpty();</span>
+<span class="nc" id="L410">        ExpressionObjectTreeFinder finder = new ExpressionObjectTreeFinder(graphNode);</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">        if (foundArray.isEmpty()) // Handle a field access or normal variable</span>
+<span class="nc" id="L412">            finder.handleAssignExpr(n, graphNode.getLastVariableAction(), realNameWithoutRootList.get(0));</span>
+        else // Handle an array access
+<span class="nc" id="L414">            finder.handleArrayAssignExpr(n);</span>
+<span class="nc" id="L415">    }</span>
+
+    @Override
+    public void visit(UnaryExpr n, Action action) {
+        // ++a -&gt; USAGE (get value), DEFINITION (add 1), USAGE (get new value)
+        // a++ -&gt; USAGE (get value), DEFINITION (add 1)
+        // any other UnaryExpr (~, !, -) -&gt; USAGE
+<span class="nc bnc" id="L422" title="All 2 branches missed.">        switch (n.getOperator()) {</span>
+            case PREFIX_DECREMENT:
+            case PREFIX_INCREMENT:
+<span class="nc" id="L425">                n.getExpression().accept(this, action);</span>
+<span class="nc" id="L426">                visitAsDefinition(n.getExpression(), null, action);</span>
+                break;
+        }
+<span class="nc" id="L429">        n.getExpression().accept(this, action);</span>
+<span class="nc bnc" id="L430" title="All 2 branches missed.">        switch (n.getOperator()) {</span>
+            case POSTFIX_INCREMENT:
+            case POSTFIX_DECREMENT:
+<span class="nc" id="L433">                visitAsDefinition(n.getExpression(), null, action);</span>
+                break;
+        }
+<span class="nc" id="L436">    }</span>
+
+    @Override
+    public void visit(VariableDeclarationExpr n, Action action) {
+<span class="nc bnc" id="L440" title="All 2 branches missed.">        for (VariableDeclarator v : n.getVariables()) {</span>
+<span class="nc" id="L441">            String[] vName = new String[]{ v.getNameAsString() };</span>
+<span class="nc" id="L442">            VariableAction vaDec = acceptAction(LOCAL_VARIABLE, vName, DECLARATION);</span>
+            try {
+<span class="nc" id="L444">                vaDec.setStaticType(v.getType().resolve());</span>
+<span class="nc" id="L445">            } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L446">            vaDec.addExpression(n);</span>
+<span class="nc" id="L447">            v.getInitializer().ifPresent(init -&gt; {</span>
+<span class="nc" id="L448">                init.accept(this, action);</span>
+<span class="nc" id="L449">                definitionStack.push(init);</span>
+<span class="nc" id="L450">                VariableAction vaDef = acceptAction(LOCAL_VARIABLE, vName, DEFINITION);</span>
+<span class="nc" id="L451">                vaDef.addExpression(n);</span>
+                try {
+<span class="nc" id="L453">                    vaDef.setStaticType(v.getType().resolve());</span>
+<span class="nc" id="L454">                } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L455">                definitionStack.pop();</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">                if (v.getType().isClassOrInterfaceType())</span>
+<span class="nc" id="L457">                    vaDef.asDefinition().setTotallyDefinedMember(vName);</span>
+<span class="nc" id="L458">                v.accept(this, action);</span>
+<span class="nc" id="L459">            });</span>
+<span class="nc" id="L460">        }</span>
+<span class="nc" id="L461">    }</span>
+
+    @Override
+    public void visit(FieldDeclaration n, Action action) {
+<span class="nc" id="L465">        ResolvedType staticType = ASTUtils.resolvedTypeOfCurrentClass(n);</span>
+<span class="nc bnc" id="L466" title="All 2 branches missed.">        for (VariableDeclarator v : n.getVariables()) {</span>
+<span class="nc" id="L467">            String[] realName = getRealNameForFieldDeclaration(v);</span>
+<span class="nc" id="L468">            VariableAction vaDec = acceptAction(FIELD, realName, DECLARATION);</span>
+<span class="nc" id="L469">            vaDec.setStaticType(staticType);</span>
+<span class="nc" id="L470">            Expression init = v.getInitializer().orElseGet(() -&gt; ASTUtils.initializerForField(n));</span>
+<span class="nc" id="L471">            init.accept(this, action);</span>
+<span class="nc" id="L472">            definitionStack.push(init);</span>
+<span class="nc" id="L473">            VariableAction vaDef = acceptAction(FIELD, realName, DEFINITION);</span>
+<span class="nc" id="L474">            vaDef.setStaticType(staticType);</span>
+<span class="nc" id="L475">            definitionStack.pop();</span>
+<span class="nc bnc" id="L476" title="All 2 branches missed.">            if (v.getType().isClassOrInterfaceType())</span>
+<span class="nc" id="L477">                vaDef.asDefinition().setTotallyDefinedMember(realName);</span>
+<span class="nc" id="L478">            v.accept(this, action);</span>
+<span class="nc" id="L479">        }</span>
+<span class="nc" id="L480">    }</span>
+
+    @Override
+    public void visit(VariableDeclarator n, Action arg) {
+<span class="nc bnc" id="L484" title="All 2 branches missed.">        if (n.getInitializer().isPresent()) {</span>
+<span class="nc" id="L485">            String realName = n.getNameAsString();</span>
+            try {
+<span class="nc bnc" id="L487" title="All 4 branches missed.">                if (n.resolve().isField() &amp;&amp; !n.resolve().asField().isStatic())</span>
+<span class="nc" id="L488">                    realName = &quot;this.&quot; + realName;</span>
+<span class="nc" id="L489">                new ExpressionObjectTreeFinder(graphNode).handleVariableDeclarator(n, realName);</span>
+<span class="nc" id="L490">            } catch (RuntimeException ignored) {}</span>
+        }
+<span class="nc" id="L492">    }</span>
+
+    @Override
+    public void visit(CatchClause n, Action arg) {
+<span class="nc" id="L496">        n.getParameter().accept(this, arg.or(DECLARATION));</span>
+<span class="nc" id="L497">        n.getBody().accept(this, arg);</span>
+<span class="nc" id="L498">    }</span>
+
+    @Override
+    public void visit(Parameter n, Action arg) {
+<span class="nc" id="L502">        String[] nName = new String[]{ n.getNameAsString() };</span>
+        try {
+<span class="nc" id="L504">            VariableAction vaDec = acceptAction(PARAMETER, nName, DECLARATION);</span>
+<span class="nc" id="L505">            vaDec.setStaticType(n.getType().resolve());</span>
+<span class="nc" id="L506">        } catch (RuntimeException ignored) {}</span>
+        try {
+<span class="nc" id="L508">            VariableAction vaDef = acceptActionNullDefinition(PARAMETER, nName);</span>
+<span class="nc" id="L509">            vaDef.setStaticType(n.getType().resolve());</span>
+<span class="nc" id="L510">        } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L511">    }</span>
+
+    // =======================================================================
+    // ================================ CALLS ================================
+    // =======================================================================
+
+    // TODO: non-linked calls should mark both parameters and scope as DEF+USE (problem: 'System.out.println(z)')
+
+    @Override
+    public void visit(ObjectCreationExpr n, Action arg) {
+        try {
+<span class="nc bnc" id="L522" title="All 2 branches missed.">            if (visitCall(n, arg))</span>
+<span class="nc" id="L523">                super.visit(n, arg);</span>
+<span class="nc" id="L524">        } catch (RuntimeException e) {}</span>
+<span class="nc" id="L525">    }</span>
+
+    @Override
+    public void visit(ExplicitConstructorInvocationStmt n, Action arg) {
+<span class="nc" id="L529">        boolean visitCall = false;</span>
+        try {
+<span class="nc" id="L531">            visitCall = visitCall(n, arg);</span>
+<span class="nc" id="L532">        } catch (RuntimeException e) {}</span>
+<span class="nc bnc" id="L533" title="All 2 branches missed.">        if (visitCall) {</span>
+<span class="nc" id="L534">            VariableAction va = acceptAction(FIELD, new String[]{ &quot;this&quot; }, DECLARATION);</span>
+<span class="nc" id="L535">            va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass(n));</span>
+<span class="nc" id="L536">            super.visit(n, arg);</span>
+        }
+        // Regardless of whether it resolves or not, 'this' is defined
+<span class="nc" id="L539">        VariableAction defThis = acceptActionNullDefinition(FIELD, new String[]{ &quot;this&quot; });</span>
+<span class="nc" id="L540">        defThis.setStaticType(ASTUtils.resolvedTypeOfCurrentClass(n));</span>
+        // setup a connection between USE(-output-) and DEF(this)
+<span class="nc" id="L542">        List&lt;VariableAction&gt; vaList = graphNode.getVariableActions();</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">        if (!visitCall) { // call-super, DEC(this), USE(-output-), ret-super, DEF(this)</span>
+<span class="nc bnc" id="L544" title="All 2 branches missed.">            assert vaList.size() &gt;= 5;</span>
+<span class="nc" id="L545">            VariableAction useOutput = vaList.get(vaList.size() - 3);</span>
+<span class="nc bnc" id="L546" title="All 4 branches missed.">            assert useOutput.isUsage() &amp;&amp; useOutput.getName().equals(VARIABLE_NAME_OUTPUT);</span>
+<span class="nc" id="L547">            defThis.asDefinition().setTotallyDefinedMember(new String[]{ &quot;this&quot; });</span>
+<span class="nc" id="L548">            ObjectTree.copyTargetTreeToSource(defThis.getObjectTree(), useOutput.getObjectTree(), &quot;&quot;, &quot;&quot;);</span>
+<span class="nc" id="L549">            useOutput.setPDGTreeConnectionTo(defThis, &quot;&quot;, &quot;&quot;);          </span>
+        }
+<span class="nc" id="L551">    }</span>
+
+    @Override
+    public void visit(MethodCallExpr n, Action arg) {
+        try {
+<span class="nc bnc" id="L556" title="All 2 branches missed.">            if (visitCall(n, arg))</span>
+<span class="nc" id="L557">                super.visit(n, arg);</span>
+<span class="nc" id="L558">        } catch (RuntimeException e) {}</span>
+<span class="nc" id="L559">    }</span>
+
+    /** Tries to resolve and add the corresponding call markers. */
+    protected boolean visitCall(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, Action action) {
+        // If we don't have the AST for the call, we should visit the rest of the call.
+<span class="nc bnc" id="L564" title="All 2 branches missed.">        if (ASTUtils.shouldVisitArgumentsForMethodCalls(call, graphNode))</span>
+<span class="nc" id="L565">            return true;</span>
+<span class="nc" id="L566">        CallableDeclaration&lt;?&gt; decl = ASTUtils.getResolvedAST(call.resolve()).orElseThrow(()-&gt;new NoSuchElementException(&quot;No CallableDeclaration found for the resolved call.&quot;));</span>
+        // Start
+<span class="nc" id="L568">        graphNode.addCallMarker(call, true);</span>
+        // Scope
+<span class="nc bnc" id="L570" title="All 2 branches missed.">        if (call instanceof ExplicitConstructorInvocationStmt) {</span>
+<span class="nc" id="L571">            VariableAction va = acceptAction(FIELD, new String[]{ &quot;this&quot; }, DECLARATION);</span>
+<span class="nc" id="L572">            va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass((ExplicitConstructorInvocationStmt) call));</span>
+        }
+<span class="nc bnc" id="L574" title="All 4 branches missed.">        if (call instanceof MethodCallExpr &amp;&amp; !decl.isStatic()) {</span>
+<span class="nc" id="L575">            ActualIONode scopeIn = ActualIONode.createActualIn(call, &quot;this&quot;, ((MethodCallExpr) call).getScope().orElse(null));</span>
+<span class="nc" id="L576">            graphNode.addSyntheticNode(scopeIn);</span>
+<span class="nc" id="L577">            realNodeStack.push(scopeIn);</span>
+<span class="nc" id="L578">            Optional&lt;Expression&gt; optionalScope = ASTUtils.getResolvableScope(call);</span>
+<span class="nc bnc" id="L579" title="All 2 branches missed.">            if (optionalScope.isPresent()) {</span>
+<span class="nc" id="L580">                Expression scope = optionalScope.get();</span>
+<span class="nc" id="L581">                scope.accept(this, action);</span>
+<span class="nc" id="L582">            } else {</span>
+<span class="nc" id="L583">                VariableAction va = acceptAction(FIELD, new String[] { &quot;this&quot; }, action);</span>
+<span class="nc" id="L584">                va.setStaticType(ASTUtils.resolvedTypeOfCurrentClass((MethodCallExpr) call));</span>
+            }
+
+            // Generate -scope-in- action, so that InterproceduralUsageFinder does not need to do so.
+<span class="nc" id="L588">            VariableAction.Definition def = new VariableAction.Definition(VariableAction.DeclarationType.SYNTHETIC, &quot;-scope-in-&quot;, graphNode);</span>
+<span class="nc" id="L589">            VariableAction.Movable movDef = new VariableAction.Movable(def, scopeIn);</span>
+<span class="nc" id="L590">            graphNode.addVariableAction(movDef);</span>
+<span class="nc" id="L591">            realNodeStack.pop();</span>
+        }
+        // Args
+<span class="nc" id="L594">        NodeWithArguments&lt;?&gt; callWithArgs = (NodeWithArguments&lt;?&gt;) call;</span>
+<span class="nc bnc" id="L595" title="All 2 branches missed.">        for (int i = 0; i &lt; callWithArgs.getArguments().size(); i++) {</span>
+<span class="nc" id="L596">            Expression argument = callWithArgs.getArguments().get(i);</span>
+<span class="nc" id="L597">            ActualIONode actualIn = ActualIONode.createActualIn(call, decl.getParameter(i).getNameAsString(), argument);</span>
+<span class="nc" id="L598">            graphNode.addSyntheticNode(actualIn);</span>
+<span class="nc" id="L599">            realNodeStack.push(actualIn);</span>
+<span class="nc" id="L600">            argument.accept(this, action);</span>
+            // Generate -arg-in- action, so that InterproceduralUsageFinder does not need to do so.
+<span class="nc" id="L602">            VariableAction.Definition def = new VariableAction.Definition(VariableAction.DeclarationType.SYNTHETIC, &quot;-arg-in-&quot;, graphNode);</span>
+<span class="nc" id="L603">            VariableAction.Movable movDef = new VariableAction.Movable(def, actualIn);</span>
+<span class="nc" id="L604">            graphNode.addVariableAction(movDef);</span>
+<span class="nc" id="L605">            realNodeStack.pop();</span>
+        }
+        // Return
+<span class="nc" id="L608">        insertOutputDefAndUse(call);</span>
+        // End
+<span class="nc" id="L610">        graphNode.addCallMarker(call, false);</span>
+<span class="nc" id="L611">        return false; // We have manually visited each element, don't call super.visit(...)</span>
+    }
+
+    protected void insertOutputDefAndUse(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc bnc" id="L615" title="All 2 branches missed.">        if (ASTUtils.resolvableIsVoid(call))</span>
+<span class="nc" id="L616">            return;</span>
+        // A node defines -output-
+<span class="nc" id="L618">        var fields = getFieldsForReturn(call);</span>
+<span class="nc" id="L619">        var def = new VariableAction.Definition(SYNTHETIC, VARIABLE_NAME_OUTPUT, graphNode,</span>
+<span class="nc" id="L620">                fields.map(tree -&gt; (ObjectTree) tree.clone()).orElse(null));</span>
+<span class="nc" id="L621">        def.setTotallyDefinedMember(ROOT_NODE);</span>
+<span class="nc" id="L622">        var defMov = new VariableAction.Movable(def, CallNode.Return.create(call));</span>
+<span class="nc" id="L623">        defMov.setStaticType(ASTUtils.getCallResolvedType(call));</span>
+<span class="nc" id="L624">        graphNode.addVariableAction(defMov);</span>
+        // The container of the call uses -output-, unless the call is wrapped in an ExpressionStmt
+<span class="nc" id="L626">        Optional&lt;Node&gt; parentNode = ((Node) call).getParentNode();</span>
+<span class="nc bnc" id="L627" title="All 4 branches missed.">        if (!parentNode.isPresent() || !(parentNode.get() instanceof ExpressionStmt)) {</span>
+<span class="nc" id="L628">            VariableAction use = new VariableAction.Usage(SYNTHETIC, VARIABLE_NAME_OUTPUT, graphNode,</span>
+<span class="nc" id="L629">                    fields.map(tree -&gt; (ObjectTree) tree.clone()).orElse(null));</span>
+<span class="nc" id="L630">            graphNode.addVariableAction(use);</span>
+<span class="nc" id="L631">            use.setStaticType(ASTUtils.getCallResolvedType(call));</span>
+        }
+<span class="nc" id="L633">    }</span>
+
+    protected Optional&lt;ObjectTree&gt; getFieldsForReturn(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L636">        ResolvedMethodLikeDeclaration resolved = call.resolve();</span>
+<span class="nc bnc" id="L637" title="All 2 branches missed.">        if (resolved instanceof AssociableToAST) {</span>
+<span class="nc" id="L638">            Optional&lt;? extends Node&gt; n = ((AssociableToAST&lt;? extends Node&gt;) resolved).toAst();</span>
+<span class="nc bnc" id="L639" title="All 4 branches missed.">            if (n.isPresent() &amp;&amp; n.get() instanceof CallableDeclaration)</span>
+<span class="nc" id="L640">                return ClassGraph.getInstance().generateObjectTreeForReturnOf((CallableDeclaration&lt;?&gt;) n.get());</span>
+        }
+<span class="nc" id="L642">        return Optional.empty();</span>
+    }
+
+    /** Prepends [declaring class name].this. to the name of the given variable declarator. */
+    protected String[] getRealNameForFieldDeclaration(VariableDeclarator decl) {
+<span class="nc" id="L647">        return new String[] {&quot;this&quot;, decl.getNameAsString()};</span>
+    }
+
+    /** Obtain the prefixed name of a variable, to improve matching of variables
+     *  that point to the same object, such as 'x' and 'this.x'. */
+    protected String[] getRealName(Expression n) {
+<span class="nc bnc" id="L653" title="All 2 branches missed.">        if (n.isNameExpr()) {</span>
+            try {
+<span class="nc" id="L655">                String prefix = getNamePrefix(n.asNameExpr());</span>
+<span class="nc bnc" id="L656" title="All 2 branches missed.">                return prefix == null ? new String[] { n.toString() } : new String[] { prefix, n.toString() };</span>
+<span class="nc" id="L657">            } catch (RuntimeException ignored) {}</span>
+<span class="nc bnc" id="L658" title="All 4 branches missed.">        } else if (n.isSuperExpr() || n.isThisExpr()) {</span>
+<span class="nc" id="L659">            return new String[] { &quot;this&quot; };</span>
+<span class="nc bnc" id="L660" title="All 2 branches missed.">        } else if (n.isFieldAccessExpr()) { // this.a.b</span>
+<span class="nc" id="L661">            List&lt;String&gt; result = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L662">            Expression scope = n.asFieldAccessExpr().getScope();</span>
+<span class="nc" id="L663">            result.add(n.asFieldAccessExpr().getNameAsString());</span>
+<span class="nc bnc" id="L664" title="All 2 branches missed.">            while (scope instanceof FieldAccessExpr) {</span>
+<span class="nc" id="L665">                result.add(0, scope.asFieldAccessExpr().getNameAsString());</span>
+<span class="nc" id="L666">                scope = scope.asFieldAccessExpr().getScope();</span>
+            }
+<span class="nc" id="L668">            String[] realName = getRealName(scope);</span>
+<span class="nc bnc" id="L669" title="All 2 branches missed.">            for (int i = realName.length - 1; i &gt;= 0; i--)</span>
+<span class="nc" id="L670">                result.add(0, realName[i]);</span>
+<span class="nc" id="L671">            return result.toArray(new String[0]);</span>
+        }
+<span class="nc" id="L673">        return new String[] { n.toString() };</span>
+    }
+
+    /** Generate the correct prefix for a NameExpr. Only works for non-static fields. */
+    protected String getNamePrefix(NameExpr n) {
+        // We only care about non-static fields
+<span class="nc" id="L679">        ResolvedValueDeclaration resolved = n.resolve();</span>
+<span class="nc bnc" id="L680" title="All 4 branches missed.">        return !resolved.isField() || resolved.asField().isStatic() ? null : &quot;this&quot;;</span>
+    }
+
+    /** Given a graph node, modify the existing object trees in each variable action
+     *  to include polymorphic nodes, according to the dynamic types that are included.
+     *  &lt;br&gt;
+     *  &lt;b&gt;Static variable actions are excluded from this process.&lt;/b&gt;
+     *  &lt;br&gt;
+     *  Polymorphic nodes are only generated if (a) at least one of the dynamic types is
+     *  contained in the class graph, (b) the polymorphic variable has fields and (c) there
+     *  aren't any polymorphic nodes in the object tree already. */
+    protected void generatePolyTrees(GraphNode&lt;?&gt; graphNode) {
+<span class="nc" id="L692">        ClassGraph classGraph = ClassGraph.getInstance();</span>
+<span class="nc bnc" id="L693" title="All 2 branches missed.">        for (VariableAction va : graphNode.getVariableActions()) {</span>
+<span class="nc bnc" id="L694" title="All 4 branches missed.">            if (va.isStatic() || !va.hasObjectTree())</span>
+<span class="nc" id="L695">                continue;</span>
+<span class="nc" id="L696">            ObjectTree newTree = new ObjectTree(va.getName());</span>
+<span class="nc" id="L697">            polyUnit(va.getObjectTree(), newTree, va.getDynamicTypes(), classGraph);</span>
+<span class="nc" id="L698">            va.setObjectTree(newTree);</span>
+<span class="nc" id="L699">        }</span>
+<span class="nc" id="L700">    }</span>
+
+    /** Handle a single level of conversion between object tree without polymorphic nodes
+     *  to new object tree with polymorphic nodes.
+     *  @see #generatePolyTrees(GraphNode) */
+    protected static void polyUnit(ObjectTree oldOT, ObjectTree newOT, Set&lt;ResolvedType&gt; types, ClassGraph classGraph) {
+<span class="nc bnc" id="L706" title="All 6 branches missed.">        boolean skipPolyNodes = types.stream().noneMatch(classGraph::containsType) || !oldOT.hasChildren() || oldOT.hasPoly();</span>
+<span class="nc bnc" id="L707" title="All 2 branches missed.">        if (skipPolyNodes) {</span>
+            // Copy as-is
+<span class="nc" id="L709">            newOT.addAll(oldOT);</span>
+        } else {
+            // Copy with typing information
+<span class="nc bnc" id="L712" title="All 2 branches missed.">            for (ResolvedType rt : types) {</span>
+<span class="nc" id="L713">                boolean rtInGraph = classGraph.containsType(rt);</span>
+<span class="nc" id="L714">                ObjectTree typeRoot = newOT.addType(rt);</span>
+                // Insert type node and copy members over
+<span class="nc bnc" id="L716" title="All 2 branches missed.">                for (Map.Entry&lt;String,ObjectTree&gt; entry : oldOT.entrySet())</span>
+<span class="nc" id="L717">                    polyUnit(entry.getValue(),</span>
+<span class="nc" id="L718">                            typeRoot.addImmediateField(entry.getKey()),</span>
+<span class="nc bnc" id="L719" title="All 2 branches missed.">                            rtInGraph ? dynamicTypesOf(rt, entry.getKey(), classGraph) : Collections.emptySet(),</span>
+                            classGraph);
+<span class="nc" id="L721">            }</span>
+        }
+<span class="nc" id="L723">    }</span>
+
+    /** Obtain the set of possible dynamic types of the given field within a given type.
+     *  Doesn't take into account the CFG, only the class graph. */
+    protected static Set&lt;ResolvedType&gt; dynamicTypesOf(ResolvedType rt, String fieldName, ClassGraph classGraph) {
+<span class="nc" id="L728">        Optional&lt;FieldDeclaration&gt; field = classGraph.findClassField(rt, fieldName);</span>
+<span class="nc bnc" id="L729" title="All 2 branches missed.">        if (!field.isPresent())</span>
+<span class="nc" id="L730">            return Collections.emptySet();</span>
+        ResolvedType fieldType;
+        try {
+<span class="nc" id="L733">            fieldType = field.get().getVariable(0).getType().resolve();</span>
+<span class="nc" id="L734">        } catch (UnsupportedOperationException e) {</span>
+<span class="nc" id="L735">            return new HashSet&lt;&gt;();</span>
+<span class="nc" id="L736">        }</span>
+<span class="nc bnc" id="L737" title="All 4 branches missed.">        if (!fieldType.isReferenceType() || !classGraph.containsType(fieldType))</span>
+<span class="nc" id="L738">            return Collections.singleton(fieldType);</span>
+<span class="nc" id="L739">        return classGraph.subclassesOf(fieldType.asReferenceType()).stream()</span>
+<span class="nc" id="L740">                .map(TypeDeclaration::resolve)</span>
+<span class="nc" id="L741">                .map(ASTUtils::resolvedTypeDeclarationToResolvedType)</span>
+<span class="nc" id="L742">                .collect(Collectors.toSet());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

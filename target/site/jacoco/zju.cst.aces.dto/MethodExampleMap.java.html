@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MethodExampleMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.dto</a> &gt; <span class="el_source">MethodExampleMap.java</span></div><h1>MethodExampleMap.java</h1><pre class="source lang-java linenums">package zju.cst.aces.dto;
+
+import lombok.Data;
+
+import java.util.*;
+
+/**
+ * Method Example Map
+ */
+public class MethodExampleMap {
+    Map&lt;String, TreeSet&lt;MEC&gt;&gt; mem;
+    Map&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; memList;
+
+<span class="nc" id="L14">    public MethodExampleMap() {</span>
+<span class="nc" id="L15">        mem = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L16">        memList = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L17">    }</span>
+
+    public void add(String typeName, String className, String methodName, int lineNum, String code) {
+<span class="nc" id="L20">        TreeSet&lt;MEC&gt; invocations = mem.computeIfAbsent(typeName, k -&gt; new TreeSet&lt;&gt;(new LengthComparator()));</span>
+<span class="nc" id="L21">        invocations.add(new MEC(className, methodName, lineNum, code));</span>
+<span class="nc" id="L22">        mem.put(typeName, invocations);</span>
+<span class="nc" id="L23">    }</span>
+    public void addBackWardPath(String typeName, List&lt;MEC&gt; paths) {
+<span class="nc" id="L25">        Set&lt;List&lt;MEC&gt;&gt; invocations = memList.computeIfAbsent(typeName, k -&gt; new HashSet&lt;&gt;());</span>
+<span class="nc" id="L26">        invocations.add(paths);</span>
+<span class="nc" id="L27">        memList.put(typeName, invocations);</span>
+<span class="nc" id="L28">    }</span>
+
+    public Map&lt;String, TreeSet&lt;MEC&gt;&gt; getMEM() {
+<span class="nc" id="L31">        return this.mem;</span>
+    }
+
+    public Map&lt;String, Set&lt;List&lt;MEC&gt;&gt;&gt; getMemList() {
+<span class="nc" id="L35">        return this.memList;</span>
+    }
+
+    @Data
+    public static class MEC {
+        String className;
+        String methodName;
+        int lineNum;
+        String code;
+
+<span class="nc" id="L45">        public MEC(String className, String methodName, int lineNum, String code) {</span>
+<span class="nc" id="L46">            this.className = className;</span>
+<span class="nc" id="L47">            this.methodName = methodName;</span>
+<span class="nc" id="L48">            this.lineNum = lineNum;</span>
+<span class="nc" id="L49">            this.code = code;</span>
+<span class="nc" id="L50">        }</span>
+        @Override
+        public boolean equals(Object o) {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            if (this == o) return true;</span>
+<span class="nc bnc" id="L54" title="All 4 branches missed.">            if (o == null || getClass() != o.getClass()) return false;</span>
+<span class="nc" id="L55">            MethodExampleMap.MEC mec = (MethodExampleMap.MEC) o;</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">            return lineNum == mec.lineNum &amp;&amp;</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">                    Objects.equals(className, mec.className) &amp;&amp;</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                    Objects.equals(methodName, mec.methodName) &amp;&amp;</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">                    Objects.equals(code, mec.code);</span>
+        }
+
+        @Override
+        public int hashCode() {
+<span class="nc" id="L64">            return Objects.hash(className, methodName, lineNum, code);</span>
+        }
+    }
+
+<span class="nc" id="L68">    static class LengthComparator implements Comparator&lt;MEC&gt; {</span>
+        @Override
+        public int compare(MEC o1, MEC o2) {
+<span class="nc" id="L71">            int lengthComparison = Integer.compare(o1.code.length(), o2.code.length());</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            if (lengthComparison != 0) {</span>
+<span class="nc" id="L73">                return lengthComparison;</span>
+            }
+            // 如果长度相同，比较其他字段
+<span class="nc" id="L76">            int classNameComparison = o1.className.compareTo(o2.className);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">            if (classNameComparison != 0) {</span>
+<span class="nc" id="L78">                return classNameComparison;</span>
+            }
+<span class="nc" id="L80">            int methodNameComparison = o1.methodName.compareTo(o2.methodName);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">            if (methodNameComparison != 0) {</span>
+<span class="nc" id="L82">                return methodNameComparison;</span>
+            }
+<span class="nc" id="L84">            return Integer.compare(o1.lineNum, o2.lineNum);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

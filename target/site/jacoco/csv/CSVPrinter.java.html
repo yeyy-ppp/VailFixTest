@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CSVPrinter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">csv</a> &gt; <span class="el_source">CSVPrinter.java</span></div><h1>CSVPrinter.java</h1><pre class="source lang-java linenums">package csv;
+import static csv.Constants.CR;
+import static csv.Constants.LF;
+import static csv.Constants.SP;
+import java.io.Closeable;
+import java.io.Flushable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.sql.Blob;
+import java.sql.Clob;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Stream;
+public final class CSVPrinter implements Flushable, Closeable {
+    private final Appendable appendable;
+    private final CSVFormat format;
+<span class="fc" id="L22">    private boolean newRecord = true;</span>
+    private long recordCount;
+<span class="fc" id="L24">    private final ReentrantLock lock = new ReentrantLock();</span>
+<span class="fc" id="L25">    public CSVPrinter(final Appendable appendable, final CSVFormat format) throws IOException {</span>
+<span class="fc" id="L26">        Objects.requireNonNull(appendable, &quot;appendable&quot;);</span>
+<span class="fc" id="L27">        Objects.requireNonNull(format, &quot;format&quot;);</span>
+<span class="fc" id="L28">        this.appendable = appendable;</span>
+<span class="fc" id="L29">        this.format = format.copy();</span>
+<span class="fc" id="L30">        final String[] headerComments = format.getHeaderComments();</span>
+<span class="pc bpc" id="L31" title="1 of 2 branches missed.">        if (headerComments != null) {</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">            for (final String line : headerComments) {</span>
+<span class="nc" id="L33">                printComment(line);</span>
+            }
+        }
+<span class="pc bpc" id="L36" title="1 of 4 branches missed.">        if (format.getHeader() != null &amp;&amp; !format.getSkipHeaderRecord()) {</span>
+<span class="nc" id="L37">            this.printRecord((Object[]) format.getHeader());</span>
+        }
+<span class="fc" id="L39">    }</span>
+    @Override
+    public void close() throws IOException {
+<span class="fc" id="L42">        close(false);</span>
+<span class="fc" id="L43">    }</span>
+    public void close(final boolean flush) throws IOException {
+<span class="pc bpc" id="L45" title="1 of 4 branches missed.">        if (flush || format.getAutoFlush()) {</span>
+<span class="fc" id="L46">            flush();</span>
+        }
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (appendable instanceof Closeable) {</span>
+<span class="fc" id="L49">            ((Closeable) appendable).close();</span>
+        }
+<span class="fc" id="L51">    }</span>
+    void endOfRecord() throws IOException {
+<span class="fc" id="L53">        println();</span>
+<span class="fc" id="L54">        recordCount++;</span>
+<span class="fc" id="L55">    }</span>
+    @Override
+    public void flush() throws IOException {
+<span class="pc bpc" id="L58" title="1 of 2 branches missed.">        if (appendable instanceof Flushable) {</span>
+<span class="fc" id="L59">            ((Flushable) appendable).flush();</span>
+        }
+<span class="fc" id="L61">    }</span>
+    public Appendable getOut() {
+<span class="fc" id="L63">        return appendable;</span>
+    }
+    public long getRecordCount() {
+<span class="fc" id="L66">        return recordCount;</span>
+    }
+    public void print(final Object value) throws IOException {
+<span class="fc" id="L69">        lock.lock();</span>
+        try {
+<span class="fc" id="L71">            printRaw(value);</span>
+        } finally {
+<span class="fc" id="L73">            lock.unlock();</span>
+        }
+<span class="fc" id="L75">    }</span>
+    public void printComment(final String comment) throws IOException {
+<span class="fc" id="L77">        lock.lock();</span>
+        try {
+<span class="pc bpc" id="L79" title="2 of 4 branches missed.">            if (comment == null || !format.isCommentMarkerSet()) {</span>
+<span class="nc" id="L80">                return;</span>
+            }
+<span class="pc bpc" id="L82" title="1 of 2 branches missed.">            if (!newRecord) {</span>
+<span class="nc" id="L83">                println();</span>
+            }
+<span class="fc" id="L85">            appendable.append(format.getCommentMarker().charValue());</span>
+<span class="fc" id="L86">            appendable.append(SP);</span>
+<span class="fc bfc" id="L87" title="All 2 branches covered.">            for (int i = 0; i &lt; comment.length(); i++) {</span>
+<span class="fc" id="L88">                final char c = comment.charAt(i);</span>
+<span class="fc bfc" id="L89" title="All 3 branches covered.">                switch (c) {</span>
+                case CR:
+<span class="pc bpc" id="L91" title="1 of 4 branches missed.">                    if (i + 1 &lt; comment.length() &amp;&amp; comment.charAt(i + 1) == LF) {</span>
+<span class="fc" id="L92">                        i++;</span>
+                    }
+                case LF:
+<span class="fc" id="L95">                    println();</span>
+<span class="fc" id="L96">                    appendable.append(format.getCommentMarker().charValue());</span>
+<span class="fc" id="L97">                    appendable.append(SP);</span>
+<span class="fc" id="L98">                    break;</span>
+                default:
+<span class="fc" id="L100">                    appendable.append(c);</span>
+                    break;
+                }
+            }
+<span class="fc" id="L104">            println();</span>
+        } finally {
+<span class="fc" id="L106">            lock.unlock();</span>
+        }
+<span class="fc" id="L108">    }</span>
+    public void printHeaders(final ResultSet resultSet) throws IOException, SQLException {
+<span class="fc" id="L110">        lock.lock();</span>
+        try {
+<span class="fc" id="L112">            try (IOStream&lt;String&gt; stream = IOStream.of(format.builder().setHeader(resultSet).get().getHeader())) {</span>
+<span class="fc" id="L113">                stream.forEachOrdered(this::print);</span>
+            }
+<span class="fc" id="L115">            println();</span>
+        } finally {
+<span class="fc" id="L117">            lock.unlock();</span>
+        }
+<span class="fc" id="L119">    }</span>
+    public void println() throws IOException {
+<span class="fc" id="L121">        lock.lock();</span>
+        try {
+<span class="fc" id="L123">            format.println(appendable);</span>
+<span class="fc" id="L124">            newRecord = true;</span>
+        } finally {
+<span class="fc" id="L126">            lock.unlock();</span>
+        }
+<span class="fc" id="L128">    }</span>
+    private void printRaw(final Object value) throws IOException {
+<span class="fc" id="L130">        format.print(value, appendable, newRecord);</span>
+<span class="fc" id="L131">        newRecord = false;</span>
+<span class="fc" id="L132">    }</span>
+    @SuppressWarnings(&quot;resource&quot;)
+    public void printRecord(final Iterable&lt;?&gt; values) throws IOException {
+<span class="fc" id="L135">        lock.lock();</span>
+        try {
+<span class="fc" id="L137">            IOStream.of(values).forEachOrdered(this::print);</span>
+<span class="fc" id="L138">            endOfRecord();</span>
+        } finally {
+<span class="fc" id="L140">            lock.unlock();</span>
+        }
+<span class="fc" id="L142">    }</span>
+    public void printRecord(final Object... values) throws IOException {
+<span class="fc" id="L144">        printRecord(Arrays.asList(values));</span>
+<span class="fc" id="L145">    }</span>
+    @SuppressWarnings(&quot;resource&quot;)
+    public void printRecord(final Stream&lt;?&gt; stream) throws IOException {
+<span class="fc" id="L148">        lock.lock();</span>
+        try {
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">            IOStream.adapt(stream).forEachOrdered(stream.isParallel() ? this::printRaw : this::print);</span>
+<span class="fc" id="L151">            endOfRecord();</span>
+        } finally {
+<span class="fc" id="L153">            lock.unlock();</span>
+        }
+<span class="fc" id="L155">    }</span>
+    private void printRecordObject(final Object value) throws IOException {
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">        if (value instanceof Object[]) {</span>
+<span class="nc" id="L158">            this.printRecord((Object[]) value);</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">        } else if (value instanceof Iterable) {</span>
+<span class="fc" id="L160">            this.printRecord((Iterable&lt;?&gt;) value);</span>
+        } else {
+<span class="fc" id="L162">            this.printRecord(value);</span>
+        }
+<span class="fc" id="L164">    }</span>
+    @SuppressWarnings(&quot;resource&quot;)
+    private void printRecords(final IOStream&lt;?&gt; stream) throws IOException {
+<span class="fc" id="L167">        format.limit(stream).forEachOrdered(this::printRecordObject);</span>
+<span class="fc" id="L168">    }</span>
+    @SuppressWarnings(&quot;resource&quot;)
+    public void printRecords(final Iterable&lt;?&gt; values) throws IOException {
+<span class="fc" id="L171">        printRecords(IOStream.of(values));</span>
+<span class="fc" id="L172">    }</span>
+    public void printRecords(final Object... values) throws IOException {
+<span class="nc" id="L174">        printRecords(Arrays.asList(values));</span>
+<span class="nc" id="L175">    }</span>
+    public void printRecords(final ResultSet resultSet) throws SQLException, IOException {
+<span class="fc" id="L177">        final int columnCount = resultSet.getMetaData().getColumnCount();</span>
+<span class="pc bpc" id="L178" title="1 of 4 branches missed.">        while (resultSet.next() &amp;&amp; format.useRow(resultSet.getRow())) {</span>
+<span class="fc" id="L179">            lock.lock();</span>
+            try {
+<span class="fc bfc" id="L181" title="All 2 branches covered.">                for (int i = 1; i &lt;= columnCount; i++) {</span>
+<span class="fc" id="L182">                    final Object object = resultSet.getObject(i);</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">                    if (object instanceof Clob) {</span>
+<span class="fc" id="L184">                        try (Reader reader = ((Clob) object).getCharacterStream()) {</span>
+<span class="fc" id="L185">                            print(reader);</span>
+                        }
+<span class="fc bfc" id="L187" title="All 2 branches covered.">                    } else if (object instanceof Blob) {</span>
+<span class="fc" id="L188">                        try (InputStream inputStream = ((Blob) object).getBinaryStream()) {</span>
+<span class="fc" id="L189">                            print(inputStream);</span>
+                        }
+                    } else {
+<span class="fc" id="L192">                        print(object);</span>
+                    }
+                }
+<span class="fc" id="L195">                endOfRecord();</span>
+            } finally {
+<span class="fc" id="L197">                lock.unlock();</span>
+<span class="fc" id="L198">            }</span>
+        }
+<span class="fc" id="L200">    }</span>
+    public void printRecords(final ResultSet resultSet, final boolean printHeader) throws SQLException, IOException {
+<span class="pc bpc" id="L202" title="1 of 2 branches missed.">        if (printHeader) {</span>
+<span class="fc" id="L203">            printHeaders(resultSet);</span>
+        }
+<span class="fc" id="L205">        printRecords(resultSet);</span>
+<span class="fc" id="L206">    }</span>
+    @SuppressWarnings({ &quot;resource&quot; })
+    public void printRecords(final Stream&lt;?&gt; values) throws IOException {
+<span class="fc" id="L209">        printRecords(IOStream.adapt(values));</span>
+<span class="fc" id="L210">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

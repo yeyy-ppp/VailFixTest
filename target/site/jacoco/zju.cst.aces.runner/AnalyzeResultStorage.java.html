@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AnalyzeResultStorage.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">AnalyzeResultStorage.java</span></div><h1>AnalyzeResultStorage.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+public class AnalyzeResultStorage {
+    // 基础存储目录（target下）
+    private static final String BASE_STORAGE_DIR = &quot;target&quot;;
+    // 已处理的类集合（避免循环依赖）
+<span class="nc" id="L16">    private Set&lt;String&gt; processedClasses = new HashSet&lt;&gt;();</span>
+    // 当前分析的根目录（如cli）
+    private String currentRootDir;
+    // 测试核心类实例（用于调用LLM分析）
+    private TestCoreDemo2 testCoreClass;
+
+<span class="nc" id="L22">    public AnalyzeResultStorage(String rootDir, TestCoreDemo2 testCore) {</span>
+<span class="nc" id="L23">        this.currentRootDir = rootDir;</span>
+<span class="nc" id="L24">        this.testCoreClass = testCore;</span>
+<span class="nc" id="L25">    }</span>
+
+    /**
+     * 启动分析并存储指定类及其依赖
+     * @param className 初始类名（如AlreadySelectedException）
+     * @param sourceCodeDir 源代码目录
+     * @throws IOException IO异常
+     */
+    public void startAnalyzeAndStore(String className, String sourceCodeDir) throws IOException {
+        // 构建根存储目录（target/analyzeStart-test-cli）
+<span class="nc" id="L35">        String rootStorageDir = Paths.get(BASE_STORAGE_DIR, &quot;analyzeStart-test-&quot; + currentRootDir).toString();</span>
+<span class="nc" id="L36">        File rootDir = new File(rootStorageDir);</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (!rootDir.exists()) {</span>
+<span class="nc" id="L38">            rootDir.mkdirs();</span>
+        }
+
+        // 递归分析类及其依赖
+<span class="nc" id="L42">        analyzeAndStoreRecursive(className, sourceCodeDir, rootStorageDir);</span>
+<span class="nc" id="L43">    }</span>
+
+    // 辅助方法：拆分源代码为多个块（按方法或固定长度）
+    private List&lt;String&gt; splitSourceCode(String sourceCode) {
+<span class="nc" id="L47">        List&lt;String&gt; chunks = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L48">        int maxChunkLength = 5000; // 每块最大字符数（根据LLM输入限制调整）</span>
+<span class="nc" id="L49">        int length = sourceCode.length();</span>
+
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (int i = 0; i &lt; length; i += maxChunkLength) {</span>
+<span class="nc" id="L52">            int end = Math.min(i + maxChunkLength, length);</span>
+            // 尽量按方法边界拆分（简单处理：找最近的&quot;}&quot;作为分割点）
+<span class="nc bnc" id="L54" title="All 2 branches missed.">            if (end &lt; length) {</span>
+<span class="nc" id="L55">                int lastBrace = sourceCode.lastIndexOf(&quot;}&quot;, end);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">                if (lastBrace &gt; i) {</span>
+<span class="nc" id="L57">                    end = lastBrace + 1; // 确保方法完整</span>
+                }
+            }
+<span class="nc" id="L60">            chunks.add(sourceCode.substring(i, end));</span>
+        }
+<span class="nc" id="L62">        return chunks;</span>
+    }
+
+    /**
+     * 递归分析类及其依赖/继承类并存储结果
+     */
+    private void analyzeAndStoreRecursive(String className, String sourceCodeDir, String rootStorageDir) throws IOException {
+        // 避免重复处理
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        if (processedClasses.contains(className)) {</span>
+<span class="nc" id="L71">            return;</span>
+        }
+<span class="nc" id="L73">        processedClasses.add(className);</span>
+
+        // 1. 检查当前类是否存在于源代码目录
+<span class="nc" id="L76">        String classFilePath = findClassInDir(className, sourceCodeDir);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (classFilePath == null) {</span>
+<span class="nc" id="L78">            System.out.println(&quot;类[&quot; + className + &quot;]不在当前目录[&quot; + sourceCodeDir + &quot;]下，跳过包依赖处理&quot;);</span>
+<span class="nc" id="L79">            return;</span>
+        }
+
+        // 2. 检查是否已存在分析结果，存在则跳过分析（但仍会用于LLM）
+<span class="nc" id="L83">        String resultFilePath = Paths.get(rootStorageDir, className + &quot;.analyze&quot;).toString();</span>
+<span class="nc" id="L84">        File resultFile = new File(resultFilePath);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (resultFile.exists()) {</span>
+<span class="nc" id="L86">            System.out.println(&quot;类[&quot; + className + &quot;]分析结果已存在，跳过分析&quot;);</span>
+        } else {
+            // 3. 调用LLM分析当前类
+<span class="nc" id="L89">            System.out.println(&quot;开始分析类[&quot; + className + &quot;]...&quot;);</span>
+<span class="nc" id="L90">            String sourceCode = testCoreClass.readSourceCode(classFilePath);</span>
+
+
+            // 拆分长代码（如按方法拆分，每块不超过5000字符）
+<span class="nc" id="L94">            List&lt;String&gt; codeChunks = splitSourceCode(sourceCode);</span>
+<span class="nc" id="L95">            StringBuilder fullAnalyzeResult = new StringBuilder();</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            for (String chunk : codeChunks) {</span>
+<span class="nc" id="L98">                String chunkResult = testCoreClass.analyzeSourceCode(chunk); // 调用LLM分析单块</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                if (chunkResult != null) {</span>
+<span class="nc" id="L100">                    fullAnalyzeResult.append(chunkResult).append(&quot;\n&quot;); // 合并结果</span>
+                }
+<span class="nc" id="L102">            }</span>
+
+<span class="nc" id="L104">            String analyzeResult = fullAnalyzeResult.toString();</span>
+
+           // String analyzeResult = testCoreClass.analyzeSourceCode(sourceCode);
+            // 处理分析结果：删除```和```over标识符
+<span class="nc" id="L108">            analyzeResult = analyzeResult.replace(&quot;```&quot;, &quot;&quot;).replace(&quot;```over&quot;, &quot;&quot;);</span>
+            // 删除空白行（匹配空行或仅含空白字符的行）
+<span class="nc" id="L110">            analyzeResult = analyzeResult.replaceAll(&quot;(?m)^\\s*$\\n?&quot;, &quot;&quot;);</span>
+<span class="nc bnc" id="L111" title="All 4 branches missed.">            if (analyzeResult == null || analyzeResult.isEmpty()) {</span>
+<span class="nc" id="L112">                System.out.println(&quot;类[&quot; + className + &quot;]分析失败，LLM未返回有效结果&quot;);</span>
+<span class="nc" id="L113">                return;</span>
+            }
+
+            // 4. 存储分析结果到target目录
+<span class="nc" id="L117">            Files.write(Paths.get(resultFilePath), analyzeResult.getBytes());</span>
+<span class="nc" id="L118">            System.out.println(&quot;类[&quot; + className + &quot;]分析结果已存储至：&quot; + resultFilePath);</span>
+        }
+
+        // 5. 提取当前类的依赖类和继承类（通过LLM分析结果）
+<span class="nc" id="L122">        String analyzeContent = new String(Files.readAllBytes(Paths.get(resultFilePath)), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L123">        ClassDependencyInfo dependencyInfo = extractDependencyInfo(analyzeContent, className);</span>
+
+        // 6. 递归处理依赖类（如OptionGroup、Option）
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        for (String dependency : dependencyInfo.getDependencies()) {</span>
+<span class="nc" id="L127">            System.out.println(&quot;处理类[&quot; + className + &quot;]的依赖类：&quot; + dependency);</span>
+<span class="nc" id="L128">            analyzeAndStoreRecursive(dependency, sourceCodeDir, rootStorageDir);</span>
+<span class="nc" id="L129">        }</span>
+
+        // 7. 处理继承类（如extends ParseException）
+<span class="nc bnc" id="L132" title="All 4 branches missed.">        if (dependencyInfo.getSuperClass() != null &amp;&amp; !dependencyInfo.getSuperClass().isEmpty()) {</span>
+<span class="nc" id="L133">            String superClass = dependencyInfo.getSuperClass();</span>
+<span class="nc" id="L134">            System.out.println(&quot;处理类[&quot; + className + &quot;]的继承类：&quot; + superClass);</span>
+<span class="nc" id="L135">            analyzeAndStoreRecursive(superClass, sourceCodeDir, rootStorageDir);</span>
+        }
+<span class="nc" id="L137">    }</span>
+
+    /**
+     * 在指定目录中查找类文件
+     * @param className 类名
+     * @param dir 目录路径
+     * @return 类文件路径，不存在则返回null
+     */
+    private String findClassInDir(String className, String dir) {
+<span class="nc" id="L146">        File directory = new File(dir);</span>
+<span class="nc bnc" id="L147" title="All 4 branches missed.">        if (!directory.exists() || !directory.isDirectory()) {</span>
+<span class="nc" id="L148">            return null;</span>
+        }
+
+<span class="nc" id="L151">        File[] files = directory.listFiles((d, name) -&gt; name.equals(className + &quot;.java&quot;));</span>
+<span class="nc bnc" id="L152" title="All 4 branches missed.">        if (files != null &amp;&amp; files.length &gt; 0) {</span>
+<span class="nc" id="L153">            return files[0].getAbsolutePath();</span>
+        }
+<span class="nc" id="L155">        return null;</span>
+    }
+
+
+    /**
+     * 从LLM分析结果中提取依赖信息（简化实现，实际需根据LLM输出格式解析）
+     * @param analyzeContent LLM分析结果
+     * @param className 类名
+     * @return 依赖信息对象
+     */
+    private ClassDependencyInfo extractDependencyInfo(String analyzeContent, String className) {
+<span class="nc" id="L166">        ClassDependencyInfo info = new ClassDependencyInfo();</span>
+<span class="nc" id="L167">        List&lt;String&gt; dependencies = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L168">        String superClass = &quot;&quot;;</span>
+
+        // 1. 提取父类（匹配&quot;父类：XXX&quot;格式）
+<span class="nc" id="L171">        String[] superLines = analyzeContent.split(&quot;父类：&quot;);</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">        if (superLines.length &gt; 1) {</span>
+<span class="nc" id="L173">            superClass = superLines[1].trim().split(&quot;\n&quot;)[0]; // 取冒号后第一行内容</span>
+<span class="nc" id="L174">            superClass = superClass.replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;); // 过滤非字母数字字符</span>
+        }
+
+        // 2. 提取依赖类（匹配&quot;依赖类：XXX,XXX&quot;格式）
+<span class="nc" id="L178">        String[] depLines = analyzeContent.split(&quot;依赖类：&quot;);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">        if (depLines.length &gt; 1) {</span>
+<span class="nc" id="L180">            String depPart = depLines[1].trim().split(&quot;\n&quot;)[0]; // 取冒号后第一行内容</span>
+<span class="nc" id="L181">            String[] depClasses = depPart.split(&quot;,&quot;);</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            for (String dep : depClasses) {</span>
+<span class="nc" id="L183">                dep = dep.trim().replaceAll(&quot;[^a-zA-Z0-9]&quot;, &quot;&quot;); // 过滤特殊字符</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                if (!dep.isEmpty()) {</span>
+<span class="nc" id="L185">                    dependencies.add(dep);</span>
+                }
+            }
+        }
+
+<span class="nc" id="L190">        info.setDependencies(dependencies);</span>
+<span class="nc" id="L191">        info.setSuperClass(superClass);</span>
+<span class="nc" id="L192">        return info;</span>
+    }
+
+    /**
+     * 依赖信息内部类
+     */
+    private static class ClassDependencyInfo {
+        private List&lt;String&gt; dependencies; // 依赖类列表
+        private String superClass; // 父类
+
+        public List&lt;String&gt; getDependencies() {
+<span class="nc" id="L203">            return dependencies;</span>
+        }
+
+        public void setDependencies(List&lt;String&gt; dependencies) {
+<span class="nc" id="L207">            this.dependencies = dependencies;</span>
+<span class="nc" id="L208">        }</span>
+
+        public String getSuperClass() {
+<span class="nc" id="L211">            return superClass;</span>
+        }
+
+        public void setSuperClass(String superClass) {
+<span class="nc" id="L215">            this.superClass = superClass;</span>
+<span class="nc" id="L216">        }</span>
+    }
+
+    // 测试调用示例
+    public static void main(String[] args) throws IOException {
+        // 初始化参数
+<span class="nc" id="L222">        String apiKey = &quot;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&quot;;</span>
+<span class="nc" id="L223">        String sourceCodeDir = &quot;src/main/java/cli&quot;; // 目标目录（如cli）</span>
+<span class="nc" id="L224">        String rootDir = &quot;cli&quot;; // 当前分析的目录名</span>
+<span class="nc" id="L225">        String targetClass = &quot;BasicParser&quot;; // 初始分析类</span>
+
+        // 初始化测试核心类
+<span class="nc" id="L228">        TestCoreDemo2 testCore = new TestCoreDemo2(apiKey);</span>
+        // 创建存储处理器
+<span class="nc" id="L230">        AnalyzeResultStorage storage = new AnalyzeResultStorage(rootDir, testCore);</span>
+        // 启动分析和存储
+<span class="nc" id="L232">        storage.startAnalyzeAndStore(targetClass, sourceCodeDir);</span>
+<span class="nc" id="L233">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,1119 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FixTestCode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">FixTestCode.java</span></div><h1>FixTestCode.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.regex.*;
+import java.util.stream.Collectors;
+//修复
+<span class="nc" id="L9">public class FixTestCode {</span>
+<span class="nc" id="L10">    TestCoreDemo2 testCoreDemo2 = new TestCoreDemo2(&quot;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&quot;);</span>
+<span class="nc" id="L11">    private enum FixMode {LINE, METHOD,CLASS}  //定义修复模式 行-体-类</span>
+    private static class CodeSpot {      //修复模式代码范围
+        final String code;
+        final FixMode mode;
+<span class="nc" id="L15">        CodeSpot(String code, FixMode mode) {</span>
+<span class="nc" id="L16">            this.code = code;</span>
+<span class="nc" id="L17">            this.mode = mode;</span>
+<span class="nc" id="L18">        }</span>
+    }
+
+    // 1. 新增错误类型与级别枚举
+<span class="nc" id="L22">    private enum ErrorType {</span>
+        // 行级错误
+<span class="nc" id="L24">        ASSERTION_ERROR, SYNTAX_ERROR, SINGLE_LINE_LOGIC_ERROR,</span>
+        // 体级错误
+<span class="nc" id="L26">        MULTI_LINE_CONFLICT, MISSING_STEPS, DEPENDENCY_ERROR,</span>
+        // 类级错误
+<span class="nc" id="L28">        CLASS_STRUCTURE_ERROR, CROSS_METHOD_DEPENDENCY, MISSING_TEST_METHOD, STATIC_RESOURCE_ERROR,</span>
+        // 未识别错误
+<span class="nc" id="L30">        UNKNOWN_ERROR</span>
+    }
+    // 2. 扩展SpotError类，添加错误类型和初始修复级别字段
+    private static class SpotError {
+        final int lineNo;
+        final int startCol;
+        final int endCol;
+        final String desc;
+        Integer methodStartLine;
+        Integer methodEndLine;
+        ErrorType errorType; // 新增：错误类型
+        FixMode initialFixMode; // 新增：初始修复级别
+
+        // 行级错误构造器（扩展）
+<span class="nc" id="L44">        SpotError(int lineNo, int startCol, int endCol, String desc) {</span>
+<span class="nc" id="L45">            this.lineNo = lineNo;</span>
+<span class="nc" id="L46">            this.startCol = startCol;</span>
+<span class="nc" id="L47">            this.endCol = endCol;</span>
+<span class="nc" id="L48">            this.desc = desc;</span>
+<span class="nc" id="L49">            this.errorType = identifyErrorType(desc); // 自动识别类型</span>
+<span class="nc" id="L50">            this.initialFixMode = getInitialFixMode(this.errorType); // 确定初始修复级别</span>
+<span class="nc" id="L51">        }</span>
+
+        // 方法级错误构造器（扩展）
+        SpotError(int lineNo, int startCol, int endCol, String desc, int methodStartLine, int methodEndLine) {
+<span class="nc" id="L55">            this(lineNo, startCol, endCol, desc);</span>
+<span class="nc" id="L56">            this.methodStartLine = methodStartLine;</span>
+<span class="nc" id="L57">            this.methodEndLine = methodEndLine;</span>
+<span class="nc" id="L58">        }</span>
+
+        // 核心：根据错误描述识别错误类型
+        private ErrorType identifyErrorType(String desc) {
+<span class="nc" id="L62">            desc = desc.toLowerCase();</span>
+            // 行级错误识别
+<span class="nc bnc" id="L64" title="All 6 branches missed.">            if (desc.contains(&quot;assert&quot;) || desc.contains(&quot;预期值&quot;) || desc.contains(&quot;实际值&quot;)) {</span>
+<span class="nc" id="L65">                return ErrorType.ASSERTION_ERROR;</span>
+            }
+<span class="nc bnc" id="L67" title="All 8 branches missed.">            if (desc.contains(&quot;分号&quot;) || desc.contains(&quot;括号&quot;) || desc.contains(&quot;语法&quot;) || desc.contains(&quot;拼写&quot;)) {</span>
+<span class="nc" id="L68">                return ErrorType.SYNTAX_ERROR;</span>
+            }
+<span class="nc bnc" id="L70" title="All 8 branches missed.">            if (desc.contains(&quot;if&quot;) || desc.contains(&quot;for&quot;) || desc.contains(&quot;while&quot;) &amp;&amp; desc.contains(&quot;单行&quot;)) {</span>
+<span class="nc" id="L71">                return ErrorType.SINGLE_LINE_LOGIC_ERROR;</span>
+            }
+
+            // 体级错误识别
+<span class="nc bnc" id="L75" title="All 6 branches missed.">            if (desc.contains(&quot;分支&quot;) || desc.contains(&quot;循环&quot;) || desc.contains(&quot;逻辑冲突&quot;)) {</span>
+<span class="nc" id="L76">                return ErrorType.MULTI_LINE_CONFLICT;</span>
+            }
+<span class="nc bnc" id="L78" title="All 6 branches missed.">            if (desc.contains(&quot;未初始化&quot;) || desc.contains(&quot;未调用&quot;) || desc.contains(&quot;缺失步骤&quot;)) {</span>
+<span class="nc" id="L79">                return ErrorType.MISSING_STEPS;</span>
+            }
+<span class="nc bnc" id="L81" title="All 6 branches missed.">            if (desc.contains(&quot;参数传递&quot;) || desc.contains(&quot;返回值处理&quot;) || desc.contains(&quot;依赖&quot;)) {</span>
+<span class="nc" id="L82">                return ErrorType.DEPENDENCY_ERROR;</span>
+            }
+
+            // 类级错误识别
+<span class="nc bnc" id="L86" title="All 6 branches missed.">            if (desc.contains(&quot;导入&quot;) || desc.contains(&quot;注解&quot;) || desc.contains(&quot;类结构&quot;)) {</span>
+<span class="nc" id="L87">                return ErrorType.CLASS_STRUCTURE_ERROR;</span>
+            }
+<span class="nc bnc" id="L89" title="All 6 branches missed.">            if (desc.contains(&quot;共享变量&quot;) || desc.contains(&quot;跨方法&quot;) || desc.contains(&quot;多方法依赖&quot;)) {</span>
+<span class="nc" id="L90">                return ErrorType.CROSS_METHOD_DEPENDENCY;</span>
+            }
+<span class="nc bnc" id="L92" title="All 6 branches missed.">            if (desc.contains(&quot;缺失测试方法&quot;) || desc.contains(&quot;未覆盖&quot;) || desc.contains(&quot;测试方法不足&quot;)) {</span>
+<span class="nc" id="L93">                return ErrorType.MISSING_TEST_METHOD;</span>
+            }
+<span class="nc bnc" id="L95" title="All 6 branches missed.">            if (desc.contains(&quot;静态资源&quot;) || desc.contains(&quot;常量&quot;) || desc.contains(&quot;全局配置&quot;)) {</span>
+<span class="nc" id="L96">                return ErrorType.STATIC_RESOURCE_ERROR;</span>
+            }
+
+            // 未识别错误
+<span class="nc" id="L100">            return ErrorType.UNKNOWN_ERROR;</span>
+        }
+
+        // 根据错误类型确定初始修复级别
+        private FixMode getInitialFixMode(ErrorType type) {
+<span class="nc bnc" id="L105" title="All 4 branches missed.">            switch (type) {</span>
+                case ASSERTION_ERROR:
+                case SYNTAX_ERROR:
+                case SINGLE_LINE_LOGIC_ERROR:
+<span class="nc" id="L109">                    return FixMode.LINE;</span>
+                case MULTI_LINE_CONFLICT:
+                case MISSING_STEPS:
+                case DEPENDENCY_ERROR:
+<span class="nc" id="L113">                    return FixMode.METHOD;</span>
+                case CLASS_STRUCTURE_ERROR:
+                case CROSS_METHOD_DEPENDENCY:
+                case MISSING_TEST_METHOD:
+                case STATIC_RESOURCE_ERROR:
+<span class="nc" id="L118">                    return FixMode.CLASS;</span>
+                default:
+<span class="nc" id="L120">                    return FixMode.LINE; // 未识别错误默认从行级开始</span>
+            }
+        }
+    }
+
+    // 初级错误信息存储库
+    /* ---------------- 初级错误信息存储库 ---------------- */
+    // 错误记录实体类
+    private static class ErrorRecord {
+        String className;       // 类名
+        String methodName;      // 方法名
+        int errorLineNo;        // 错误行号（1-base）
+        String errorType;       // 错误类型（如&quot;断言错误&quot;、&quot;语法错误&quot;）
+        String errorContent;    // 错误具体描述
+        String errorCode;       // 错误行的原始代码
+        String fixedCode;       // 修复后的代码
+
+        public ErrorRecord(String className, String methodName, int errorLineNo,
+<span class="nc" id="L138">                           String errorType, String errorContent, String errorCode, String fixedCode) {</span>
+<span class="nc" id="L139">            this.className = className;</span>
+<span class="nc" id="L140">            this.methodName = methodName;</span>
+<span class="nc" id="L141">            this.errorLineNo = errorLineNo;</span>
+<span class="nc" id="L142">            this.errorType = errorType;</span>
+<span class="nc" id="L143">            this.errorContent = errorContent;</span>
+<span class="nc" id="L144">            this.errorCode = errorCode;</span>
+<span class="nc" id="L145">            this.fixedCode = fixedCode;</span>
+<span class="nc" id="L146">        }</span>
+    }
+
+    // 内存存储库（使用List作为临时存储）
+<span class="nc" id="L150">    private List&lt;ErrorRecord&gt; errorRepository = new ArrayList&lt;&gt;();</span>
+
+    // 添加错误记录到存储库
+   /* private void addToRepository(Map&lt;String, String&gt; classInfo, SpotError error,
+                                 String errorCode, String fixedCode, String methodName) {
+        // 从错误描述中提取错误类型（简单示例）
+        String errorType = error.desc.contains(&quot;预期值&quot;) ? &quot;断言错误&quot; : &quot;未知错误&quot;;
+
+        ErrorRecord record = new ErrorRecord(
+                classInfo.getOrDefault(&quot;类名&quot;, &quot;&quot;),
+                methodName,
+                error.lineNo,
+                errorType,
+                error.desc,
+                errorCode,
+                fixedCode
+        );
+        errorRepository.add(record);
+        System.out.println(&quot;已记录错误信息到存储库：&quot; + record.className + &quot;第&quot; + record.errorLineNo + &quot;行&quot;);
+    }*/
+    // 记录错误修复信息
+    // 1. 修复ErrorRecord无参构造器问题（原类只有带参构造器）
+    private void addToRepository(Map&lt;String, String&gt; classInfo, SpotError error, String errorCode, String fixedCode, String methodName) {
+<span class="nc" id="L173">        ErrorRecord record = new ErrorRecord(</span>
+<span class="nc" id="L174">                classInfo.get(&quot;类名&quot;),</span>
+                methodName,
+                error.lineNo,
+<span class="nc bnc" id="L177" title="All 2 branches missed.">                error.desc.contains(&quot;语法&quot;) ? &quot;语法错误&quot; : &quot;逻辑错误&quot;,</span>
+                error.desc,  // 补充errorContent参数（原遗漏）
+                errorCode,
+                fixedCode
+        );
+<span class="nc" id="L182">        errorRepository.add(record);</span>
+<span class="nc" id="L183">    }</span>
+
+    // 从存储库查询错误记录（示例方法）
+    private List&lt;ErrorRecord&gt; queryRecordsByClass(String className) {
+<span class="nc" id="L187">        return errorRepository.stream()</span>
+<span class="nc" id="L188">                .filter(r -&gt; r.className.equals(className))</span>
+<span class="nc" id="L189">                .collect(Collectors.toList());</span>
+    }
+
+    // 提取整个类的代码
+    private String extractClassCode(Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L194">        Path path = Paths.get(getTestFilePath(classInfo));</span>
+<span class="nc" id="L195">        return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);</span>
+    }
+    private void replaceClass(Map&lt;String, String&gt; classInfo, String newClassCode) throws IOException {
+<span class="nc" id="L198">        Path path = Paths.get(getTestFilePath(classInfo));</span>
+<span class="nc" id="L199">        Files.write(path, newClassCode.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L200">        System.out.println(&quot;类级替换完成&quot;);</span>
+<span class="nc" id="L201">    }</span>
+
+    /*// 类级修复核心方法
+    private boolean attemptClassLevelFix(SpotError error, Map&lt;String, String&gt; classInfo) throws IOException {
+        // 1. 提取整个类代码
+        String classCode = extractClassCode(classInfo);
+        if (classCode.isEmpty()) {
+            System.err.println(&quot;类级修复失败：无法提取类代码&quot;);
+            return false;
+        }
+
+        // 2. 生成类级修复提示
+        String prompt = &quot;以下测试类的第&quot; + error.lineNo + &quot;行存在错误，行级和方法级修复均失败，请修复整个类：\n&quot; +
+                &quot;错误描述：&quot; + error.desc + &quot;\n&quot; +
+                &quot;类完整代码：\n```java\n&quot; + classCode + &quot;\n```\n&quot; +
+                &quot;修复要求：\n&quot; +
+                &quot;1. 确保解决指定行的错误\n&quot; +
+                &quot;2. 保持类结构、其他方法和导入语句完整\n&quot; +
+                &quot;3. 仅返回修复后的完整类代码（无解释）&quot;;
+
+        // 3. 调用LLM获取修复结果
+        String fixedClassCode = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();
+        fixedClassCode = cleanCodeBlock(fixedClassCode);
+        if (fixedClassCode.isEmpty() || !isSyntaxValid(fixedClassCode)) {
+            System.err.println(&quot;类级修复失败：修复结果无效&quot;);
+            return false;
+        }
+
+        // 4. 替换整个类代码
+        Path path = Paths.get(getTestFilePath(classInfo));
+        Files.writeString(path, fixedClassCode, StandardCharsets.UTF_8);
+        System.out.println(&quot;类级修复完成：替换整个类代码&quot;);
+        return true;
+    }*/
+    // 新增：类级修复入口（处理类级错误，如缺少方法、依赖问题）
+    private boolean attemptClassLevelFix(Map&lt;String, String&gt; classInfo, List&lt;SpotError&gt; remainingErrors) throws IOException {
+<span class="nc" id="L237">        String classCode = extractClassCode(classInfo);</span>
+<span class="nc" id="L238">        String errorDesc = &quot;以下错误需通过类级修复解决：\n&quot;;</span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">        for (SpotError e : remainingErrors) {</span>
+<span class="nc" id="L240">            errorDesc += &quot;- 行&quot; + e.lineNo + &quot;：&quot; + e.desc + &quot;\n&quot;;</span>
+<span class="nc" id="L241">        }</span>
+<span class="nc" id="L242">        errorDesc += &quot;请补充缺失的测试方法，修复所有语法错误，并确保覆盖被测试类的全部方法。&quot;;</span>
+
+<span class="nc" id="L244">        String prompt = &quot;你是专业Java测试工程师，请修复整个测试类的错误：\n&quot; +</span>
+                &quot;错误信息：&quot; + errorDesc + &quot;\n&quot; +
+                &quot;当前测试类代码：\n```java\n&quot; + classCode + &quot;\n```\n&quot; +
+                &quot;要求：1. 补充缺失的测试方法；2. 修复所有语法错误；3. 保持JUnit 5风格；4. 仅返回完整测试类代码。&quot;;
+
+<span class="nc" id="L249">        String fixedClassCode = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L250">        fixedClassCode = cleanCodeBlock(fixedClassCode);</span>
+<span class="nc bnc" id="L251" title="All 4 branches missed.">        if (fixedClassCode.isEmpty() || !isSyntaxValid(fixedClassCode)) {</span>
+<span class="nc" id="L252">            return false;</span>
+        }
+
+<span class="nc" id="L255">        replaceClass(classInfo, fixedClassCode);</span>
+<span class="nc" id="L256">        return true;</span>
+    }
+
+   /* *//* 错误位置记录 *//*
+    private static class SpotError {
+        final int lineNo;       // 1-base行号
+        final int startCol;     // 行内起始列（0-base）
+        final int endCol;       // 行内结束列（0-base）
+        final String desc;      // 错误描述
+        Integer methodStartLine; // 方法起始行（1-base，方法级错误时使用）
+        Integer methodEndLine;   // 方法结束行（1-base，方法级错误时使用）
+
+        // 行级错误构造器
+        SpotError(int lineNo, int startCol, int endCol, String desc) {
+            this.lineNo = lineNo;
+            this.startCol = startCol;
+            this.endCol = endCol;
+            this.desc = desc;
+        }
+
+        // 方法级错误构造器（含行级信息）  323123
+        SpotError(int lineNo, int startCol, int endCol, String desc, int methodStartLine, int methodEndLine) {
+            this(lineNo, startCol, endCol, desc);
+            this.methodStartLine = methodStartLine;
+            this.methodEndLine = methodEndLine;
+        }
+    }*/
+
+
+    /* 错误类型区分 */
+    private static class TrackedError {
+        SpotError error;
+        boolean isInitial; // 是否为初始错误（非修复后新增）
+        boolean fixed;     // 是否已修复
+
+<span class="nc" id="L291">        TrackedError(SpotError error, boolean isInitial) {</span>
+<span class="nc" id="L292">            this.error = error;</span>
+<span class="nc" id="L293">            this.isInitial = isInitial;</span>
+<span class="nc" id="L294">            this.fixed = false;</span>
+<span class="nc" id="L295">        }</span>
+    }
+
+    /* 解析单条错误的验证报告，提取错误位置（行号）、错误内容和描述 */
+    private SpotError parseSpotError(String validateReport) {
+        // 正则匹配：错误位置：[行号]，错误内容：[错误片段]，错误原因：[描述]
+<span class="nc" id="L301">        Pattern p = Pattern.compile(</span>
+                &quot;错误位置\\s*[:：]\\s*\\[(\\d+)\\]\\s*[,，]\\s*错误内容\\s*[:：]\\s*\\[(.*?)\\]\\s*[,，]\\s*错误原因\\s*[:：]\\s*\\[(.*?)\\]&quot;,
+                Pattern.DOTALL
+        );
+<span class="nc" id="L305">        Matcher m = p.matcher(validateReport);</span>
+<span class="nc bnc" id="L306" title="All 2 branches missed.">        if (!m.find()) return null;</span>
+
+<span class="nc" id="L308">        int lineNo = Integer.parseInt(m.group(1));</span>
+<span class="nc" id="L309">        String errorContent = m.group(2).trim();</span>
+<span class="nc" id="L310">        String desc = m.group(3).trim();</span>
+
+        // 计算错误内容在该行的起止列（模拟逻辑，实际可根据原代码行匹配）
+<span class="nc" id="L313">        int startCol = -1;</span>
+<span class="nc" id="L314">        int endCol = -1;</span>
+
+<span class="nc" id="L316">        return new SpotError(lineNo, startCol, endCol, desc);</span>
+    }
+
+    // 解析多条错误的验证报告，依次提取所有错误的行号和描述
+    private List&lt;SpotError&gt; parseMultipleSpotErrors(String validateReport) {
+<span class="nc" id="L321">        List&lt;SpotError&gt; errors = new ArrayList&lt;&gt;();</span>
+        // 适配控制台输出的错误格式（如：&quot;错误位置：[11]，错误原因：2 + 3 的实际结果应为5，但expected值为6&quot;）
+<span class="nc" id="L323">        Pattern p = Pattern.compile(</span>
+                &quot;错误位置\\s*[:：]\\s*\\[(\\d+)\\]\\s*[,，]\\s*错误原因\\s*[:：]\\s*(.*?)(?=\\n|$)&quot;,
+                Pattern.DOTALL
+        );
+<span class="nc" id="L327">        Matcher m = p.matcher(validateReport);</span>
+<span class="nc bnc" id="L328" title="All 2 branches missed.">        while (m.find()) {</span>
+<span class="nc" id="L329">            int lineNo = Integer.parseInt(m.group(1).trim()); // 提取行号</span>
+<span class="nc" id="L330">            String desc = m.group(2).trim();</span>
+            // 从错误原因中提取预期值和实际值（辅助LLM修复）
+<span class="nc" id="L332">            desc += &quot;（请修改assertEquals的预期值为正确结果）&quot;;</span>
+<span class="nc" id="L333">            errors.add(new SpotError(lineNo, -1, -1, desc)); // 行列范围暂时不填，优先保证行号正确</span>
+<span class="nc" id="L334">        }</span>
+<span class="nc" id="L335">        return errors;</span>
+    }
+
+    // 将错误按所在方法分组 便于批量处理同一方法内的错误  323123
+    private Map&lt;String, List&lt;SpotError&gt;&gt; groupErrorsByMethod(List&lt;SpotError&gt; errors, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L340">        Map&lt;String, List&lt;SpotError&gt;&gt; methodErrors = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L341">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(getTestFilePath(classInfo)));</span>
+<span class="nc bnc" id="L342" title="All 2 branches missed.">        for (SpotError err : errors) {</span>
+<span class="nc" id="L343">            int[] range = expandToMethod(lines, Math.max(0, err.lineNo - 1));</span>
+<span class="nc" id="L344">            String methodKey = range[0] + &quot;-&quot; + range[1];</span>
+<span class="nc" id="L345">            methodErrors.computeIfAbsent(methodKey, k -&gt; new ArrayList&lt;&gt;()).add(err);</span>
+<span class="nc" id="L346">        }</span>
+<span class="nc" id="L347">        return methodErrors;</span>
+    }
+
+    // 5. 修改fixMultipleSpots方法，适配新的修复流程
+    public String fixMultipleSpots(String validateReport, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L352">        List&lt;SpotError&gt; errors = parseMultipleSpotErrors(validateReport);</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">        if (errors.isEmpty()) return null;</span>
+
+<span class="nc" id="L355">        errors.sort((e1, e2) -&gt; Integer.compare(e2.lineNo, e1.lineNo));</span>
+
+<span class="nc bnc" id="L357" title="All 2 branches missed.">        for (SpotError error : errors) {</span>
+<span class="nc" id="L358">            boolean fixed = attemptFix(error, classInfo); // 直接调用新的attemptFix方法</span>
+<span class="nc bnc" id="L359" title="All 2 branches missed.">            if (!fixed) {</span>
+<span class="nc" id="L360">                System.err.println(&quot;所有级别修复均失败：&quot; + error.lineNo);</span>
+            }
+<span class="nc" id="L362">        }</span>
+
+        // 修复后验证逻辑不变
+<span class="nc" id="L365">        String fixedCode = new String(Files.readAllBytes(Paths.get(getTestFilePath(classInfo))), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L366">        String reValidate = validateTest(fixedCode);</span>
+<span class="nc" id="L367">        System.out.println(&quot;fixMultipleSpots修复完成再次验证：&quot; + reValidate);</span>
+
+<span class="nc" id="L369">        return fixedCode;</span>
+    }
+   /* *//* ---------------- 多错误修复主入口,按行号分步修复逻辑  ---------------- *//*
+    public String fixMultipleSpots(String validateReport, Map&lt;String, String&gt; classInfo) throws IOException {
+        List&lt;SpotError&gt; errors = parseMultipleSpotErrors(validateReport);
+        if (errors.isEmpty()) return null;
+
+        // 按行号倒序处理，避免替换后行号偏移
+        errors.sort((e1, e2) -&gt; Integer.compare(e2.lineNo, e1.lineNo));
+
+        for (SpotError error : errors) {
+            // 1. 先尝试行内片段修复
+            CodeSpot spot = extractSpotByStrategy(classInfo, error);
+            if (spot.code.isEmpty()) continue;
+
+            String prompt = FIX_SPOT_PROMPT
+                    .replace(&quot;{errorPrompt}&quot;, error.desc)
+                    .replace(&quot;{spotCode}&quot;, spot.code); // 仅传入错误片段
+
+            String newSpot = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();
+            newSpot = cleanCodeBlock(newSpot);
+
+            // 2. 若行内修复无效，升级为方法级修复
+            if (newSpot.isEmpty() || newSpot.equals(&quot;null&quot;) || !isSyntaxValid(newSpot)) {
+                System.err.println(&quot;行级修复失败，尝试方法级修复：&quot; + error.lineNo);
+                // 重新提取方法体
+                spot = new CodeSpot(
+                        extractMethodCode(classInfo, error.methodStartLine, error.methodEndLine),
+                        FixMode.METHOD
+                );
+                prompt = FIX_SPOT_PROMPT
+                        .replace(&quot;{errorPrompt}&quot;, error.desc + &quot;（行级修复失败，尝试修复整个方法）&quot;)
+                        .replace(&quot;{spotCode}&quot;, spot.code);
+                newSpot = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();
+                newSpot = cleanCodeBlock(newSpot);
+                if (newSpot.isEmpty() || !isSyntaxValid(newSpot)) {
+                    System.err.println(&quot;方法级修复仍失败，尝试类级修复：&quot; + error.lineNo);
+                    // 将单个error封装为List传入
+                    List&lt;SpotError&gt; errorList = Collections.singletonList(error);
+                    boolean classFixed = attemptClassLevelFix(classInfo, errorList);
+                    if (!classFixed) {
+                        System.err.println(&quot;类级修复仍失败，跳过：&quot; + error.lineNo);
+                        continue;
+                    }
+                }
+            }
+
+            // 3. 基于记录的位置放回修复结果
+            replaceSpotByStrategy(classInfo, error, newSpot, spot.mode);
+        }
+
+        // 修复后再次验证
+        String fixedCode = new String(Files.readAllBytes(Paths.get(getTestFilePath(classInfo))), StandardCharsets.UTF_8);
+        String reValidate = validateTest(fixedCode);
+        System.out.println(&quot;fixMultipleSpots修复完成再次验证：&quot; + reValidate);
+
+        return fixedCode;
+    }*/
+
+    /* ---------------- 路径处理 ---------------- */
+    private String getTestFilePath(Map&lt;String, String&gt; classInfo) {
+<span class="nc" id="L430">        String root = System.getProperty(&quot;user.dir&quot;);</span>
+<span class="nc" id="L431">        String packagePath = classInfo.getOrDefault(&quot;包路径&quot;, &quot;&quot;).replace('.', File.separatorChar);</span>
+<span class="nc" id="L432">        String className = classInfo.getOrDefault(&quot;类名&quot;, &quot;&quot;) + &quot;Test.java&quot;;</span>
+<span class="nc" id="L433">        return Paths.get(root, &quot;src&quot;, &quot;test&quot;, &quot;java&quot;, packagePath, className).toString();</span>
+    }
+
+    /*// 获取被测试类源码（仅用于必要场景，当前修复提示不传递）
+    private String getTestedClassCode(Map&lt;String, String&gt; classInfo) throws IOException {
+        String root = System.getProperty(&quot;user.dir&quot;);
+        String packagePath = classInfo.getOrDefault(&quot;包路径&quot;, &quot;&quot;).replace('.', File.separatorChar);
+        String className = classInfo.getOrDefault(&quot;类名&quot;, &quot;&quot;) + &quot;.java&quot;;
+        Path path = Paths.get(root, &quot;src&quot;, &quot;main&quot;, &quot;java&quot;, packagePath, className);
+        if (!Files.exists(path)) {
+            return &quot;被测试类源码不存在&quot;;
+        }
+        return Files.readString(path, StandardCharsets.UTF_8);
+    }*/
+
+    // 定位错误范围
+    private int[] expandToMethod(List&lt;String&gt; lines, int idx) {
+<span class="nc" id="L450">        int start = idx;</span>
+        // 向上查找@Test注解或测试方法定义（void testXXX()）
+<span class="nc bnc" id="L452" title="All 2 branches missed.">        while (start &gt; 0) {</span>
+<span class="nc" id="L453">            String line = lines.get(start).trim();</span>
+<span class="nc bnc" id="L454" title="All 8 branches missed.">            if (line.startsWith(&quot;@Test&quot;) || (line.startsWith(&quot;void&quot;) &amp;&amp; line.contains(&quot;test&quot;) &amp;&amp; line.contains(&quot;()&quot;))) {</span>
+<span class="nc" id="L455">                break;</span>
+            }
+<span class="nc" id="L457">            start--;</span>
+<span class="nc" id="L458">        }</span>
+<span class="nc bnc" id="L459" title="All 2 branches missed.">        if (start &lt; 0) start = idx;</span>
+
+        // 向下匹配大括号（忽略字符串内的括号）
+<span class="nc" id="L462">        int end = start;</span>
+<span class="nc" id="L463">        int brace = 0;</span>
+<span class="nc" id="L464">        boolean inString = false;</span>
+<span class="nc bnc" id="L465" title="All 2 branches missed.">        for (int i = start; i &lt; lines.size(); i++) {</span>
+<span class="nc" id="L466">            String line = lines.get(i);</span>
+<span class="nc bnc" id="L467" title="All 2 branches missed.">            for (char c : line.toCharArray()) {</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">                if (c == '&quot;') {</span>
+<span class="nc bnc" id="L469" title="All 2 branches missed.">                    inString = !inString; // 标记字符串范围</span>
+<span class="nc bnc" id="L470" title="All 2 branches missed.">                } else if (!inString) {</span>
+<span class="nc bnc" id="L471" title="All 2 branches missed.">                    if (c == '{') brace++;</span>
+<span class="nc bnc" id="L472" title="All 2 branches missed.">                    else if (c == '}') brace--;</span>
+                }
+            }
+<span class="nc bnc" id="L475" title="All 2 branches missed.">            if (brace == 0) {</span>
+<span class="nc" id="L476">                end = i;</span>
+<span class="nc" id="L477">                break;</span>
+            }
+        }
+<span class="nc" id="L480">        return new int[]{start, end};</span>
+    }
+
+    /* ---------------- 代码片段提取（隔离错误代码） ---------------- */
+    // 提取行内具体错误片段（基于行列范围）
+    private String extractErrorSnippet(List&lt;String&gt; lines, SpotError error) {
+<span class="nc bnc" id="L486" title="All 4 branches missed.">        if (error.lineNo &lt; 1 || error.lineNo &gt; lines.size()) {</span>
+<span class="nc" id="L487">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L489">        String line = lines.get(error.lineNo - 1);</span>
+        // 若行列范围有效，提取片段；否则返回整行（降级处理）
+<span class="nc bnc" id="L491" title="All 4 branches missed.">        if (error.startCol &gt;= 0 &amp;&amp; error.endCol &lt; line.length()) {</span>
+<span class="nc" id="L492">            return line.substring(error.startCol, error.endCol + 1);</span>
+        } else {
+<span class="nc" id="L494">            return line;</span>
+        }
+    }
+
+    // 提取指定错误方法体代码
+    private String extractMethodCode(Map&lt;String, String&gt; classInfo, Integer startLine, Integer endLine) throws IOException {
+<span class="nc bnc" id="L500" title="All 4 branches missed.">        if (startLine == null || endLine == null) return &quot;&quot;;</span>
+<span class="nc" id="L501">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(getTestFilePath(classInfo)));</span>
+<span class="nc" id="L502">        int startIdx = startLine - 1;</span>
+<span class="nc" id="L503">        int endIdx = endLine - 1;</span>
+<span class="nc bnc" id="L504" title="All 6 branches missed.">        if (startIdx &lt; 0 || endIdx &gt;= lines.size() || startIdx &gt; endIdx) {</span>
+<span class="nc" id="L505">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L507">        return String.join(&quot;\n&quot;, lines.subList(startIdx, endIdx + 1));</span>
+    }
+
+    // 基于错误信息提取待修复片段
+    private CodeSpot extractSpotByStrategy(Map&lt;String, String&gt; classInfo, SpotError error) throws IOException {
+<span class="nc" id="L512">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(getTestFilePath(classInfo)));</span>
+        // 优先提取行内错误片段
+<span class="nc" id="L514">        String errorSnippet = extractErrorSnippet(lines, error);</span>
+<span class="nc bnc" id="L515" title="All 2 branches missed.">        if (!errorSnippet.isEmpty()) {</span>
+<span class="nc" id="L516">            return new CodeSpot(errorSnippet, FixMode.LINE);</span>
+        }
+        // 若片段提取失败，提取所在方法（并记录方法范围到error）
+<span class="nc" id="L519">        int[] methodRange = expandToMethod(lines, error.lineNo - 1);</span>
+<span class="nc" id="L520">        error.methodStartLine = methodRange[0] + 1; // 转为1-base</span>
+<span class="nc" id="L521">        error.methodEndLine = methodRange[1] + 1;</span>
+<span class="nc" id="L522">        String methodCode = String.join(&quot;\n&quot;, lines.subList(methodRange[0], methodRange[1] + 1));</span>
+<span class="nc" id="L523">        return new CodeSpot(methodCode, FixMode.METHOD);</span>
+    }
+
+    /* ---------------- 清理和校验输出代码 ---------------- */
+    private String cleanCodeBlock(String code) {
+<span class="nc bnc" id="L528" title="All 2 branches missed.">        if (code == null) return &quot;&quot;;</span>
+<span class="nc" id="L529">        code = code.replaceAll(&quot;^\\s*```java\\s*&quot;, &quot;&quot;);</span>
+<span class="nc" id="L530">        code = code.replaceAll(&quot;\\s*```\\s*$&quot;, &quot;&quot;);</span>
+<span class="nc" id="L531">        return code.trim();</span>
+    }
+
+    // 简单校验代码大括号语法
+    private boolean isSyntaxValid(String code) {
+<span class="nc" id="L536">        int brace = 0;</span>
+<span class="nc" id="L537">        boolean inString = false;</span>
+<span class="nc bnc" id="L538" title="All 2 branches missed.">        for (char c : code.toCharArray()) {</span>
+<span class="nc bnc" id="L539" title="All 2 branches missed.">            if (c == '&quot;') {</span>
+<span class="nc bnc" id="L540" title="All 2 branches missed.">                inString = !inString;</span>
+<span class="nc bnc" id="L541" title="All 2 branches missed.">            } else if (!inString) {</span>
+<span class="nc bnc" id="L542" title="All 2 branches missed.">                if (c == '{') brace++;</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">                else if (c == '}') brace--;</span>
+            }
+<span class="nc bnc" id="L545" title="All 2 branches missed.">            if (brace &lt; 0) return false; // 右括号多于左括号</span>
+        }
+<span class="nc bnc" id="L547" title="All 2 branches missed.">        return brace == 0; // 括号必须平衡</span>
+    }
+
+    //  根据修复模式精准替换错误代码
+    private void replaceSpotByStrategy(Map&lt;String, String&gt; classInfo, SpotError error, String newSpot, FixMode mode) throws IOException {
+<span class="nc" id="L552">        newSpot = cleanCodeBlock(newSpot);</span>
+<span class="nc" id="L553">        Path path = Paths.get(getTestFilePath(classInfo));</span>
+<span class="nc" id="L554">        List&lt;String&gt; lines = Files.readAllLines(path);</span>
+
+<span class="nc bnc" id="L556" title="All 2 branches missed.">        if (mode == FixMode.LINE) {</span>
+            // 行内片段替换（保留其他正确内容）
+<span class="nc" id="L558">            int lineIdx = error.lineNo - 1;</span>
+<span class="nc bnc" id="L559" title="All 4 branches missed.">            if (lineIdx &lt; 0 || lineIdx &gt;= lines.size()) {</span>
+<span class="nc" id="L560">                return;</span>
+            }
+<span class="nc" id="L562">            String originalLine = lines.get(lineIdx);</span>
+            // 若行列范围有效，替换片段；否则替换整行
+<span class="nc bnc" id="L564" title="All 4 branches missed.">            if (error.startCol &gt;= 0 &amp;&amp; error.endCol &lt; originalLine.length()) {</span>
+<span class="nc" id="L565">                String newLine = originalLine.substring(0, error.startCol)</span>
+                        + newSpot
+<span class="nc" id="L567">                        + originalLine.substring(error.endCol + 1);</span>
+<span class="nc" id="L568">                lines.set(lineIdx, newLine);</span>
+<span class="nc" id="L569">            } else {</span>
+                // 降级：替换整行（保留缩进）
+<span class="nc" id="L571">                String indent = originalLine.replaceAll(&quot;\\S.*&quot;, &quot;&quot;);</span>
+<span class="nc" id="L572">                lines.set(lineIdx, indent + newSpot);</span>
+            }
+<span class="nc" id="L574">        } else {</span>
+            // 方法级替换（基于记录的methodStartLine和methodEndLine）
+<span class="nc bnc" id="L576" title="All 4 branches missed.">            if (error.methodStartLine == null || error.methodEndLine == null) {</span>
+<span class="nc" id="L577">                return;</span>
+            }
+<span class="nc" id="L579">            int startIdx = error.methodStartLine - 1;</span>
+<span class="nc" id="L580">            int endIdx = error.methodEndLine - 1;</span>
+<span class="nc bnc" id="L581" title="All 6 branches missed.">            if (startIdx &lt; 0 || endIdx &gt;= lines.size() || startIdx &gt; endIdx) {</span>
+<span class="nc" id="L582">                return;</span>
+            }
+            // 替换整个方法体
+<span class="nc" id="L585">            List&lt;String&gt; newLines = Arrays.asList(newSpot.split(&quot;\n&quot;));</span>
+<span class="nc" id="L586">            String methodIndent = lines.get(startIdx).replaceAll(&quot;\\S.*&quot;, &quot;&quot;);</span>
+<span class="nc" id="L587">            List&lt;String&gt; indentedLines = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            for (String line : newLines) {</span>
+<span class="nc" id="L589">                indentedLines.add(methodIndent + line);</span>
+<span class="nc" id="L590">            }</span>
+<span class="nc" id="L591">            lines.subList(startIdx, endIdx + 1).clear();</span>
+<span class="nc" id="L592">            lines.addAll(startIdx, indentedLines);</span>
+        }
+
+<span class="nc" id="L595">        Files.write(path, lines, StandardCharsets.UTF_8);</span>
+
+<span class="nc" id="L597">        String errorCode = getOriginalLine(classInfo, error.lineNo); // 获取错误行原始代码</span>
+<span class="nc" id="L598">        String methodName = &quot;未知方法&quot;; // 可通过expandToMethod获取方法名（需额外实现）</span>
+<span class="nc" id="L599">        addToRepository(classInfo, error, errorCode, newSpot, methodName);</span>
+
+<span class="nc" id="L601">    }</span>
+
+    /* ---------------- 修复提示模板（仅含错误片段） ---------------- */
+    private static final String FIX_SPOT_PROMPT =
+            &quot;你是一名专业的java测试代码修复工程师，请修复以下测试代码片段的错误\n&quot; +
+                    &quot;错误信息：{errorPrompt}\n&quot; +
+                    &quot;请根据错误信息修复错误位置代码，保持代码其他部分不变。\n&quot; +
+                    &quot;错误片段：\n```java\n{spotCode}\n```\n&quot; +
+                    &quot;仅返回修改后的代码片段（无解释、注释，保持语法正确）：&quot;;
+
+    private static final String generatePrompt =
+            &quot;根据以下待测试类的信息生成测试代码：\n&quot; +
+                    &quot;包路径：{packagePath}\n&quot; +
+                    &quot;类名：{className}\n&quot; +
+                    &quot;全部方法信息：\n&quot; +
+                    &quot;{allMethodsInfo}\n&quot; +
+                    &quot;你是一位资深Java测试人员，请为上述类中的焦点方法编写JUnit 5风格且系统编译器版本为8的单元测试代码，除了给定的格式要求不要返回其他内容（包括注释、解释、思考过程等），要求如下：\n&quot; +
+                    &quot;1. 测试用例应覆盖所有代码路径，包括分支条件和边界情况。\n&quot; +
+                    &quot;2. 测试代码必须无编译错误。如有必要，可以使用反射测试私有方法或字段。\n&quot; +
+                    &quot;3. 请根据注释中提供的执行路径信息生成相应测试。\n&quot; +
+                    &quot;4. 测试类名为[类名]Test，若有命名冲突，则依次命名为[类名]Test1、Test2等。\n&quot; +
+                    &quot;5. 正确设置包路径与包导入；禁止使用 `org.junit.jupiter.params` 包内容。\n\n&quot; +
+                    &quot;请直接输出完整的测试代码，不包含任何注释、解释或思考过程。以下为待测试的源代码：\n&quot;;
+
+    /* ---------------- LLM调用 ---------------- */
+    private String sendRequestAndGetResponse0(String content, String prompt) throws IOException {
+<span class="nc" id="L627">        return testCoreDemo2.sendRequestAndGetResponse0(content, prompt);</span>
+    }
+
+    /* ---------------- 单行修复优化 ---------------- */
+    // 修改replaceExactLine，增加文件写入日志，验证是否执行替换
+    private void replaceExactLine(Map&lt;String, String&gt; classInfo, int lineNo, String newLine) throws IOException {
+<span class="nc" id="L633">        Path path = Paths.get(getTestFilePath(classInfo));</span>
+        // 验证路径是否正确
+<span class="nc bnc" id="L635" title="All 2 branches missed.">        if (!Files.exists(path)) {</span>
+<span class="nc" id="L636">            System.err.println(&quot;替换失败：测试文件不存在，路径=&quot; + path);</span>
+<span class="nc" id="L637">            return;</span>
+        }
+<span class="nc" id="L639">        List&lt;String&gt; lines = Files.readAllLines(path, StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L640" title="All 4 branches missed.">        if (lineNo &lt; 1 || lineNo &gt; lines.size()) {</span>
+<span class="nc" id="L641">            System.err.println(&quot;替换失败：行号无效，lineNo=&quot; + lineNo);</span>
+<span class="nc" id="L642">            return;</span>
+        }
+        // 保留原行缩进
+<span class="nc" id="L645">        String originalLine = lines.get(lineNo - 1);</span>
+<span class="nc" id="L646">        String indent = originalLine.replaceAll(&quot;\\S.*&quot;, &quot;&quot;);</span>
+<span class="nc" id="L647">        String modifiedLine = indent + newLine;</span>
+<span class="nc" id="L648">        lines.set(lineNo - 1, modifiedLine);</span>
+        // 写入文件并打印日志
+<span class="nc" id="L650">        Files.write(path, lines, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L651">        System.out.println(&quot;已替换行 &quot; + lineNo + &quot;：原内容=[&quot; + originalLine + &quot;]，新内容=[&quot; + modifiedLine + &quot;]&quot;);</span>
+<span class="nc" id="L652">    }</span>
+
+
+    private String getOriginalLine(Map&lt;String, String&gt; classInfo, int lineNo) throws IOException {
+<span class="nc" id="L656">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(getTestFilePath(classInfo)));</span>
+<span class="nc bnc" id="L657" title="All 4 branches missed.">        if (lineNo &lt; 1 || lineNo &gt; lines.size()) return &quot;&quot;;</span>
+<span class="nc" id="L658">        return lines.get(lineNo - 1).replaceFirst(&quot;^\\s*\\d+\\s+&quot;, &quot;&quot;);</span>
+    }
+
+    public String fixSingleLine(int lineNo, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L662">        String originalLine = getOriginalLine(classInfo, lineNo);</span>
+<span class="nc bnc" id="L663" title="All 2 branches missed.">        if (originalLine.isEmpty()) return null;</span>
+
+<span class="nc" id="L665">        String prompt = FIX_SPOT_PROMPT</span>
+<span class="nc" id="L666">                .replace(&quot;{errorPrompt}&quot;, &quot;预期值与实际不符&quot;)</span>
+<span class="nc" id="L667">                .replace(&quot;{spotCode}&quot;, originalLine);</span>
+
+<span class="nc" id="L669">        String newLine = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L670">        newLine = cleanCodeBlock(newLine);</span>
+<span class="nc bnc" id="L671" title="All 6 branches missed.">        if (newLine.isEmpty() || newLine.equals(&quot;null&quot;) || !isSyntaxValid(newLine)) {</span>
+<span class="nc" id="L672">            System.err.println(&quot;单行修复无效，跳过行：&quot; + lineNo);</span>
+<span class="nc" id="L673">            return null;</span>
+        }
+
+<span class="nc" id="L676">        replaceExactLine(classInfo, lineNo, newLine);</span>
+<span class="nc" id="L677">        return new String(Files.readAllBytes(Paths.get(getTestFilePath(classInfo))), StandardCharsets.UTF_8);</span>
+    }
+
+    /* ---------------- 单错误修复主入口 ---------------- */
+    public String fixSingleSpot(String validateReport, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L682">        SpotError err = parseSpotError(validateReport);</span>
+<span class="nc bnc" id="L683" title="All 2 branches missed.">        if (err == null) return null;</span>
+
+<span class="nc" id="L685">        CodeSpot spot = extractSpotByStrategy(classInfo, err);</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">        if (spot.code.isEmpty()) return null;</span>
+
+<span class="nc" id="L688">        String prompt = FIX_SPOT_PROMPT</span>
+<span class="nc" id="L689">                .replace(&quot;{errorPrompt}&quot;, err.desc)</span>
+<span class="nc" id="L690">                .replace(&quot;{spotCode}&quot;, spot.code);</span>
+
+<span class="nc" id="L692">        String newSpot = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L693">        newSpot = cleanCodeBlock(newSpot);</span>
+<span class="nc bnc" id="L694" title="All 6 branches missed.">        if (newSpot.isEmpty() || newSpot.equals(&quot;null&quot;) || !isSyntaxValid(newSpot)) {</span>
+<span class="nc" id="L695">            System.err.println(&quot;单错误修复无效，尝试方法级修复&quot;);</span>
+            // 升级为方法级修复
+<span class="nc" id="L697">            spot = new CodeSpot(</span>
+<span class="nc" id="L698">                    extractMethodCode(classInfo, err.methodStartLine, err.methodEndLine),</span>
+                    FixMode.METHOD
+            );
+<span class="nc" id="L701">            prompt = FIX_SPOT_PROMPT</span>
+<span class="nc" id="L702">                    .replace(&quot;{errorPrompt}&quot;, err.desc + &quot;（行级修复失败，尝试修复整个方法）&quot;)</span>
+<span class="nc" id="L703">                    .replace(&quot;{spotCode}&quot;, spot.code);</span>
+<span class="nc" id="L704">            newSpot = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L705">            newSpot = cleanCodeBlock(newSpot);</span>
+<span class="nc bnc" id="L706" title="All 4 branches missed.">            if (newSpot.isEmpty() || !isSyntaxValid(newSpot)) {</span>
+<span class="nc" id="L707">                System.err.println(&quot;方法级修复仍失败&quot;);</span>
+<span class="nc" id="L708">                return null;</span>
+            }
+        }
+
+<span class="nc" id="L712">        replaceSpotByStrategy(classInfo, err, newSpot, spot.mode);</span>
+<span class="nc" id="L713">        Path path = Paths.get(getTestFilePath(classInfo));</span>
+<span class="nc" id="L714">        return new String(Files.readAllBytes(path), StandardCharsets.UTF_8);</span>
+    }
+
+    /* ---------------- 测试生成相关 ---------------- */
+    public String generateTestForMethod(String srcJava, int methodIdx) throws IOException {
+<span class="nc" id="L719">        String analyze = testCoreDemo2.analyzeSourceCode(srcJava);</span>
+<span class="nc" id="L720">        Map&lt;String, String&gt; info = testCoreDemo2.extractClassInfo3(analyze);</span>
+        String testCode;
+<span class="nc bnc" id="L722" title="All 2 branches missed.">        if (methodIdx &lt;= 0) {</span>
+<span class="nc" id="L723">            testCode = testCoreDemo2.generateTestCode2(srcJava, analyze, &quot;&quot;);</span>
+        } else {
+<span class="nc" id="L725">            String methodInfo = findMethodInfoByIndex(info.get(&quot;allMethodsInfo&quot;), methodIdx);</span>
+<span class="nc bnc" id="L726" title="All 2 branches missed.">            if (methodInfo == null) return null;</span>
+<span class="nc" id="L727">            String prompt = generatePrompt</span>
+<span class="nc" id="L728">                    .replace(&quot;{packagePath}&quot;, info.get(&quot;包路径&quot;))</span>
+<span class="nc" id="L729">                    .replace(&quot;{className}&quot;, info.get(&quot;类名&quot;))</span>
+<span class="nc" id="L730">                    .replace(&quot;{allMethodsInfo}&quot;, methodInfo);</span>
+<span class="nc" id="L731">            testCode = sendRequestAndGetResponse0(srcJava, prompt);</span>
+        }
+<span class="nc" id="L733">        TestCore.createTestClass2(testCode, info);</span>
+<span class="nc" id="L734">        return testCode;</span>
+    }
+
+    private String findMethodInfoByIndex(String allInfo, int idx) {
+<span class="nc" id="L738">        Pattern p = Pattern.compile(&quot;序号：\\s*&quot; + idx + &quot;\\s*\n(.*?)(?=\\n序号|\\z)&quot;, Pattern.DOTALL);</span>
+<span class="nc" id="L739">        Matcher m = p.matcher(allInfo);</span>
+<span class="nc bnc" id="L740" title="All 2 branches missed.">        return m.find() ? m.group(1) : null;</span>
+    }
+
+    public String validateTest(String testCode) throws IOException {
+<span class="nc" id="L744">        return testCoreDemo2.validateTestCode2(testCode);</span>
+    }
+
+
+
+
+    /* ---------------- 核心修复逻辑：处理初始错误+新出现的错误 ---------------- */
+    public String fixWithNewErrorHandling(String initialReport, Map&lt;String, String&gt; classInfo) throws IOException {
+        // 1. 解析初始错误（仅错误1和2）
+<span class="nc" id="L753">        List&lt;SpotError&gt; initialErrors = parseMultipleSpotErrors(initialReport);</span>
+<span class="nc bnc" id="L754" title="All 2 branches missed.">        if (initialErrors.isEmpty()) return null;</span>
+<span class="nc" id="L755">        initialErrors.sort((e1, e2) -&gt; Integer.compare(e2.lineNo, e1.lineNo));</span>
+
+        // 跟踪初始错误（标记为isInitial=true）
+<span class="nc" id="L758">        List&lt;TrackedError&gt; trackedErrors = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L759" title="All 2 branches missed.">        for (SpotError e : initialErrors) {</span>
+<span class="nc" id="L760">            trackedErrors.add(new TrackedError(e, true));</span>
+<span class="nc" id="L761">        }</span>
+
+        // 2. 修复初始错误
+<span class="nc bnc" id="L764" title="All 2 branches missed.">        for (TrackedError te : trackedErrors) {</span>
+<span class="nc bnc" id="L765" title="All 4 branches missed.">            if (te.isInitial &amp;&amp; !te.fixed) {</span>
+<span class="nc" id="L766">                te.fixed = attemptFix(te.error, classInfo);</span>
+<span class="nc bnc" id="L767" title="All 2 branches missed.">                if (!te.fixed) {</span>
+<span class="nc" id="L768">                    System.out.println(&quot;初始错误&quot; + te.error.lineNo + &quot;修复失败，准备方法级修复&quot;);</span>
+                }
+            }
+<span class="nc" id="L771">        }</span>
+
+
+        // 3. 第一次修复后验证：检查初始错误是否修复，是否出现新错误（如错误3）
+<span class="nc" id="L775">        String testCodeAfterFirstFix = new String(Files.readAllBytes(Paths.get(getTestFilePath(classInfo))), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L776">        String firstReValidate = validateTest(testCodeAfterFirstFix);</span>
+<span class="nc" id="L777">        List&lt;SpotError&gt; allErrorsAfterFirstFix = parseMultipleSpotErrors(firstReValidate);</span>
+
+        // 4. 区分初始错误是否修复成功，以及是否有新错误
+<span class="nc" id="L780">        List&lt;TrackedError&gt; remainingErrors = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L781" title="All 2 branches missed.">        for (SpotError e : allErrorsAfterFirstFix) {</span>
+            // 检查是否为未修复的初始错误
+<span class="nc" id="L783">            TrackedError matchedInitial = trackedErrors.stream()</span>
+<span class="nc bnc" id="L784" title="All 4 branches missed.">                    .filter(te -&gt; te.isInitial &amp;&amp; te.error.lineNo == e.lineNo)</span>
+<span class="nc" id="L785">                    .findFirst().orElse(null);</span>
+
+<span class="nc bnc" id="L787" title="All 2 branches missed.">            if (matchedInitial != null) {</span>
+                // 初始错误未修复
+<span class="nc" id="L789">                matchedInitial.fixed = false;</span>
+<span class="nc" id="L790">                remainingErrors.add(matchedInitial);</span>
+            } else {
+                // 新出现的错误（如错误3）
+<span class="nc" id="L793">                remainingErrors.add(new TrackedError(e, false));</span>
+            }
+<span class="nc" id="L795">        }</span>
+
+        // 5. 处理未修复的初始错误（方法级修复）和新错误（原修复程序）
+        // 5.1 先处理未修复的初始错误（方法级修复）
+<span class="nc bnc" id="L799" title="All 2 branches missed.">        for (TrackedError te : remainingErrors) {</span>
+<span class="nc bnc" id="L800" title="All 4 branches missed.">            if (te.isInitial &amp;&amp; !te.fixed) {</span>
+<span class="nc" id="L801">                System.out.println(&quot;对未修复的初始错误&quot; + te.error.lineNo + &quot;执行方法级修复&quot;);</span>
+<span class="nc" id="L802">                String methodCode = extractMethodCodeForError(te.error, classInfo);</span>
+<span class="nc" id="L803">                boolean methodFixed = attemptMethodLevelFix(te.error, methodCode, classInfo);</span>
+<span class="nc" id="L804">                te.fixed = methodFixed;</span>
+            }
+<span class="nc" id="L806">        }</span>
+
+        // 5.2 再处理新出现的错误（如错误3，用原修复程序）
+<span class="nc" id="L809">        List&lt;SpotError&gt; newErrors = remainingErrors.stream()</span>
+<span class="nc bnc" id="L810" title="All 2 branches missed.">                .filter(te -&gt; !te.isInitial)</span>
+<span class="nc" id="L811">                .map(te -&gt; te.error)</span>
+<span class="nc" id="L812">                .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L814" title="All 2 branches missed.">        if (!newErrors.isEmpty()) {</span>
+<span class="nc" id="L815">            System.out.println(&quot;发现&quot; + newErrors.size() + &quot;个新错误（如错误3），启动原修复程序修复&quot;);</span>
+            // 生成新错误的验证报告，调用原修复程序
+<span class="nc" id="L817">            String newErrorReport = generateErrorReport(newErrors);</span>
+<span class="nc" id="L818">            fixMultipleSpots(newErrorReport, classInfo);</span>
+        }
+
+        // 6. 第二次修复后验证：若仍有错误，触发类级修复
+<span class="nc" id="L822">        String testCodeAfterSecondFix = new String(Files.readAllBytes(Paths.get(getTestFilePath(classInfo))), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L823">        String secondReValidate = validateTest(testCodeAfterSecondFix);</span>
+<span class="nc" id="L824">        List&lt;SpotError&gt; remainingErrorsAfterSecondFix = parseMultipleSpotErrors(secondReValidate);</span>
+
+<span class="nc bnc" id="L826" title="All 2 branches missed.">        if (!remainingErrorsAfterSecondFix.isEmpty()) {</span>
+<span class="nc" id="L827">            System.out.println(&quot;发现&quot; + remainingErrorsAfterSecondFix.size() + &quot;个未修复错误，启动类级修复&quot;);</span>
+<span class="nc" id="L828">            boolean classFixed = attemptClassLevelFix(classInfo, remainingErrorsAfterSecondFix);</span>
+<span class="nc bnc" id="L829" title="All 2 branches missed.">            if (!classFixed) {</span>
+<span class="nc" id="L830">                System.err.println(&quot;类级修复失败，保留最终状态&quot;);</span>
+            }
+        }
+
+        // 7. 最终验证
+<span class="nc" id="L835">        return new String(Files.readAllBytes(Paths.get(getTestFilePath(classInfo))), StandardCharsets.UTF_8);</span>
+    }
+
+   /* private boolean attemptFix(SpotError error, Map&lt;String, String&gt; classInfo) throws IOException {
+        CodeSpot spot = extractSpotByStrategy(classInfo, error);
+        if (spot.code.isEmpty()) return false;
+
+        String prompt = FIX_SPOT_PROMPT
+                .replace(&quot;{errorPrompt}&quot;, error.desc)
+                .replace(&quot;{spotCode}&quot;, spot.code);
+
+        String newSpot = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();
+        newSpot = cleanCodeBlock(newSpot);
+
+        if (newSpot.isEmpty() || newSpot.equals(&quot;null&quot;) || !isSyntaxValid(newSpot)) {
+            return false;
+        }
+
+        replaceSpotByStrategy(classInfo, error, newSpot, spot.mode);
+        return true;
+    }*/
+
+    // 4. 新增按修复级别提取代码的方法
+    private CodeSpot extractSpotByMode(Map&lt;String, String&gt; classInfo, SpotError error, FixMode mode) throws IOException {
+<span class="nc" id="L859">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(getTestFilePath(classInfo)));</span>
+<span class="nc bnc" id="L860" title="All 2 branches missed.">        if (mode == FixMode.LINE) {</span>
+<span class="nc" id="L861">            String errorSnippet = extractErrorSnippet(lines, error);</span>
+<span class="nc bnc" id="L862" title="All 2 branches missed.">            return new CodeSpot(errorSnippet.isEmpty() ? lines.get(error.lineNo - 1) : errorSnippet, FixMode.LINE);</span>
+<span class="nc bnc" id="L863" title="All 2 branches missed.">        } else if (mode == FixMode.METHOD) {</span>
+<span class="nc" id="L864">            int[] methodRange = expandToMethod(lines, error.lineNo - 1);</span>
+<span class="nc" id="L865">            error.methodStartLine = methodRange[0] + 1;</span>
+<span class="nc" id="L866">            error.methodEndLine = methodRange[1] + 1;</span>
+<span class="nc" id="L867">            String methodCode = String.join(&quot;\n&quot;, lines.subList(methodRange[0], methodRange[1] + 1));</span>
+<span class="nc" id="L868">            return new CodeSpot(methodCode, FixMode.METHOD);</span>
+        } else {
+            // 类级直接提取完整类代码
+<span class="nc" id="L871">            return new CodeSpot(extractClassCode(classInfo), FixMode.CLASS);</span>
+        }
+    }
+    // 3. 修改修复尝试方法，根据初始级别选择修复策略
+    private boolean attemptFix(SpotError error, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L876">        FixMode currentMode = error.initialFixMode; // 从初始级别开始</span>
+<span class="nc" id="L877">        CodeSpot spot = extractSpotByMode(classInfo, error, currentMode); // 按初始级别提取代码</span>
+
+        while (true) {
+<span class="nc bnc" id="L880" title="All 2 branches missed.">            if (spot.code.isEmpty()) {</span>
+<span class="nc" id="L881">                return false;</span>
+            }
+
+<span class="nc" id="L884">            String prompt = FIX_SPOT_PROMPT</span>
+<span class="nc" id="L885">                    .replace(&quot;{errorPrompt}&quot;, error.desc)</span>
+<span class="nc" id="L886">                    .replace(&quot;{spotCode}&quot;, spot.code);</span>
+
+<span class="nc" id="L888">            String newSpot = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L889">            newSpot = cleanCodeBlock(newSpot);</span>
+
+<span class="nc bnc" id="L891" title="All 6 branches missed.">            if (newSpot.isEmpty() || newSpot.equals(&quot;null&quot;) || !isSyntaxValid(newSpot)) {</span>
+                // 修复失败，升级级别
+<span class="nc bnc" id="L893" title="All 2 branches missed.">                if (currentMode == FixMode.LINE) {</span>
+<span class="nc" id="L894">                    currentMode = FixMode.METHOD;</span>
+<span class="nc" id="L895">                    spot = extractSpotByMode(classInfo, error, currentMode);</span>
+<span class="nc bnc" id="L896" title="All 2 branches missed.">                } else if (currentMode == FixMode.METHOD) {</span>
+<span class="nc" id="L897">                    currentMode = FixMode.CLASS;</span>
+                    // 类级修复直接调用专门方法
+<span class="nc" id="L899">                    return attemptClassLevelFix(classInfo, Collections.singletonList(error));</span>
+                } else {
+                    // 类级修复失败
+<span class="nc" id="L902">                    return false;</span>
+                }
+            } else {
+                // 修复成功，替换代码
+<span class="nc" id="L906">                replaceSpotByStrategy(classInfo, error, newSpot, currentMode);</span>
+<span class="nc" id="L907">                return true;</span>
+            }
+<span class="nc" id="L909">        }</span>
+    }
+
+    private String extractMethodCodeForError(SpotError error, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L913">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(getTestFilePath(classInfo)));</span>
+<span class="nc" id="L914">        int[] methodRange = expandToMethod(lines, error.lineNo - 1);</span>
+<span class="nc" id="L915">        error.methodStartLine = methodRange[0] + 1; // 转为1-base</span>
+<span class="nc" id="L916">        error.methodEndLine = methodRange[1] + 1;</span>
+<span class="nc" id="L917">        return String.join(&quot;\n&quot;, lines.subList(methodRange[0], methodRange[1] + 1));</span>
+    }
+
+    /* ---------------- 新增辅助方法 ---------------- */
+// 生成错误报告（用于新错误传递给原修复程序）
+    private String generateErrorReport(List&lt;SpotError&gt; errors) {
+<span class="nc" id="L923">        StringBuilder report = new StringBuilder();</span>
+<span class="nc bnc" id="L924" title="All 2 branches missed.">        for (SpotError e : errors) {</span>
+<span class="nc" id="L925">            report.append(&quot;该测试代码在验证[数值正确性]时失败，错误位置：[&quot;).append(e.lineNo)</span>
+<span class="nc" id="L926">                    .append(&quot;]，错误原因：&quot;).append(e.desc).append(&quot;\n&quot;);</span>
+<span class="nc" id="L927">        }</span>
+<span class="nc" id="L928">        return report.toString();</span>
+    }
+
+    // 方法级修复（针对未修复的初始错误）
+    private boolean attemptMethodLevelFix(SpotError error, String methodCode, Map&lt;String, String&gt; classInfo) throws IOException {
+<span class="nc" id="L933">        String prompt = &quot;以下测试方法中的行&quot; + error.lineNo + &quot;存在错误，请修复：\n&quot; +</span>
+                &quot;错误信息：&quot; + error.desc + &quot;\n&quot; +
+                &quot;方法完整代码：\n```java\n&quot; + methodCode + &quot;\n```\n&quot; +
+                &quot;仅返回修复后的完整方法代码（保留结构，不解释）&quot;;
+
+<span class="nc" id="L938">        String fixedMethod = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L939">        fixedMethod = cleanCodeBlock(fixedMethod);</span>
+<span class="nc bnc" id="L940" title="All 4 branches missed.">        if (fixedMethod.isEmpty() || !isSyntaxValid(fixedMethod)) {</span>
+<span class="nc" id="L941">            return false;</span>
+        }
+
+        // 替换整个方法
+<span class="nc" id="L945">        replaceMethod(classInfo, error.methodStartLine, error.methodEndLine, fixedMethod);</span>
+<span class="nc" id="L946">        return true;</span>
+    }
+
+  /*  private void replaceMethod(Map&lt;String, String&gt; classInfo, int startLine, int endLine, String newMethodCode) throws IOException {
+        Path path = Paths.get(getTestFilePath(classInfo));
+        List&lt;String&gt; lines = Files.readAllLines(path);
+
+        int startIdx = startLine - 1;
+        int endIdx = endLine - 1;
+        if (startIdx &lt; 0 || endIdx &gt;= lines.size() || startIdx &gt; endIdx) {
+            return;
+        }
+    }*/
+// 补充方法级修复的完整替换逻辑（原replaceMethod方法未完成文件写入）
+  private void replaceMethod(Map&lt;String, String&gt; classInfo, int startLine, int endLine, String newMethodCode) throws IOException {
+<span class="nc" id="L961">      Path path = Paths.get(getTestFilePath(classInfo));</span>
+<span class="nc" id="L962">      List&lt;String&gt; lines = Files.readAllLines(path, StandardCharsets.UTF_8);</span>
+
+<span class="nc" id="L964">      int startIdx = startLine - 1;</span>
+<span class="nc" id="L965">      int endIdx = endLine - 1;</span>
+<span class="nc bnc" id="L966" title="All 6 branches missed.">      if (startIdx &lt; 0 || endIdx &gt;= lines.size() || startIdx &gt; endIdx) {</span>
+<span class="nc" id="L967">          System.err.println(&quot;方法替换失败：范围无效&quot;);</span>
+<span class="nc" id="L968">          return;</span>
+      }
+
+      // 清除原方法行，插入新方法代码（保留缩进）
+<span class="nc" id="L972">      String methodIndent = lines.get(startIdx).replaceAll(&quot;\\S.*&quot;, &quot;&quot;); // 提取方法首行缩进</span>
+<span class="nc" id="L973">      List&lt;String&gt; newMethodLines = Arrays.asList(newMethodCode.split(&quot;\n&quot;));</span>
+<span class="nc" id="L974">      List&lt;String&gt; indentedNewLines = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L975" title="All 2 branches missed.">      for (String line : newMethodLines) {</span>
+<span class="nc" id="L976">          indentedNewLines.add(methodIndent + line); // 保持与原方法相同缩进</span>
+<span class="nc" id="L977">      }</span>
+
+<span class="nc" id="L979">      lines.subList(startIdx, endIdx + 1).clear();</span>
+<span class="nc" id="L980">      lines.addAll(startIdx, indentedNewLines);</span>
+<span class="nc" id="L981">      Files.write(path, lines, StandardCharsets.UTF_8);</span>
+<span class="nc" id="L982">      System.out.println(&quot;方法替换完成：行[&quot; + startLine + &quot;-&quot; + endLine + &quot;]&quot;);</span>
+<span class="nc" id="L983">  }</span>
+
+    // 生成临时验证提示，让LLM检查修复是否满足要求
+    private String generateValidationPrompt(SpotError error, String fixedCode) {
+<span class="nc" id="L987">        return &quot;请验证以下修复是否解决了指定错误：\n&quot; +</span>
+                &quot;错误位置：第&quot; + error.lineNo + &quot;行\n&quot; +
+                &quot;错误描述：&quot; + error.desc + &quot;\n&quot; +
+                &quot;修复后的代码：\n```java\n&quot; + fixedCode + &quot;\n```\n&quot; +
+                &quot;验证要求：\n&quot; +
+                &quot;1. 错误是否已修复（如预期值是否修改为正确结果）\n&quot; +
+                &quot;2. 修复后的代码是否存在语法错误\n&quot; +
+                &quot;3. 仅返回'通过'或'未通过'，无需额外解释&quot;;
+    }
+
+    // 调用LLM执行临时验证
+    private boolean validateFixByLLM(SpotError error, String fixedCode) throws IOException {
+<span class="nc" id="L999">        String prompt = generateValidationPrompt(error, fixedCode);</span>
+<span class="nc" id="L1000">        String response = sendRequestAndGetResponse0(&quot;&quot;, prompt).trim();</span>
+<span class="nc" id="L1001">        return &quot;通过&quot;.equals(response);</span>
+    }
+
+
+
+    /*public static void main(String[] args) throws IOException {
+        FixTestCode fixer = new FixTestCode();
+        Map&lt;String, String&gt; classInfo = new HashMap&lt;&gt;();
+        classInfo.put(&quot;包路径&quot;, &quot;codeing&quot;);
+        classInfo.put(&quot;类名&quot;, &quot;Fix&quot;);
+        String testFilePath = fixer.getTestFilePath(classInfo);
+        System.out.println(&quot;测试文件路径：&quot; + testFilePath);
+        File testFile = new File(testFilePath);
+        if (!testFile.exists()) {
+            System.out.println(&quot;错误：测试文件不存在！&quot;);
+            return;
+        }
+        //获取测试代码
+        String testCode = new String(Files.readAllBytes(Paths.get(testFilePath)), StandardCharsets.UTF_8);
+        //验证测试代码
+        String validateReport = fixer.validateTest(testCode);
+        System.out.println(&quot;&gt;&gt;&gt; main本次验证结果：\n&quot; + validateReport);
+        //验证通过
+        if (validateReport.isEmpty() || !validateReport.contains(&quot;错误位置&quot;)) {
+            System.out.println(&quot;未发现错误，无需修复&quot;);
+            return;
+        }
+        //验证不通过
+        if (!validateReport.contains(&quot;全部验证通过&quot;)) {
+            // 调用多错误修复入口（而非循环单行修复）
+            String fixed = fixer.fixMultipleSpots(validateReport, classInfo);
+            if (fixed != null) {
+                System.out.println(&quot;&gt;&gt;&gt; 修复后测试类：\n&quot; + fixed);
+                String reValidate = fixer.validateTest(fixed);
+                System.out.println(&quot;&gt;&gt;&gt; 再次验证：\n&quot; + reValidate);
+            } else {
+                System.out.println(&quot;修复失败&quot;);
+            }
+        }
+    }*/
+
+    public static void main(String[] args) throws IOException {
+        // 1. 初始化修复器实例
+<span class="nc" id="L1044">        FixTestCode fixer = new FixTestCode();</span>
+
+        // 2. 配置待测试源代码路径
+<span class="nc" id="L1047">        String apiKey = &quot;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&quot;;</span>
+<span class="nc" id="L1048">        String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\cli&quot;;</span>
+<span class="nc" id="L1049">        String sourceCodePath = &quot;src/main/java/cli/AlreadySelectedException.java&quot;;</span>
+<span class="nc" id="L1050">        String targetPackage = &quot;cli&quot;;</span>
+<span class="nc" id="L1051">        TestCoreDemo2 testCoreClass = new TestCoreDemo2(apiKey);</span>
+<span class="nc" id="L1052">        testCoreClass.className = &quot;AlreadySelectedException&quot;; // 设置当前处理的类名</span>
+
+<span class="nc" id="L1054">        String sourceCodeFile=testCoreClass.readSourceCode(sourceCodePath);</span>
+<span class="nc" id="L1055">        String conversationHistory = &quot;&quot;; // 初始化对话历史</span>
+
+
+<span class="nc" id="L1058">        Path srcPath = Paths.get(sourceCodePath);</span>
+<span class="nc bnc" id="L1059" title="All 2 branches missed.">        if (!Files.exists(srcPath)) {</span>
+<span class="nc" id="L1060">            System.err.println(&quot;错误：待测试源代码文件不存在，路径=&quot; + sourceCodePath);</span>
+<span class="nc" id="L1061">            return;</span>
+        }
+
+
+        //分析
+<span class="nc" id="L1066">        String analyzePromt=testCoreClass.analyzeSourceCode(sourceCodeFile);</span>
+<span class="nc bnc" id="L1067" title="All 4 branches missed.">        if (analyzePromt == null || analyzePromt.isEmpty()) {</span>
+<span class="nc" id="L1068">            System.out.println(&quot;1.2分析阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1069">            return;</span>
+        }
+
+        //提取
+<span class="nc" id="L1073">        Map&lt;String, String&gt; classInfo = testCoreClass.extractClassInfo3(analyzePromt);</span>
+<span class="nc" id="L1074">        System.out.println(&quot;2.1解析到的类信息：&quot; + classInfo);</span>
+<span class="nc bnc" id="L1075" title="All 4 branches missed.">        if (analyzePromt == null || analyzePromt.isEmpty()) {</span>
+<span class="nc" id="L1076">            System.out.println(&quot;2.2分析阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1077">            return;</span>
+        }
+
+        //生成
+<span class="nc" id="L1081">        String testCode=testCoreClass.generateTestCode2(sourceCodeFile,analyzePromt,conversationHistory);</span>
+<span class="nc bnc" id="L1082" title="All 4 branches missed.">        if (testCode == null || testCode.isEmpty()) {</span>
+<span class="nc" id="L1083">            System.out.println(&quot;2.2生成阶段失败：LLM 未返回有效结果&quot;);</span>
+<span class="nc" id="L1084">            return;</span>
+        }
+
+        //类
+<span class="nc" id="L1088">        testCoreClass.createTestClass2(testCode, classInfo);</span>
+<span class="nc" id="L1089">        String testFilePath = fixer.getTestFilePath(classInfo);</span>
+<span class="nc" id="L1090">        System.out.println(&quot;生成的测试文件路径：&quot; + testFilePath);</span>
+
+        // 8. 读取生成的测试代码
+<span class="nc" id="L1093">        String generatedTestCode = new String(Files.readAllBytes(Paths.get(testFilePath)), StandardCharsets.UTF_8);</span>
+
+        // 9. 验证生成的测试代码
+<span class="nc" id="L1096">        String validateReport = fixer.validateTest(generatedTestCode);</span>
+<span class="nc" id="L1097">        System.out.println(&quot;&gt;&gt;&gt; 初始测试代码验证结果：\n&quot; + validateReport);</span>
+
+        // 10. 若存在错误则进行修复
+<span class="nc bnc" id="L1100" title="All 2 branches missed.">        if (validateReport.contains(&quot;错误位置&quot;)) {</span>
+<span class="nc" id="L1101">            System.out.println(&quot;开始修复测试代码...&quot;);</span>
+<span class="nc" id="L1102">            String fixedTestCode = fixer.fixWithNewErrorHandling(validateReport, classInfo);</span>
+<span class="nc bnc" id="L1103" title="All 2 branches missed.">            if (fixedTestCode != null) {</span>
+<span class="nc" id="L1104">                System.out.println(&quot;&gt;&gt;&gt; 修复后测试代码：\n&quot; + fixedTestCode);</span>
+                // 最终验证
+<span class="nc" id="L1106">                String finalValidate = fixer.validateTest(fixedTestCode);</span>
+<span class="nc" id="L1107">                System.out.println(&quot;&gt;&gt;&gt; 修复后最终验证结果：\n&quot; + finalValidate);</span>
+<span class="nc" id="L1108">            } else {</span>
+<span class="nc" id="L1109">                System.err.println(&quot;测试代码修复失败&quot;);</span>
+            }
+<span class="nc" id="L1111">        } else {</span>
+<span class="nc" id="L1112">            System.out.println(&quot;生成的测试代码无错误，无需修复&quot;);</span>
+        }
+<span class="nc" id="L1114">    }</span>
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

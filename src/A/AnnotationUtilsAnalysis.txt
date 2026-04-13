@@ -1,0 +1,47 @@
+```
+包路径：lang3
+类名：AnnotationUtils
+父类：无
+依赖类：ClassUtils, ObjectUtils, StringUtils, Validate, ToStringBuilder, ToStringStyle, UncheckedException
+---
+序号：1
+方法名：annotationArrayMemberEquals(Annotation[] a1, Annotation[] a2)
+返回类型：boolean
+功能描述：比较两个注解数组是否相等
+序号：2
+方法名：arrayMemberEquals(Class<?> componentType, Object o1, Object o2)
+返回类型：boolean
+功能描述：根据元素类型比较两个数组是否相等
+序号：3
+方法名：arrayMemberHash(Class<?> componentType, Object o)
+返回类型：int
+功能描述：根据元素类型计算数组的哈希值
+序号：4
+方法名：equals(Annotation a1, Annotation a2)
+返回类型：boolean
+功能描述：比较两个注解实例是否相等
+序号：5
+方法名：hashCode(Annotation a)
+返回类型：int
+功能描述：计算注解实例的哈希值
+序号：6
+方法名：hashMember(String name, Object value)
+返回类型：int
+功能描述：计算注解成员的哈希值
+序号：7
+方法名：isValidAnnotationMemberType(Class<?> type)
+返回类型：boolean
+功能描述：检查类型是否为合法的注解成员类型
+序号：8
+方法名：memberEquals(Class<?> type, Object o1, Object o2)
+返回类型：boolean
+功能描述：根据类型比较两个成员值是否相等
+序号：9
+方法名：toString(Annotation a)
+返回类型：String
+功能描述：生成注解的字符串表示
+序号：10
+方法名：AnnotationUtils()
+返回类型：void
+功能描述：已过期的默认构造函数
+```

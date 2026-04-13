@@ -1,0 +1,138 @@
+package gson.internal.bind;
+
+import gson.Gson;
+import gson.ToNumberPolicy;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import gson.JsonSyntaxException;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+
+public class NumberTypeAdapterTest {
+
+    @Test
+    void testNewFactory_CreatesAdapter() {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        assertNotNull(adapter);
+    }
+
+    @Test
+    void testNewFactory_ReturnsNewInstanceEachTime() {
+        TypeAdapterFactory factory1 = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapterFactory factory2 = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        assertNotSame(factory1, factory2);
+    }
+
+    @Test
+    void testGetFactory_LazilyParsedNumber() {
+        TypeAdapterFactory factory1 = NumberTypeAdapter.getFactory(ToNumberPolicy.LAZILY_PARSED_NUMBER);
+        TypeAdapterFactory factory2 = NumberTypeAdapter.getFactory(ToNumberPolicy.LAZILY_PARSED_NUMBER);
+        assertSame(factory1, factory2);
+    }
+
+    @Test
+    void testGetFactory_OtherStrategy() {
+        TypeAdapterFactory factory1 = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapterFactory factory2 = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        assertNotSame(factory1, factory2);
+    }
+
+    @Test
+    void testFactoryCreatesNumberAdapter() {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        assertNotNull(adapter);
+    }
+
+    @Test
+    void testFactoryReturnsNullForOtherTypes() {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Integer> adapter = factory.create(null, TypeToken.get(Integer.class));
+        assertNull(adapter);
+    }
+
+    @Test
+    void testRead_NullToken() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        JsonReader reader = new JsonReader(new StringReader("null"));
+        reader.peek();
+        assertNull(adapter.read(reader));
+    }
+
+    @Test
+    void testRead_NumberToken() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        assertEquals(123.45, adapter.read(reader).doubleValue(), 0.001);
+    }
+
+    @Test
+    void testRead_StringToken() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        JsonReader reader = new JsonReader(new StringReader("\"123.45\""));
+        assertEquals(123.45, adapter.read(reader).doubleValue(), 0.001);
+    }
+
+    @Test
+    void testRead_StringTokenLazilyParsed() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.LAZILY_PARSED_NUMBER);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        JsonReader reader = new JsonReader(new StringReader("\"123\""));
+        Number result = adapter.read(reader);
+        assertEquals("123", result.toString());
+    }
+
+    @Test
+    void testRead_InvalidToken() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        JsonReader reader = new JsonReader(new StringReader("true"));
+        reader.peek();
+        assertThrows(JsonSyntaxException.class, () -> adapter.read(reader));
+    }
+
+    @Test
+    void testWrite_Integer() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        StringWriter sw = new StringWriter();
+        JsonWriter writer = new JsonWriter(sw);
+        adapter.write(writer, 123);
+        writer.flush();
+        assertEquals("123", sw.toString());
+    }
+
+    @Test
+    void testWrite_Double() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        StringWriter sw = new StringWriter();
+        JsonWriter writer = new JsonWriter(sw);
+        adapter.write(writer, 123.45);
+        writer.flush();
+        assertEquals("123.45", sw.toString());
+    }
+
+    @Test
+    void testWrite_Null() throws IOException {
+        TypeAdapterFactory factory = NumberTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapter<Number> adapter = factory.create(null, TypeToken.get(Number.class));
+        StringWriter sw = new StringWriter();
+        JsonWriter writer = new JsonWriter(sw);
+        adapter.write(writer, null);
+        writer.flush();
+        assertEquals("null", sw.toString());
+    }
+
+}

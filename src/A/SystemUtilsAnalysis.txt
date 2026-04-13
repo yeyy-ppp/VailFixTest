@@ -1,0 +1,36 @@
+```
+包路径：lang3
+类名：SystemUtils
+父类：无
+依赖类：SystemProperties
+---
+序号：1
+方法名：getJavaVersionMatches(String)
+返回类型：boolean
+功能描述：检查Java规范版本是否匹配给定前缀
+---
+序号：2
+方法名：getUserName()
+返回类型：String
+功能描述：获取系统用户名
+---
+序号：3
+方法名：getUserName(String)
+返回类型：String
+功能描述：获取系统用户名（带默认值参数）
+---
+序号：4
+方法名：isJavaAwtHeadless()
+返回类型：boolean
+功能描述：检查是否处于AWT Headless模式
+---
+序号：5
+方法名：isJavaVersionMatch(String, String)
+返回类型：boolean
+功能描述：检查指定Java版本是否以给定前缀开头
+---
+序号：6
+方法名：SystemUtils()
+返回类型：无
+功能描述：默认构造方法
+```

@@ -1,0 +1,15 @@
+```
+包路径：gson.internal
+类名：TroubleshootingGuide
+父类：无
+依赖类：无
+---
+序号：1
+方法名：TroubleshootingGuide()
+返回类型：void
+功能描述：私有构造方法，防止类被实例化
+序号：2
+方法名：createUrl(String id)
+返回类型：String
+功能描述：根据给定id生成指向GitHub故障排除文档的URL字符串
+```

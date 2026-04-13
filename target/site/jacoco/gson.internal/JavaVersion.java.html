@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaVersion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal</a> &gt; <span class="el_source">JavaVersion.java</span></div><h1>JavaVersion.java</h1><pre class="source lang-java linenums">package gson.internal;
+public final class JavaVersion {
+<span class="fc" id="L3">  private static final int majorJavaVersion = determineMajorJavaVersion();</span>
+  private static int determineMajorJavaVersion() {
+<span class="fc" id="L5">    String javaVersion = System.getProperty(&quot;java.version&quot;);</span>
+<span class="fc" id="L6">    return parseMajorJavaVersion(javaVersion);</span>
+  }
+  static int parseMajorJavaVersion(String javaVersion) {
+<span class="fc" id="L9">    int version = parseDotted(javaVersion);</span>
+<span class="fc bfc" id="L10" title="All 2 branches covered.">    if (version == -1) {</span>
+<span class="fc" id="L11">      version = extractBeginningInt(javaVersion);</span>
+    }
+<span class="fc bfc" id="L13" title="All 2 branches covered.">    if (version == -1) {</span>
+<span class="fc" id="L14">      return 6;</span>
+    }
+<span class="fc" id="L16">    return version;</span>
+  }
+  private static int parseDotted(String javaVersion) {
+    try {
+<span class="fc" id="L20">      String[] parts = javaVersion.split(&quot;[._]&quot;, 3);</span>
+<span class="fc" id="L21">      int firstVer = Integer.parseInt(parts[0]);</span>
+<span class="fc bfc" id="L22" title="All 4 branches covered.">      if (firstVer == 1 &amp;&amp; parts.length &gt; 1) {</span>
+<span class="fc" id="L23">        return Integer.parseInt(parts[1]);</span>
+      } else {
+<span class="fc" id="L25">        return firstVer;</span>
+      }
+<span class="fc" id="L27">    } catch (NumberFormatException e) {</span>
+<span class="fc" id="L28">      return -1;</span>
+    }
+  }
+  private static int extractBeginningInt(String javaVersion) {
+    try {
+<span class="fc" id="L33">      StringBuilder num = new StringBuilder();</span>
+<span class="fc bfc" id="L34" title="All 2 branches covered.">      for (int i = 0; i &lt; javaVersion.length(); ++i) {</span>
+<span class="fc" id="L35">        char c = javaVersion.charAt(i);</span>
+<span class="fc bfc" id="L36" title="All 2 branches covered.">        if (Character.isDigit(c)) {</span>
+<span class="fc" id="L37">          num.append(c);</span>
+        } else {
+          break;
+        }
+      }
+<span class="fc" id="L42">      return Integer.parseInt(num.toString());</span>
+<span class="fc" id="L43">    } catch (NumberFormatException e) {</span>
+<span class="fc" id="L44">      return -1;</span>
+    }
+  }
+  public static int getMajorJavaVersion() {
+<span class="fc" id="L48">    return majorJavaVersion;</span>
+  }
+  public static boolean isJava9OrLater() {
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    return majorJavaVersion &gt;= 9;</span>
+  }
+  private JavaVersion() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

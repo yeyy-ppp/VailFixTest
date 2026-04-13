@@ -1,0 +1,185 @@
+包路径：lang3
+类名：RandomStringUtils
+父类：无
+依赖类：org.apache.maven.surefire.shared.lang3.StringUtils,lang3.RandomUtils
+---
+序号：1
+方法名：insecure()
+返回类型：RandomStringUtils
+功能描述：返回不安全的RandomStringUtils实例
+序号：2
+方法名：random(int count)
+返回类型：String
+功能描述：生成指定长度的随机字符串（已弃用）
+序号：3
+方法名：random(int count, boolean letters, boolean numbers)
+返回类型：String
+功能描述：生成指定长度的随机字符串，控制字母和数字（已弃用）
+序号：4
+方法名：random(int count, char... chars)
+返回类型：String
+功能描述：从指定字符数组生成随机字符串（已弃用）
+序号：5
+方法名：random(int count, int start, int end, boolean letters, boolean numbers)
+返回类型：String
+功能描述：在指定范围内生成随机字符串，控制字母和数字（已弃用）
+序号：6
+方法名：random(int count, int start, int end, boolean letters, boolean numbers, char... chars)
+返回类型：String
+功能描述：在指定范围内从字符数组生成随机字符串（已弃用）
+序号：7
+方法名：random(int count, int start, int end, boolean letters, boolean digits, char[] chars, Random random)
+返回类型：String
+功能描述：核心方法，生成指定条件的随机字符串
+序号：8
+方法名：random(int count, String chars)
+返回类型：String
+功能描述：从指定字符串生成随机字符串（已弃用）
+序号：9
+方法名：randomAlphabetic(int count)
+返回类型：String
+功能描述：生成字母字符串（已弃用）
+序号：10
+方法名：randomAlphabetic(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的字母字符串（已弃用）
+序号：11
+方法名：randomAlphanumeric(int count)
+返回类型：String
+功能描述：生成字母数字字符串（已弃用）
+序号：12
+方法名：randomAlphanumeric(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的字母数字字符串（已弃用）
+序号：13
+方法名：randomAscii(int count)
+返回类型：String
+功能描述：生成ASCII字符串（32-127）（已弃用）
+序号：14
+方法名：randomAscii(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的ASCII字符串（已弃用）
+序号：15
+方法名：randomGraph(int count)
+返回类型：String
+功能描述：生成可打印非空白字符字符串（33-126）（已弃用）
+序号：16
+方法名：randomGraph(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的可打印非空白字符字符串（已弃用）
+序号：17
+方法名：randomNumeric(int count)
+返回类型：String
+功能描述：生成数字字符串（已弃用）
+序号：18
+方法名：randomNumeric(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的数字字符串（已弃用）
+序号：19
+方法名：randomPrint(int count)
+返回类型：String
+功能描述：生成可打印字符字符串（32-126）（已弃用）
+序号：20
+方法名：randomPrint(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的可打印字符字符串（已弃用）
+序号：21
+方法名：secure()
+返回类型：RandomStringUtils
+功能描述：返回安全的RandomStringUtils实例
+序号：22
+方法名：secureStrong()
+返回类型：RandomStringUtils
+功能描述：返回强安全的RandomStringUtils实例
+序号：23
+方法名：RandomStringUtils()
+返回类型：无
+功能描述：构造方法（已弃用）
+序号：24
+方法名：RandomStringUtils(Supplier<lang3.RandomUtils> random)
+返回类型：无
+功能描述：私有构造方法
+序号：25
+方法名：next(int count)
+返回类型：String
+功能描述：生成基本随机字符串
+序号：26
+方法名：next(int count, boolean letters, boolean numbers)
+返回类型：String
+功能描述：生成控制字母/数字的随机字符串
+序号：27
+方法名：next(int count, char... chars)
+返回类型：String
+功能描述：从字符数组生成随机字符串
+序号：28
+方法名：next(int count, int start, int end, boolean letters, boolean numbers)
+返回类型：String
+功能描述：在指定字符范围内生成随机字符串
+序号：29
+方法名：next(int count, int start, int end, boolean letters, boolean numbers, char... chars)
+返回类型：String
+功能描述：在指定范围内从字符数组生成随机字符串
+序号：30
+方法名：next(int count, String chars)
+返回类型：String
+功能描述：从字符串生成随机字符串
+序号：31
+方法名：nextAlphabetic(int count)
+返回类型：String
+功能描述：生成字母字符串
+序号：32
+方法名：nextAlphabetic(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的字母字符串
+序号：33
+方法名：nextAlphanumeric(int count)
+返回类型：String
+功能描述：生成字母数字字符串
+序号：34
+方法名：nextAlphanumeric(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的字母数字字符串
+序号：35
+方法名：nextAscii(int count)
+返回类型：String
+功能描述：生成ASCII字符串（32-127）
+序号：36
+方法名：nextAscii(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的ASCII字符串
+序号：37
+方法名：nextGraph(int count)
+返回类型：String
+功能描述：生成可打印非空白字符字符串（33-126）
+序号：38
+方法名：nextGraph(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的可打印非空白字符字符串
+序号：39
+方法名：nextNumeric(int count)
+返回类型：String
+功能描述：生成数字字符串
+序号：40
+方法名：nextNumeric(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的数字字符串
+序号：41
+方法名：nextPrint(int count)
+返回类型：String
+功能描述：生成可打印字符字符串（32-126）
+序号：42
+方法名：nextPrint(int minLengthInclusive, int maxLengthExclusive)
+返回类型：String
+功能描述：生成指定长度范围的可打印字符字符串
+序号：43
+方法名：random()
+返回类型：Random
+功能描述：获取当前随机数生成器
+序号：44
+方法名：randomUtils()
+返回类型：RandomUtils
+功能描述：获取RandomUtils实例
+序号：45
+方法名：toString()
+返回类型：String
+功能描述：返回对象字符串表示

@@ -1,0 +1,37 @@
+[2026-01-13 18:37:27] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, create, create, hasArg, hasArg, hasArgs, hasArgs, hasOptionalArg, hasOptionalArgs, hasOptionalArgs, isRequired, isRequired, reset, withArgName, withDescription, withLongOpt, withType, withType, withValueSeparator, withValueSeparator
+  未覆盖: OptionBuilder
+优化建议: 增加create()方法在设置longopt后正常创建Option的测试; 增加hasArgs(int)和hasOptionalArgs(int)的边界值测试（如0、负数）; 增加withType方法传入null的异常场景测试; 增强reset测试，验证除longopt外的其他配置项重置
+
+[2026-01-13 18:40:38] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: create, create, create, hasArg, hasArg, hasArgs, hasArgs, hasOptionalArg, hasOptionalArgs, hasOptionalArgs, isRequired, isRequired, reset, withArgName, withDescription, withLongOpt, withType, withType, withValueSeparator, withValueSeparator
+  未覆盖: OptionBuilder
+
+[2026-01-15 11:18:02] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, create, create, hasArg, hasArg, hasArgs, hasArgs, hasOptionalArg, hasOptionalArgs, hasOptionalArgs, isRequired, isRequired, withArgName, withDescription, withLongOpt, withType, withType, withValueSeparator, withValueSeparator
+  未覆盖: reset, OptionBuilder
+
+[2026-01-15 11:23:04] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, create, create, hasArg, hasArg, hasArgs, hasArgs, hasOptionalArg, hasOptionalArgs, hasOptionalArgs, isRequired, isRequired, reset, withArgName, withDescription, withLongOpt, withType, withType, withValueSeparator, withValueSeparator
+  未覆盖: OptionBuilder
+
+[2026-01-19 15:36:35] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, create, create, hasArg, hasArg, hasArgs, hasArgs, hasOptionalArg, hasOptionalArgs, hasOptionalArgs, isRequired, isRequired, withArgName, withDescription, withLongOpt, withType, withType, withValueSeparator, withValueSeparator
+  未覆盖: reset, OptionBuilder
+
+[2026-01-19 15:40:58] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, create, create, hasArg, hasArg, hasArgs, hasArgs, hasOptionalArg, hasOptionalArgs, hasOptionalArgs, isRequired, isRequired, withArgName, withDescription, withLongOpt, withType, withType, withValueSeparator, withValueSeparator
+  未覆盖: reset, OptionBuilder
+

@@ -1,0 +1,12 @@
+[2026-01-21 13:26:19] 验证结果
+错误类型: 未知错误, 错误行: 175, 错误原因: 数组越界（读取长度4超过缓冲区长度3）, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: ExtendedBufferedReader, ExtendedBufferedReader, close, isClosed, getBytesRead, getLastChar, getLineNumber, getPosition, peek, peek, mark, read, read, readLine, reset
+  未覆盖: getEncodedCharLength
+
+[2026-01-21 13:30:04] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: ExtendedBufferedReader, ExtendedBufferedReader, close, isClosed, getBytesRead, getEncodedCharLength, getLastChar, getLineNumber, getPosition, peek, peek, mark, read, read, readLine, reset
+  未覆盖: 全部覆盖
+

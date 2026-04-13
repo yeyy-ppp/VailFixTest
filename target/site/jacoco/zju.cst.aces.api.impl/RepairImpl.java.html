@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RepairImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.impl</a> &gt; <span class="el_source">RepairImpl.java</span></div><h1>RepairImpl.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.impl;
+
+import lombok.Data;
+import zju.cst.aces.api.Repair;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.dto.ChatResponse;
+import zju.cst.aces.dto.PromptInfo;
+
+import static zju.cst.aces.runner.solution_runner.AbstractRunner.*;
+import static zju.cst.aces.api.impl.ChatGenerator.*;
+
+@Data
+public class RepairImpl implements Repair {
+
+    Config config;
+
+    PromptConstructorImpl promptConstructorImpl;
+
+<span class="nc" id="L19">    boolean success = false;</span>
+
+<span class="nc" id="L21">    public RepairImpl(Config config, PromptConstructorImpl promptConstructorImpl) {</span>
+<span class="nc" id="L22">        this.config = config;</span>
+<span class="nc" id="L23">        this.promptConstructorImpl = promptConstructorImpl;</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    public String ruleBasedRepair(String code) {
+<span class="nc" id="L28">        code = changeTestName(code, promptConstructorImpl.getTestName());</span>
+<span class="nc" id="L29">        code = repairPackage(code, promptConstructorImpl.getPromptInfo().getClassInfo().getPackageName());</span>
+<span class="nc" id="L30">        code = repairImports(code, promptConstructorImpl.getPromptInfo().getClassInfo().getImports());</span>
+<span class="nc" id="L31">        return code;</span>
+    }
+
+    @Override
+    public String LLMBasedRepair(String code, int rounds) {
+<span class="nc" id="L36">        PromptInfo promptInfo = promptConstructorImpl.getPromptInfo();</span>
+<span class="nc" id="L37">        promptInfo.setUnitTest(code);</span>
+<span class="nc" id="L38">        String fullClassName = promptInfo.getClassInfo().getPackageName() + &quot;.&quot; + promptInfo.getClassInfo().getClassName();</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">        if (runTest(config, promptConstructorImpl.getFullTestName(), promptInfo, rounds)) {</span>
+<span class="nc" id="L40">            this.success = true;</span>
+<span class="nc" id="L41">            return code;</span>
+        }
+
+<span class="nc" id="L44">        promptConstructorImpl.generate();</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (promptConstructorImpl.isExceedMaxTokens()) {</span>
+<span class="nc" id="L46">            config.getLogger().error(&quot;Exceed max prompt tokens: &quot; + promptInfo.methodInfo.methodName + &quot; Skipped.&quot;);</span>
+<span class="nc" id="L47">            return code;</span>
+        }
+<span class="nc" id="L49">        ChatResponse response = chat(config, promptConstructorImpl.getChatMessages());</span>
+<span class="nc" id="L50">        String newcode = extractCodeByResponse(response);</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        if (newcode.isEmpty()) {</span>
+<span class="nc" id="L52">            config.getLogger().warn(&quot;Test for method &lt; &quot; + promptInfo.methodInfo.methodName + &quot; &gt; extract code failed&quot;);</span>
+<span class="nc" id="L53">            return code;</span>
+        } else {
+<span class="nc" id="L55">            return newcode;</span>
+        }
+    }
+
+    @Override
+    public String LLMBasedRepair(String code) {
+<span class="nc" id="L61">        PromptInfo promptInfo = promptConstructorImpl.getPromptInfo();</span>
+<span class="nc" id="L62">        promptInfo.setUnitTest(code);</span>
+<span class="nc" id="L63">        String fullClassName = promptInfo.getClassInfo().getPackageName() + &quot;.&quot; + promptInfo.getClassInfo().getClassName();</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (runTest(config, promptConstructorImpl.getFullTestName(), promptInfo, 0)) {</span>
+<span class="nc" id="L65">            config.getLogger().info(&quot;Test for method &lt; &quot; + promptInfo.methodInfo.methodName + &quot; &gt; doesn't need repair&quot;);</span>
+<span class="nc" id="L66">            return code;</span>
+        }
+
+<span class="nc" id="L69">        promptConstructorImpl.generate();</span>
+
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (promptConstructorImpl.isExceedMaxTokens()) {</span>
+<span class="nc" id="L72">            config.getLogger().error(&quot;Exceed max prompt tokens: &quot; + promptInfo.methodInfo.methodName + &quot; Skipped.&quot;);</span>
+<span class="nc" id="L73">            return code;</span>
+        }
+<span class="nc" id="L75">        ChatResponse response = chat(config, promptConstructorImpl.getChatMessages());</span>
+<span class="nc" id="L76">        String newcode = extractCodeByResponse(response);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (newcode.isEmpty()) {</span>
+<span class="nc" id="L78">            config.getLogger().warn(&quot;Test for method &lt; &quot; + promptInfo.methodInfo.methodName + &quot; &gt; extract code failed&quot;);</span>
+<span class="nc" id="L79">            return code;</span>
+        } else {
+<span class="nc" id="L81">            return newcode;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

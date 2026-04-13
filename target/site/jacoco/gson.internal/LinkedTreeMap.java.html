@@ -1,0 +1,501 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LinkedTreeMap.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal</a> &gt; <span class="el_source">LinkedTreeMap.java</span></div><h1>LinkedTreeMap.java</h1><pre class="source lang-java linenums">package gson.internal;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import java.io.IOException;
+import java.io.InvalidObjectException;
+import java.io.ObjectInputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
+import java.util.AbstractMap;
+import java.util.AbstractSet;
+import java.util.Comparator;
+import java.util.ConcurrentModificationException;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Set;
+@SuppressWarnings(&quot;serial&quot;)
+public final class LinkedTreeMap&lt;K, V&gt; extends AbstractMap&lt;K, V&gt; implements Serializable {
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+<span class="fc" id="L20">  private static final Comparator&lt;Comparable&gt; NATURAL_ORDER =</span>
+<span class="fc" id="L21">      new Comparator&lt;Comparable&gt;() {</span>
+        @Override
+        public int compare(Comparable a, Comparable b) {
+<span class="nc" id="L24">          return a.compareTo(b);</span>
+        }
+      };
+  private final Comparator&lt;? super K&gt; comparator;
+  private final boolean allowNullValues;
+  Node&lt;K, V&gt; root;
+<span class="fc" id="L30">  int size = 0;</span>
+<span class="fc" id="L31">  int modCount = 0;</span>
+  final Node&lt;K, V&gt; header;
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public LinkedTreeMap() {
+<span class="fc" id="L35">    this((Comparator&lt;? super K&gt;) NATURAL_ORDER, true);</span>
+<span class="fc" id="L36">  }</span>
+  @SuppressWarnings(&quot;unchecked&quot;)
+  public LinkedTreeMap(boolean allowNullValues) {
+<span class="fc" id="L39">    this((Comparator&lt;? super K&gt;) NATURAL_ORDER, allowNullValues);</span>
+<span class="fc" id="L40">  }</span>
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+<span class="fc" id="L42">  public LinkedTreeMap(Comparator&lt;? super K&gt; comparator, boolean allowNullValues) {</span>
+<span class="pc bpc" id="L43" title="1 of 2 branches missed.">    this.comparator = comparator != null ? comparator : (Comparator) NATURAL_ORDER;</span>
+<span class="fc" id="L44">    this.allowNullValues = allowNullValues;</span>
+<span class="fc" id="L45">    this.header = new Node&lt;&gt;(allowNullValues);</span>
+<span class="fc" id="L46">  }</span>
+  @Override
+  public int size() {
+<span class="fc" id="L49">    return size;</span>
+  }
+  @Override
+  public V get(Object key) {
+<span class="fc" id="L53">    Node&lt;K, V&gt; node = findByObject(key);</span>
+<span class="fc bfc" id="L54" title="All 2 branches covered.">    return node != null ? node.value : null;</span>
+  }
+  @Override
+  public boolean containsKey(Object key) {
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    return findByObject(key) != null;</span>
+  }
+  @CanIgnoreReturnValue
+  @Override
+  public V put(K key, V value) {
+<span class="fc bfc" id="L63" title="All 2 branches covered.">    if (key == null) {</span>
+<span class="fc" id="L64">      throw new NullPointerException(&quot;key == null&quot;);</span>
+    }
+<span class="fc bfc" id="L66" title="All 4 branches covered.">    if (value == null &amp;&amp; !allowNullValues) {</span>
+<span class="fc" id="L67">      throw new NullPointerException(&quot;value == null&quot;);</span>
+    }
+<span class="fc" id="L69">    Node&lt;K, V&gt; created = find(key, true);</span>
+<span class="fc" id="L70">    V result = created.value;</span>
+<span class="fc" id="L71">    created.value = value;</span>
+<span class="fc" id="L72">    return result;</span>
+  }
+  @Override
+  public void clear() {
+<span class="fc" id="L76">    root = null;</span>
+<span class="fc" id="L77">    size = 0;</span>
+<span class="fc" id="L78">    modCount++;</span>
+<span class="fc" id="L79">    Node&lt;K, V&gt; header = this.header;</span>
+<span class="fc" id="L80">    header.next = header.prev = header;</span>
+<span class="fc" id="L81">  }</span>
+  @Override
+  public V remove(Object key) {
+<span class="fc" id="L84">    Node&lt;K, V&gt; node = removeInternalByKey(key);</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">    return node != null ? node.value : null;</span>
+  }
+  Node&lt;K, V&gt; find(K key, boolean create) {
+<span class="fc" id="L88">    Comparator&lt;? super K&gt; comparator = this.comparator;</span>
+<span class="fc" id="L89">    Node&lt;K, V&gt; nearest = root;</span>
+<span class="fc" id="L90">    int comparison = 0;</span>
+<span class="fc bfc" id="L91" title="All 2 branches covered.">    if (nearest != null) {</span>
+      @SuppressWarnings(&quot;unchecked&quot;)
+      Comparable&lt;Object&gt; comparableKey =
+<span class="fc bfc" id="L94" title="All 2 branches covered.">          (comparator == NATURAL_ORDER) ? (Comparable&lt;Object&gt;) key : null;</span>
+      while (true) {
+        comparison =
+<span class="fc bfc" id="L97" title="All 2 branches covered.">            (comparableKey != null)</span>
+<span class="fc" id="L98">                ? comparableKey.compareTo(nearest.key)</span>
+<span class="fc" id="L99">                : comparator.compare(key, nearest.key);</span>
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (comparison == 0) {</span>
+<span class="fc" id="L101">          return nearest;</span>
+        }
+<span class="fc bfc" id="L103" title="All 2 branches covered.">        Node&lt;K, V&gt; child = (comparison &lt; 0) ? nearest.left : nearest.right;</span>
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (child == null) {</span>
+<span class="fc" id="L105">          break;</span>
+        }
+<span class="fc" id="L107">        nearest = child;</span>
+<span class="fc" id="L108">      }</span>
+    }
+<span class="fc bfc" id="L110" title="All 2 branches covered.">    if (!create) {</span>
+<span class="fc" id="L111">      return null;</span>
+    }
+<span class="fc" id="L113">    Node&lt;K, V&gt; header = this.header;</span>
+    Node&lt;K, V&gt; created;
+<span class="fc bfc" id="L115" title="All 2 branches covered.">    if (nearest == null) {</span>
+<span class="pc bpc" id="L116" title="1 of 4 branches missed.">      if (comparator == NATURAL_ORDER &amp;&amp; !(key instanceof Comparable)) {</span>
+<span class="nc" id="L117">        throw new ClassCastException(key.getClass().getName() + &quot; is not Comparable&quot;);</span>
+      }
+<span class="fc" id="L119">      created = new Node&lt;&gt;(allowNullValues, nearest, key, header, header.prev);</span>
+<span class="fc" id="L120">      root = created;</span>
+    } else {
+<span class="fc" id="L122">      created = new Node&lt;&gt;(allowNullValues, nearest, key, header, header.prev);</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">      if (comparison &lt; 0) {</span>
+<span class="fc" id="L124">        nearest.left = created;</span>
+      } else {
+<span class="fc" id="L126">        nearest.right = created;</span>
+      }
+<span class="fc" id="L128">      rebalance(nearest, true);</span>
+    }
+<span class="fc" id="L130">    size++;</span>
+<span class="fc" id="L131">    modCount++;</span>
+<span class="fc" id="L132">    return created;</span>
+  }
+  @SuppressWarnings(&quot;unchecked&quot;)
+  Node&lt;K, V&gt; findByObject(Object key) {
+    try {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">      return key != null ? find((K) key, false) : null;</span>
+<span class="fc" id="L138">    } catch (ClassCastException e) {</span>
+<span class="fc" id="L139">      return null;</span>
+    }
+  }
+  Node&lt;K, V&gt; findByEntry(Entry&lt;?, ?&gt; entry) {
+<span class="fc" id="L143">    Node&lt;K, V&gt; mine = findByObject(entry.getKey());</span>
+<span class="fc bfc" id="L144" title="All 4 branches covered.">    boolean valuesEqual = mine != null &amp;&amp; equal(mine.value, entry.getValue());</span>
+<span class="fc bfc" id="L145" title="All 2 branches covered.">    return valuesEqual ? mine : null;</span>
+  }
+  private static boolean equal(Object a, Object b) {
+<span class="fc" id="L148">    return Objects.equals(a, b);</span>
+  }
+  void removeInternal(Node&lt;K, V&gt; node, boolean unlink) {
+<span class="fc bfc" id="L151" title="All 2 branches covered.">    if (unlink) {</span>
+<span class="fc" id="L152">      node.prev.next = node.next;</span>
+<span class="fc" id="L153">      node.next.prev = node.prev;</span>
+    }
+<span class="fc" id="L155">    Node&lt;K, V&gt; left = node.left;</span>
+<span class="fc" id="L156">    Node&lt;K, V&gt; right = node.right;</span>
+<span class="fc" id="L157">    Node&lt;K, V&gt; originalParent = node.parent;</span>
+<span class="pc bpc" id="L158" title="1 of 4 branches missed.">    if (left != null &amp;&amp; right != null) {</span>
+<span class="pc bpc" id="L159" title="1 of 2 branches missed.">      Node&lt;K, V&gt; adjacent = (left.height &gt; right.height) ? left.last() : right.first();</span>
+<span class="fc" id="L160">      removeInternal(adjacent, false);</span>
+<span class="fc" id="L161">      int leftHeight = 0;</span>
+<span class="fc" id="L162">      left = node.left;</span>
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">      if (left != null) {</span>
+<span class="fc" id="L164">        leftHeight = left.height;</span>
+<span class="fc" id="L165">        adjacent.left = left;</span>
+<span class="fc" id="L166">        left.parent = adjacent;</span>
+<span class="fc" id="L167">        node.left = null;</span>
+      }
+<span class="fc" id="L169">      int rightHeight = 0;</span>
+<span class="fc" id="L170">      right = node.right;</span>
+<span class="pc bpc" id="L171" title="1 of 2 branches missed.">      if (right != null) {</span>
+<span class="nc" id="L172">        rightHeight = right.height;</span>
+<span class="nc" id="L173">        adjacent.right = right;</span>
+<span class="nc" id="L174">        right.parent = adjacent;</span>
+<span class="nc" id="L175">        node.right = null;</span>
+      }
+<span class="fc" id="L177">      adjacent.height = Math.max(leftHeight, rightHeight) + 1;</span>
+<span class="fc" id="L178">      replaceInParent(node, adjacent);</span>
+<span class="fc" id="L179">      return;</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">    } else if (left != null) {</span>
+<span class="nc" id="L181">      replaceInParent(node, left);</span>
+<span class="nc" id="L182">      node.left = null;</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">    } else if (right != null) {</span>
+<span class="fc" id="L184">      replaceInParent(node, right);</span>
+<span class="fc" id="L185">      node.right = null;</span>
+    } else {
+<span class="fc" id="L187">      replaceInParent(node, null);</span>
+    }
+<span class="fc" id="L189">    rebalance(originalParent, false);</span>
+<span class="fc" id="L190">    size--;</span>
+<span class="fc" id="L191">    modCount++;</span>
+<span class="fc" id="L192">  }</span>
+  Node&lt;K, V&gt; removeInternalByKey(Object key) {
+<span class="fc" id="L194">    Node&lt;K, V&gt; node = findByObject(key);</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">    if (node != null) {</span>
+<span class="fc" id="L196">      removeInternal(node, true);</span>
+    }
+<span class="fc" id="L198">    return node;</span>
+  }
+  @SuppressWarnings(&quot;ReferenceEquality&quot;)
+  private void replaceInParent(Node&lt;K, V&gt; node, Node&lt;K, V&gt; replacement) {
+<span class="fc" id="L202">    Node&lt;K, V&gt; parent = node.parent;</span>
+<span class="fc" id="L203">    node.parent = null;</span>
+<span class="fc bfc" id="L204" title="All 2 branches covered.">    if (replacement != null) {</span>
+<span class="fc" id="L205">      replacement.parent = parent;</span>
+    }
+<span class="fc bfc" id="L207" title="All 2 branches covered.">    if (parent != null) {</span>
+<span class="fc bfc" id="L208" title="All 2 branches covered.">      if (parent.left == node) {</span>
+<span class="fc" id="L209">        parent.left = replacement;</span>
+      } else {
+<span class="pc bpc" id="L211" title="1 of 2 branches missed.">        assert parent.right == node;</span>
+<span class="fc" id="L212">        parent.right = replacement;</span>
+      }
+    } else {
+<span class="fc" id="L215">      root = replacement;</span>
+    }
+<span class="fc" id="L217">  }</span>
+  private void rebalance(Node&lt;K, V&gt; unbalanced, boolean insert) {
+<span class="fc bfc" id="L219" title="All 2 branches covered.">    for (Node&lt;K, V&gt; node = unbalanced; node != null; node = node.parent) {</span>
+<span class="fc" id="L220">      Node&lt;K, V&gt; left = node.left;</span>
+<span class="fc" id="L221">      Node&lt;K, V&gt; right = node.right;</span>
+<span class="fc bfc" id="L222" title="All 2 branches covered.">      int leftHeight = left != null ? left.height : 0;</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">      int rightHeight = right != null ? right.height : 0;</span>
+<span class="fc" id="L224">      int delta = leftHeight - rightHeight;</span>
+<span class="fc bfc" id="L225" title="All 2 branches covered.">      if (delta == -2) {</span>
+<span class="fc" id="L226">        Node&lt;K, V&gt; rightLeft = right.left;</span>
+<span class="fc" id="L227">        Node&lt;K, V&gt; rightRight = right.right;</span>
+<span class="pc bpc" id="L228" title="1 of 2 branches missed.">        int rightRightHeight = rightRight != null ? rightRight.height : 0;</span>
+<span class="fc bfc" id="L229" title="All 2 branches covered.">        int rightLeftHeight = rightLeft != null ? rightLeft.height : 0;</span>
+<span class="fc" id="L230">        int rightDelta = rightLeftHeight - rightRightHeight;</span>
+<span class="pc bpc" id="L231" title="5 of 6 branches missed.">        if (rightDelta == -1 || (rightDelta == 0 &amp;&amp; !insert)) {</span>
+<span class="fc" id="L232">          rotateLeft(node);</span>
+        } else {
+<span class="nc bnc" id="L234" title="All 2 branches missed.">          assert (rightDelta == 1);</span>
+<span class="nc" id="L235">          rotateRight(right);</span>
+<span class="nc" id="L236">          rotateLeft(node);</span>
+        }
+<span class="pc bpc" id="L238" title="1 of 2 branches missed.">        if (insert) {</span>
+<span class="fc" id="L239">          break;</span>
+        }
+<span class="pc bfc" id="L241" title="All 2 branches covered.">      } else if (delta == 2) {</span>
+<span class="fc" id="L242">        Node&lt;K, V&gt; leftLeft = left.left;</span>
+<span class="fc" id="L243">        Node&lt;K, V&gt; leftRight = left.right;</span>
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">        int leftRightHeight = leftRight != null ? leftRight.height : 0;</span>
+<span class="pc bpc" id="L245" title="1 of 2 branches missed.">        int leftLeftHeight = leftLeft != null ? leftLeft.height : 0;</span>
+<span class="fc" id="L246">        int leftDelta = leftLeftHeight - leftRightHeight;</span>
+<span class="pc bpc" id="L247" title="4 of 6 branches missed.">        if (leftDelta == 1 || (leftDelta == 0 &amp;&amp; !insert)) {</span>
+<span class="nc" id="L248">          rotateRight(node);</span>
+        } else {
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">          assert (leftDelta == -1);</span>
+<span class="fc" id="L251">          rotateLeft(left);</span>
+<span class="fc" id="L252">          rotateRight(node);</span>
+        }
+<span class="pc bpc" id="L254" title="1 of 2 branches missed.">        if (insert) {</span>
+<span class="fc" id="L255">          break;</span>
+        }
+<span class="pc bfc" id="L257" title="All 2 branches covered.">      } else if (delta == 0) {</span>
+<span class="fc" id="L258">        node.height = leftHeight + 1;</span>
+<span class="pc bpc" id="L259" title="1 of 2 branches missed.">        if (insert) {</span>
+<span class="nc" id="L260">          break;</span>
+        }
+      } else {
+<span class="pc bpc" id="L263" title="1 of 4 branches missed.">        assert (delta == -1 || delta == 1);</span>
+<span class="fc" id="L264">        node.height = Math.max(leftHeight, rightHeight) + 1;</span>
+<span class="fc bfc" id="L265" title="All 2 branches covered.">        if (!insert) {</span>
+<span class="fc" id="L266">          break;</span>
+        }
+      }
+    }
+<span class="fc" id="L270">  }</span>
+  private void rotateLeft(Node&lt;K, V&gt; root) {
+<span class="fc" id="L272">    Node&lt;K, V&gt; left = root.left;</span>
+<span class="fc" id="L273">    Node&lt;K, V&gt; pivot = root.right;</span>
+<span class="fc" id="L274">    Node&lt;K, V&gt; pivotLeft = pivot.left;</span>
+<span class="fc" id="L275">    Node&lt;K, V&gt; pivotRight = pivot.right;</span>
+<span class="fc" id="L276">    root.right = pivotLeft;</span>
+<span class="fc bfc" id="L277" title="All 2 branches covered.">    if (pivotLeft != null) {</span>
+<span class="fc" id="L278">      pivotLeft.parent = root;</span>
+    }
+<span class="fc" id="L280">    replaceInParent(root, pivot);</span>
+<span class="fc" id="L281">    pivot.left = root;</span>
+<span class="fc" id="L282">    root.parent = pivot;</span>
+<span class="fc" id="L283">    root.height =</span>
+<span class="fc bfc" id="L284" title="All 4 branches covered.">        Math.max(left != null ? left.height : 0, pivotLeft != null ? pivotLeft.height : 0) + 1;</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">    pivot.height = Math.max(root.height, pivotRight != null ? pivotRight.height : 0) + 1;</span>
+<span class="fc" id="L286">  }</span>
+  private void rotateRight(Node&lt;K, V&gt; root) {
+<span class="fc" id="L288">    Node&lt;K, V&gt; pivot = root.left;</span>
+<span class="fc" id="L289">    Node&lt;K, V&gt; right = root.right;</span>
+<span class="fc" id="L290">    Node&lt;K, V&gt; pivotLeft = pivot.left;</span>
+<span class="fc" id="L291">    Node&lt;K, V&gt; pivotRight = pivot.right;</span>
+<span class="fc" id="L292">    root.left = pivotRight;</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">    if (pivotRight != null) {</span>
+<span class="nc" id="L294">      pivotRight.parent = root;</span>
+    }
+<span class="fc" id="L296">    replaceInParent(root, pivot);</span>
+<span class="fc" id="L297">    pivot.right = root;</span>
+<span class="fc" id="L298">    root.parent = pivot;</span>
+<span class="fc" id="L299">    root.height =</span>
+<span class="pc bpc" id="L300" title="2 of 4 branches missed.">        Math.max(right != null ? right.height : 0, pivotRight != null ? pivotRight.height : 0) + 1;</span>
+<span class="pc bpc" id="L301" title="1 of 2 branches missed.">    pivot.height = Math.max(root.height, pivotLeft != null ? pivotLeft.height : 0) + 1;</span>
+<span class="fc" id="L302">  }</span>
+  private EntrySet entrySet;
+  private KeySet keySet;
+  @Override
+  public Set&lt;Entry&lt;K, V&gt;&gt; entrySet() {
+<span class="fc" id="L307">    EntrySet result = entrySet;</span>
+<span class="pc bpc" id="L308" title="1 of 2 branches missed.">    if (result == null) {</span>
+<span class="fc" id="L309">      result = entrySet = new EntrySet();</span>
+    }
+<span class="fc" id="L311">    return result;</span>
+  }
+  @Override
+  public Set&lt;K&gt; keySet() {
+<span class="fc" id="L315">    KeySet result = keySet;</span>
+<span class="pc bpc" id="L316" title="1 of 2 branches missed.">    if (result == null) {</span>
+<span class="fc" id="L317">      result = keySet = new KeySet();</span>
+    }
+<span class="fc" id="L319">    return result;</span>
+  }
+  static final class Node&lt;K, V&gt; implements Entry&lt;K, V&gt; {
+    Node&lt;K, V&gt; parent;
+    Node&lt;K, V&gt; left;
+    Node&lt;K, V&gt; right;
+    Node&lt;K, V&gt; next;
+    Node&lt;K, V&gt; prev;
+    final K key;
+    final boolean allowNullValue;
+    V value;
+    int height;
+<span class="fc" id="L331">    Node(boolean allowNullValue) {</span>
+<span class="fc" id="L332">      key = null;</span>
+<span class="fc" id="L333">      this.allowNullValue = allowNullValue;</span>
+<span class="fc" id="L334">      next = prev = this;</span>
+<span class="fc" id="L335">    }</span>
+<span class="fc" id="L336">    Node(boolean allowNullValue, Node&lt;K, V&gt; parent, K key, Node&lt;K, V&gt; next, Node&lt;K, V&gt; prev) {</span>
+<span class="fc" id="L337">      this.parent = parent;</span>
+<span class="fc" id="L338">      this.key = key;</span>
+<span class="fc" id="L339">      this.allowNullValue = allowNullValue;</span>
+<span class="fc" id="L340">      this.height = 1;</span>
+<span class="fc" id="L341">      this.next = next;</span>
+<span class="fc" id="L342">      this.prev = prev;</span>
+<span class="fc" id="L343">      prev.next = this;</span>
+<span class="fc" id="L344">      next.prev = this;</span>
+<span class="fc" id="L345">    }</span>
+    @Override
+    public K getKey() {
+<span class="fc" id="L348">      return key;</span>
+    }
+    @Override
+    public V getValue() {
+<span class="fc" id="L352">      return value;</span>
+    }
+    @Override
+    public V setValue(V value) {
+<span class="nc bnc" id="L356" title="All 4 branches missed.">      if (value == null &amp;&amp; !allowNullValue) {</span>
+<span class="nc" id="L357">        throw new NullPointerException(&quot;value == null&quot;);</span>
+      }
+<span class="nc" id="L359">      V oldValue = this.value;</span>
+<span class="nc" id="L360">      this.value = value;</span>
+<span class="nc" id="L361">      return oldValue;</span>
+    }
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L365" title="All 2 branches missed.">      if (o instanceof Entry) {</span>
+<span class="nc" id="L366">        Entry&lt;?, ?&gt; other = (Entry&lt;?, ?&gt;) o;</span>
+<span class="nc bnc" id="L367" title="All 8 branches missed.">        return (key == null ? other.getKey() == null : key.equals(other.getKey()))</span>
+<span class="nc bnc" id="L368" title="All 4 branches missed.">            &amp;&amp; (value == null ? other.getValue() == null : value.equals(other.getValue()));</span>
+      }
+<span class="nc" id="L370">      return false;</span>
+    }
+    @Override
+    public int hashCode() {
+<span class="pc bpc" id="L374" title="2 of 4 branches missed.">      return (key == null ? 0 : key.hashCode()) ^ (value == null ? 0 : value.hashCode());</span>
+    }
+    @Override
+    public String toString() {
+<span class="nc" id="L378">      return key + &quot;=&quot; + value;</span>
+    }
+    public Node&lt;K, V&gt; first() {
+<span class="fc" id="L381">      Node&lt;K, V&gt; node = this;</span>
+<span class="fc" id="L382">      Node&lt;K, V&gt; child = node.left;</span>
+<span class="pc bpc" id="L383" title="1 of 2 branches missed.">      while (child != null) {</span>
+<span class="nc" id="L384">        node = child;</span>
+<span class="nc" id="L385">        child = node.left;</span>
+      }
+<span class="fc" id="L387">      return node;</span>
+    }
+    public Node&lt;K, V&gt; last() {
+<span class="nc" id="L390">      Node&lt;K, V&gt; node = this;</span>
+<span class="nc" id="L391">      Node&lt;K, V&gt; child = node.right;</span>
+<span class="nc bnc" id="L392" title="All 2 branches missed.">      while (child != null) {</span>
+<span class="nc" id="L393">        node = child;</span>
+<span class="nc" id="L394">        child = node.right;</span>
+      }
+<span class="nc" id="L396">      return node;</span>
+    }
+  }
+  private abstract class LinkedTreeMapIterator&lt;T&gt; implements Iterator&lt;T&gt; {
+<span class="fc" id="L400">    Node&lt;K, V&gt; next = header.next;</span>
+<span class="fc" id="L401">    Node&lt;K, V&gt; lastReturned = null;</span>
+<span class="fc" id="L402">    int expectedModCount = modCount;</span>
+<span class="fc" id="L403">    LinkedTreeMapIterator() {}</span>
+    @Override
+    @SuppressWarnings(&quot;ReferenceEquality&quot;)
+    public final boolean hasNext() {
+<span class="fc bfc" id="L407" title="All 2 branches covered.">      return next != header;</span>
+    }
+    @SuppressWarnings(&quot;ReferenceEquality&quot;)
+    final Node&lt;K, V&gt; nextNode() {
+<span class="fc" id="L411">      Node&lt;K, V&gt; e = next;</span>
+<span class="fc bfc" id="L412" title="All 2 branches covered.">      if (e == header) {</span>
+<span class="fc" id="L413">        throw new NoSuchElementException();</span>
+      }
+<span class="fc bfc" id="L415" title="All 2 branches covered.">      if (modCount != expectedModCount) {</span>
+<span class="fc" id="L416">        throw new ConcurrentModificationException();</span>
+      }
+<span class="fc" id="L418">      next = e.next;</span>
+<span class="fc" id="L419">      lastReturned = e;</span>
+<span class="fc" id="L420">      return e;</span>
+    }
+    @Override
+    public final void remove() {
+<span class="fc bfc" id="L424" title="All 2 branches covered.">      if (lastReturned == null) {</span>
+<span class="fc" id="L425">        throw new IllegalStateException();</span>
+      }
+<span class="fc" id="L427">      removeInternal(lastReturned, true);</span>
+<span class="fc" id="L428">      lastReturned = null;</span>
+<span class="fc" id="L429">      expectedModCount = modCount;</span>
+<span class="fc" id="L430">    }</span>
+  }
+<span class="fc" id="L432">  class EntrySet extends AbstractSet&lt;Entry&lt;K, V&gt;&gt; {</span>
+    @Override
+    public int size() {
+<span class="fc" id="L435">      return size;</span>
+    }
+    @Override
+    public Iterator&lt;Entry&lt;K, V&gt;&gt; iterator() {
+<span class="fc" id="L439">      return new LinkedTreeMapIterator&lt;Entry&lt;K, V&gt;&gt;() {</span>
+        @Override
+        public Entry&lt;K, V&gt; next() {
+<span class="fc" id="L442">          return nextNode();</span>
+        }
+      };
+    }
+    @Override
+    public boolean contains(Object o) {
+<span class="nc bnc" id="L448" title="All 4 branches missed.">      return o instanceof Entry &amp;&amp; findByEntry((Entry&lt;?, ?&gt;) o) != null;</span>
+    }
+    @Override
+    public boolean remove(Object o) {
+<span class="nc bnc" id="L452" title="All 2 branches missed.">      if (!(o instanceof Entry)) {</span>
+<span class="nc" id="L453">        return false;</span>
+      }
+<span class="nc" id="L455">      Node&lt;K, V&gt; node = findByEntry((Entry&lt;?, ?&gt;) o);</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">      if (node == null) {</span>
+<span class="nc" id="L457">        return false;</span>
+      }
+<span class="nc" id="L459">      removeInternal(node, true);</span>
+<span class="nc" id="L460">      return true;</span>
+    }
+    @Override
+    public void clear() {
+<span class="nc" id="L464">      LinkedTreeMap.this.clear();</span>
+<span class="nc" id="L465">    }</span>
+  }
+<span class="fc" id="L467">  final class KeySet extends AbstractSet&lt;K&gt; {</span>
+    @Override
+    public int size() {
+<span class="fc" id="L470">      return size;</span>
+    }
+    @Override
+    public Iterator&lt;K&gt; iterator() {
+<span class="fc" id="L474">      return new LinkedTreeMapIterator&lt;K&gt;() {</span>
+        @Override
+        public K next() {
+<span class="fc" id="L477">          return nextNode().key;</span>
+        }
+      };
+    }
+    @Override
+    public boolean contains(Object o) {
+<span class="fc" id="L483">      return containsKey(o);</span>
+    }
+    @Override
+    public boolean remove(Object key) {
+<span class="pc bpc" id="L487" title="1 of 2 branches missed.">      return removeInternalByKey(key) != null;</span>
+    }
+    @Override
+    public void clear() {
+<span class="nc" id="L491">      LinkedTreeMap.this.clear();</span>
+<span class="nc" id="L492">    }</span>
+  }
+  private Object writeReplace() throws ObjectStreamException {
+<span class="nc" id="L495">    return new LinkedHashMap&lt;&gt;(this);</span>
+  }
+  private void readObject(ObjectInputStream in) throws IOException {
+<span class="nc" id="L498">    throw new InvalidObjectException(&quot;Deserialization is unsupported&quot;);</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

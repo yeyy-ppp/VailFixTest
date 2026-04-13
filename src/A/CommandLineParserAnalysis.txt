@@ -1,0 +1,13 @@
+包路径：cli
+类名：CommandLineParser
+父类：无
+依赖类：CommandLine,Options,ParseException
+---
+序号：1
+方法名：parse(Options options, String[] arguments)
+返回类型：CommandLine
+功能描述：解析命令行参数为CommandLine对象
+序号：2
+方法名：parse(Options options, String[] arguments, boolean stopAtNonOption)
+返回类型：CommandLine
+功能描述：解析命令行参数并可指定在非选项处停止

@@ -1,0 +1,6 @@
+[2026-01-20 12:28:11] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: Builder, get, getIndent, getLeftPad, getMaxWidth, getMinWidth, isScalable, setAlignment, setIndent, setLeftPad, setMaxWidth, setMinWidth, setScalable, setTextStyle, builder, TextStyle, getAlignment, getIndent, getLeftPad, getMaxWidth, getMinWidth, isScalable, pad, toString
+  未覆盖: 全部覆盖
+

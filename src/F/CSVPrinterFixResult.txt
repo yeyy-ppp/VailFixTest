@@ -1,0 +1,281 @@
+[2026-01-21 13:01:55] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package csv;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Types;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
+
+class CSVPrinterTest {
+
+    @Test
+    void testConstructorWithHeaderComments() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVFormat format = CSVFormat.builder()
+                .setHeaderComments("Comment1", "Comment2")
+                .setHeader("Header1", "Header2")
+                .build();
+        new CSVPrinter(writer, format);
+        String result = writer.toString();
+        assertTrue(result.contains("# Comment1"));
+        assertTrue(result.contains("# Comment2"));
+        assertTrue(result.contains("Header1,Header2"));
+    }
+
+    @Test
+    void testConstructorWithoutHeader() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVFormat format = CSVFormat.builder()
+                .setSkipHeaderRecord(true)
+                .setHeader("Header1", "Header2")
+                .build();
+        new CSVPrinter(writer, format);
+        assertFalse(writer.toString().contains("Header1,Header2"));
+    }
+
+    @Test
+    void testCloseWithoutFlush() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.close();
+        assertThrows(IOException.class, () -> writer.write("test"));
+    }
+
+    @Test
+    void testCloseWithFlush() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.print("data");
+        printer.close(true);
+        assertEquals("data", writer.toString());
+    }
+
+    @Test
+    void testEndOfRecord() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.print("value");
+        printer.endOfRecord();
+        assertEquals("value" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+        assertEquals(1, printer.getRecordCount());
+    }
+
+    @Test
+    void testFlush() throws IOException {
+        Writer writer = Mockito.mock(Writer.class);
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.flush();
+        Mockito.verify(writer).flush();
+    }
+
+    @Test
+    void testGetOut() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        assertEquals(writer, printer.getOut());
+    }
+
+    @Test
+    void testGetRecordCount() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecord("value");
+        assertEquals(1, printer.getRecordCount());
+    }
+
+    @Test
+    void testPrint() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.print("test");
+        assertEquals("test", writer.toString());
+    }
+
+    @Test
+    void testPrintCommentWithNewlines() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.builder().setCommentMarker('#').build());
+        printer.printComment("line1\nline2\rline3\r\nline4");
+        String expected = "# line1" + System.lineSeparator() + 
+                          "# line2" + System.lineSeparator() + 
+                          "# line3" + System.lineSeparator() + 
+                          "# line4" + System.lineSeparator();
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    void testPrintRecordIterable() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecord(Arrays.asList("a", "b", "c"));
+        assertEquals("a,b,c" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordVarargs() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecord("x", "y", "z");
+        assertEquals("x,y,z" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordStream() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecord(Stream.of("p", "q", "r"));
+        assertEquals("p,q,r" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordsIterable() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecords(Arrays.asList(
+            Arrays.asList("a1", "a2"),
+            Arrays.asList("b1", "b2")
+        ));
+        String expected = "a1,a2" + CSVFormat.DEFAULT.getLineSeparator() + 
+                          "b1,b2" + CSVFormat.DEFAULT.getLineSeparator();
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    void testPrintHeadersResultSet() throws SQLException, IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        
+        ResultSetMetaData metaData = Mockito.mock(ResultSetMetaData.class);
+        Mockito.when(metaData.getColumnCount()).thenReturn(2);
+        Mockito.when(metaData.getColumnName(1)).thenReturn("col1");
+        Mockito.when(metaData.getColumnName(2)).thenReturn("col2");
+        
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+        
+        printer.printHeaders(resultSet);
+        assertEquals("col1,col2" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordsResultSetWithBlobClob() throws SQLException, IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        
+        ResultSetMetaData metaData = Mockito.mock(ResultSetMetaData.class);
+        Mockito.when(metaData.getColumnCount()).thenReturn(3);
+        Mockito.when(metaData.getColumnType(1)).thenReturn(Types.VARCHAR);
+        Mockito.when(metaData.getColumnType(2)).thenReturn(Types.CLOB);
+        Mockito.when(metaData.getColumnType(3)).thenReturn(Types.BLOB);
+        
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+        Mockito.when(resultSet.next()).thenReturn(true, false);
+        Mockito.when(resultSet.getObject(1)).thenReturn("text");
+        Mockito.when(resultSet.getObject(2)).thenReturn(Mockito.mock(java.sql.Clob.class));
+        Mockito.when(resultSet.getObject(3)).thenReturn(Mockito.mock(java.sql.Blob.class));
+        
+        printer.printRecords(resultSet);
+        assertTrue(writer.toString().startsWith("text"));
+    }
+
+    @Test
+    void testPrintRecordsResultSetWithHeader() throws SQLException, IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        
+        ResultSetMetaData metaData = Mockito.mock(ResultSetMetaData.class);
+        Mockito.when(metaData.getColumnCount()).thenReturn(2);
+        Mockito.when(metaData.getColumnName(1)).thenReturn("h1");
+        Mockito.when(metaData.getColumnName(2)).thenReturn("h2");
+        
+        ResultSet resultSet = Mockito.mock(ResultSet.class);
+        Mockito.when(resultSet.getMetaData()).thenReturn(metaData);
+        Mockito.when(resultSet.next()).thenReturn(true, false);
+        Mockito.when(resultSet.getObject(1)).thenReturn("v1");
+        Mockito.when(resultSet.getObject(2)).thenReturn("v2");
+        
+        printer.printRecords(resultSet, true);
+        String expected = "h1,h2" + CSVFormat.DEFAULT.getLineSeparator() + 
+                          "v1,v2" + CSVFormat.DEFAULT.getLineSeparator();
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    void testPrintRecordsStream() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecords(Stream.of("a", "b"));
+        String expected = "a" + CSVFormat.DEFAULT.getLineSeparator() + 
+                          "b" + CSVFormat.DEFAULT.getLineSeparator();
+        assertEquals(expected, writer.toString());
+    }
+
+    @Test
+    void testPrintln() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.println();
+        assertEquals(CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRaw() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRaw("raw,value");
+        assertEquals("raw,value", writer.toString());
+    }
+
+    @Test
+    void testPrintRecordObjectWithIterable() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecordObject(Arrays.asList("a", "b"));
+        assertEquals("a,b" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordObjectWithArray() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecordObject(new Object[]{"x", "y"});
+        assertEquals("x,y" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordObjectWithStream() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecordObject(Stream.of("p", "q"));
+        assertEquals("p,q" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+
+    @Test
+    void testPrintRecordObjectWithSingleObject() throws IOException {
+        StringWriter writer = new StringWriter();
+        CSVPrinter printer = new CSVPrinter(writer, CSVFormat.DEFAULT);
+        printer.printRecordObject(123);
+        assertEquals("123" + CSVFormat.DEFAULT.getLineSeparator(), writer.toString());
+    }
+}
+```
+

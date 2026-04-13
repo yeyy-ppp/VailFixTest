@@ -1,0 +1,1223 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="0639c1f2-d3d6-4e7a-b14d-7b9f91960fc6" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/BatchTest_0123_2054.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/BatchTest_0126_1110.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/AbstractFutureProxyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/AbstractSupplierAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ArrayTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/BasicThreadFactoryAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/BuilderAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/CharSetAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/CharSetUtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ClassLoaderUtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ClassPathUtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/CloneFailedExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/CollectionTypeAdapterFactoryAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ComputableAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ConstructorConstructorAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ConversionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/DefaultDateTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ExcluderAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ExclusionStrategyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableBiConsumerAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableBiFunctionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableBiPredicateAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableCallableAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableConsumerAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableFunctionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableIntFunctionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailablePredicateAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableRunnableAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FailableSupplierAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FieldAttributesAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FieldNamingPolicyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FieldNamingStrategyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FormattingStyleAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/FutureTasksAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/GsonAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/GsonBuilderAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/GsonTypesAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ISO8601UtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/InstanceCreatorAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/IntStreamsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JavaVersionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonAdapterAnnotationTypeAdapterFactoryAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonArrayAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonDeserializationContextAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonDeserializerAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonElementAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonElementTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonIOExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonNullAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonObjectAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonParseExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonParserAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonPrimitiveAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonReaderAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonReaderInternalAccessAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonSerializationContextAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonSerializerAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonStreamParserAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonSyntaxExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonTokenAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonTreeReaderAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonTreeWriterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/JsonWriterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/LangCollectorsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/LazilyParsedNumberAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/LinkedTreeMapAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/LockingVisitorsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/LongRangeAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/LongSerializationPolicyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/MalformedJsonExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/MapTypeAdapterFactoryAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/MutableAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/MutableIntAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/NonNullElementWrapperListAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/NumberLimitsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/NumberRangeAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/NumberTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ObjectConstructorAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ObjectTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/PreJava9DateFormatProviderAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/PrimitivesAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/RandomStringUtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/RandomUtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/RangeAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ReflectionAccessFilterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ReflectionAccessFilterHelperAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ReflectionHelperAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ReflectiveTypeAdapterFactoryAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/RuntimeEnvironmentAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/SerializationDelegatingTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/SerializationExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/SqlTypesSupportAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/StreamsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/StrictnessAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/SuppliersAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/SystemPropertiesAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/SystemUtilsAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ToNumberPolicyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/ToNumberStrategyAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TreeTypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TroubleshootingGuideAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TypeAdapterAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TypeAdapterFactoryAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TypeAdaptersAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TypeTokenAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/TypedAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/UncheckedExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/UncheckedExecutionExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/UncheckedFutureAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/UncheckedInterruptedExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/UncheckedTimeoutExceptionAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/A/UnsafeAllocatorAnalysis.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/AbstractFutureProxyFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/AbstractSupplierFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/AppendableJoinerFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ArraySorterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/BasicThreadFactoryFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/CharSetUtilsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ClassLoaderUtilsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ClassPathUtilsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/CollectionTypeAdapterFactoryFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ConversionFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/DefaultDateTypeAdapterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ExclusionStrategyFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/FailableFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/FieldAttributesFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/FormattingStyleFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/FutureTasksFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/GsonBuilderFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ISO8601UtilsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/IntStreamsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonAdapterAnnotationTypeAdapterFactoryFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonArrayFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonElementFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonElementTypeAdapterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonParserFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonPrimitiveFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonReaderFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonSerializerFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonStreamParserFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonTreeWriterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/JsonWriterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/LangCollectorsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/LazilyParsedNumberFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/LinkedTreeMapFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/LockingVisitorsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/LongRangeFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/NonNullElementWrapperListFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/NumberLimitsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/NumberRangeFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/NumberTypeAdapterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ObjectTypeAdapterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/PreJava9DateFormatProviderFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/RandomStringUtilsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/RandomUtilsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/RangeFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ReflectionAccessFilterHelperFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ReflectiveTypeAdapterFactoryFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/SerializationExceptionFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/SqlTypesSupportFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/StreamsFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/ToNumberPolicyFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/TroubleshootingGuideFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/TypeAdapterFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/TypeTokenFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/F/UnsafeAllocatorFixResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/AbstractFutureProxyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/AppendableJoinerValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ArrayFillValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ArraySorterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ArrayTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/BasicThreadFactoryValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/BuilderValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/CharSetUtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/CharSetValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ClassLoaderUtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ClassPathUtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/CloneFailedExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/CollectionTypeAdapterFactoryValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ComputableValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ConstructorConstructorValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ConversionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/DefaultDateTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ExcluderValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ExclusionStrategyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableBiConsumerValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableBiFunctionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableBiPredicateValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableCallableValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableFunctionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableIntFunctionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailablePredicateValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableRunnableValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableSupplierValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FailableValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FieldAttributesValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FieldNamingPolicyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FieldNamingStrategyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FormattingStyleValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/FutureTasksValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/GsonBuilderValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/GsonTypesValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/GsonValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ISO8601UtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/InstanceCreatorValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/IntStreamsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JavaVersionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonAdapterAnnotationTypeAdapterFactoryValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonArrayValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonDeserializationContextValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonDeserializerValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonElementTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonElementValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonNullValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonObjectValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonParseExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonParserValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonPrimitiveValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonReaderInternalAccessValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonReaderValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonSerializationContextValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonSerializerValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonStreamParserValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonSyntaxExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonTokenValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonTreeReaderValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonTreeWriterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/JsonWriterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/LangCollectorsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/LazilyParsedNumberValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/LinkedTreeMapValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/LockingVisitorsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/LongRangeValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/LongSerializationPolicyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/MalformedJsonExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/MapTypeAdapterFactoryValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/MutableIntValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/MutableValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/NonNullElementWrapperListValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/NumberLimitsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/NumberRangeValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/NumberTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ObjectConstructorValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ObjectTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/PreJava9DateFormatProviderValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/PrimitivesValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/RandomStringUtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/RandomUtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/RangeValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ReflectionAccessFilterHelperValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ReflectionAccessFilterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ReflectionHelperValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ReflectiveTypeAdapterFactoryValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/RuntimeEnvironmentValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/SerializationDelegatingTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/SerializationExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/SqlTypesSupportValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/StreamsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/StrictnessValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/SuppliersValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/SystemPropertiesValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/SystemUtilsValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ToNumberPolicyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/ToNumberStrategyValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/TreeTypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/TroubleshootingGuideValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/TypeAdapterValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/TypeTokenValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/TypedValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/UncheckedExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/UncheckedExecutionExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/UncheckedFutureValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/UncheckedInterruptedExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/UncheckedTimeoutExceptionValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/V/UnsafeAllocatorValidateResult.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ExclusionStrategy.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ExclusionStrategy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldAttributes.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldAttributes.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$5.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$6.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy$7.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingStrategy.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FieldNamingStrategy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FormattingStyle.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/FormattingStyle.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/Gson$FutureTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/Gson.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/Gson.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/GsonBuilder.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/GsonBuilder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/InstanceCreator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/InstanceCreator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonArray.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonArray.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonDeserializationContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonDeserializationContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonDeserializer.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonDeserializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonElement.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonElement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonIOException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonIOException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonNull.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonNull.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonObject.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonObject.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonParseException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonParseException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonPrimitive.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonPrimitive.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonSerializationContext.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonSerializationContext.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonSerializer.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonSerializer.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonStreamParser.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonSyntaxException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/JsonSyntaxException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/LongSerializationPolicy$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/LongSerializationPolicy$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/LongSerializationPolicy.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/LongSerializationPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter$4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter$FilterResult.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ReflectionAccessFilter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/Strictness.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/Strictness.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberPolicy$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberPolicy$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberPolicy$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberPolicy$4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberPolicy.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberPolicy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberStrategy.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/ToNumberStrategy.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/TypeAdapter$NullSafeTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/TypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/TypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/TypeAdapterFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/TypeAdapterFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/Expose.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/JsonAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/SerializedName.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/SerializedName.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/Since.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/Until.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ConstructorConstructor$InstanceCreatorConstructor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ConstructorConstructor$ThrowingObjectConstructor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ConstructorConstructor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ConstructorConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Excluder$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Excluder.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Excluder.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/GsonTypes$GenericArrayTypeImpl.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/GsonTypes$ParameterizedTypeImpl.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/GsonTypes$WildcardTypeImpl.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/GsonTypes.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/GsonTypes.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/JavaVersion.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/JavaVersion.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/JsonReaderInternalAccess.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/JsonReaderInternalAccess.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LazilyParsedNumber.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LazilyParsedNumber.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$EntrySet$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$EntrySet.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$KeySet$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$KeySet.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$LinkedTreeMapIterator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap$Node.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/LinkedTreeMap.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/NonNullElementWrapperList.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/NonNullElementWrapperList.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/NumberLimits.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/NumberLimits.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ObjectConstructor.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ObjectConstructor.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/PreJava9DateFormatProvider.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/PreJava9DateFormatProvider.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Primitives.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Primitives.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ReflectionAccessFilterHelper$AccessChecker$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ReflectionAccessFilterHelper$AccessChecker$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ReflectionAccessFilterHelper$AccessChecker.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ReflectionAccessFilterHelper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/ReflectionAccessFilterHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Streams$AppendableWriter$CurrentWrite.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Streams$AppendableWriter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Streams.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/Streams.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/TroubleshootingGuide.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/TroubleshootingGuide.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/UnsafeAllocator$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/UnsafeAllocator$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/UnsafeAllocator$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/UnsafeAllocator$4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/UnsafeAllocator.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/UnsafeAllocator.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ArrayTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ArrayTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ArrayTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/CollectionTypeAdapterFactory$Adapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/CollectionTypeAdapterFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/CollectionTypeAdapterFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/DefaultDateTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/DefaultDateTypeAdapter$DateType$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/DefaultDateTypeAdapter$DateType.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/DefaultDateTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/DefaultDateTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/EnumTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/EnumTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/EnumTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/IgnoreJRERequirement.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JavaTimeTypeAdapters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactory$DummyTypeAdapterFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonElementTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonElementTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonElementTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeReader$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeReader$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeReader.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeReader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeWriter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeWriter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/JsonTreeWriter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/MapTypeAdapterFactory$Adapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/MapTypeAdapterFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/MapTypeAdapterFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/NumberTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/NumberTypeAdapter$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/NumberTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/NumberTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ObjectTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ObjectTypeAdapter$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ObjectTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ObjectTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$Adapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$BoundField.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$FieldReflectionAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$FieldsData.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory$RecordAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/ReflectiveTypeAdapterFactory.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/SerializationDelegatingTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/SerializationDelegatingTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TreeTypeAdapter$GsonContextImpl.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TreeTypeAdapter$SingleTypeFactory.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TreeTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TreeTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapterRuntimeTypeWrapper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapterRuntimeTypeWrapper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$10.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$11.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$12.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$13.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$14.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$15.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$16.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$17.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$18.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$19.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$20.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$21.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$22.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$23.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$24.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$25.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$26.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$27.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$28.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$29.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$30.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$31.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$32.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$33$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$33.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$34.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$5.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$6.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$7.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$8.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$9.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$DoubleAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$FactorySupplier.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$FloatAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters$IntegerFieldsTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/TypeAdapters.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/util/ISO8601Utils.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/bind/util/ISO8601Utils.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/reflect/ReflectionHelper$RecordHelper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/reflect/ReflectionHelper$RecordNotSupportedHelper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/reflect/ReflectionHelper$RecordSupportedHelper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/reflect/ReflectionHelper.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/reflect/ReflectionHelper.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlDateTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlDateTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlDateTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTimeTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTimeTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTimeTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTimestampTypeAdapter$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTimestampTypeAdapter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTimestampTypeAdapter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTypesSupport$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTypesSupport$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTypesSupport.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/internal/sql/SqlTypesSupport.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/reflect/TypeToken.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/reflect/TypeToken.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonReader$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonReader.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonReader.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonScope.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonScope.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonToken.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonToken.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonWriter.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/JsonWriter.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/MalformedJsonException.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/gson/stream/MalformedJsonException.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/ExclusionStrategyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/FieldAttributesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/FieldNamingPolicyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/FieldNamingStrategyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/FormattingStyleTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/GsonBuilderTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/GsonBuilderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/GsonTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/InstanceCreatorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonArrayTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonDeserializationContextTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonDeserializerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonElementTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonNullTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonObjectTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonParseExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonParserTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonPrimitiveTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonSerializationContextTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonSerializerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonStreamParserTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/JsonSyntaxExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/LongSerializationPolicyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/ReflectionAccessFilterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/StrictnessTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/ToNumberPolicyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/ToNumberStrategyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/TypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/ConstructorConstructorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/ExcluderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/GsonTypesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/JavaVersionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/JsonReaderInternalAccessTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/LazilyParsedNumberTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/LinkedTreeMapTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/NonNullElementWrapperListTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/NumberLimitsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/ObjectConstructorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/PreJava9DateFormatProviderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/PrimitivesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/ReflectionAccessFilterHelperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/StreamsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/TroubleshootingGuideTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/UnsafeAllocatorTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/ArrayTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/CollectionTypeAdapterFactoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/DefaultDateTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$1.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$2.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$3.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$4.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$5.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$6.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$7.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest$TestClass.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest.class" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonAdapterAnnotationTypeAdapterFactoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonElementTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonTreeReaderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/JsonTreeWriterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/MapTypeAdapterFactoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/NumberTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/ObjectTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/ReflectiveTypeAdapterFactoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/SerializationDelegatingTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/TreeTypeAdapterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/bind/util/ISO8601UtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/reflect/ReflectionHelperTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/internal/sql/SqlTypesSupportTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/reflect/TypeTokenTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/stream/JsonReaderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/stream/JsonTokenTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/stream/JsonWriterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/gson/stream/MalformedJsonExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/AppendableJoinerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/ArrayFillTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/ArraySorterTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/CharSetTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/CharSetUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/ClassLoaderUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/ClassPathUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/ConversionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/LongRangeTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/NumberRangeTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/RandomStringUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/RandomUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/RangeTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/RuntimeEnvironmentTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/SerializationExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/SystemPropertiesTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/SystemUtilsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/builder/AbstractSupplierTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/builder/BuilderTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/AbstractFutureProxyTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/BasicThreadFactoryTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/ComputableTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/FutureTasksTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/UncheckedExecutionExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/UncheckedFutureTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/UncheckedTimeoutExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/concurrent/locks/LockingVisitorsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/exception/CloneFailedExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/exception/UncheckedExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/exception/UncheckedInterruptedExceptionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableBiConsumerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableBiFunctionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableBiPredicateTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableCallableTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableConsumerTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableFunctionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableIntFunctionTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailablePredicateTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableRunnableTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableSupplierTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/FailableTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/function/SuppliersTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/mutable/MutableIntTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/mutable/MutableTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/reflect/TypedTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/stream/IntStreamsTest.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/test/java/lang3/stream/LangCollectorsTest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/codeing/AddExample.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/codeing/AddExample.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/AnnotationUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/AppendableJoiner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/AppendableJoiner.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/ArchUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/ArrayFill.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/ArrayFill.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/ArrayUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/BitField.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/BooleanUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/CharEncoding.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/CharSequenceUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/CharSet.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/CharSet.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/CharSetUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/CharSetUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/CharUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/Charsets.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/Charsets.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/ClassUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/DoubleRange.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/EnumUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/Functions.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/IntegerRange.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/JavaVersion.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/LocaleUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/NotImplementedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/NumberRange.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/NumberRange.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/ObjectUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/RandomStringUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/RandomStringUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/RandomUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/RandomUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/RegExUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/RuntimeEnvironment.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/RuntimeEnvironment.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/SerializationUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/Streams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/StringEscapeUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/StringUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/Strings.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/SystemProperties.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/SystemProperties.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/SystemUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/SystemUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/ThreadUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/Validate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/arch/Processor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/arch/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/CompareToBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/Diff.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/DiffBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/DiffExclude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/Expose.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/DiffResult.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/Diffable.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/EqualsBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/EqualsExclude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/builder/EqualsExclude.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/HashCodeBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/HashCodeExclude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/JsonAdapter.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/MultilineRecursiveToStringStyle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/RecursiveToStringStyle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/ReflectionDiffBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/ReflectionToStringBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/StandardToStringStyle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/ToStringBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/ToStringExclude.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/Since.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/ToStringStyle.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/ToStringSummary.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gson/annotations/Until.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/builder/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/compare/ComparableUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/compare/ObjectToStringComparator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/compare/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/AbstractCircuitBreaker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/AbstractConcurrentInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/AtomicInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/AtomicSafeInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/BackgroundInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/BasicThreadFactory.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/concurrent/BasicThreadFactory.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/CallableBackgroundInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/CircuitBreaker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/CircuitBreakingException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/Computable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/concurrent/Computable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/ConcurrentException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/ConcurrentInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/ConcurrentRuntimeException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/ConcurrentUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/ConstantInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/EventCountCircuitBreaker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/LazyInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/Memoizer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/MultiBackgroundInitializer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/ThresholdCircuitBreaker.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/TimedSemaphore.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/UncheckedExecutionException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/concurrent/UncheckedExecutionException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/UncheckedFuture.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/concurrent/UncheckedFuture.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/UncheckedTimeoutException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/concurrent/UncheckedTimeoutException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/locks/LockingVisitors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/concurrent/locks/LockingVisitors.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/locks/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/concurrent/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/doc-files/logo.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/event/EventListenerSupport.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/event/EventUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/event/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/CloneFailedException.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/exception/CloneFailedException.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/ContextedException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/ContextedRuntimeException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/DefaultExceptionContext.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/ExceptionContext.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/ExceptionUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/UncheckedIllegalAccessException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/UncheckedReflectiveOperationException.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/exception/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/BooleanConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/ByteConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/ByteSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/Consumers.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/Failable.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/Failable.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableBiFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailableBiFunction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableBiPredicate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailableBiPredicate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableBooleanSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableByteConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableByteSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableConsumer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailableConsumer.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleBinaryOperator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoublePredicate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleToIntFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleToLongFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableDoubleUnaryOperator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailableFunction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntBinaryOperator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntFunction.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntFunction.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntPredicate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntToDoubleFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntToFloatFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntToLongFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableIntUnaryOperator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongBinaryOperator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongPredicate.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongToDoubleFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongToIntFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableLongUnaryOperator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableObjDoubleConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableObjIntConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableObjLongConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailablePredicate.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailablePredicate.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableShortSupplier.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableSupplier.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/function/FailableSupplier.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToBooleanFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToDoubleBiFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToDoubleFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToIntBiFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToIntFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToLongBiFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/FailableToLongFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/Functions.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/IntToCharFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/MethodInvokers.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/Predicates.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/ToBooleanBiFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/TriConsumer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/TriFunction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/function/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/math/Fraction.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/math/IEEE754rUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/math/NumberUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/math/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableBoolean.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableByte.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableDouble.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableFloat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableInt.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableInt.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableLong.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableObject.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/MutableShort.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/mutable/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/ConstructorUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/FieldUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/InheritanceUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/MemberUtils.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/reflect/MemberUtils.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/MethodUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/TypeLiteral.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/TypeUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/Typed.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/reflect/Typed.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/reflect/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/stream/LangCollectors.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/lang3/stream/LangCollectors.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/stream/Streams.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/stream/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/CompositeFormat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/ExtendedMessageFormat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/FormatFactory.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/FormattableUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/StrBuilder.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/StrLookup.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/StrMatcher.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/StrSubstitutor.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/StrTokenizer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/WordUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/AggregateTranslator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/CharSequenceTranslator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/CodePointTranslator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/EntityArrays.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/JavaUnicodeEscaper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/LookupTranslator.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/NumericEntityEscaper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/NumericEntityUnescaper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/OctalUnescaper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/UnicodeEscaper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/UnicodeUnescaper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/UnicodeUnpairedSurrogateRemover.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/text/translate/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/AbstractFormatCache.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/CalendarUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/DateFormatUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/DateParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/DatePrinter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/DateUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/DurationFormatUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/DurationUtils.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/FastDateFormat.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/FastDateParser.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/FastDatePrinter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/FastTimeZone.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/GmtTimeZone.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/StopWatch.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/TimeZones.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/time/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/ImmutablePair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/ImmutableTriple.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/MutablePair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/MutableTriple.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/Pair.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/Triple.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/tuple/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/util/FluentBitSet.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/util/IterableStringTokenizer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/lang3/util/package-info.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/zju/cst/aces/runner/ValiFixTextCoreDemo5.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/zju/cst/aces/runner/ValiFixTextCoreDemo5.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/codeing/AddExampleTest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/codeing/AddExampleTest.java" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
+  </component>
+  <component name="ErrorTreeViewConfiguration">
+    <option name="autoscrollToSource" value="true" />
+    <option name="IS_AUTOSCROLL_TO_SOURCE" value="true" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="package-info" />
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsFlowSettings">
+    <service-enabled>true</service-enabled>
+    <exe-path />
+    <other-services-enabled>true</other-services-enabled>
+    <auto-save>true</auto-save>
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="localRepository" value="D:\TopNew-SpringBoot\maven\apache-maven-3.9.1-bin\apache-maven-3.9.1\repository" />
+        <option name="mavenHome" value="D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1" />
+        <option name="userSettingsFile" value="D:\TopNew-SpringBoot\maven\apache-maven-3.9.1-bin\apache-maven-3.9.1\conf\settings.xml" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="importAutomatically" value="true" />
+        <option name="jdkForImporter" value="1.8" />
+        <option name="vmOptionsForImporter" value="-Xmx768m" />
+      </MavenImportingSettings>
+    </option>
+    <option name="enabledProfiles">
+      <list>
+        <option value="release" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="2wn9uAfwdhH8QVGrcFEa2Tq7Hca" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="aspect.path.notification.shown" value="true" />
+    <property name="jdk.selected.JAVA_MODULE" value="1.8" />
+    <property name="last_directory_selection" value="$PROJECT_DIR$/src/main/java" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/V" />
+    <property name="node.js.detected.package.eslint" value="true" />
+    <property name="node.js.detected.package.tslint" value="true" />
+    <property name="node.js.path.for.package.eslint" value="project" />
+    <property name="node.js.path.for.package.tslint" value="project" />
+    <property name="node.js.selected.package.eslint" value="(autodetect)" />
+    <property name="node.js.selected.package.tslint" value="(autodetect)" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="project.structure.last.edited" value="Modules" />
+    <property name="project.structure.proportion" value="0.15" />
+    <property name="project.structure.side.proportion" value="0.2" />
+    <property name="settings.editor.selected.configurable" value="preferences.pluginManager" />
+  </component>
+  <component name="RecentsManager">
+    <key name="ExtractSuperBase.RECENT_KEYS">
+      <recent name="lang3.builder" />
+      <recent name="csv" />
+    </key>
+    <key name="MoveClassesOrPackagesDialog.RECENTS_KEY">
+      <recent name="lang3" />
+      <recent name="cli" />
+      <recent name="codeing" />
+      <recent name="" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="D:\fx\jafx\chatunitest-core" />
+      <recent name="D:\fx\jafx\chatunitest-core\src\test\java" />
+      <recent name="D:\fx\jafx\chatunitest-core\src\main\java\codeing" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="cli" />
+    </key>
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\fx\jafx\chatunitest-core\src\V" />
+      <recent name="D:\fx\jafx\chatunitest-core\src\F" />
+      <recent name="D:\fx\jafx\chatunitest-core\src\A" />
+      <recent name="D:\fx\jafx\chatunitest-core\src\test\java" />
+      <recent name="D:\fx\jafx\chatunitest-core\src\main\java" />
+    </key>
+  </component>
+  <component name="RunAnythingCache">
+    <option name="myCommands">
+      <command value="mvn clean" />
+      <command value="mvn in" />
+      <command value="mvn clean install" />
+      <command value="mvn install" />
+      <command value="mvn install -U" />
+    </option>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="JUnit.TreeTypeAdapterTest.testWriteWithDelegateAdapter">
+    <configuration name="GsonTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chatunitest-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="gson.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="gson" />
+      <option name="MAIN_CLASS_NAME" value="gson.GsonTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="JsonTreeReaderTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chatunitest-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="gson.internal.bind.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="gson.internal.bind" />
+      <option name="MAIN_CLASS_NAME" value="gson.internal.bind.JsonTreeReaderTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="ReflectiveTypeAdapterFactoryTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chatunitest-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="gson.internal.bind.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="gson.internal.bind" />
+      <option name="MAIN_CLASS_NAME" value="gson.internal.bind.ReflectiveTypeAdapterFactoryTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TreeTypeAdapterTest" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chatunitest-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="gson.internal.bind.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="gson.internal.bind" />
+      <option name="MAIN_CLASS_NAME" value="gson.internal.bind.TreeTypeAdapterTest" />
+      <option name="TEST_OBJECT" value="class" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="TreeTypeAdapterTest.testWriteWithDelegateAdapter" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="chatunitest-core" />
+      <extension name="coverage">
+        <pattern>
+          <option name="PATTERN" value="gson.internal.bind.*" />
+          <option name="ENABLED" value="true" />
+        </pattern>
+      </extension>
+      <option name="PACKAGE_NAME" value="gson.internal.bind" />
+      <option name="MAIN_CLASS_NAME" value="gson.internal.bind.TreeTypeAdapterTest" />
+      <option name="METHOD_NAME" value="testWriteWithDelegateAdapter" />
+      <option name="TEST_OBJECT" value="method" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="JUnit.TreeTypeAdapterTest" />
+      <item itemvalue="JUnit.ReflectiveTypeAdapterFactoryTest" />
+      <item itemvalue="JUnit.JsonTreeReaderTest" />
+      <item itemvalue="JUnit.GsonTest" />
+      <item itemvalue="JUnit.TreeTypeAdapterTest.testWriteWithDelegateAdapter" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="JUnit.TreeTypeAdapterTest.testWriteWithDelegateAdapter" />
+        <item itemvalue="JUnit.GsonTest" />
+        <item itemvalue="JUnit.JsonTreeReaderTest" />
+        <item itemvalue="JUnit.ReflectiveTypeAdapterFactoryTest" />
+        <item itemvalue="JUnit.TreeTypeAdapterTest" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SvnConfiguration">
+    <configuration>C:\Users\TOP令隹\AppData\Roaming\Subversion</configuration>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="0639c1f2-d3d6-4e7a-b14d-7b9f91960fc6" name="Default Changelist" comment="" />
+      <created>1746666690125</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1746666690125</updated>
+      <workItem from="1746666693162" duration="14425000" />
+      <workItem from="1746687400776" duration="170000" />
+      <workItem from="1746688547005" duration="315000" />
+      <workItem from="1746688908261" duration="8129000" />
+      <workItem from="1746771875902" duration="60827000" />
+      <workItem from="1747125019824" duration="9019000" />
+      <workItem from="1747271034438" duration="61766000" />
+      <workItem from="1747800750301" duration="5043000" />
+      <workItem from="1747830076682" duration="298000" />
+      <workItem from="1747830463449" duration="236000" />
+      <workItem from="1747830969535" duration="329000" />
+      <workItem from="1747876133554" duration="51162000" />
+      <workItem from="1748090890138" duration="1366000" />
+      <workItem from="1748092698780" duration="583000" />
+      <workItem from="1748093491090" duration="670000" />
+      <workItem from="1748094198747" duration="7257000" />
+      <workItem from="1748150094420" duration="2798000" />
+      <workItem from="1748152933223" duration="1460000" />
+      <workItem from="1748154423880" duration="17057000" />
+      <workItem from="1748241248513" duration="5653000" />
+      <workItem from="1748254115603" duration="2174000" />
+      <workItem from="1748309520448" duration="36913000" />
+      <workItem from="1748860835464" duration="7736000" />
+      <workItem from="1748914260875" duration="68745000" />
+      <workItem from="1749200662451" duration="34704000" />
+      <workItem from="1750409905420" duration="2681000" />
+      <workItem from="1750916041223" duration="40000" />
+      <workItem from="1750920559618" duration="670000" />
+      <workItem from="1758285791458" duration="750000" />
+      <workItem from="1760938075480" duration="11626000" />
+      <workItem from="1760958487207" duration="12282000" />
+      <workItem from="1761022992863" duration="10440000" />
+      <workItem from="1761110548508" duration="12442000" />
+      <workItem from="1761194707795" duration="13247000" />
+      <workItem from="1762044919008" duration="37558000" />
+      <workItem from="1763736817227" duration="4015000" />
+      <workItem from="1764922905892" duration="1226000" />
+      <workItem from="1765343677221" duration="12229000" />
+      <workItem from="1765414847082" duration="2779000" />
+      <workItem from="1765773139275" duration="5034000" />
+      <workItem from="1765863099138" duration="24470000" />
+      <workItem from="1766363959603" duration="13448000" />
+      <workItem from="1767572848460" duration="13841000" />
+      <workItem from="1767659793817" duration="80905000" />
+      <workItem from="1768442902042" duration="10911000" />
+      <workItem from="1768542056699" duration="1249000" />
+      <workItem from="1768789879258" duration="1301000" />
+      <workItem from="1768799956844" duration="9919000" />
+      <workItem from="1768812105482" duration="2825000" />
+      <workItem from="1768868510563" duration="19844000" />
+      <workItem from="1768954967177" duration="22865000" />
+      <workItem from="1769129641589" duration="2172000" />
+      <workItem from="1769135017866" duration="45554000" />
+      <workItem from="1769992932363" duration="2465000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State>
+              <option name="COLUMN_ORDER" />
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+  </component>
+</project>

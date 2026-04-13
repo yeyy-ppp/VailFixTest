@@ -1,0 +1,15 @@
+```
+包路径：gson
+类名：ExclusionStrategy
+父类：无
+依赖类：FieldAttributes
+---
+序号：1
+方法名：shouldSkipField(FieldAttributes f)
+返回类型：boolean
+功能描述：根据字段属性判断是否跳过该字段的序列化/反序列化
+序号：2
+方法名：shouldSkipClass(Class<?> clazz)
+返回类型：boolean
+功能描述：根据类对象判断是否跳过整个类的序列化/反序列化
+```

@@ -1,0 +1,12 @@
+[2026-01-23 19:53:57] 验证结果
+错误类型: 编译错误, 错误行: 86, 错误原因: [未导入JsonSyntaxException且未处理受检异常IOException], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: create, toString, write, read, deserializeToDate
+  未覆盖: 全部覆盖
+
+[2026-01-23 19:58:38] 修复后验证结果
+错误类型: 断言值错误, 错误行: 63, 错误原因: 日期字符串依赖于时区，可能导致断言失败, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: create, toString, write, read, deserializeToDate, toString
+  未覆盖: 全部覆盖
+

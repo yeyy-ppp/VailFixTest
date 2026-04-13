@@ -1,0 +1,63 @@
+```
+包路径：gson.internal.bind
+类名：TreeTypeAdapter
+父类：SerializationDelegatingTypeAdapter
+依赖类：JsonSerializer,JsonDeserializer,Gson,TypeToken,TypeAdapterFactory,TypeAdapter,Streams,JsonElement,JsonParseException,JsonSerializationContext,JsonDeserializationContext,JsonReader,JsonWriter
+---
+序号：1
+方法名：TreeTypeAdapter(JsonSerializer<T> serializer, JsonDeserializer<T> deserializer, Gson gson, TypeToken<T> typeToken, TypeAdapterFactory skipPast, boolean nullSafe)
+返回类型：无
+功能描述：使用给定的序列化器、反序列化器、Gson实例、类型标记、跳过工厂和空安全标志初始化适配器
+序号：2
+方法名：TreeTypeAdapter(JsonSerializer<T> serializer, JsonDeserializer<T> deserializer, Gson gson, TypeToken<T> typeToken, TypeAdapterFactory skipPast)
+返回类型：无
+功能描述：使用默认空安全标志初始化适配器（委托给6参数构造器）
+序号：3
+方法名：read(JsonReader in)
+返回类型：T
+功能描述：从JSON输入流读取对象（使用反序列化器或委托适配器）
+序号：4
+方法名：write(JsonWriter out, T value)
+返回类型：void
+功能描述：向JSON输出流写入对象（使用序列化器或委托适配器）
+序号：5
+方法名：delegate()
+返回类型：TypeAdapter<T>
+功能描述：获取或初始化委托的类型适配器（延迟加载）
+序号：6
+方法名：getSerializationDelegate()
+返回类型：TypeAdapter<T>
+功能描述：获取序列化代理适配器（当前实例或委托适配器）
+序号：7
+方法名：newFactory(TypeToken<?> exactType, Object typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建精确类型匹配的TypeAdapterFactory
+序号：8
+方法名：newFactoryWithMatchRawType(TypeToken<?> exactType, Object typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建支持原始类型匹配的TypeAdapterFactory
+序号：9
+方法名：newTypeHierarchyFactory(Class<?> hierarchyType, Object typeAdapter)
+返回类型：TypeAdapterFactory
+功能描述：创建类层级匹配的TypeAdapterFactory
+序号：10
+方法名：SingleTypeFactory(Object typeAdapter, TypeToken<?> exactType, boolean matchRawType, Class<?> hierarchyType)
+返回类型：无
+功能描述：初始化单类型工厂并验证适配器类型
+序号：11
+方法名：create(Gson gson, TypeToken<T> type)
+返回类型：TypeAdapter<T>
+功能描述：根据类型匹配创建TreeTypeAdapter实例
+序号：12
+方法名：serialize(Object src)
+返回类型：JsonElement
+功能描述：将对象序列化为JsonElement（使用默认类型）
+序号：13
+方法名：serialize(Object src, Type typeOfSrc)
+返回类型：JsonElement
+功能描述：将指定类型对象序列化为JsonElement
+序号：14
+方法名：deserialize(JsonElement json, Type typeOfT)
+返回类型：<R> R
+功能描述：将JsonElement反序列化为指定类型对象
+```

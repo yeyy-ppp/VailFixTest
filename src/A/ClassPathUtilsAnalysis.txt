@@ -1,0 +1,33 @@
+包路径：lang3
+类名：ClassPathUtils
+父类：无
+依赖类：无
+---
+序号：1
+方法名：packageToPath(String path)
+返回类型：String
+功能描述：将包名中的点替换为斜杠，返回文件路径字符串
+序号：2
+方法名：pathToPackage(String path)
+返回类型：String
+功能描述：将文件路径中的斜杠替换为点，返回包名字符串
+序号：3
+方法名：toFullyQualifiedName(Class<?> context, String resourceName)
+返回类型：String
+功能描述：基于给定类上下文，生成资源的完全限定名
+序号：4
+方法名：toFullyQualifiedName(Package context, String resourceName)
+返回类型：String
+功能描述：基于给定包上下文，生成资源的完全限定名
+序号：5
+方法名：toFullyQualifiedPath(Class<?> context, String resourceName)
+返回类型：String
+功能描述：基于给定类上下文，生成资源的完全限定路径
+序号：6
+方法名：toFullyQualifiedPath(Package context, String resourceName)
+返回类型：String
+功能描述：基于给定包上下文，生成资源的完全限定路径
+序号：7
+方法名：ClassPathUtils()
+返回类型：void
+功能描述：已弃用的无操作构造函数

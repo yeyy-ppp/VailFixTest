@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NumberTypeAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">NumberTypeAdapter.java</span></div><h1>NumberTypeAdapter.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.Gson;
+import gson.JsonSyntaxException;
+import gson.ToNumberPolicy;
+import gson.ToNumberStrategy;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+public final class NumberTypeAdapter extends TypeAdapter&lt;Number&gt; {
+<span class="fc" id="L14">  private static final TypeAdapterFactory LAZILY_PARSED_NUMBER_FACTORY =</span>
+<span class="fc" id="L15">      newFactory(ToNumberPolicy.LAZILY_PARSED_NUMBER);</span>
+  private final ToNumberStrategy toNumberStrategy;
+<span class="fc" id="L17">  private NumberTypeAdapter(ToNumberStrategy toNumberStrategy) {</span>
+<span class="fc" id="L18">    this.toNumberStrategy = toNumberStrategy;</span>
+<span class="fc" id="L19">  }</span>
+  private static TypeAdapterFactory newFactory(ToNumberStrategy toNumberStrategy) {
+<span class="fc" id="L21">    NumberTypeAdapter adapter = new NumberTypeAdapter(toNumberStrategy);</span>
+<span class="fc" id="L22">    return new TypeAdapterFactory() {</span>
+      @SuppressWarnings(&quot;unchecked&quot;)
+      @Override
+      public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">        return type.getRawType() == Number.class ? (TypeAdapter&lt;T&gt;) adapter : null;</span>
+      }
+    };
+  }
+  public static TypeAdapterFactory getFactory(ToNumberStrategy toNumberStrategy) {
+<span class="fc bfc" id="L31" title="All 2 branches covered.">    if (toNumberStrategy == ToNumberPolicy.LAZILY_PARSED_NUMBER) {</span>
+<span class="fc" id="L32">      return LAZILY_PARSED_NUMBER_FACTORY;</span>
+    } else {
+<span class="fc" id="L34">      return newFactory(toNumberStrategy);</span>
+    }
+  }
+  @Override
+  public Number read(JsonReader in) throws IOException {
+<span class="fc" id="L39">    JsonToken jsonToken = in.peek();</span>
+<span class="fc bfc" id="L40" title="All 3 branches covered.">    switch (jsonToken) {</span>
+      case NULL:
+<span class="fc" id="L42">        in.nextNull();</span>
+<span class="fc" id="L43">        return null;</span>
+      case NUMBER:
+      case STRING:
+<span class="fc" id="L46">        return toNumberStrategy.readNumber(in);</span>
+      default:
+<span class="fc" id="L48">        throw new JsonSyntaxException(</span>
+<span class="fc" id="L49">            &quot;Expecting number, got: &quot; + jsonToken + &quot;; at path &quot; + in.getPath());</span>
+    }
+  }
+
+  @Override
+  public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L56">  }</span>
+
+  @Override
+  public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L60">    return null;</span>
+  }
+
+  @Override
+  public void write(JsonWriter out, Number value) throws IOException {
+<span class="fc" id="L65">    out.value(value);</span>
+<span class="fc" id="L66">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

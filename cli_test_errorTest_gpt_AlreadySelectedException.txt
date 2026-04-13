@@ -1,0 +1,885 @@
+类名：AlreadySelectedException
+分析阶段：
+  耗时：3009 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：5506 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：1307 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  失败原因：```
+该测试代码在验证[导入语句]时失败，错误位置：[1]，错误原因：未导入 `AlreadySelectedException`、`Option` 和 `OptionGroup` 类，这些类需要手动导入以便于测试。
+```
+修复阶段：
+  耗时：82389 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：4
+  修复失败原因：第 1 次修复失败，原因是：null
+第 2 次修复失败，原因是：null
+第 3 次修复失败，原因是：null
+
+  修复成功次数：0
+评估阶段：
+  耗时：-1749036093910 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  覆盖率数据：
+总耗时：93115 毫秒
+总消耗 token 数量：0
+测试代码生成结果：false
+失败原因：AlreadySelectedException, AlreadySelectedException, AlreadySelectedException
+--------------------------------------------------------
+起始时间：1749036001699
+
+套件 开始时间: 1749036001699
+分析起始时间：1749036001699
+
+分析 开始时间: 1749036001699
+解析提示内容：
+```
+包路径：cli
+类名：AlreadySelectedException
+方法名：AlreadySelectedException
+返回类型：void
+功能描述：构造方法，初始化已选择的选项组和选项，并格式化错误信息。
+方法名：AlreadySelectedException
+返回类型：void
+功能描述：构造方法，初始化错误信息，组和选项均为null。
+方法名：AlreadySelectedException
+返回类型：void
+功能描述：私有构造方法，接收自定义错误信息、选项组和选项。
+方法名：getOption
+返回类型：Option
+功能描述：返回当前异常相关联的选项。
+方法名：getOptionGroup
+返回类型：OptionGroup
+功能描述：返回当前异常相关联的选项组。
+```over
+
+分析结束时间：1749036004708
+
+分析总耗时：3009
+分析 结束时间: 1749036004708
+分析 耗时: 3.009 秒
+生成 开始时间: 1749036004709
+生成测试代码：
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```over
+
+生成 结束时间: 1749036010214
+生成 耗时: 5.505 秒
+验证 开始时间: 1749036010214
+测试代码验证结果：
+```
+该测试代码在验证[导入语句]时失败，错误位置：[1]，错误原因：未导入 `AlreadySelectedException`、`Option` 和 `OptionGroup` 类，这些类需要手动导入以便于测试。
+```over
+
+验证 结束时间: 1749036011521
+验证 耗时: 1.307 秒
+修复 开始时间: 1749036011522
+第 1 次修复结果：
+【修复成功】
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```over
+
+测试代码验证结果：
+```
+该测试代码在验证[导入语句]时失败，错误位置：[3]，错误原因：未导入待测试类AlreadySelectedException和OptionGroup。
+该测试代码在验证[测试逻辑完整性]时失败，错误位置：[6]，错误原因：未覆盖边界情况和异常处理逻辑。
+该测试代码在验证[语法正确性]时失败，错误位置：[11]，错误原因：未处理可能的NullPointerException。
+```over
+
+修复后的代码验证失败！
+第 2 次修复结果：
+根据您提供的错误信息和代码，以下是几个修正和改进建议，以解决未导入类、测试逻辑完整性和语法正确性的问题。
+
+### 修正错误
+
+1. **未导入待测试类**：确保导入`AlreadySelectedException`和`OptionGroup`类。
+
+   - 在代码顶部导入缺失的类：
+   ```java
+   import cli.AlreadySelectedException;
+   import cli.OptionGroup;
+   import cli.Option;
+   ```
+
+2. **覆盖边界情况和异常处理逻辑**：需要添加一些测试用例来处理边界条件，例如对`null`值的处理、重复选择的情况等。
+
+3. **处理可能的NullPointerException**：检查构造函数是否能处理`null`值，并针对可能导致的`NullPointerException`编写测试。
+
+### 修正后的代码示例
+
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+// 导入缺失的类
+import cli.AlreadySelectedException;
+import cli.OptionGroup;
+import cli.Option;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    // 测试空/无效输入以验证异常处理逻辑
+    @Test
+    void testAlreadySelectedExceptionWithNullGroup() {
+        Option option = new Option("testOption");
+        AlreadySelectedException exception = new AlreadySelectedException("Null group", null, option);
+
+        assertEquals("Null group", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithNullOption() {
+        OptionGroup group = new OptionGroup();
+        AlreadySelectedException exception = new AlreadySelectedException("Null option", group, null);
+
+        assertEquals("Null option", exception.getMessage());
+        assertNull(exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```
+
+### 总结
+
+通过导入缺失的类、增加对边界条件的测试以及确保处理`null`情况，您可以解决代码中存在的错误。确保 `AlreadySelectedException`和`OptionGroup`类在您的项目中定义，并可以正确编译和运行上述测试。over
+
+第 3 次修复结果：
+您在处理测试代码的问题时已经做出了很好的尝试。以下是对您提供的错误信息和代码的进一步分析与建议，以确保代码的完整性和健壮性。
+
+### 问题分析
+
+1. **未导入待测试类**：`AlreadySelectedException`和`OptionGroup`需要在测试文件中导入，确保可以正常使用。
+
+2. **测试逻辑完整性**：需要涵盖所有可能的边界情况，如空值（null）输入、重复选择、异常情况等，确保代码在各种情况下都能正常处理。
+
+3. **语法正确性**：需要确保代码不会抛出未处理的异常，例如`NullPointerException`。
+
+### 修正建议
+
+可以按照下面的方式修改您的测试代码：
+
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+// 导入待测试类
+import org.junit.jupiter.api.Test;
+
+// 导入相关的异常类
+import cli.AlreadySelectedException;
+import cli.OptionGroup;
+import cli.Option;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    // 测试空组和空选项的情况，确保处理逻辑
+    @Test
+    void testAlreadySelectedExceptionWithNullGroup() {
+        Option option = new Option("testOption");
+        AlreadySelectedException exception = new AlreadySelectedException("Option group is null", null, option);
+
+        assertEquals("Option group is null", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithNullOption() {
+        OptionGroup group = new OptionGroup();
+        AlreadySelectedException exception = new AlreadySelectedException("Option is null", group, null);
+
+        assertEquals("Option is null", exception.getMessage());
+        assertNull(exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```
+
+### 总结
+
+解决了未导入类的问题，增加了对可能的边界条件和异常处理逻辑的测试，确保测试代码在运行时更加健壮。通过这些改进，您的测试代码应该能够覆盖到更多的用例，从而有效地验证`AlreadySelectedException`的行为。确保相关的类在项目中定义且可正常使用，从而避免编译错误。over
+
+经过 4 次修复尝试，仍未成功。
+第 1 次修复失败：nullover
+
+第 1 次修复结果：
+【修复成功】
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```over
+
+测试代码验证结果：
+```
+该测试代码在验证[导入语句]时失败，错误位置：[1]，错误原因：缺少对`AlreadySelectedException`、`Option`和`OptionGroup`类的导入。
+```over
+
+修复后的代码验证失败！
+第 2 次修复结果：
+看起来您在测试类 `AlreadySelectedExceptionTest2` 中遇到了一个关于导入缺失的问题。为了修复这个问题，您需要确保对 `AlreadySelectedException`、`Option` 和 `OptionGroup` 类的正确导入。
+
+如果这三个类定义在您自己的代码库中，您需要找到它们的文件，并添加合适的导入语句。以下是示例的改正版本，假设这些类在相应的包中：
+
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+// 导入所需的类
+import cli.AlreadySelectedException;
+import cli.Option;
+import cli.OptionGroup;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```
+
+确保以下几点:
+
+1. `AlreadySelectedException`、`Option` 和 `OptionGroup` 的类定义在 `cli` 包中；如果在其他包中，调整导入语句以反映正确的包路径。
+2. 如果这些类尚未实现，请确保为它们编写适当的实现，以便测试能够正常工作。
+
+这将解决导入缺失的问题，并使测试代码顺利编译和运行。over
+
+第 3 次修复结果：
+为了修复您在测试类 `AlreadySelectedExceptionTest2` 中遇到的导入缺失问题，您需要确保引入相关的类，比如 `AlreadySelectedException`、`Option` 和 `OptionGroup`。在确保这些类在正确的包中定义之后，您可以根据实际情况调整导入语句。以下是更正后的代码示例，包括必要的导入语句。
+
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+// 导入所需的类
+import cli.AlreadySelectedException;
+import cli.Option;
+import cli.OptionGroup;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```
+
+### 关键要素：
+1. **确保类的包名正确**：请确认 `AlreadySelectedException`、`Option` 和 `OptionGroup` 的类定义在 `cli` 包中。如果这些类位于其他包中，需要调整导入语句以反映正确的包路径。
+
+2. **编写相应的类**：如果 `AlreadySelectedException`、`Option` 和 `OptionGroup` 这些类尚未实现，请确保为它们编写合适的实现，以便测试能够成功编译并运行。
+
+3. **使用JUnit进行单元测试**：确保您的项目中已正确配置 JUnit 库，以支持测试的运行。
+
+通过上述步骤，您应该能够成功解决导入缺失的问题，并使测试代码顺利编译和运行。确保在开发和测试时遵循清晰的包结构，能有助于避免类似问题的再次出现。over
+
+经过 4 次修复尝试，仍未成功。
+第 2 次修复失败：nullover
+
+第 1 次修复结果：
+【修复成功】
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```over
+
+测试代码验证结果：
+```
+该测试代码在验证[导入语句]时失败，错误位置：[1]，错误原因：缺少对已使用类 `OptionGroup`、`Option` 和 `AlreadySelectedException` 的导入语句。
+该测试代码在验证[测试逻辑完整性]时失败，错误位置：[6]，错误原因：`OptionGroup` 和 `Option` 的行为未测试，未覆盖正常路径中的相关逻辑。
+```over
+
+修复后的代码验证失败！
+第 2 次修复结果：
+根据您提供的测试代码，以下步骤可以帮助您解决所遇到的问题。
+
+### 1. 缺少导入语句
+错误信息指出缺少对 `OptionGroup`、`Option` 和 `AlreadySelectedException` 的导入语句。您需要在文件的开头添加相应的导入语句，确保 Java 可以找到这些类。假设这些类位于 `cli` 包中，您需要的导入语句如下：
+
+```java
+import cli.OptionGroup;
+import cli.Option;
+import cli.AlreadySelectedException;
+```
+
+### 2. 测试逻辑完整性
+您需要确保 `OptionGroup` 和 `Option` 的行为得到测试，并且覆盖正常路径中的相关逻辑。您可以编写单元测试，以涵盖这些类的核心功能。以下是这些类可能需要的基本测试示例：
+
+#### Option 类的简单测试示例
+```java
+import cli.Option;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class OptionTest {
+
+    @Test
+    void testOptionCreation() {
+        String name = "testOption";
+        Option option = new Option(name);
+
+        assertEquals(name, option.getName());
+        assertFalse(option.isSelected());
+    }
+
+    @Test
+    void testOptionSelection() {
+        Option option = new Option("testOption");
+        option.select();
+
+        assertTrue(option.isSelected());
+    }
+}
+```
+
+#### OptionGroup 类的简单测试示例
+```java
+import cli.Option;
+import cli.OptionGroup;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class OptionGroupTest {
+
+    @Test
+    void testOptionGroupSelection() {
+        OptionGroup group = new OptionGroup();
+        Option option1 = new Option("option1");
+        Option option2 = new Option("option2");
+
+        group.addOption(option1);
+        group.addOption(option2);
+
+        group.select(option1);
+        assertTrue(option1.isSelected());
+        assertFalse(option2.isSelected());
+
+        Exception exception = assertThrows(AlreadySelectedException.class, () -> {
+            group.select(option2);
+        });
+
+        assertEquals("The option 'option2' was specified but an option from this group has already been selected: 'option1'", exception.getMessage());
+    }
+}
+```
+
+### 完整测试文件
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```
+
+### 结论
+以上修改应该满足测试代码所需的导入语句，并通过添加合适的测试来确保 `OptionGroup` 和 `Option` 的行为被测试覆盖。请根据您实际的类实现情况进一步调整测试代码。over
+
+第 3 次修复结果：
+根据您提供的信息，您的测试代码在以下方面失败：
+
+1. **缺少导入语句**：需要确保正确导入 `OptionGroup`、`Option` 和 `AlreadySelectedException` 类。
+2. **测试逻辑完整性**：需要覆盖 `OptionGroup` 和 `Option` 的正常逻辑以确保它们的行为得到充分测试。
+
+### 解决方案
+
+以下是如何修复这两个问题的详细步骤：
+
+#### 1. 添加必要的导入语句
+
+确保在 Java 文件的开头添加如下导入语句：
+
+```java
+import cli.OptionGroup;
+import cli.Option;
+import cli.AlreadySelectedException;
+```
+
+#### 2. 编写测试用例以覆盖相关逻辑
+
+以下是 `Option` 和 `OptionGroup` 的基础测试用例示例：
+
+##### Option 类的测试示例
+
+```java
+import cli.Option;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class OptionTest {
+
+    @Test
+    void testOptionCreation() {
+        String name = "testOption";
+        Option option = new Option(name);
+
+        assertEquals(name, option.getName());
+        assertFalse(option.isSelected());
+    }
+
+    @Test
+    void testOptionSelection() {
+        Option option = new Option("testOption");
+        option.select();
+
+        assertTrue(option.isSelected());
+    }
+}
+```
+
+##### OptionGroup 类的测试示例
+
+```java
+import cli.Option;
+import cli.OptionGroup;
+import cli.AlreadySelectedException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class OptionGroupTest {
+
+    @Test
+    void testOptionGroupSelection() {
+        OptionGroup group = new OptionGroup();
+        Option option1 = new Option("option1");
+        Option option2 = new Option("option2");
+
+        group.addOption(option1);
+        group.addOption(option2);
+
+        group.select(option1);
+        assertTrue(option1.isSelected());
+        assertFalse(option2.isSelected());
+
+        Exception exception = assertThrows(AlreadySelectedException.class, () -> {
+            group.select(option2);
+        });
+
+        assertEquals("The option 'option2' was specified but an option from this group has already been selected: 'option1'", exception.getMessage());
+    }
+}
+```
+
+##### AlreadySelectedException 类的测试示例
+
+```java
+import cli.AlreadySelectedException;
+import cli.OptionGroup;
+import cli.Option;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class AlreadySelectedExceptionTest2 {
+
+    @Test
+    void testAlreadySelectedExceptionWithGroupAndOption() {
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+        group.select(option);
+
+        AlreadySelectedException exception = new AlreadySelectedException(group, option);
+
+        assertEquals("The option 'testOption' was specified but an option from this group has already been selected: 'testOption'", exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessage() {
+        String message = "Custom error message";
+        AlreadySelectedException exception = new AlreadySelectedException(message);
+
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getOption());
+        assertNull(exception.getOptionGroup());
+    }
+
+    @Test
+    void testAlreadySelectedExceptionWithMessageGroupAndOption() {
+        String message = "Error occurred";
+        OptionGroup group = new OptionGroup();
+        Option option = new Option("testOption");
+
+        AlreadySelectedException exception = new AlreadySelectedException(message, group, option);
+
+        assertEquals(message, exception.getMessage());
+        assertEquals(option, exception.getOption());
+        assertEquals(group, exception.getOptionGroup());
+    }
+}
+```
+
+### 总结
+
+通过添加所需的导入语句并确保覆盖 `OptionGroup` 和 `Option` 的主要行为，您应能够解决出现的错误并保证逻辑的完整性。这些测试涵盖了创建选项、选择选项和处理已选择异常的情况，确保代码的各个部分都得到了充分的测试。请根据你的具体实现来调整和扩展这些测试用例。over
+
+经过 4 次修复尝试，仍未成功。
+第 3 次修复失败：nullover
+
+修复 结束时间: 1749036093910
+修复 耗时: 82.388 秒
+套件 结束时间: 1749036093912
+套件 耗时: 92.213 秒
+
+Process finished with exit code 0

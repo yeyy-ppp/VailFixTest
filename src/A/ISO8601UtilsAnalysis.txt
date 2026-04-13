@@ -1,0 +1,41 @@
+包路径：gson.internal.bind.util
+类名：ISO8601Utils
+父类：无
+依赖类：无
+---
+序号：1
+方法名：ISO8601Utils()
+返回类型：void
+功能描述：私有构造方法，防止类实例化。
+序号：2
+方法名：format(Date date)
+返回类型：String
+功能描述：将Date对象格式化为ISO 8601字符串（UTC时区，无毫秒）。
+序号：3
+方法名：format(Date date, boolean millis)
+返回类型：String
+功能描述：将Date对象格式化为ISO 8601字符串（UTC时区，可选毫秒）。
+序号：4
+方法名：format(Date date, boolean millis, TimeZone tz)
+返回类型：String
+功能描述：将Date对象格式化为ISO 8601字符串（可选毫秒和时区）。
+序号：5
+方法名：parse(String date, ParsePosition pos)
+返回类型：Date
+功能描述：解析ISO 8601格式字符串为Date对象。
+序号：6
+方法名：checkOffset(String value, int offset, char expected)
+返回类型：boolean
+功能描述：检查字符串中指定位置是否有预期字符。
+序号：7
+方法名：parseInt(String value, int beginIndex, int endIndex)
+返回类型：int
+功能描述：解析字符串中的子字符串为整数。
+序号：8
+方法名：padInt(StringBuilder buffer, int value, int length)
+返回类型：void
+功能描述：将整数填充指定位数到StringBuilder（补零）。
+序号：9
+方法名：indexOfNonDigit(String string, int offset)
+返回类型：int
+功能描述：从指定位置开始查找非数字字符的索引。

@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TesterValidator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.chattester</a> &gt; <span class="el_source">TesterValidator.java</span></div><h1>TesterValidator.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util.chattester;
+
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.StaticJavaParser;
+import lombok.Data;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import zju.cst.aces.api.Validator;
+import zju.cst.aces.dto.PromptInfo;
+
+import java.nio.file.Path;
+import java.util.List;
+
+
+@Data
+public class TesterValidator implements Validator {
+
+    TesterCompiler compiler;
+
+<span class="nc" id="L19">    public TesterValidator(Path testOutputPath, Path compileOutputPath, Path targetPath, List&lt;String&gt; classpathElements) {</span>
+<span class="nc" id="L20">        this.compiler = new TesterCompiler(testOutputPath, compileOutputPath, targetPath, classpathElements);</span>
+<span class="nc" id="L21">    }</span>
+
+    @Override
+    public boolean syntacticValidate(String code) {
+        try {
+<span class="nc" id="L26">            StaticJavaParser.parse(code);</span>
+<span class="nc" id="L27">            return true;</span>
+<span class="nc" id="L28">        } catch (ParseProblemException e) {</span>
+<span class="nc" id="L29">            return false;</span>
+        }
+    }
+
+    @Override
+    public boolean semanticValidate(String code, String className, Path outputPath, PromptInfo promptInfo) {
+<span class="nc" id="L35">        compiler.setCode(code);</span>
+<span class="nc" id="L36">        return compiler.compileTest(className, outputPath, promptInfo);</span>
+    }
+
+    @Override
+    public boolean runtimeValidate(String fullTestName) {
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        return compiler.executeTest(fullTestName).getTestsFailedCount() == 0;</span>
+    }
+
+    @Override
+    public boolean compile(String className, Path outputPath, PromptInfo promptInfo) {
+<span class="nc" id="L46">        return compiler.compileTest(className, outputPath, promptInfo);</span>
+    }
+
+    @Override
+    public TestExecutionSummary execute(String fullTestName) {
+<span class="nc" id="L51">        return compiler.executeTest(fullTestName);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

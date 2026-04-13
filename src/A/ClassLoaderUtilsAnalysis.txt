@@ -1,0 +1,29 @@
+包路径：lang3
+类名：ClassLoaderUtils
+父类：Object
+依赖类：无
+---
+序号：1
+方法名：getSystemURLs()
+返回类型：URL[]
+功能描述：获取系统类加载器的URL数组
+序号：2
+方法名：getThreadURLs()
+返回类型：URL[]
+功能描述：获取当前线程上下文类加载器的URL数组
+序号：3
+方法名：getURLs(ClassLoader cl)
+返回类型：URL[]
+功能描述：返回指定类加载器的URL数组（如果它是URLClassLoader），否则返回空数组
+序号：4
+方法名：toString(ClassLoader classLoader)
+返回类型：String
+功能描述：返回类加载器的字符串表示；如果是URLClassLoader则调用特定方法，否则使用Objects.toString
+序号：5
+方法名：toString(URLClassLoader classLoader)
+返回类型：String
+功能描述：返回URLClassLoader的字符串表示包含其URL数组，或"null"如果为null
+序号：6
+方法名：ClassLoaderUtils()
+返回类型：无
+功能描述：废弃的构造方法，无具体功能

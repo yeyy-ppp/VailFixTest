@@ -1,0 +1,12 @@
+[2026-01-24 04:15:45] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: JsonReader, setLenient, isLenient, setStrictness, getStrictness, setNestingLimit, getNestingLimit, beginArray, endArray, beginObject, endObject, hasNext, peek, nextName, nextString, nextBoolean, nextNull, nextDouble, nextLong, nextInt, close, skipValue, locationString, getPath, getPath
+  未覆盖: doPeek, peekKeyword, peekNumber, isLiteral, nextQuotedValue, nextUnquotedValue, skipQuotedValue, skipUnquotedValue, push, fillBuffer, nextNonWhitespace, checkLenient, skipToEndOfLine, skipTo, toString, getPreviousPath, readEscapeCharacter, syntaxError, unexpectedTokenError, consumeNonExecutePrefix
+
+[2026-01-24 04:21:54] 修复后验证结果
+错误类型: 编译错误, 错误行: 17, 错误原因: [未导入gson.JsonScope类导致作用域检查失败], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: JsonReader, setLenient, isLenient, setStrictness, getStrictness, setNestingLimit, getNestingLimit, beginArray, endArray, beginObject, endObject, hasNext, peek, isLiteral, nextName, nextString, nextBoolean, nextNull, nextDouble, nextLong, nextInt, close, skipValue, push, fillBuffer, nextNonWhitespace, checkLenient, skipToEndOfLine, skipTo, toString, locationString, getPath, getPath, getPreviousPath, readEscapeCharacter, syntaxError, unexpectedTokenError, consumeNonExecutePrefix
+  未覆盖: doPeek, peekKeyword, peekNumber, nextQuotedValue, nextUnquotedValue, skipQuotedValue, skipUnquotedValue
+

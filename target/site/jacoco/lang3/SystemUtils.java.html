@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SystemUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">SystemUtils.java</span></div><h1>SystemUtils.java</h1><pre class="source lang-java linenums">package lang3;
+public class SystemUtils {
+    @Deprecated
+<span class="fc" id="L4">    public static final String FILE_SEPARATOR = SystemProperties.getFileSeparator();</span>
+    @Deprecated
+<span class="fc" id="L6">    public static final String JAVA_AWT_FONTS = SystemProperties.getJavaAwtFonts();</span>
+    @Deprecated
+<span class="fc" id="L8">    public static final String JAVA_AWT_GRAPHICSENV = SystemProperties.getJavaAwtGraphicsenv();</span>
+    @Deprecated
+<span class="fc" id="L10">    public static final String JAVA_AWT_HEADLESS = SystemProperties.getJavaAwtHeadless();</span>
+    @Deprecated
+<span class="fc" id="L12">    public static final String JAVA_AWT_PRINTERJOB = SystemProperties.getJavaAwtPrinterjob();</span>
+    @Deprecated
+<span class="fc" id="L14">    public static final String JAVA_COMPILER = SystemProperties.getJavaCompiler();</span>
+    @Deprecated
+<span class="fc" id="L16">    public static final String JAVA_ENDORSED_DIRS = SystemProperties.getJavaEndorsedDirs();</span>
+    @Deprecated
+<span class="fc" id="L18">    public static final String JAVA_EXT_DIRS = SystemProperties.getJavaExtDirs();</span>
+<span class="fc" id="L19">    public static final String JAVA_SPECIFICATION_VERSION = SystemProperties.getJavaSpecificationVersion();</span>
+    @Deprecated
+<span class="fc" id="L21">    public static final String LINE_SEPARATOR = SystemProperties.getLineSeparator();</span>
+    @Deprecated
+<span class="fc" id="L23">    public static final String PATH_SEPARATOR = SystemProperties.getPathSeparator();</span>
+    @Deprecated
+<span class="fc" id="L25">    public static final boolean IS_JAVA_1_9 = getJavaVersionMatches(&quot;9&quot;);</span>
+    @Deprecated
+    public static final String USER_NAME_KEY = &quot;user.name&quot;;
+    @Deprecated
+    public static final String USER_DIR_KEY = &quot;user.dir&quot;;
+    @Deprecated
+    public static final String JAVA_IO_TMPDIR_KEY = &quot;java.io.tmpdir&quot;;
+    @Deprecated
+    public static final String JAVA_HOME_KEY = &quot;java.home&quot;;
+    @Deprecated
+<span class="fc" id="L35">    public static final String AWT_TOOLKIT = SystemProperties.getAwtToolkit();</span>
+    private static boolean getJavaVersionMatches(final String versionPrefix) {
+<span class="fc" id="L37">        return isJavaVersionMatch(JAVA_SPECIFICATION_VERSION, versionPrefix);</span>
+    }
+    @Deprecated
+    public static String getUserName() {
+<span class="fc" id="L41">        return SystemProperties.getUserName();</span>
+    }
+    @Deprecated
+    public static String getUserName(final String defaultValue) {
+<span class="fc" id="L45">        return SystemProperties.getUserName(defaultValue);</span>
+    }
+    @Deprecated
+    public static boolean isJavaAwtHeadless() {
+<span class="fc" id="L49">        return Boolean.TRUE.toString().equals(JAVA_AWT_HEADLESS);</span>
+    }
+    static boolean isJavaVersionMatch(final String version, final String versionPrefix) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if (version == null) {</span>
+<span class="fc" id="L53">            return false;</span>
+        }
+<span class="fc" id="L55">        return version.startsWith(versionPrefix);</span>
+    }
+<span class="fc" id="L57">    public SystemUtils() {</span>
+<span class="fc" id="L58">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

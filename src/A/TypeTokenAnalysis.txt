@@ -1,0 +1,93 @@
+包路径：gson.reflect
+类名：TypeToken
+父类：无
+依赖类：GsonTypes, TroubleshootingGuide
+---
+序号：1
+方法名：TypeToken()
+返回类型：void
+功能描述：初始化类型令牌对象，获取类型参数并设置原始类型和哈希码
+序号：2
+方法名：TypeToken(Type type)
+返回类型：void
+功能描述：初始化类型令牌对象，规范化和验证给定类型，设置原始类型和哈希码
+序号：3
+方法名：isCapturingTypeVariablesForbidden()
+返回类型：boolean
+功能描述：检查系统属性是否禁止捕获类型变量
+序号：4
+方法名：getTypeTokenTypeArgument()
+返回类型：Type
+功能描述：获取当前类型令牌的类型参数，并验证其不包含类型变量
+序号：5
+方法名：verifyNoTypeVariable(Type type)
+返回类型：void
+功能描述：递归验证给定类型不包含类型变量，否则抛出异常
+序号：6
+方法名：getRawType()
+返回类型：Class<? super T>
+功能描述：返回类型令牌的原始类型
+序号：7
+方法名：getType()
+返回类型：Type
+功能描述：返回类型令牌的完整类型
+序号：8
+方法名：isAssignableFrom(Class<?> cls)
+返回类型：boolean
+功能描述：检查给定类是否可赋值给当前类型令牌（已弃用）
+序号：9
+方法名：isAssignableFrom(Type from)
+返回类型：boolean
+功能描述：检查给定类型是否可赋值给当前类型令牌（已弃用）
+序号：10
+方法名：isAssignableFrom(TypeToken<?> token)
+返回类型：boolean
+功能描述：检查给定类型令牌的类型是否可赋值给当前类型令牌（已弃用）
+序号：11
+方法名：isAssignableFrom(Type from, GenericArrayType to)
+返回类型：boolean
+功能描述：检查给定类型是否可赋值给泛型数组类型
+序号：12
+方法名：isAssignableFrom(Type from, ParameterizedType to, Map<String, Type> typeVarMap)
+返回类型：boolean
+功能描述：检查给定类型是否可赋值给参数化类型，使用类型变量映射
+序号：13
+方法名：typeEquals(ParameterizedType from, ParameterizedType to, Map<String, Type> typeVarMap)
+返回类型：boolean
+功能描述：检查两个参数化类型是否相等，考虑类型变量映射
+序号：14
+方法名：buildUnsupportedTypeException(Type token, Class<?>... expected)
+返回类型：IllegalArgumentException
+功能描述：构建并返回不支持类型的异常消息
+序号：15
+方法名：matches(Type from, Type to, Map<String, Type> typeMap)
+返回类型：boolean
+功能描述：检查两个类型是否匹配，考虑类型映射
+序号：16
+方法名：hashCode()
+返回类型：int
+功能描述：返回类型令牌的哈希码
+序号：17
+方法名：equals(Object o)
+返回类型：boolean
+功能描述：检查两个类型令牌是否相等
+序号：18
+方法名：toString()
+返回类型：String
+功能描述：返回类型令牌的字符串表示
+序号：19
+方法名：get(Type type)
+返回类型：TypeToken<?>
+功能描述：创建并返回给定类型的类型令牌实例
+序号：20
+方法名：get(Class<T> type)
+返回类型：TypeToken<T>
+功能描述：创建并返回给定类的类型令牌实例
+序号：21
+方法名：getParameterized(Type rawType, Type... typeArguments)
+返回类型：TypeToken<?>
+功能描述：创建并返回参数化类型的类型令牌实例
+序号：22
+方法名：getArray(Type componentType)
+返回类型：TypeToken<?>
+功能描述：创建并返回数组类型的类型令牌实例

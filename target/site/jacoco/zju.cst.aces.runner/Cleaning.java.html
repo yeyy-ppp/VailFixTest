@@ -1,0 +1,1134 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Cleaning.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">Cleaning.java</span></div><h1>Cleaning.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.nio.file.StandardCopyOption;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * 处理TryCommons下面数据
+ * 功能：清洗、去重、去噪、过滤、标准化、代码分块
+ */
+<span class="nc" id="L28">public class Cleaning {</span>
+
+    // Java 8 兼容的文件读取方法
+    private static String readFileContent(Path path) throws IOException {
+<span class="nc" id="L32">        byte[] bytes = Files.readAllBytes(path);</span>
+<span class="nc" id="L33">        return new String(bytes, StandardCharsets.UTF_8);</span>
+    }
+
+    // Java 8 兼容的文件写入方法
+    private static void writeFileContent(Path path, String content) throws IOException {
+<span class="nc" id="L38">        Files.write(path, content.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L39">    }</span>
+
+    // 用于去重的哈希集合
+<span class="nc" id="L42">    private final Set&lt;String&gt; contentHashes = new HashSet&lt;&gt;();</span>
+    
+    // 单行注释模式
+<span class="nc" id="L45">    private static final Pattern SINGLE_LINE_COMMENT = Pattern.compile(&quot;//.*&quot;);</span>
+    
+    // 多行注释模式
+<span class="nc" id="L48">    private static final Pattern MULTI_LINE_COMMENT = Pattern.compile(&quot;/\\*[\\s\\S]*?\\*/&quot;);</span>
+    
+    // 空白行模式
+<span class="nc" id="L51">    private static final Pattern BLANK_LINE = Pattern.compile(&quot;^\\s*$&quot;, Pattern.MULTILINE);</span>
+    
+    // 连续空白行模式
+<span class="nc" id="L54">    private static final Pattern MULTIPLE_BLANK_LINES = Pattern.compile(&quot;(\\r?\\n){3,}&quot;);</span>
+
+    /**
+     * 清洗单个文件内容
+     * @param content 原始内容
+     * @return 清洗后的内容
+     */
+    public String cleanContent(String content) {
+<span class="nc bnc" id="L62" title="All 4 branches missed.">        if (content == null || content.isEmpty()) {</span>
+<span class="nc" id="L63">            return content;</span>
+        }
+        
+<span class="nc" id="L66">        String result = content;</span>
+        
+        // 1. 删除多行注释
+<span class="nc" id="L69">        result = removeMultiLineComments(result);</span>
+        
+        // 2. 删除单行注释
+<span class="nc" id="L72">        result = removeSingleLineComments(result);</span>
+        
+        // 3. 删除空白行
+<span class="nc" id="L75">        result = removeBlankLines(result);</span>
+        
+        // 4. 标准化空白字符
+<span class="nc" id="L78">        result = normalizeWhitespace(result);</span>
+        
+<span class="nc" id="L80">        return result;</span>
+    }
+
+    /**
+     * 删除单行注释 (//)
+     */
+    public String removeSingleLineComments(String content) {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (content == null) return null;</span>
+        
+<span class="nc" id="L89">        StringBuilder result = new StringBuilder();</span>
+<span class="nc" id="L90">        boolean inString = false;</span>
+<span class="nc" id="L91">        boolean inChar = false;</span>
+<span class="nc" id="L92">        char prevChar = 0;</span>
+        
+<span class="nc" id="L94">        String[] lines = content.split(&quot;\n&quot;, -1);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">        for (int i = 0; i &lt; lines.length; i++) {</span>
+<span class="nc" id="L96">            String line = lines[i];</span>
+<span class="nc" id="L97">            StringBuilder cleanLine = new StringBuilder();</span>
+<span class="nc" id="L98">            inString = false;</span>
+<span class="nc" id="L99">            inChar = false;</span>
+<span class="nc" id="L100">            prevChar = 0;</span>
+            
+<span class="nc bnc" id="L102" title="All 2 branches missed.">            for (int j = 0; j &lt; line.length(); j++) {</span>
+<span class="nc" id="L103">                char c = line.charAt(j);</span>
+                
+                // 处理字符串内的情况
+<span class="nc bnc" id="L106" title="All 6 branches missed.">                if (c == '&quot;' &amp;&amp; prevChar != '\\' &amp;&amp; !inChar) {</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                    inString = !inString;</span>
+                }
+<span class="nc bnc" id="L109" title="All 6 branches missed.">                if (c == '\'' &amp;&amp; prevChar != '\\' &amp;&amp; !inString) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                    inChar = !inChar;</span>
+                }
+                
+                // 检测单行注释
+<span class="nc bnc" id="L114" title="All 10 branches missed.">                if (!inString &amp;&amp; !inChar &amp;&amp; c == '/' &amp;&amp; j + 1 &lt; line.length() &amp;&amp; line.charAt(j + 1) == '/') {</span>
+<span class="nc" id="L115">                    break; // 跳过剩余部分</span>
+                }
+                
+<span class="nc" id="L118">                cleanLine.append(c);</span>
+<span class="nc" id="L119">                prevChar = c;</span>
+            }
+            
+<span class="nc" id="L122">            result.append(cleanLine);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            if (i &lt; lines.length - 1) {</span>
+<span class="nc" id="L124">                result.append(&quot;\n&quot;);</span>
+            }
+        }
+        
+<span class="nc" id="L128">        return result.toString();</span>
+    }
+
+    /**
+     * 删除多行注释
+     */
+    public String removeMultiLineComments(String content) {
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (content == null) return null;</span>
+<span class="nc" id="L136">        return MULTI_LINE_COMMENT.matcher(content).replaceAll(&quot;&quot;);</span>
+    }
+
+    /**
+     * 删除空白行
+     */
+    public String removeBlankLines(String content) {
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        if (content == null) return null;</span>
+        
+<span class="nc" id="L145">        String[] lines = content.split(&quot;\n&quot;, -1);</span>
+<span class="nc" id="L146">        StringBuilder result = new StringBuilder();</span>
+        
+<span class="nc bnc" id="L148" title="All 2 branches missed.">        for (String line : lines) {</span>
+<span class="nc bnc" id="L149" title="All 2 branches missed.">            if (!line.trim().isEmpty()) {</span>
+<span class="nc" id="L150">                result.append(line).append(&quot;\n&quot;);</span>
+            }
+        }
+        
+        // 移除末尾多余的换行符
+<span class="nc bnc" id="L155" title="All 4 branches missed.">        if (result.length() &gt; 0 &amp;&amp; result.charAt(result.length() - 1) == '\n') {</span>
+<span class="nc" id="L156">            result.setLength(result.length() - 1);</span>
+        }
+        
+<span class="nc" id="L159">        return result.toString();</span>
+    }
+
+    /**
+     * 标准化空白字符
+     * - 将多个连续空格替换为单个空格
+     * - 移除行尾空白
+     * - 统一换行符
+     */
+    public String normalizeWhitespace(String content) {
+<span class="nc bnc" id="L169" title="All 2 branches missed.">        if (content == null) return null;</span>
+        
+<span class="nc" id="L171">        String[] lines = content.split(&quot;\n&quot;, -1);</span>
+<span class="nc" id="L172">        StringBuilder result = new StringBuilder();</span>
+        
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        for (int i = 0; i &lt; lines.length; i++) {</span>
+<span class="nc" id="L175">            String line = lines[i];</span>
+            // 移除行尾空白
+<span class="nc" id="L177">            line = line.replaceAll(&quot;\\s+$&quot;, &quot;&quot;);</span>
+<span class="nc" id="L178">            result.append(line);</span>
+<span class="nc bnc" id="L179" title="All 2 branches missed.">            if (i &lt; lines.length - 1) {</span>
+<span class="nc" id="L180">                result.append(&quot;\n&quot;);</span>
+            }
+        }
+        
+<span class="nc" id="L184">        return result.toString();</span>
+    }
+
+    /**
+     * 检查内容是否重复（基于哈希）
+     * @param content 内容
+     * @return true 如果是重复内容
+     */
+    public boolean isDuplicate(String content) {
+<span class="nc" id="L193">        String hash = computeHash(content);</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">        return !contentHashes.add(hash);</span>
+    }
+
+    /**
+     * 计算内容的MD5哈希
+     */
+    private String computeHash(String content) {
+        try {
+<span class="nc" id="L202">            MessageDigest md = MessageDigest.getInstance(&quot;MD5&quot;);</span>
+<span class="nc" id="L203">            byte[] digest = md.digest(content.getBytes(StandardCharsets.UTF_8));</span>
+<span class="nc" id="L204">            StringBuilder sb = new StringBuilder();</span>
+<span class="nc bnc" id="L205" title="All 2 branches missed.">            for (byte b : digest) {</span>
+<span class="nc" id="L206">                sb.append(String.format(&quot;%02x&quot;, b));</span>
+            }
+<span class="nc" id="L208">            return sb.toString();</span>
+<span class="nc" id="L209">        } catch (NoSuchAlgorithmException e) {</span>
+            // 降级使用hashCode
+<span class="nc" id="L211">            return String.valueOf(content.hashCode());</span>
+        }
+    }
+
+    /**
+     * 重置去重缓存
+     */
+    public void resetDuplicateCache() {
+<span class="nc" id="L219">        contentHashes.clear();</span>
+<span class="nc" id="L220">    }</span>
+
+    /**
+     * 过滤无效代码
+     * - 过滤过短的代码片段
+     * - 过滤只有import语句的文件
+     */
+    public boolean isValidCode(String content, int minLines) {
+<span class="nc bnc" id="L228" title="All 4 branches missed.">        if (content == null || content.trim().isEmpty()) {</span>
+<span class="nc" id="L229">            return false;</span>
+        }
+        
+<span class="nc" id="L232">        String[] lines = content.split(&quot;\n&quot;);</span>
+<span class="nc" id="L233">        int codeLines = 0;</span>
+        
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        for (String line : lines) {</span>
+<span class="nc" id="L236">            String trimmed = line.trim();</span>
+            // 跳过空行、import、package语句
+<span class="nc bnc" id="L238" title="All 2 branches missed.">            if (!trimmed.isEmpty() </span>
+<span class="nc bnc" id="L239" title="All 2 branches missed.">                &amp;&amp; !trimmed.startsWith(&quot;import &quot;) </span>
+<span class="nc bnc" id="L240" title="All 2 branches missed.">                &amp;&amp; !trimmed.startsWith(&quot;package &quot;)) {</span>
+<span class="nc" id="L241">                codeLines++;</span>
+            }
+        }
+        
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        return codeLines &gt;= minLines;</span>
+    }
+
+    // ==================== 复杂度分析与报告生成 ====================
+
+    /**
+     * 方法信息类 - 包含方法代码和复杂度指标
+     */
+<span class="nc" id="L253">    public static class MethodInfo {</span>
+        public String className;      // 所属类名
+        public String methodName;     // 方法名
+        public String signature;      // 方法签名
+        public String code;           // 方法代码
+        public int startLine;         // 起始行
+        public int endLine;           // 结束行
+        public int lineCount;         // 代码行数
+        
+        // 复杂度指标
+        public int nestingDepth;      // 最大嵌套深度
+        public int loopCount;         // 循环数量 (for, while, do)
+        public int branchCount;       // 分支数量 (if, switch, case)
+        public int tryCatchCount;     // try-catch 数量
+        public int complexity;        // 综合复杂度评分
+        
+        @Override
+        public String toString() {
+<span class="nc" id="L271">            return String.format(&quot;%s.%s [行数:%d, 嵌套:%d, 循环:%d, 分支:%d, try-catch:%d, 复杂度:%d]&quot;,</span>
+<span class="nc" id="L272">                    className, methodName, lineCount, nestingDepth, loopCount, branchCount, tryCatchCount, complexity);</span>
+        }
+    }
+
+    /**
+     * 分析方法复杂度
+     */
+    private void analyzeMethodComplexity(MethodInfo info) {
+<span class="nc" id="L280">        String code = info.code;</span>
+        
+<span class="nc" id="L282">        info.nestingDepth = calculateNestingDepth(code);</span>
+<span class="nc" id="L283">        info.loopCount = countPattern(code, &quot;\\b(for|while|do)\\s*\\(&quot;);</span>
+<span class="nc" id="L284">        info.branchCount = countPattern(code, &quot;\\b(if|switch|case)\\s*[\\(:]&quot;);</span>
+<span class="nc" id="L285">        info.tryCatchCount = countPattern(code, &quot;\\b(try|catch)\\s*[\\{\\(]&quot;);</span>
+        
+        // 综合复杂度评分
+<span class="nc" id="L288">        info.complexity = info.nestingDepth * 3 </span>
+                        + info.loopCount * 2 
+                        + info.branchCount * 2 
+                        + info.tryCatchCount * 2
+<span class="nc bnc" id="L292" title="All 2 branches missed.">                        + (info.lineCount &gt; 30 ? 2 : 0)</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">                        + (info.lineCount &gt; 50 ? 3 : 0);</span>
+<span class="nc" id="L294">    }</span>
+
+    private int calculateNestingDepth(String code) {
+<span class="nc" id="L297">        int maxDepth = 0, currentDepth = 0;</span>
+<span class="nc" id="L298">        boolean inString = false;</span>
+<span class="nc" id="L299">        char prevChar = 0;</span>
+        
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        for (char c : code.toCharArray()) {</span>
+<span class="nc bnc" id="L302" title="All 6 branches missed.">            if (c == '&quot;' &amp;&amp; prevChar != '\\') inString = !inString;</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">            if (!inString) {</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">                if (c == '{') { currentDepth++; maxDepth = Math.max(maxDepth, currentDepth); }</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">                else if (c == '}') currentDepth--;</span>
+            }
+<span class="nc" id="L307">            prevChar = c;</span>
+        }
+<span class="nc" id="L309">        return Math.max(0, maxDepth - 1);</span>
+    }
+
+    private int countPattern(String code, String regex) {
+<span class="nc" id="L313">        Matcher matcher = Pattern.compile(regex).matcher(code);</span>
+<span class="nc" id="L314">        int count = 0;</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">        while (matcher.find()) count++;</span>
+<span class="nc" id="L316">        return count;</span>
+    }
+
+    /**
+     * 按方法分割并分析复杂度
+     */
+    public List&lt;MethodInfo&gt; splitByMethodsWithComplexity(String content, String className) {
+<span class="nc" id="L323">        List&lt;MethodInfo&gt; methods = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L324" title="All 4 branches missed.">        if (content == null || content.isEmpty()) return methods;</span>
+        
+<span class="nc" id="L326">        Pattern methodPattern = Pattern.compile(</span>
+            &quot;((?:public|private|protected|static|final|native|synchronized|abstract|default)\\s+)*&quot; +
+            &quot;(?:&lt;[\\w\\s,&lt;&gt;\\[\\]?]+&gt;\\s+)?&quot; +
+            &quot;([\\w&lt;&gt;\\[\\],\\s\\?]+)\\s+&quot; +
+            &quot;(\\w+)\\s*&quot; +
+            &quot;(\\([^)]*\\))&quot; +
+            &quot;(?:\\s*throws\\s+[\\w,\\s]+)?&quot; +
+            &quot;\\s*\\{&quot;
+        );
+        
+<span class="nc" id="L336">        Matcher matcher = methodPattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L338" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L339">            int start = matcher.start();</span>
+<span class="nc" id="L340">            int braceStart = matcher.end() - 1;</span>
+<span class="nc" id="L341">            int braceCount = 1;</span>
+<span class="nc" id="L342">            int end = braceStart + 1;</span>
+            
+<span class="nc bnc" id="L344" title="All 4 branches missed.">            while (end &lt; content.length() &amp;&amp; braceCount &gt; 0) {</span>
+<span class="nc" id="L345">                char c = content.charAt(end);</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">                if (c == '{') braceCount++;</span>
+<span class="nc bnc" id="L347" title="All 2 branches missed.">                else if (c == '}') braceCount--;</span>
+<span class="nc" id="L348">                end++;</span>
+<span class="nc" id="L349">            }</span>
+            
+<span class="nc bnc" id="L351" title="All 2 branches missed.">            if (braceCount == 0) {</span>
+<span class="nc" id="L352">                MethodInfo info = new MethodInfo();</span>
+<span class="nc" id="L353">                info.className = className;</span>
+<span class="nc" id="L354">                info.methodName = matcher.group(3);</span>
+<span class="nc" id="L355">                info.signature = matcher.group(3) + matcher.group(4);</span>
+<span class="nc" id="L356">                info.code = content.substring(start, end).trim();</span>
+<span class="nc" id="L357">                info.startLine = content.substring(0, start).split(&quot;\n&quot;).length;</span>
+<span class="nc" id="L358">                info.endLine = content.substring(0, end).split(&quot;\n&quot;).length;</span>
+<span class="nc" id="L359">                info.lineCount = info.endLine - info.startLine + 1;</span>
+<span class="nc" id="L360">                analyzeMethodComplexity(info);</span>
+<span class="nc" id="L361">                methods.add(info);</span>
+            }
+<span class="nc" id="L363">        }</span>
+<span class="nc" id="L364">        return methods;</span>
+    }
+
+    /**
+     * 分析目录复杂度并按包生成报告
+     * @param directory 源代码目录
+     * @param outputBaseDir 报告输出基础目录 (如 src/main/java/M)
+     */
+    public void generateComplexityReport(Path directory, Path outputBaseDir) throws IOException {
+        // 按包分组的报告
+<span class="nc" id="L374">        Map&lt;String, JsonObject&gt; packageReports = new LinkedHashMap&lt;&gt;();</span>
+        
+<span class="nc" id="L376">        try (Stream&lt;Path&gt; paths = Files.walk(directory)) {</span>
+<span class="nc" id="L377">            List&lt;Path&gt; javaFiles = paths</span>
+<span class="nc" id="L378">                    .filter(Files::isRegularFile)</span>
+<span class="nc" id="L379">                    .filter(p -&gt; p.toString().endsWith(&quot;.java&quot;))</span>
+<span class="nc" id="L380">                    .collect(Collectors.toList());</span>
+            
+<span class="nc bnc" id="L382" title="All 2 branches missed.">            for (Path file : javaFiles) {</span>
+<span class="nc" id="L383">                String content = readFileContent(file);</span>
+<span class="nc" id="L384">                String className = file.getFileName().toString().replace(&quot;.java&quot;, &quot;&quot;);</span>
+                
+                // 获取相对包路径 (如 cli 或 cli/help)
+<span class="nc" id="L387">                Path relativePath = directory.relativize(file.getParent());</span>
+<span class="nc" id="L388">                String packagePath = relativePath.toString().replace(&quot;\\&quot;, &quot;/&quot;);</span>
+                
+<span class="nc" id="L390">                List&lt;MethodInfo&gt; methods = splitByMethodsWithComplexity(content, className);</span>
+                
+<span class="nc bnc" id="L392" title="All 2 branches missed.">                if (!methods.isEmpty()) {</span>
+                    // 获取或创建该包的报告
+<span class="nc" id="L394">                    JsonObject packageReport = packageReports.computeIfAbsent(packagePath, k -&gt; new JsonObject());</span>
+                    
+<span class="nc" id="L396">                    JsonObject classInfo = new JsonObject();</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">                    for (MethodInfo m : methods) {</span>
+<span class="nc" id="L398">                        JsonObject methodInfo = new JsonObject();</span>
+<span class="nc" id="L399">                        methodInfo.addProperty(&quot;complexity&quot;, m.complexity);</span>
+<span class="nc" id="L400">                        methodInfo.addProperty(&quot;lineCount&quot;, m.lineCount);</span>
+<span class="nc" id="L401">                        methodInfo.addProperty(&quot;nestingDepth&quot;, m.nestingDepth);</span>
+<span class="nc" id="L402">                        methodInfo.addProperty(&quot;loopCount&quot;, m.loopCount);</span>
+<span class="nc" id="L403">                        methodInfo.addProperty(&quot;branchCount&quot;, m.branchCount);</span>
+<span class="nc" id="L404">                        methodInfo.addProperty(&quot;tryCatchCount&quot;, m.tryCatchCount);</span>
+<span class="nc" id="L405">                        methodInfo.addProperty(&quot;strategy&quot;, getStrategy(m.complexity));</span>
+<span class="nc" id="L406">                        classInfo.add(m.methodName, methodInfo);</span>
+<span class="nc" id="L407">                    }</span>
+<span class="nc" id="L408">                    packageReport.add(className, classInfo);</span>
+                }
+<span class="nc" id="L410">            }</span>
+        }
+        
+        // 为每个包生成独立的报告文件
+<span class="nc" id="L414">        com.google.gson.Gson prettyGson = new com.google.gson.GsonBuilder().setPrettyPrinting().create();</span>
+        
+<span class="nc bnc" id="L416" title="All 2 branches missed.">        for (Map.Entry&lt;String, JsonObject&gt; entry : packageReports.entrySet()) {</span>
+<span class="nc" id="L417">            String packagePath = entry.getKey();</span>
+<span class="nc" id="L418">            JsonObject report = entry.getValue();</span>
+            
+            // 生成报告文件名 (如 cli_report.json, help_report.json)
+<span class="nc bnc" id="L421" title="All 2 branches missed.">            String reportName = packagePath.isEmpty() ? &quot;root_report.json&quot; </span>
+<span class="nc" id="L422">                    : packagePath.replace(&quot;/&quot;, &quot;_&quot;).replace(&quot;\\&quot;, &quot;_&quot;) + &quot;_report.json&quot;;</span>
+            
+            // 如果是子包，取最后一个包名
+<span class="nc bnc" id="L425" title="All 2 branches missed.">            if (packagePath.contains(&quot;/&quot;)) {</span>
+<span class="nc" id="L426">                String lastPkg = packagePath.substring(packagePath.lastIndexOf(&quot;/&quot;) + 1);</span>
+<span class="nc" id="L427">                reportName = lastPkg + &quot;_report.json&quot;;</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">            } else if (!packagePath.isEmpty()) {</span>
+<span class="nc" id="L429">                reportName = packagePath + &quot;_report.json&quot;;</span>
+            }
+            
+            // 输出路径: outputBaseDir/包路径/报告名
+<span class="nc" id="L433">            Path outputPath = outputBaseDir.resolve(packagePath).resolve(reportName);</span>
+<span class="nc" id="L434">            Files.createDirectories(outputPath.getParent());</span>
+            
+<span class="nc" id="L436">            String jsonOutput = prettyGson.toJson(report);</span>
+<span class="nc" id="L437">            writeFileContent(outputPath, jsonOutput);</span>
+            
+<span class="nc" id="L439">            System.out.println(&quot;已生成报告: &quot; + outputPath + &quot; (&quot; + report.size() + &quot; 个类)&quot;);</span>
+<span class="nc" id="L440">        }</span>
+        
+<span class="nc" id="L442">        System.out.println(&quot;\n复杂度报告生成完成，共 &quot; + packageReports.size() + &quot; 个包&quot;);</span>
+<span class="nc" id="L443">    }</span>
+
+    /**
+     * 根据复杂度返回测试策略
+     */
+    private String getStrategy(int complexity) {
+<span class="nc bnc" id="L449" title="All 2 branches missed.">        if (complexity &lt; 5) return &quot;simple&quot;;</span>
+<span class="nc bnc" id="L450" title="All 2 branches missed.">        if (complexity &lt;= 10) return &quot;standard&quot;;</span>
+<span class="nc" id="L451">        return &quot;detailed&quot;;</span>
+    }
+
+    // ==================== 代码分块（旧方法，已废弃） ====================
+
+    /**
+     * 代码分块 - 按方法分割
+     * @param content Java源代码
+     * @return 方法代码块列表
+     * @deprecated 建议使用 splitByMethodsWithComplexity
+     */
+    @Deprecated
+    public List&lt;String&gt; splitByMethods(String content) {
+<span class="nc" id="L464">        List&lt;String&gt; methods = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L465" title="All 4 branches missed.">        if (content == null || content.isEmpty()) {</span>
+<span class="nc" id="L466">            return methods;</span>
+        }
+        
+        // 简单的方法提取（基于大括号匹配）
+<span class="nc" id="L470">        Pattern methodPattern = Pattern.compile(</span>
+            &quot;((?:public|private|protected|static|final|native|synchronized|abstract|transient)+\\s+)&quot; +
+            &quot;(?:&lt;[\\w\\s,&lt;&gt;\\[\\]]+&gt;\\s+)?&quot; +  // 泛型
+            &quot;[\\w&lt;&gt;\\[\\]]+\\s+&quot; +              // 返回类型
+            &quot;(\\w+)\\s*&quot; +                       // 方法名
+            &quot;\\([^)]*\\)&quot; +                      // 参数
+            &quot;(?:\\s*throws\\s+[\\w,\\s]+)?&quot; +   // throws
+            &quot;\\s*\\{&quot;                            // 方法体开始
+        );
+        
+<span class="nc" id="L480">        Matcher matcher = methodPattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L482" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L483">            int start = matcher.start();</span>
+<span class="nc" id="L484">            int braceStart = matcher.end() - 1;</span>
+<span class="nc" id="L485">            int braceCount = 1;</span>
+<span class="nc" id="L486">            int end = braceStart + 1;</span>
+            
+            // 匹配大括号
+<span class="nc bnc" id="L489" title="All 4 branches missed.">            while (end &lt; content.length() &amp;&amp; braceCount &gt; 0) {</span>
+<span class="nc" id="L490">                char c = content.charAt(end);</span>
+<span class="nc bnc" id="L491" title="All 2 branches missed.">                if (c == '{') braceCount++;</span>
+<span class="nc bnc" id="L492" title="All 2 branches missed.">                else if (c == '}') braceCount--;</span>
+<span class="nc" id="L493">                end++;</span>
+<span class="nc" id="L494">            }</span>
+            
+<span class="nc bnc" id="L496" title="All 2 branches missed.">            if (braceCount == 0) {</span>
+<span class="nc" id="L497">                methods.add(content.substring(start, end).trim());</span>
+            }
+<span class="nc" id="L499">        }</span>
+        
+<span class="nc" id="L501">        return methods;</span>
+    }
+
+    /**
+     * 代码分块 - 按类分割
+     */
+    public List&lt;String&gt; splitByClasses(String content) {
+<span class="nc" id="L508">        List&lt;String&gt; classes = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L509" title="All 4 branches missed.">        if (content == null || content.isEmpty()) {</span>
+<span class="nc" id="L510">            return classes;</span>
+        }
+        
+<span class="nc" id="L513">        Pattern classPattern = Pattern.compile(</span>
+            &quot;((?:public|private|protected|static|final|abstract)?\\s*)&quot; +
+            &quot;(class|interface|enum)\\s+&quot; +
+            &quot;(\\w+)&quot; +
+            &quot;(?:&lt;[^&gt;]+&gt;)?&quot; +
+            &quot;(?:\\s+extends\\s+[\\w&lt;&gt;,\\s]+)?&quot; +
+            &quot;(?:\\s+implements\\s+[\\w&lt;&gt;,\\s]+)?&quot; +
+            &quot;\\s*\\{&quot;
+        );
+        
+<span class="nc" id="L523">        Matcher matcher = classPattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L525" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L526">            int start = matcher.start();</span>
+<span class="nc" id="L527">            int braceStart = matcher.end() - 1;</span>
+<span class="nc" id="L528">            int braceCount = 1;</span>
+<span class="nc" id="L529">            int end = braceStart + 1;</span>
+            
+<span class="nc bnc" id="L531" title="All 4 branches missed.">            while (end &lt; content.length() &amp;&amp; braceCount &gt; 0) {</span>
+<span class="nc" id="L532">                char c = content.charAt(end);</span>
+<span class="nc bnc" id="L533" title="All 2 branches missed.">                if (c == '{') braceCount++;</span>
+<span class="nc bnc" id="L534" title="All 2 branches missed.">                else if (c == '}') braceCount--;</span>
+<span class="nc" id="L535">                end++;</span>
+<span class="nc" id="L536">            }</span>
+            
+<span class="nc bnc" id="L538" title="All 2 branches missed.">            if (braceCount == 0) {</span>
+<span class="nc" id="L539">                classes.add(content.substring(start, end).trim());</span>
+            }
+<span class="nc" id="L541">        }</span>
+        
+<span class="nc" id="L543">        return classes;</span>
+    }
+
+    /**
+     * 处理目录下的所有Java文件（输出到新目录）
+     * @param inputDir 输入目录
+     * @param outputDir 输出目录
+     */
+    public void processDirectory(Path inputDir, Path outputDir) throws IOException {
+<span class="nc bnc" id="L552" title="All 2 branches missed.">        if (!Files.exists(inputDir)) {</span>
+<span class="nc" id="L553">            throw new IllegalArgumentException(&quot;输入目录不存在: &quot; + inputDir);</span>
+        }
+        
+<span class="nc" id="L556">        Files.createDirectories(outputDir);</span>
+<span class="nc" id="L557">        resetDuplicateCache();</span>
+        
+<span class="nc" id="L559">        try (Stream&lt;Path&gt; paths = Files.walk(inputDir)) {</span>
+<span class="nc" id="L560">            List&lt;Path&gt; javaFiles = paths</span>
+<span class="nc" id="L561">                .filter(Files::isRegularFile)</span>
+<span class="nc" id="L562">                .filter(p -&gt; p.toString().endsWith(&quot;.java&quot;))</span>
+<span class="nc" id="L563">                .collect(Collectors.toList());</span>
+            
+<span class="nc bnc" id="L565" title="All 2 branches missed.">            for (Path file : javaFiles) {</span>
+<span class="nc" id="L566">                processFile(file, inputDir, outputDir);</span>
+<span class="nc" id="L567">            }</span>
+        }
+<span class="nc" id="L569">    }</span>
+
+    /**
+     * 原地处理目录下的所有Java文件（直接覆盖原文件）
+     * @param inputDir 输入目录
+     */
+    public void processDirectoryInPlace(Path inputDir) throws IOException {
+<span class="nc bnc" id="L576" title="All 2 branches missed.">        if (!Files.exists(inputDir)) {</span>
+<span class="nc" id="L577">            throw new IllegalArgumentException(&quot;输入目录不存在: &quot; + inputDir);</span>
+        }
+        
+<span class="nc" id="L580">        resetDuplicateCache();</span>
+        
+<span class="nc" id="L582">        try (Stream&lt;Path&gt; paths = Files.walk(inputDir)) {</span>
+<span class="nc" id="L583">            List&lt;Path&gt; javaFiles = paths</span>
+<span class="nc" id="L584">                .filter(Files::isRegularFile)</span>
+<span class="nc" id="L585">                .filter(p -&gt; p.toString().endsWith(&quot;.java&quot;))</span>
+<span class="nc" id="L586">                .collect(Collectors.toList());</span>
+            
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            for (Path file : javaFiles) {</span>
+<span class="nc" id="L589">                processFileInPlace(file);</span>
+<span class="nc" id="L590">            }</span>
+        }
+<span class="nc" id="L592">    }</span>
+
+    /**
+     * 原地处理单个文件
+     */
+    private void processFileInPlace(Path file) throws IOException {
+<span class="nc" id="L598">        String content = readFileContent(file);</span>
+        
+        // 清洗内容
+<span class="nc" id="L601">        String cleaned = cleanContent(content);</span>
+        
+        // 只有内容变化才写入
+<span class="nc bnc" id="L604" title="All 2 branches missed.">        if (!cleaned.equals(content)) {</span>
+<span class="nc" id="L605">            writeFileContent(file, cleaned);</span>
+<span class="nc" id="L606">            System.out.println(&quot;已清洗: &quot; + file);</span>
+        }
+<span class="nc" id="L608">    }</span>
+
+    /**
+     * 处理单个文件（输出到新目录）
+     */
+    private void processFile(Path file, Path inputDir, Path outputDir) throws IOException {
+<span class="nc" id="L614">        String content = readFileContent(file);</span>
+        
+        // 清洗内容
+<span class="nc" id="L617">        String cleaned = cleanContent(content);</span>
+        
+        // 检查是否有效
+<span class="nc bnc" id="L620" title="All 2 branches missed.">        if (!isValidCode(cleaned, 3)) {</span>
+<span class="nc" id="L621">            System.out.println(&quot;跳过无效文件: &quot; + file);</span>
+<span class="nc" id="L622">            return;</span>
+        }
+        
+        // 检查是否重复
+<span class="nc bnc" id="L626" title="All 2 branches missed.">        if (isDuplicate(cleaned)) {</span>
+<span class="nc" id="L627">            System.out.println(&quot;跳过重复文件: &quot; + file);</span>
+<span class="nc" id="L628">            return;</span>
+        }
+        
+        // 计算相对路径并写入输出目录
+<span class="nc" id="L632">        Path relativePath = inputDir.relativize(file);</span>
+<span class="nc" id="L633">        Path outputFile = outputDir.resolve(relativePath);</span>
+<span class="nc" id="L634">        Files.createDirectories(outputFile.getParent());</span>
+<span class="nc" id="L635">        writeFileContent(outputFile, cleaned);</span>
+        
+<span class="nc" id="L637">        System.out.println(&quot;已处理: &quot; + file);</span>
+<span class="nc" id="L638">    }</span>
+
+    /**
+     * 提取代码中的import语句
+     */
+    public List&lt;String&gt; extractImports(String content) {
+<span class="nc" id="L644">        List&lt;String&gt; imports = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L645" title="All 2 branches missed.">        if (content == null) return imports;</span>
+        
+<span class="nc" id="L647">        Pattern importPattern = Pattern.compile(&quot;^\\s*import\\s+([\\w.]+(?:\\.\\*)?);&quot;, Pattern.MULTILINE);</span>
+<span class="nc" id="L648">        Matcher matcher = importPattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L650" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L651">            imports.add(matcher.group(1));</span>
+        }
+        
+<span class="nc" id="L654">        return imports;</span>
+    }
+
+    /**
+     * 提取包名
+     */
+    public String extractPackage(String content) {
+<span class="nc bnc" id="L661" title="All 2 branches missed.">        if (content == null) return null;</span>
+        
+<span class="nc" id="L663">        Pattern packagePattern = Pattern.compile(&quot;^\\s*package\\s+([\\w.]+);&quot;, Pattern.MULTILINE);</span>
+<span class="nc" id="L664">        Matcher matcher = packagePattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L666" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L667">            return matcher.group(1);</span>
+        }
+<span class="nc" id="L669">        return null;</span>
+    }
+
+    /**
+     * 去除License头部注释
+     */
+    public String removeLicenseHeader(String content) {
+<span class="nc bnc" id="L676" title="All 2 branches missed.">        if (content == null) return null;</span>
+        
+        // 匹配文件开头的多行注释（通常是License）
+<span class="nc" id="L679">        Pattern licensePattern = Pattern.compile(&quot;^\\s*/\\*[\\s\\S]*?\\*/\\s*&quot;, Pattern.MULTILINE);</span>
+<span class="nc" id="L680">        Matcher matcher = licensePattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L682" title="All 4 branches missed.">        if (matcher.find() &amp;&amp; matcher.start() == 0) {</span>
+<span class="nc" id="L683">            return content.substring(matcher.end());</span>
+        }
+        
+<span class="nc" id="L686">        return content;</span>
+    }
+
+    // ==================== 依赖分析与自动导入 ====================
+
+    // 常见包名到Maven坐标的映射
+<span class="nc" id="L692">    private static final Map&lt;String, String[]&gt; KNOWN_DEPENDENCIES = new HashMap&lt;&gt;();</span>
+    
+    static {
+        // 格式: 包前缀 -&gt; [groupId, artifactId, version]
+<span class="nc" id="L696">        KNOWN_DEPENDENCIES.put(&quot;org.apache.commons.cli&quot;, new String[]{&quot;commons-cli&quot;, &quot;commons-cli&quot;, &quot;1.6.0&quot;});</span>
+<span class="nc" id="L697">        KNOWN_DEPENDENCIES.put(&quot;org.apache.commons.lang3&quot;, new String[]{&quot;org.apache.commons&quot;, &quot;commons-lang3&quot;, &quot;3.14.0&quot;});</span>
+<span class="nc" id="L698">        KNOWN_DEPENDENCIES.put(&quot;org.apache.commons.io&quot;, new String[]{&quot;commons-io&quot;, &quot;commons-io&quot;, &quot;2.15.1&quot;});</span>
+<span class="nc" id="L699">        KNOWN_DEPENDENCIES.put(&quot;org.apache.commons.collections4&quot;, new String[]{&quot;org.apache.commons&quot;, &quot;commons-collections4&quot;, &quot;4.4&quot;});</span>
+<span class="nc" id="L700">        KNOWN_DEPENDENCIES.put(&quot;org.apache.commons.text&quot;, new String[]{&quot;org.apache.commons&quot;, &quot;commons-text&quot;, &quot;1.11.0&quot;});</span>
+<span class="nc" id="L701">        KNOWN_DEPENDENCIES.put(&quot;com.google.guava&quot;, new String[]{&quot;com.google.guava&quot;, &quot;guava&quot;, &quot;33.0.0-jre&quot;});</span>
+<span class="nc" id="L702">        KNOWN_DEPENDENCIES.put(&quot;org.slf4j&quot;, new String[]{&quot;org.slf4j&quot;, &quot;slf4j-api&quot;, &quot;2.0.9&quot;});</span>
+<span class="nc" id="L703">        KNOWN_DEPENDENCIES.put(&quot;org.junit.jupiter&quot;, new String[]{&quot;org.junit.jupiter&quot;, &quot;junit-jupiter&quot;, &quot;5.10.1&quot;});</span>
+<span class="nc" id="L704">        KNOWN_DEPENDENCIES.put(&quot;org.mockito&quot;, new String[]{&quot;org.mockito&quot;, &quot;mockito-core&quot;, &quot;5.8.0&quot;});</span>
+<span class="nc" id="L705">        KNOWN_DEPENDENCIES.put(&quot;com.fasterxml.jackson&quot;, new String[]{&quot;com.fasterxml.jackson.core&quot;, &quot;jackson-databind&quot;, &quot;2.16.1&quot;});</span>
+<span class="nc" id="L706">        KNOWN_DEPENDENCIES.put(&quot;org.apache.logging.log4j&quot;, new String[]{&quot;org.apache.logging.log4j&quot;, &quot;log4j-core&quot;, &quot;2.22.1&quot;});</span>
+<span class="nc" id="L707">    }</span>
+
+<span class="nc" id="L709">    private final OkHttpClient httpClient = new OkHttpClient.Builder()</span>
+<span class="nc" id="L710">            .connectTimeout(30, TimeUnit.SECONDS)</span>
+<span class="nc" id="L711">            .readTimeout(30, TimeUnit.SECONDS)</span>
+<span class="nc" id="L712">            .build();</span>
+    
+<span class="nc" id="L714">    private final Gson gson = new Gson();</span>
+
+    /**
+     * 扫描目录下所有Java文件的import语句
+     * @param directory 目录路径
+     * @return 所有外部import语句集合
+     */
+    public Set&lt;String&gt; scanAllImports(Path directory) throws IOException {
+<span class="nc" id="L722">        Set&lt;String&gt; allImports = new TreeSet&lt;&gt;();</span>
+        
+<span class="nc" id="L724">        try (Stream&lt;Path&gt; paths = Files.walk(directory)) {</span>
+<span class="nc" id="L725">            List&lt;Path&gt; javaFiles = paths</span>
+<span class="nc" id="L726">                    .filter(Files::isRegularFile)</span>
+<span class="nc" id="L727">                    .filter(p -&gt; p.toString().endsWith(&quot;.java&quot;))</span>
+<span class="nc" id="L728">                    .collect(Collectors.toList());</span>
+            
+<span class="nc bnc" id="L730" title="All 2 branches missed.">            for (Path file : javaFiles) {</span>
+<span class="nc" id="L731">                String content = readFileContent(file);</span>
+<span class="nc" id="L732">                List&lt;String&gt; imports = extractAllImports(content);</span>
+<span class="nc" id="L733">                allImports.addAll(imports);</span>
+<span class="nc" id="L734">            }</span>
+        }
+        
+<span class="nc" id="L737">        return allImports;</span>
+    }
+
+    /**
+     * 提取所有import语句（包括static import）
+     */
+    public List&lt;String&gt; extractAllImports(String content) {
+<span class="nc" id="L744">        List&lt;String&gt; imports = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L745" title="All 2 branches missed.">        if (content == null) return imports;</span>
+        
+        // 匹配普通import和static import
+<span class="nc" id="L748">        Pattern importPattern = Pattern.compile(</span>
+                &quot;^\\s*import\\s+(static\\s+)?([\\w.]+(?:\\.\\*)?);&quot;, 
+                Pattern.MULTILINE
+        );
+<span class="nc" id="L752">        Matcher matcher = importPattern.matcher(content);</span>
+        
+<span class="nc bnc" id="L754" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L755">            String importStmt = matcher.group(2);</span>
+            // 对于static import，提取类的完整路径
+<span class="nc bnc" id="L757" title="All 2 branches missed.">            if (matcher.group(1) != null) {</span>
+                // static import: 去掉最后的方法/字段名
+<span class="nc" id="L759">                int lastDot = importStmt.lastIndexOf('.');</span>
+<span class="nc bnc" id="L760" title="All 2 branches missed.">                if (lastDot &gt; 0) {</span>
+<span class="nc" id="L761">                    String className = importStmt.substring(0, lastDot);</span>
+                    // 再去掉一层获取包名
+<span class="nc" id="L763">                    int classNameDot = className.lastIndexOf('.');</span>
+<span class="nc bnc" id="L764" title="All 2 branches missed.">                    if (classNameDot &gt; 0) {</span>
+<span class="nc" id="L765">                        imports.add(className.substring(0, classNameDot));</span>
+                    }
+                }
+<span class="nc" id="L768">            } else {</span>
+                // 普通import
+<span class="nc" id="L770">                int lastDot = importStmt.lastIndexOf('.');</span>
+<span class="nc bnc" id="L771" title="All 2 branches missed.">                if (lastDot &gt; 0) {</span>
+<span class="nc" id="L772">                    imports.add(importStmt.substring(0, lastDot));</span>
+                }
+            }
+<span class="nc" id="L775">        }</span>
+        
+<span class="nc" id="L777">        return imports;</span>
+    }
+
+    /**
+     * 过滤出外部依赖（排除项目内部包和JDK包）
+     * @param imports import语句集合
+     * @param projectPackages 项目内部包前缀列表
+     * @return 外部依赖包集合
+     */
+    public Set&lt;String&gt; filterExternalDependencies(Set&lt;String&gt; imports, List&lt;String&gt; projectPackages) {
+<span class="nc" id="L787">        Set&lt;String&gt; external = new TreeSet&lt;&gt;();</span>
+        
+<span class="nc bnc" id="L789" title="All 2 branches missed.">        for (String imp : imports) {</span>
+            // 跳过JDK内置包
+<span class="nc bnc" id="L791" title="All 6 branches missed.">            if (imp.startsWith(&quot;java.&quot;) || imp.startsWith(&quot;javax.&quot;) || imp.startsWith(&quot;sun.&quot;)) {</span>
+<span class="nc" id="L792">                continue;</span>
+            }
+            
+            // 跳过项目内部包
+<span class="nc" id="L796">            boolean isInternal = false;</span>
+<span class="nc bnc" id="L797" title="All 2 branches missed.">            for (String projectPkg : projectPackages) {</span>
+<span class="nc bnc" id="L798" title="All 2 branches missed.">                if (imp.startsWith(projectPkg)) {</span>
+<span class="nc" id="L799">                    isInternal = true;</span>
+<span class="nc" id="L800">                    break;</span>
+                }
+<span class="nc" id="L802">            }</span>
+            
+<span class="nc bnc" id="L804" title="All 2 branches missed.">            if (!isInternal) {</span>
+<span class="nc" id="L805">                external.add(imp);</span>
+            }
+<span class="nc" id="L807">        }</span>
+        
+<span class="nc" id="L809">        return external;</span>
+    }
+
+    /**
+     * 从Maven Central搜索依赖坐标
+     * @param packageName 包名
+     * @return Maven依赖信息 [groupId, artifactId, version]，未找到返回null
+     */
+    public String[] searchMavenDependency(String packageName) {
+        // 先检查已知映射
+<span class="nc bnc" id="L819" title="All 2 branches missed.">        for (Map.Entry&lt;String, String[]&gt; entry : KNOWN_DEPENDENCIES.entrySet()) {</span>
+<span class="nc bnc" id="L820" title="All 2 branches missed.">            if (packageName.startsWith(entry.getKey())) {</span>
+<span class="nc" id="L821">                return entry.getValue();</span>
+            }
+<span class="nc" id="L823">        }</span>
+        
+        // 通过Maven Central API搜索
+        try {
+<span class="nc" id="L827">            String searchUrl = &quot;https://search.maven.org/solrsearch/select?q=fc:&quot; + </span>
+<span class="nc" id="L828">                    packageName.replace(&quot;.&quot;, &quot;/&quot;) + &quot;&amp;rows=1&amp;wt=json&quot;;</span>
+            
+<span class="nc" id="L830">            Request request = new Request.Builder()</span>
+<span class="nc" id="L831">                    .url(searchUrl)</span>
+<span class="nc" id="L832">                    .build();</span>
+            
+<span class="nc" id="L834">            try (Response response = httpClient.newCall(request).execute()) {</span>
+<span class="nc bnc" id="L835" title="All 4 branches missed.">                if (response.isSuccessful() &amp;&amp; response.body() != null) {</span>
+<span class="nc" id="L836">                    String json = response.body().string();</span>
+<span class="nc" id="L837">                    JsonObject root = gson.fromJson(json, JsonObject.class);</span>
+<span class="nc" id="L838">                    JsonObject responseObj = root.getAsJsonObject(&quot;response&quot;);</span>
+                    
+<span class="nc bnc" id="L840" title="All 4 branches missed.">                    if (responseObj != null &amp;&amp; responseObj.get(&quot;numFound&quot;).getAsInt() &gt; 0) {</span>
+<span class="nc" id="L841">                        JsonArray docs = responseObj.getAsJsonArray(&quot;docs&quot;);</span>
+<span class="nc bnc" id="L842" title="All 2 branches missed.">                        if (docs.size() &gt; 0) {</span>
+<span class="nc" id="L843">                            JsonObject doc = docs.get(0).getAsJsonObject();</span>
+<span class="nc" id="L844">                            String groupId = doc.get(&quot;g&quot;).getAsString();</span>
+<span class="nc" id="L845">                            String artifactId = doc.get(&quot;a&quot;).getAsString();</span>
+<span class="nc" id="L846">                            String version = doc.get(&quot;latestVersion&quot;).getAsString();</span>
+<span class="nc" id="L847">                            return new String[]{groupId, artifactId, version};</span>
+                        }
+                    }
+                }
+<span class="nc bnc" id="L851" title="All 2 branches missed.">            }</span>
+<span class="nc" id="L852">        } catch (Exception e) {</span>
+<span class="nc" id="L853">            System.err.println(&quot;搜索Maven依赖失败: &quot; + packageName + &quot; - &quot; + e.getMessage());</span>
+<span class="nc" id="L854">        }</span>
+        
+<span class="nc" id="L856">        return null;</span>
+    }
+
+    /**
+     * 分析目录并生成需要添加的Maven依赖
+     * @param directory 源代码目录
+     * @param projectPackages 项目内部包前缀
+     * @return 依赖列表，每个元素为 [groupId, artifactId, version]
+     */
+    public List&lt;String[]&gt; analyzeDependencies(Path directory, List&lt;String&gt; projectPackages) throws IOException {
+<span class="nc" id="L866">        Set&lt;String&gt; allImports = scanAllImports(directory);</span>
+<span class="nc" id="L867">        Set&lt;String&gt; externalDeps = filterExternalDependencies(allImports, projectPackages);</span>
+        
+<span class="nc" id="L869">        Map&lt;String, String[]&gt; uniqueDeps = new LinkedHashMap&lt;&gt;();</span>
+        
+<span class="nc bnc" id="L871" title="All 2 branches missed.">        for (String pkg : externalDeps) {</span>
+<span class="nc" id="L872">            String[] dep = searchMavenDependency(pkg);</span>
+<span class="nc bnc" id="L873" title="All 2 branches missed.">            if (dep != null) {</span>
+<span class="nc" id="L874">                String key = dep[0] + &quot;:&quot; + dep[1];</span>
+<span class="nc bnc" id="L875" title="All 2 branches missed.">                if (!uniqueDeps.containsKey(key)) {</span>
+<span class="nc" id="L876">                    uniqueDeps.put(key, dep);</span>
+<span class="nc" id="L877">                    System.out.println(&quot;找到依赖: &quot; + key + &quot;:&quot; + dep[2]);</span>
+                }
+<span class="nc" id="L879">            } else {</span>
+<span class="nc" id="L880">                System.out.println(&quot;未找到依赖: &quot; + pkg);</span>
+            }
+<span class="nc" id="L882">        }</span>
+        
+<span class="nc" id="L884">        return new ArrayList&lt;&gt;(uniqueDeps.values());</span>
+    }
+
+    /**
+     * 生成Maven依赖XML片段
+     * @param dependencies 依赖列表
+     * @return XML字符串
+     */
+    public String generateDependencyXml(List&lt;String[]&gt; dependencies) {
+<span class="nc" id="L893">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L894">        sb.append(&quot;&lt;!-- 自动生成的依赖 --&gt;\n&quot;);</span>
+        
+<span class="nc bnc" id="L896" title="All 2 branches missed.">        for (String[] dep : dependencies) {</span>
+<span class="nc" id="L897">            sb.append(&quot;&lt;dependency&gt;\n&quot;);</span>
+<span class="nc" id="L898">            sb.append(&quot;    &lt;groupId&gt;&quot;).append(dep[0]).append(&quot;&lt;/groupId&gt;\n&quot;);</span>
+<span class="nc" id="L899">            sb.append(&quot;    &lt;artifactId&gt;&quot;).append(dep[1]).append(&quot;&lt;/artifactId&gt;\n&quot;);</span>
+<span class="nc" id="L900">            sb.append(&quot;    &lt;version&gt;&quot;).append(dep[2]).append(&quot;&lt;/version&gt;\n&quot;);</span>
+<span class="nc" id="L901">            sb.append(&quot;&lt;/dependency&gt;\n&quot;);</span>
+<span class="nc" id="L902">        }</span>
+        
+<span class="nc" id="L904">        return sb.toString();</span>
+    }
+
+    /**
+     * 自动更新pom.xml添加依赖
+     * @param pomPath pom.xml路径
+     * @param dependencies 依赖列表
+     */
+    public void updatePomXml(Path pomPath, List&lt;String[]&gt; dependencies) throws IOException {
+<span class="nc bnc" id="L913" title="All 2 branches missed.">        if (!Files.exists(pomPath)) {</span>
+<span class="nc" id="L914">            throw new IllegalArgumentException(&quot;pom.xml不存在: &quot; + pomPath);</span>
+        }
+        
+<span class="nc" id="L917">        String pomContent = readFileContent(pomPath);</span>
+        
+        // 读取现有依赖，避免重复添加
+<span class="nc" id="L920">        Set&lt;String&gt; existingDeps = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L921">        Pattern depPattern = Pattern.compile(</span>
+                &quot;&lt;groupId&gt;([^&lt;]+)&lt;/groupId&gt;\\s*&lt;artifactId&gt;([^&lt;]+)&lt;/artifactId&gt;&quot;,
+                Pattern.DOTALL
+        );
+<span class="nc" id="L925">        Matcher matcher = depPattern.matcher(pomContent);</span>
+<span class="nc bnc" id="L926" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L927">            existingDeps.add(matcher.group(1) + &quot;:&quot; + matcher.group(2));</span>
+        }
+        
+        // 过滤出需要新增的依赖
+<span class="nc" id="L931">        List&lt;String[]&gt; newDeps = dependencies.stream()</span>
+<span class="nc bnc" id="L932" title="All 2 branches missed.">                .filter(dep -&gt; !existingDeps.contains(dep[0] + &quot;:&quot; + dep[1]))</span>
+<span class="nc" id="L933">                .collect(Collectors.toList());</span>
+        
+<span class="nc bnc" id="L935" title="All 2 branches missed.">        if (newDeps.isEmpty()) {</span>
+<span class="nc" id="L936">            System.out.println(&quot;没有需要新增的依赖&quot;);</span>
+<span class="nc" id="L937">            return;</span>
+        }
+        
+        // 生成新依赖XML
+<span class="nc" id="L941">        StringBuilder newDepsXml = new StringBuilder();</span>
+<span class="nc bnc" id="L942" title="All 2 branches missed.">        for (String[] dep : newDeps) {</span>
+<span class="nc" id="L943">            newDepsXml.append(&quot;        &lt;dependency&gt;\n&quot;);</span>
+<span class="nc" id="L944">            newDepsXml.append(&quot;            &lt;groupId&gt;&quot;).append(dep[0]).append(&quot;&lt;/groupId&gt;\n&quot;);</span>
+<span class="nc" id="L945">            newDepsXml.append(&quot;            &lt;artifactId&gt;&quot;).append(dep[1]).append(&quot;&lt;/artifactId&gt;\n&quot;);</span>
+<span class="nc" id="L946">            newDepsXml.append(&quot;            &lt;version&gt;&quot;).append(dep[2]).append(&quot;&lt;/version&gt;\n&quot;);</span>
+<span class="nc" id="L947">            newDepsXml.append(&quot;        &lt;/dependency&gt;\n&quot;);</span>
+<span class="nc" id="L948">        }</span>
+        
+        // 在&lt;/dependencies&gt;前插入新依赖
+<span class="nc" id="L951">        String updatedPom = pomContent.replace(</span>
+                &quot;&lt;/dependencies&gt;&quot;,
+<span class="nc" id="L953">                newDepsXml.toString() + &quot;    &lt;/dependencies&gt;&quot;</span>
+        );
+        
+        // 备份原文件
+<span class="nc" id="L957">        Path backupPath = pomPath.resolveSibling(&quot;pom.xml.backup&quot;);</span>
+<span class="nc" id="L958">        Files.copy(pomPath, backupPath, StandardCopyOption.REPLACE_EXISTING);</span>
+        
+        // 写入更新后的pom.xml
+<span class="nc" id="L961">        writeFileContent(pomPath, updatedPom);</span>
+        
+<span class="nc" id="L963">        System.out.println(&quot;已添加 &quot; + newDeps.size() + &quot; 个新依赖到pom.xml&quot;);</span>
+<span class="nc" id="L964">        System.out.println(&quot;原文件已备份到: &quot; + backupPath);</span>
+<span class="nc" id="L965">    }</span>
+
+    /**
+     * 一键分析并导入依赖
+     * @param sourceDir 源代码目录
+     * @param pomPath pom.xml路径
+     * @param projectPackages 项目内部包前缀
+     */
+    public void analyzeAndImportDependencies(Path sourceDir, Path pomPath, List&lt;String&gt; projectPackages) 
+            throws IOException {
+<span class="nc" id="L975">        System.out.println(&quot;开始分析目录: &quot; + sourceDir);</span>
+        
+        // 分析依赖
+<span class="nc" id="L978">        List&lt;String[]&gt; dependencies = analyzeDependencies(sourceDir, projectPackages);</span>
+        
+<span class="nc bnc" id="L980" title="All 2 branches missed.">        if (dependencies.isEmpty()) {</span>
+<span class="nc" id="L981">            System.out.println(&quot;未发现需要导入的外部依赖&quot;);</span>
+<span class="nc" id="L982">            return;</span>
+        }
+        
+<span class="nc" id="L985">        System.out.println(&quot;\n发现 &quot; + dependencies.size() + &quot; 个外部依赖:&quot;);</span>
+<span class="nc" id="L986">        System.out.println(generateDependencyXml(dependencies));</span>
+        
+        // 更新pom.xml
+<span class="nc" id="L989">        updatePomXml(pomPath, dependencies);</span>
+<span class="nc" id="L990">    }</span>
+
+    // ==================== 独立清洗方法（不依赖编译） ====================
+    
+    /**
+     * 独立清洗方法 - 直接处理指定目录的Java文件
+     * 即使目录中的代码有语法错误也能正常工作
+     * 
+     * 使用方法：
+     * java -cp &quot;lib/*;target/classes&quot; zju.cst.aces.runner.Cleaning cleanOnly src/main/java/csv
+     * 
+     * @param targetDir 要清洗的目录路径
+     */
+    public static void cleanOnly(String targetDir) {
+<span class="nc" id="L1004">        System.out.println(&quot;=== 独立清洗模式 ===&quot;);</span>
+<span class="nc" id="L1005">        System.out.println(&quot;目标目录: &quot; + targetDir + &quot;\n&quot;);</span>
+        
+<span class="nc" id="L1007">        Path dir = Paths.get(targetDir);</span>
+        
+<span class="nc bnc" id="L1009" title="All 2 branches missed.">        if (!Files.exists(dir)) {</span>
+<span class="nc" id="L1010">            System.err.println(&quot;错误: 目录不存在: &quot; + dir);</span>
+<span class="nc" id="L1011">            return;</span>
+        }
+        
+<span class="nc" id="L1014">        Cleaning cleaning = new Cleaning();</span>
+<span class="nc" id="L1015">        int processedCount = 0;</span>
+<span class="nc" id="L1016">        int modifiedCount = 0;</span>
+        
+<span class="nc" id="L1018">        try (Stream&lt;Path&gt; paths = Files.walk(dir)) {</span>
+<span class="nc" id="L1019">            List&lt;Path&gt; javaFiles = paths</span>
+<span class="nc" id="L1020">                    .filter(Files::isRegularFile)</span>
+<span class="nc" id="L1021">                    .filter(p -&gt; p.toString().endsWith(&quot;.java&quot;))</span>
+<span class="nc" id="L1022">                    .collect(Collectors.toList());</span>
+            
+<span class="nc" id="L1024">            System.out.println(&quot;找到 &quot; + javaFiles.size() + &quot; 个Java文件\n&quot;);</span>
+            
+<span class="nc bnc" id="L1026" title="All 2 branches missed.">            for (Path file : javaFiles) {</span>
+                try {
+<span class="nc" id="L1028">                    System.out.print(&quot;处理: &quot; + file.getFileName() + &quot; ... &quot;);</span>
+                    
+<span class="nc" id="L1030">                    String content = readFileContent(file);</span>
+<span class="nc" id="L1031">                    String original = content;</span>
+                    
+                    // 执行清洗
+<span class="nc" id="L1034">                    String cleaned = cleaning.cleanContent(content);</span>
+                    
+                    // 只有内容变化才写入
+<span class="nc bnc" id="L1037" title="All 2 branches missed.">                    if (!cleaned.equals(original)) {</span>
+<span class="nc" id="L1038">                        writeFileContent(file, cleaned);</span>
+<span class="nc" id="L1039">                        System.out.println(&quot;✓ 已清洗&quot;);</span>
+<span class="nc" id="L1040">                        modifiedCount++;</span>
+                    } else {
+<span class="nc" id="L1042">                        System.out.println(&quot;- 无需修改&quot;);</span>
+                    }
+                    
+<span class="nc" id="L1045">                    processedCount++;</span>
+                    
+<span class="nc" id="L1047">                } catch (Exception e) {</span>
+<span class="nc" id="L1048">                    System.out.println(&quot;✗ 失败: &quot; + e.getMessage());</span>
+<span class="nc" id="L1049">                }</span>
+<span class="nc" id="L1050">            }</span>
+            
+<span class="nc" id="L1052">            System.out.println(&quot;\n=== 清洗完成 ===&quot;);</span>
+<span class="nc" id="L1053">            System.out.println(&quot;处理文件数: &quot; + processedCount);</span>
+<span class="nc" id="L1054">            System.out.println(&quot;修改文件数: &quot; + modifiedCount);</span>
+            
+<span class="nc" id="L1056">        } catch (IOException e) {</span>
+<span class="nc" id="L1057">            System.err.println(&quot;遍历目录失败: &quot; + e.getMessage());</span>
+<span class="nc" id="L1058">            e.printStackTrace();</span>
+<span class="nc" id="L1059">        }</span>
+<span class="nc" id="L1060">    }</span>
+    
+    // ==================== 主方法示例 ====================
+    
+    public static void main(String[] args) {
+        // 支持命令行参数调用独立清洗方法
+<span class="nc bnc" id="L1066" title="All 4 branches missed.">        if (args.length &gt; 0 &amp;&amp; &quot;cleanOnly&quot;.equals(args[0])) {</span>
+<span class="nc bnc" id="L1067" title="All 2 branches missed.">            if (args.length &lt; 2) {</span>
+<span class="nc" id="L1068">                System.err.println(&quot;用法: java Cleaning cleanOnly &lt;目录路径&gt;&quot;);</span>
+<span class="nc" id="L1069">                System.err.println(&quot;示例: java Cleaning cleanOnly src/main/java/lang3&quot;);</span>
+<span class="nc" id="L1070">                return;</span>
+            }
+<span class="nc" id="L1072">            cleanOnly(args[1]);</span>
+<span class="nc" id="L1073">            return;</span>
+        }
+<span class="nc" id="L1075">        Cleaning cleaning = new Cleaning();</span>
+        
+        // 处理多个目录
+<span class="nc" id="L1078">        List&lt;Path&gt; inputDirs = Arrays.asList(</span>
+              //  Paths.get(&quot;src/main/java/help&quot;),
+<span class="nc" id="L1080">                Paths.get(&quot;src/main/java/lang3&quot;)</span>
+        );
+        
+        // 1. 原地清洗所有目录
+<span class="nc bnc" id="L1084" title="All 2 branches missed.">        for (Path inputDir : inputDirs) {</span>
+<span class="nc bnc" id="L1085" title="All 2 branches missed.">            if (Files.exists(inputDir)) {</span>
+                try {
+<span class="nc" id="L1087">                    System.out.println(&quot;开始清洗目录: &quot; + inputDir);</span>
+<span class="nc" id="L1088">                    cleaning.processDirectoryInPlace(inputDir);</span>
+<span class="nc" id="L1089">                    System.out.println(&quot;清洗处理完成: &quot; + inputDir + &quot;\n&quot;);</span>
+<span class="nc" id="L1090">                } catch (IOException e) {</span>
+<span class="nc" id="L1091">                    System.err.println(&quot;清洗处理失败 &quot; + inputDir + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L1092">                }</span>
+            } else {
+<span class="nc" id="L1094">                System.out.println(&quot;目录不存在，跳过: &quot; + inputDir);</span>
+            }
+<span class="nc" id="L1096">        }</span>
+        
+        // 2. 生成复杂度报告到 src/main/java/M/ 目录（按包结构）
+<span class="nc" id="L1099">        Path reportBaseDir = Paths.get(&quot;src/main/java/M&quot;);</span>
+<span class="nc bnc" id="L1100" title="All 2 branches missed.">        for (Path inputDir : inputDirs) {</span>
+<span class="nc bnc" id="L1101" title="All 2 branches missed.">            if (Files.exists(inputDir)) {</span>
+                try {
+<span class="nc" id="L1103">                    System.out.println(&quot;生成复杂度报告: &quot; + inputDir);</span>
+<span class="nc" id="L1104">                    cleaning.generateComplexityReport(inputDir, reportBaseDir);</span>
+<span class="nc" id="L1105">                    System.out.println(&quot;复杂度报告生成完成: &quot; + inputDir + &quot;\n&quot;);</span>
+<span class="nc" id="L1106">                } catch (IOException e) {</span>
+<span class="nc" id="L1107">                    System.err.println(&quot;复杂度报告生成失败 &quot; + inputDir + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L1108">                }</span>
+            }
+<span class="nc" id="L1110">        }</span>
+        
+        // 3. 分析并导入依赖
+<span class="nc" id="L1113">        Path pomPath = Paths.get(&quot;pom.xml&quot;);</span>
+<span class="nc" id="L1114">        List&lt;String&gt; projectPackages = Arrays.asList(</span>
+             /*   &quot;zju.cst.aces&quot;,
+                &quot;TryCommons&quot;,*/
+                &quot;lang3&quot;
+        );
+        
+<span class="nc bnc" id="L1120" title="All 2 branches missed.">        for (Path inputDir : inputDirs) {</span>
+<span class="nc bnc" id="L1121" title="All 2 branches missed.">            if (Files.exists(inputDir)) {</span>
+                try {
+<span class="nc" id="L1123">                    System.out.println(&quot;分析依赖: &quot; + inputDir);</span>
+<span class="nc" id="L1124">                    cleaning.analyzeAndImportDependencies(inputDir, pomPath, projectPackages);</span>
+<span class="nc" id="L1125">                } catch (IOException e) {</span>
+<span class="nc" id="L1126">                    System.err.println(&quot;依赖导入失败 &quot; + inputDir + &quot;: &quot; + e.getMessage());</span>
+<span class="nc" id="L1127">                }</span>
+            }
+<span class="nc" id="L1129">        }</span>
+        
+<span class="nc" id="L1131">        System.out.println(&quot;\n所有处理完成！请执行 mvn install 安装依赖&quot;);</span>
+<span class="nc" id="L1132">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

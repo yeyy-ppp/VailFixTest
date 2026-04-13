@@ -1,0 +1,317 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonTreeReader.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">JsonTreeReader.java</span></div><h1>JsonTreeReader.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import gson.JsonArray;
+import gson.JsonElement;
+import gson.JsonNull;
+import gson.JsonObject;
+import gson.JsonPrimitive;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.MalformedJsonException;
+import java.io.IOException;
+import java.io.Reader;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.Map;
+public final class JsonTreeReader extends JsonReader {
+<span class="fc" id="L17">  private static final Reader UNREADABLE_READER =</span>
+<span class="fc" id="L18">      new Reader() {</span>
+        @Override
+        public int read(char[] buffer, int offset, int count) {
+<span class="nc" id="L21">          throw new AssertionError();</span>
+        }
+        @Override
+        public void close() {
+<span class="nc" id="L25">          throw new AssertionError();</span>
+        }
+      };
+<span class="fc" id="L28">  private static final Object SENTINEL_CLOSED = new Object();</span>
+<span class="fc" id="L29">  private Object[] stack = new Object[32];</span>
+<span class="fc" id="L30">  private int stackSize = 0;</span>
+<span class="fc" id="L31">  private String[] pathNames = new String[32];</span>
+<span class="fc" id="L32">  private int[] pathIndices = new int[32];</span>
+  public JsonTreeReader(JsonElement element) {
+<span class="fc" id="L34">    super(UNREADABLE_READER);</span>
+<span class="fc" id="L35">    push(element);</span>
+<span class="fc" id="L36">  }</span>
+  @Override
+  public void beginArray() throws IOException {
+<span class="fc" id="L39">    expect(JsonToken.BEGIN_ARRAY);</span>
+<span class="fc" id="L40">    JsonArray array = (JsonArray) peekStack();</span>
+<span class="fc" id="L41">    push(array.iterator());</span>
+<span class="fc" id="L42">    pathIndices[stackSize - 1] = 0;</span>
+<span class="fc" id="L43">  }</span>
+  @Override
+  public void endArray() throws IOException {
+<span class="fc" id="L46">    expect(JsonToken.END_ARRAY);</span>
+<span class="fc" id="L47">    popStack();</span>
+<span class="fc" id="L48">    popStack();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    if (stackSize &gt; 0) {</span>
+<span class="fc" id="L50">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L52">  }</span>
+  @Override
+  public void beginObject() throws IOException {
+<span class="fc" id="L55">    expect(JsonToken.BEGIN_OBJECT);</span>
+<span class="fc" id="L56">    JsonObject object = (JsonObject) peekStack();</span>
+<span class="fc" id="L57">    push(object.entrySet().iterator());</span>
+<span class="fc" id="L58">  }</span>
+  @Override
+  public void endObject() throws IOException {
+<span class="fc" id="L61">    expect(JsonToken.END_OBJECT);</span>
+<span class="fc" id="L62">    pathNames[stackSize - 1] = null;</span>
+<span class="fc" id="L63">    popStack();</span>
+<span class="fc" id="L64">    popStack();</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">    if (stackSize &gt; 0) {</span>
+<span class="fc" id="L66">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L68">  }</span>
+  @Override
+  public boolean hasNext() throws IOException {
+<span class="fc" id="L71">    JsonToken token = peek();</span>
+<span class="pc bpc" id="L72" title="3 of 6 branches missed.">    return token != JsonToken.END_OBJECT</span>
+        &amp;&amp; token != JsonToken.END_ARRAY
+        &amp;&amp; token != JsonToken.END_DOCUMENT;
+  }
+  @Override
+  public JsonToken peek() throws IOException {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">    if (stackSize == 0) {</span>
+<span class="fc" id="L79">      return JsonToken.END_DOCUMENT;</span>
+    }
+<span class="fc" id="L81">    Object o = peekStack();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">    if (o instanceof Iterator) {</span>
+<span class="fc" id="L83">      boolean isObject = stack[stackSize - 2] instanceof JsonObject;</span>
+<span class="fc" id="L84">      Iterator&lt;?&gt; iterator = (Iterator&lt;?&gt;) o;</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">      if (iterator.hasNext()) {</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">        if (isObject) {</span>
+<span class="fc" id="L87">          return JsonToken.NAME;</span>
+        } else {
+<span class="fc" id="L89">          push(iterator.next());</span>
+<span class="fc" id="L90">          return peek();</span>
+        }
+      } else {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">        return isObject ? JsonToken.END_OBJECT : JsonToken.END_ARRAY;</span>
+      }
+<span class="fc bfc" id="L95" title="All 2 branches covered.">    } else if (o instanceof JsonObject) {</span>
+<span class="fc" id="L96">      return JsonToken.BEGIN_OBJECT;</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">    } else if (o instanceof JsonArray) {</span>
+<span class="fc" id="L98">      return JsonToken.BEGIN_ARRAY;</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">    } else if (o instanceof JsonPrimitive) {</span>
+<span class="fc" id="L100">      JsonPrimitive primitive = (JsonPrimitive) o;</span>
+<span class="fc bfc" id="L101" title="All 2 branches covered.">      if (primitive.isString()) {</span>
+<span class="fc" id="L102">        return JsonToken.STRING;</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">      } else if (primitive.isBoolean()) {</span>
+<span class="fc" id="L104">        return JsonToken.BOOLEAN;</span>
+<span class="pc bpc" id="L105" title="1 of 2 branches missed.">      } else if (primitive.isNumber()) {</span>
+<span class="fc" id="L106">        return JsonToken.NUMBER;</span>
+      } else {
+<span class="nc" id="L108">        throw new AssertionError();</span>
+      }
+<span class="fc bfc" id="L110" title="All 2 branches covered.">    } else if (o instanceof JsonNull) {</span>
+<span class="fc" id="L111">      return JsonToken.NULL;</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">    } else if (o == SENTINEL_CLOSED) {</span>
+<span class="fc" id="L113">      throw new IllegalStateException(&quot;JsonReader is closed&quot;);</span>
+    } else {
+<span class="nc" id="L115">      throw new MalformedJsonException(</span>
+<span class="nc" id="L116">          &quot;Custom JsonElement subclass &quot; + o.getClass().getName() + &quot; is not supported&quot;);</span>
+    }
+  }
+  private Object peekStack() {
+<span class="fc" id="L120">    return stack[stackSize - 1];</span>
+  }
+  @CanIgnoreReturnValue
+  private Object popStack() {
+<span class="fc" id="L124">    Object result = stack[--stackSize];</span>
+<span class="fc" id="L125">    stack[stackSize] = null;</span>
+<span class="fc" id="L126">    return result;</span>
+  }
+  private void expect(JsonToken expected) throws IOException {
+<span class="pc bpc" id="L129" title="1 of 2 branches missed.">    if (peek() != expected) {</span>
+<span class="nc" id="L130">      throw new IllegalStateException(</span>
+<span class="nc" id="L131">          &quot;Expected &quot; + expected + &quot; but was &quot; + peek() + locationString());</span>
+    }
+<span class="fc" id="L133">  }</span>
+  private String nextName(boolean skipName) throws IOException {
+<span class="fc" id="L135">    expect(JsonToken.NAME);</span>
+<span class="fc" id="L136">    Iterator&lt;?&gt; i = (Iterator&lt;?&gt;) peekStack();</span>
+<span class="fc" id="L137">    Map.Entry&lt;?, ?&gt; entry = (Map.Entry&lt;?, ?&gt;) i.next();</span>
+<span class="fc" id="L138">    String result = (String) entry.getKey();</span>
+<span class="pc bpc" id="L139" title="1 of 2 branches missed.">    pathNames[stackSize - 1] = skipName ? &quot;&lt;skipped&gt;&quot; : result;</span>
+<span class="fc" id="L140">    push(entry.getValue());</span>
+<span class="fc" id="L141">    return result;</span>
+  }
+  @Override
+  public String nextName() throws IOException {
+<span class="fc" id="L145">    return nextName(false);</span>
+  }
+  @Override
+  public String nextString() throws IOException {
+<span class="fc" id="L149">    JsonToken token = peek();</span>
+<span class="pc bpc" id="L150" title="3 of 4 branches missed.">    if (token != JsonToken.STRING &amp;&amp; token != JsonToken.NUMBER) {</span>
+<span class="nc" id="L151">      throw new IllegalStateException(</span>
+<span class="nc" id="L152">          &quot;Expected &quot; + JsonToken.STRING + &quot; but was &quot; + token + locationString());</span>
+    }
+<span class="fc" id="L154">    String result = ((JsonPrimitive) popStack()).getAsString();</span>
+<span class="fc bfc" id="L155" title="All 2 branches covered.">    if (stackSize &gt; 0) {</span>
+<span class="fc" id="L156">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L158">    return result;</span>
+  }
+  @Override
+  public boolean nextBoolean() throws IOException {
+<span class="fc" id="L162">    expect(JsonToken.BOOLEAN);</span>
+<span class="fc" id="L163">    boolean result = ((JsonPrimitive) popStack()).getAsBoolean();</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">    if (stackSize &gt; 0) {</span>
+<span class="nc" id="L165">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L167">    return result;</span>
+  }
+  @Override
+  public void nextNull() throws IOException {
+<span class="fc" id="L171">    expect(JsonToken.NULL);</span>
+<span class="fc" id="L172">    popStack();</span>
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">    if (stackSize &gt; 0) {</span>
+<span class="nc" id="L174">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L176">  }</span>
+  @Override
+  public double nextDouble() throws IOException {
+<span class="fc" id="L179">    JsonToken token = peek();</span>
+<span class="pc bpc" id="L180" title="3 of 4 branches missed.">    if (token != JsonToken.NUMBER &amp;&amp; token != JsonToken.STRING) {</span>
+<span class="nc" id="L181">      throw new IllegalStateException(</span>
+<span class="nc" id="L182">          &quot;Expected &quot; + JsonToken.NUMBER + &quot; but was &quot; + token + locationString());</span>
+    }
+<span class="fc" id="L184">    double result = ((JsonPrimitive) peekStack()).getAsDouble();</span>
+<span class="pc bpc" id="L185" title="2 of 6 branches missed.">    if (!isLenient() &amp;&amp; (Double.isNaN(result) || Double.isInfinite(result))) {</span>
+<span class="fc" id="L186">      throw new MalformedJsonException(&quot;JSON forbids NaN and infinities: &quot; + result);</span>
+    }
+<span class="fc" id="L188">    popStack();</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">    if (stackSize &gt; 0) {</span>
+<span class="nc" id="L190">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L192">    return result;</span>
+  }
+  @Override
+  public long nextLong() throws IOException {
+<span class="fc" id="L196">    JsonToken token = peek();</span>
+<span class="pc bpc" id="L197" title="3 of 4 branches missed.">    if (token != JsonToken.NUMBER &amp;&amp; token != JsonToken.STRING) {</span>
+<span class="nc" id="L198">      throw new IllegalStateException(</span>
+<span class="nc" id="L199">          &quot;Expected &quot; + JsonToken.NUMBER + &quot; but was &quot; + token + locationString());</span>
+    }
+<span class="fc" id="L201">    long result = ((JsonPrimitive) peekStack()).getAsLong();</span>
+<span class="fc" id="L202">    popStack();</span>
+<span class="pc bpc" id="L203" title="1 of 2 branches missed.">    if (stackSize &gt; 0) {</span>
+<span class="nc" id="L204">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L206">    return result;</span>
+  }
+  @Override
+  public int nextInt() throws IOException {
+<span class="fc" id="L210">    JsonToken token = peek();</span>
+<span class="pc bpc" id="L211" title="3 of 4 branches missed.">    if (token != JsonToken.NUMBER &amp;&amp; token != JsonToken.STRING) {</span>
+<span class="nc" id="L212">      throw new IllegalStateException(</span>
+<span class="nc" id="L213">          &quot;Expected &quot; + JsonToken.NUMBER + &quot; but was &quot; + token + locationString());</span>
+    }
+<span class="fc" id="L215">    int result = ((JsonPrimitive) peekStack()).getAsInt();</span>
+<span class="fc" id="L216">    popStack();</span>
+<span class="fc bfc" id="L217" title="All 2 branches covered.">    if (stackSize &gt; 0) {</span>
+<span class="fc" id="L218">      pathIndices[stackSize - 1]++;</span>
+    }
+<span class="fc" id="L220">    return result;</span>
+  }
+  JsonElement nextJsonElement() throws IOException {
+<span class="fc" id="L223">    JsonToken peeked = peek();</span>
+<span class="pc bpc" id="L224" title="4 of 8 branches missed.">    if (peeked == JsonToken.NAME</span>
+        || peeked == JsonToken.END_ARRAY
+        || peeked == JsonToken.END_OBJECT
+        || peeked == JsonToken.END_DOCUMENT) {
+<span class="nc" id="L228">      throw new IllegalStateException(&quot;Unexpected &quot; + peeked + &quot; when reading a JsonElement.&quot;);</span>
+    }
+<span class="fc" id="L230">    JsonElement element = (JsonElement) peekStack();</span>
+<span class="fc" id="L231">    skipValue();</span>
+<span class="fc" id="L232">    return element;</span>
+  }
+  @Override
+  public void close() throws IOException {
+<span class="fc" id="L236">    stack = new Object[] {SENTINEL_CLOSED};</span>
+<span class="fc" id="L237">    stackSize = 1;</span>
+<span class="fc" id="L238">  }</span>
+  @Override
+  public void skipValue() throws IOException {
+<span class="fc" id="L241">    JsonToken peeked = peek();</span>
+<span class="pc bpc" id="L242" title="4 of 5 branches missed.">    switch (peeked) {</span>
+      case NAME:
+        @SuppressWarnings(&quot;unused&quot;)
+<span class="nc" id="L245">        String unused = nextName(true);</span>
+<span class="nc" id="L246">        break;</span>
+      case END_ARRAY:
+<span class="nc" id="L248">        endArray();</span>
+<span class="nc" id="L249">        break;</span>
+      case END_OBJECT:
+<span class="nc" id="L251">        endObject();</span>
+<span class="nc" id="L252">        break;</span>
+      case END_DOCUMENT:
+<span class="nc" id="L254">        break;</span>
+      default:
+<span class="fc" id="L256">        popStack();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        if (stackSize &gt; 0) {</span>
+<span class="fc" id="L258">          pathIndices[stackSize - 1]++;</span>
+        }
+        break;
+    }
+<span class="fc" id="L262">  }</span>
+  @Override
+  public String toString() {
+<span class="fc" id="L265">    return getClass().getSimpleName() + locationString();</span>
+  }
+  public void promoteNameToValue() throws IOException {
+<span class="fc" id="L268">    expect(JsonToken.NAME);</span>
+<span class="fc" id="L269">    Iterator&lt;?&gt; i = (Iterator&lt;?&gt;) peekStack();</span>
+<span class="fc" id="L270">    Map.Entry&lt;?, ?&gt; entry = (Map.Entry&lt;?, ?&gt;) i.next();</span>
+<span class="fc" id="L271">    push(entry.getValue());</span>
+<span class="fc" id="L272">    push(new JsonPrimitive((String) entry.getKey()));</span>
+<span class="fc" id="L273">  }</span>
+  private void push(Object newTop) {
+<span class="fc bfc" id="L275" title="All 2 branches covered.">    if (stackSize == stack.length) {</span>
+<span class="fc" id="L276">      int newLength = stackSize * 2;</span>
+<span class="fc" id="L277">      stack = Arrays.copyOf(stack, newLength);</span>
+<span class="fc" id="L278">      pathIndices = Arrays.copyOf(pathIndices, newLength);</span>
+<span class="fc" id="L279">      pathNames = Arrays.copyOf(pathNames, newLength);</span>
+    }
+<span class="fc" id="L281">    stack[stackSize++] = newTop;</span>
+<span class="fc" id="L282">  }</span>
+  private String getPath(boolean usePreviousPath) {
+<span class="fc" id="L284">    StringBuilder result = new StringBuilder().append('$');</span>
+<span class="fc bfc" id="L285" title="All 2 branches covered.">    for (int i = 0; i &lt; stackSize; i++) {</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">      if (stack[i] instanceof JsonArray) {</span>
+<span class="nc bnc" id="L287" title="All 4 branches missed.">        if (++i &lt; stackSize &amp;&amp; stack[i] instanceof Iterator) {</span>
+<span class="nc" id="L288">          int pathIndex = pathIndices[i];</span>
+<span class="nc bnc" id="L289" title="All 8 branches missed.">          if (usePreviousPath &amp;&amp; pathIndex &gt; 0 &amp;&amp; (i == stackSize - 1 || i == stackSize - 2)) {</span>
+<span class="nc" id="L290">            pathIndex--;</span>
+          }
+<span class="nc" id="L292">          result.append('[').append(pathIndex).append(']');</span>
+<span class="nc" id="L293">        }</span>
+<span class="pc bpc" id="L294" title="1 of 2 branches missed.">      } else if (stack[i] instanceof JsonObject) {</span>
+<span class="pc bpc" id="L295" title="1 of 4 branches missed.">        if (++i &lt; stackSize &amp;&amp; stack[i] instanceof Iterator) {</span>
+<span class="fc" id="L296">          result.append('.');</span>
+<span class="fc bfc" id="L297" title="All 2 branches covered.">          if (pathNames[i] != null) {</span>
+<span class="fc" id="L298">            result.append(pathNames[i]);</span>
+          }
+        }
+      }
+    }
+<span class="fc" id="L303">    return result.toString();</span>
+  }
+  @Override
+  public String getPath() {
+<span class="fc" id="L307">    return getPath(false);</span>
+  }
+  @Override
+  public String getPreviousPath() {
+<span class="fc" id="L311">    return getPath(true);</span>
+  }
+  private String locationString() {
+<span class="fc" id="L314">    return &quot; at path &quot; + getPath();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

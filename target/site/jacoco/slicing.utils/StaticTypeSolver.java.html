@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StaticTypeSolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.utils</a> &gt; <span class="el_source">StaticTypeSolver.java</span></div><h1>StaticTypeSolver.java</h1><pre class="source lang-java linenums">package slicing.utils;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.symbolsolver.JavaSymbolSolver;
+import com.github.javaparser.symbolsolver.model.resolution.TypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.CombinedTypeSolver;
+import com.github.javaparser.symbolsolver.resolution.typesolvers.ReflectionTypeSolver;
+
+/** A static class whose only purpose is storing a type solver for conversions
+ *  of ResolvedTypeDeclaration objects into ResolvedType ones. */
+<span class="nc" id="L11">public class StaticTypeSolver {</span>
+<span class="nc" id="L12">    protected static final CombinedTypeSolver combinedTypeSolver = new CombinedTypeSolver();</span>
+
+    /** Whether we've added the JRE type solver or not. */
+<span class="nc" id="L15">    protected static boolean typeSolverHasJRE = false;</span>
+
+    static {
+<span class="nc" id="L18">        StaticJavaParser.getConfiguration().setSymbolResolver(new JavaSymbolSolver(combinedTypeSolver));</span>
+<span class="nc" id="L19">    }</span>
+
+    /** Append a type solver (typically a {@link com.github.javaparser.symbolsolver.resolution.typesolvers.JavaParserTypeSolver JavaParserTypeSolver}. */
+    public static void addTypeSolver(TypeSolver typeSolver) {
+<span class="nc" id="L23">        combinedTypeSolver.add(typeSolver);</span>
+<span class="nc" id="L24">    }</span>
+
+    /** Append a {@link ReflectionTypeSolver} to the type solver, JRE only.
+     *  This operation can only be performed once, subsequent invocations will
+     *  be discarded. */
+    public static void addTypeSolverJRE() {
+<span class="nc" id="L30">        addTypeSolverJRE(true);</span>
+<span class="nc" id="L31">    }</span>
+
+    /** Append a {@link ReflectionTypeSolver} to the type solver.
+     *  This operation can only be performed once, subsequent invocations will
+     *  be discarded.  */
+    public static void addTypeSolverJRE(boolean jreOnly) {
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (!typeSolverHasJRE) {</span>
+<span class="nc" id="L38">            combinedTypeSolver.add(new ReflectionTypeSolver(true));</span>
+<span class="nc" id="L39">            typeSolverHasJRE = true;</span>
+        }
+<span class="nc" id="L41">    }</span>
+
+    /** Obtain the type solver. This resulting object should not be manually modified. */
+    protected static TypeSolver getTypeSolver() {
+<span class="nc" id="L45">        return combinedTypeSolver;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

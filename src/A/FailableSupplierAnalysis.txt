@@ -1,0 +1,15 @@
+```
+包路径：lang3.function
+类名：FailableSupplier
+父类：无
+依赖类：无
+---
+序号：1
+方法名：nul()
+返回类型：FailableSupplier<T, E>
+功能描述：返回一个预定义的NUL实例
+序号：2
+方法名：get()
+返回类型：T
+功能描述：获取一个结果或抛出异常
+```

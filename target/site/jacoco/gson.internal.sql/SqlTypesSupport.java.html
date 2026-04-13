@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SqlTypesSupport.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.sql</a> &gt; <span class="el_source">SqlTypesSupport.java</span></div><h1>SqlTypesSupport.java</h1><pre class="source lang-java linenums">package gson.internal.sql;
+import gson.TypeAdapterFactory;
+import gson.internal.bind.DefaultDateTypeAdapter.DateType;
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+@SuppressWarnings(&quot;JavaUtilDate&quot;)
+public final class SqlTypesSupport {
+  public static final boolean SUPPORTS_SQL_TYPES;
+  public static final DateType&lt;? extends Date&gt; DATE_DATE_TYPE;
+  public static final DateType&lt;? extends Date&gt; TIMESTAMP_DATE_TYPE;
+  public static final TypeAdapterFactory DATE_FACTORY;
+  public static final TypeAdapterFactory TIME_FACTORY;
+  public static final TypeAdapterFactory TIMESTAMP_FACTORY;
+  public static final List&lt;TypeAdapterFactory&gt; SQL_TYPE_FACTORIES;
+  static {
+    boolean sqlTypesSupport;
+    try {
+<span class="fc" id="L21">      Class.forName(&quot;java.sql.Date&quot;);</span>
+<span class="fc" id="L22">      sqlTypesSupport = true;</span>
+<span class="nc" id="L23">    } catch (ClassNotFoundException classNotFoundException) {</span>
+<span class="nc" id="L24">      sqlTypesSupport = false;</span>
+<span class="fc" id="L25">    }</span>
+<span class="fc" id="L26">    SUPPORTS_SQL_TYPES = sqlTypesSupport;</span>
+<span class="pc bpc" id="L27" title="1 of 2 branches missed.">    if (SUPPORTS_SQL_TYPES) {</span>
+<span class="fc" id="L28">      DATE_DATE_TYPE =</span>
+<span class="fc" id="L29">          new DateType&lt;java.sql.Date&gt;(java.sql.Date.class) {</span>
+            @Override
+            protected java.sql.Date deserialize(Date date) {
+<span class="nc" id="L32">              return new java.sql.Date(date.getTime());</span>
+            }
+          };
+<span class="fc" id="L35">      TIMESTAMP_DATE_TYPE =</span>
+<span class="fc" id="L36">          new DateType&lt;Timestamp&gt;(Timestamp.class) {</span>
+            @Override
+            protected Timestamp deserialize(Date date) {
+<span class="nc" id="L39">              return new Timestamp(date.getTime());</span>
+            }
+          };
+<span class="fc" id="L42">      DATE_FACTORY = SqlDateTypeAdapter.FACTORY;</span>
+<span class="fc" id="L43">      TIME_FACTORY = SqlTimeTypeAdapter.FACTORY;</span>
+<span class="fc" id="L44">      TIMESTAMP_FACTORY = SqlTimestampTypeAdapter.FACTORY;</span>
+<span class="fc" id="L45">      SQL_TYPE_FACTORIES =</span>
+<span class="fc" id="L46">          Collections.unmodifiableList(</span>
+<span class="fc" id="L47">              Arrays.asList(TIME_FACTORY, DATE_FACTORY, TIMESTAMP_FACTORY));</span>
+    } else {
+<span class="nc" id="L49">      DATE_DATE_TYPE = null;</span>
+<span class="nc" id="L50">      TIMESTAMP_DATE_TYPE = null;</span>
+<span class="nc" id="L51">      DATE_FACTORY = null;</span>
+<span class="nc" id="L52">      TIME_FACTORY = null;</span>
+<span class="nc" id="L53">      TIMESTAMP_FACTORY = null;</span>
+<span class="nc" id="L54">      SQL_TYPE_FACTORIES = Collections.emptyList();</span>
+    }
+<span class="fc" id="L56">  }</span>
+  private SqlTypesSupport() {}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,12 @@
+[2026-01-23 20:07:26] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, JsonAdapterAnnotationTypeAdapterFactory, create, getTypeAdapter, isClassJsonAdapterFactory
+  未覆盖: getAnnotation, createAdapter, putFactoryAndGetCurrent
+
+[2026-01-23 20:12:27] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: create, JsonAdapterAnnotationTypeAdapterFactory, getAnnotation, create, createAdapter, putFactoryAndGetCurrent, getTypeAdapter, isClassJsonAdapterFactory
+  未覆盖: 全部覆盖
+

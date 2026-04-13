@@ -1,0 +1,385 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CodeCoverageAnalyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.coverage</a> &gt; <span class="el_source">CodeCoverageAnalyzer.java</span></div><h1>CodeCoverageAnalyzer.java</h1><pre class="source lang-java linenums">package zju.cst.aces.coverage;
+
+import org.jacoco.core.analysis.*;
+import org.jacoco.core.data.ExecutionDataStore;
+import org.jacoco.core.data.SessionInfoStore;
+import org.jacoco.core.instr.Instrumenter;
+import org.jacoco.core.runtime.IRuntime;
+import org.jacoco.core.runtime.LoggerRuntime;
+import org.jacoco.core.runtime.RuntimeData;
+import org.junit.platform.engine.discovery.DiscoverySelectors;
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import org.objectweb.asm.Type;
+
+import javax.tools.*;
+import java.io.*;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.*;
+
+/**
+ * 调用analyzeCoverage方法，传入测试类的源代码、目标类名和方法签名，即可获取方法的覆盖率信息
+ */
+<span class="nc" id="L31">public class CodeCoverageAnalyzer {</span>
+
+    public static class MemoryClassLoader extends URLClassLoader {
+<span class="nc" id="L34">        private final Map&lt;String, byte[]&gt; definitions = new HashMap&lt;&gt;();</span>
+
+        public MemoryClassLoader(URL[] urls, ClassLoader parent) {
+<span class="nc" id="L37">            super(urls, parent); // 显式传递父类加载器</span>
+<span class="nc" id="L38">        }</span>
+
+        public void addDefinition(final String name, final byte[] bytes) {
+<span class="nc" id="L41">            definitions.put(name, bytes);</span>
+<span class="nc" id="L42">        }</span>
+
+        @Override
+        public Class&lt;?&gt; loadClass(String name) throws ClassNotFoundException {
+            // 优先由父类加载JUnit相关类
+<span class="nc bnc" id="L47" title="All 6 branches missed.">            if (name.startsWith(&quot;org.junit&quot;) || name.startsWith(&quot;org.opentest4j&quot;) || name.startsWith(&quot;org.apiguardian&quot;)) {</span>
+<span class="nc" id="L48">                return super.loadClass(name);</span>
+            }
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (definitions.containsKey(name)) {</span>
+<span class="nc" id="L51">                return findClass(name);</span>
+            }
+<span class="nc" id="L53">            return super.loadClass(name);</span>
+        }
+
+        @Override
+        protected Class&lt;?&gt; findClass(final String name) throws ClassNotFoundException {
+<span class="nc" id="L58">            byte[] bytes = definitions.get(name);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            if (bytes != null) {</span>
+<span class="nc" id="L60">                return defineClass(name, bytes, 0, bytes.length);</span>
+            }
+<span class="nc" id="L62">            return super.findClass(name);</span>
+        }
+    }
+
+    /**
+     *  分析测试类的覆盖率
+     * @param testSourceCode  测试类的源代码
+     * @param targetTestName 测试类的全限定名
+     * @param targetClassName 目标类的全类名
+     * @param methodSignature 目标方法签名
+     * @param targetClassCompiledDir 目标类的编译目录
+     * @param targetClassSourceDir 目标类相关的源代码目录
+     * @param dependencies 依赖的jar包路径
+     * @return
+     * @throws Exception
+     */
+    public Map&lt;String, Object&gt; analyzeCoverage(String testSourceCode, String targetTestName, String targetClassName, String methodSignature, String targetClassCompiledDir, String targetClassSourceDir, List&lt;String&gt; dependencies) throws Exception {
+
+<span class="nc" id="L80">        final IRuntime runtime = new LoggerRuntime();</span>
+<span class="nc" id="L81">        final Instrumenter instr = new Instrumenter(runtime);</span>
+
+<span class="nc" id="L83">        byte[] instrumentedTest = compileAndInstrument(testSourceCode, targetTestName, instr, targetClassCompiledDir, dependencies);</span>
+<span class="nc" id="L84">        byte[] instrumentedClass = instrumentTargetClass(targetClassName, targetClassCompiledDir, instr);</span>
+
+<span class="nc" id="L86">        final RuntimeData data = new RuntimeData();</span>
+<span class="nc" id="L87">        runtime.startup(data);</span>
+
+<span class="nc" id="L89">        URL[] urls = dependencies.stream().map(File::new).map(file -&gt; {</span>
+            try {
+<span class="nc" id="L91">                return file.toURI().toURL();</span>
+<span class="nc" id="L92">            } catch (IOException e) {</span>
+<span class="nc" id="L93">                throw new RuntimeException(e);</span>
+            }
+<span class="nc" id="L95">        }).toArray(URL[]::new);</span>
+        // 确保目标类编译目录在依赖列表中
+
+    // 修改此行代码，传入当前上下文类加载器作为父类
+<span class="nc" id="L99">        MemoryClassLoader memoryClassLoader = new MemoryClassLoader(urls, Thread.currentThread().getContextClassLoader());</span>
+<span class="nc" id="L100">        memoryClassLoader.addDefinition(targetTestName, instrumentedTest);</span>
+<span class="nc" id="L101">        memoryClassLoader.addDefinition(targetClassName, instrumentedClass);</span>
+
+<span class="nc" id="L103">        Class&lt;?&gt; testClass = memoryClassLoader.loadClass(targetTestName);</span>
+
+<span class="nc" id="L105">        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()</span>
+<span class="nc" id="L106">                .selectors(DiscoverySelectors.selectClass(testClass))</span>
+<span class="nc" id="L107">                .build();</span>
+        // 不需要显式创建 TestEngine，使用默认配置即可
+<span class="nc" id="L109">        Launcher launcher = LauncherFactory.create();  // 默认会自动注册 JUnit Jupiter 引擎</span>
+<span class="nc" id="L110">        SummaryGeneratingListener listener = new SummaryGeneratingListener();</span>
+<span class="nc" id="L111">        launcher.registerTestExecutionListeners(listener);</span>
+<span class="nc" id="L112">        launcher.execute(request);</span>
+
+
+<span class="nc" id="L115">        TestExecutionSummary summary = listener.getSummary();</span>
+<span class="nc" id="L116">        summary.printTo(new PrintWriter(System.out));</span>
+
+<span class="nc" id="L118">        final ExecutionDataStore executionData = new ExecutionDataStore();</span>
+<span class="nc" id="L119">        final SessionInfoStore sessionInfos = new SessionInfoStore();</span>
+<span class="nc" id="L120">        data.collect(executionData, sessionInfos, false);</span>
+<span class="nc" id="L121">        runtime.shutdown();</span>
+
+<span class="nc" id="L123">        final CoverageBuilder coverageBuilder = new CoverageBuilder();</span>
+<span class="nc" id="L124">        final Analyzer analyzer = new Analyzer(executionData, coverageBuilder);</span>
+<span class="nc" id="L125">        InputStream originalClass = getTargetClass(targetClassName, targetClassCompiledDir);</span>
+<span class="nc" id="L126">        analyzer.analyzeClass(originalClass, targetClassName);</span>
+<span class="nc" id="L127">        originalClass.close();</span>
+
+<span class="nc" id="L129">        return getMethodCoverageInfo(coverageBuilder, targetClassName, methodSignature, targetClassSourceDir);</span>
+    }
+
+    private byte[] compileAndInstrument(String sourceCode, String className, Instrumenter instr, String targetClassCompiledDir, List&lt;String&gt; dependencies) throws IOException {
+<span class="nc" id="L133">        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();</span>
+<span class="nc" id="L134">        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);</span>
+
+<span class="nc" id="L136">        File outputDir = new File(&quot;compiled_classes&quot;);</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        if (!outputDir.exists()) {</span>
+<span class="nc" id="L138">            outputDir.mkdirs();</span>
+        }
+
+<span class="nc" id="L141">        List&lt;File&gt; classPath = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L142">        classPath.add(new File(targetClassCompiledDir));</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        for (String dependency : dependencies) {</span>
+<span class="nc" id="L144">            classPath.add(new File(dependency));</span>
+<span class="nc" id="L145">        }</span>
+<span class="nc" id="L146">        fileManager.setLocation(StandardLocation.CLASS_OUTPUT,Arrays.asList(outputDir));</span>
+<span class="nc" id="L147">        fileManager.setLocation(StandardLocation.CLASS_PATH, classPath);</span>
+
+<span class="nc" id="L149">        JavaFileObject file = new JavaSourceFromString(className, sourceCode);</span>
+<span class="nc" id="L150">        Iterable&lt;? extends JavaFileObject&gt; compilationUnits =Arrays.asList(file);</span>
+<span class="nc" id="L151">        compiler.getTask(null, fileManager, null, null, null, compilationUnits).call();</span>
+
+<span class="nc" id="L153">        File compiledFile = new File(outputDir, className.replace('.', '/') + &quot;.class&quot;);</span>
+<span class="nc" id="L154">        InputStream compiledClass = new FileInputStream(compiledFile);</span>
+<span class="nc" id="L155">        byte[] instrumentedClass = instr.instrument(compiledClass, className);</span>
+<span class="nc" id="L156">        compiledClass.close();</span>
+        // 删除编译后的 .class 文件
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (compiledFile.exists()) {</span>
+<span class="nc" id="L159">            compiledFile.delete();</span>
+        }
+<span class="nc" id="L161">        return instrumentedClass;</span>
+    }
+
+    private byte[] instrumentTargetClass(final String targetClassName, final String targetClassCompiledDir, Instrumenter instr) throws IOException {
+<span class="nc" id="L165">        File compiledFile = new File(targetClassCompiledDir, targetClassName.replace('.', '/') + &quot;.class&quot;);</span>
+<span class="nc" id="L166">        InputStream compiledClass = new FileInputStream(compiledFile);</span>
+<span class="nc" id="L167">        byte[] instrumentedClass = instr.instrument(compiledClass, targetClassName);</span>
+<span class="nc" id="L168">        compiledClass.close();</span>
+<span class="nc" id="L169">        return instrumentedClass;</span>
+    }
+
+    private InputStream getTargetClass(final String name, final String compiledDir) throws IOException {
+<span class="nc" id="L173">        File compiledFile = new File(compiledDir, name.replace('.', '/') + &quot;.class&quot;);</span>
+<span class="nc" id="L174">        return new FileInputStream(compiledFile);</span>
+    }
+
+    private Map&lt;String, Object&gt; getMethodCoverageInfo(final CoverageBuilder coverageBuilder, final String className, final String methodSignature, final String sourceDir) throws IOException {
+<span class="nc" id="L178">        Map&lt;String, Object&gt; resultMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L179">        List&lt;Integer&gt; uncoveredLines = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L180">        StringBuilder methodCode = new StringBuilder();</span>
+
+<span class="nc bnc" id="L182" title="All 2 branches missed.">        for (final IClassCoverage cc : coverageBuilder.getClasses()) {</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            if (cc.getName().replace(&quot;/&quot;, &quot;.&quot;).equals(className)) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                for (IMethodCoverage mc : cc.getMethods()) {</span>
+<span class="nc" id="L185">                    String methodSig = getMethodSignature(mc.getName(), mc.getDesc());</span>
+                    //方法签名，对应class-info的&quot;methodSignature&quot;
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                    if (methodSig.equals(methodSignature)) {</span>
+<span class="nc" id="L188">                        resultMap.put(&quot;instructionCoverage&quot;, getCoveragePercentage(mc.getInstructionCounter()));</span>
+<span class="nc" id="L189">                        resultMap.put(&quot;branchCoverage&quot;, getCoveragePercentage(mc.getBranchCounter()));</span>
+<span class="nc" id="L190">                        resultMap.put(&quot;lineCoverage&quot;, getCoveragePercentage(mc.getLineCounter()));</span>
+
+<span class="nc" id="L192">                        String sourceFileName = sourceDir + File.separator + className.replace('.', File.separatorChar) + &quot;.java&quot;;</span>
+<span class="nc" id="L193">                        List&lt;String&gt; sourceLines = Files.readAllLines(Paths.get(sourceFileName));</span>
+
+<span class="nc" id="L195">                        boolean insideMethod = false;</span>
+<span class="nc" id="L196">                        int openBraces = 0;</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                        for (int i = 0; i &lt; sourceLines.size(); i++) {</span>
+<span class="nc" id="L198">                            String line = sourceLines.get(i);</span>
+<span class="nc bnc" id="L199" title="All 4 branches missed.">                            if (mc.getFirstLine() - 2 &lt;= i + 1 &amp;&amp; i + 1 &lt;= mc.getLastLine() + 2) {</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                                if (mc.getLine(i + 1).getStatus() == ICounter.NOT_COVERED) {</span>
+<span class="nc" id="L201">                                    methodCode.append(String.format(&quot;%s //--- Uncovered line: %d ---%n&quot;, line, i + 1));</span>
+<span class="nc" id="L202">                                    uncoveredLines.add(i + 1);</span>
+                                } else {
+<span class="nc" id="L204">                                    methodCode.append(line).append(&quot;\n&quot;);</span>
+                                }
+                            }
+                        }
+                    }
+<span class="nc" id="L209">                }</span>
+            }
+<span class="nc" id="L211">        }</span>
+
+<span class="nc" id="L213">        resultMap.put(&quot;methodCode&quot;, methodCode.toString());</span>
+<span class="nc" id="L214">        resultMap.put(&quot;uncoveredLines&quot;, formatUncoveredLines(uncoveredLines));</span>
+<span class="nc" id="L215">        return resultMap;</span>
+    }
+
+    private double getCoveragePercentage(ICounter counter) {
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        if (counter.getTotalCount() == 0) {</span>
+<span class="nc" id="L220">            return 100.0;</span>
+        }
+<span class="nc" id="L222">        return 100.0 * counter.getCoveredCount() / counter.getTotalCount();</span>
+    }
+
+    private String getMethodSignature(String methodName, String methodDesc) {
+<span class="nc" id="L226">        return methodName + parseMethodDescriptor(methodDesc);</span>
+    }
+
+    public static String parseMethodDescriptor(String descriptor) {
+<span class="nc" id="L230">        Type[] argumentTypes = Type.getArgumentTypes(descriptor);</span>
+<span class="nc" id="L231">        StringBuilder result = new StringBuilder(&quot;(&quot;);</span>
+<span class="nc bnc" id="L232" title="All 2 branches missed.">        for (int i = 0; i &lt; argumentTypes.length; i++) {</span>
+<span class="nc" id="L233">            Type argumentType = argumentTypes[i];</span>
+<span class="nc" id="L234">            String typeName = argumentType.getClassName();</span>
+<span class="nc" id="L235">            int lastDotIndex = typeName.lastIndexOf('.');</span>
+<span class="nc bnc" id="L236" title="All 2 branches missed.">            if (lastDotIndex != -1) {</span>
+<span class="nc" id="L237">                typeName = typeName.substring(lastDotIndex + 1);</span>
+            }
+<span class="nc" id="L239">            result.append(typeName);</span>
+
+<span class="nc bnc" id="L241" title="All 2 branches missed.">            if (i &lt; argumentTypes.length - 1) {</span>
+<span class="nc" id="L242">                result.append(&quot;, &quot;);</span>
+            }
+        }
+
+<span class="nc" id="L246">        result.append(&quot;)&quot;);</span>
+<span class="nc" id="L247">        return result.toString();</span>
+    }
+
+    private int countOccurrences(String haystack, char needle) {
+<span class="nc" id="L251">        int count = 0;</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        for (char c : haystack.toCharArray()) {</span>
+<span class="nc bnc" id="L253" title="All 2 branches missed.">            if (c == needle) {</span>
+<span class="nc" id="L254">                count++;</span>
+            }
+        }
+<span class="nc" id="L257">        return count;</span>
+    }
+
+    private List&lt;String&gt; formatUncoveredLines(List&lt;Integer&gt; uncoveredLines) {
+<span class="nc" id="L261">        List&lt;String&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">        if (uncoveredLines.isEmpty()) {</span>
+<span class="nc" id="L263">            return result;</span>
+        }
+<span class="nc" id="L265">        int start = uncoveredLines.get(0);</span>
+<span class="nc" id="L266">        int end = start;</span>
+
+<span class="nc bnc" id="L268" title="All 2 branches missed.">        for (int i = 1; i &lt; uncoveredLines.size(); i++) {</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">            if (uncoveredLines.get(i) == end + 1) {</span>
+<span class="nc" id="L270">                end = uncoveredLines.get(i);</span>
+            } else {
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                if (start == end) {</span>
+<span class="nc" id="L273">                    result.add(String.valueOf(start));</span>
+                } else {
+<span class="nc" id="L275">                    result.add(start + &quot;-&quot; + end);</span>
+                }
+<span class="nc" id="L277">                start = uncoveredLines.get(i);</span>
+<span class="nc" id="L278">                end = start;</span>
+            }
+        }
+
+<span class="nc bnc" id="L282" title="All 2 branches missed.">        if (start == end) {</span>
+<span class="nc" id="L283">            result.add(String.valueOf(start));</span>
+        } else {
+<span class="nc" id="L285">            result.add(start + &quot;-&quot; + end);</span>
+        }
+
+<span class="nc" id="L288">        return result;</span>
+    }
+
+    public static void main(final String[] args) throws Exception {
+
+<span class="nc" id="L293">        String testSourceCode = &quot;/*\n&quot; +</span>
+                &quot; * This file was automatically generated by SmartUt\n&quot; +
+                &quot; * Tue Nov 26 16:13:43 GMT 2024\n&quot; +
+                &quot; */\n&quot; +
+                &quot;\n&quot; +
+                &quot;package myTest;\n&quot; +
+                &quot;\n&quot; +
+                &quot;import org.junit.Test;\n&quot; +
+                &quot;import static org.junit.Assert.*;\n&quot; +
+                &quot;public class TeplaB_SSTest  {\n&quot; +
+                &quot;\n&quot; +
+                &quot;    @Test(timeout = 4000)\n&quot; +
+                &quot;    public void test_getA_0()  throws Throwable  {\n&quot; +
+                &quot;        TeplaB teplaB0 = new TeplaB();\n&quot; +
+                &quot;        teplaB0.init();\n&quot; +
+                &quot;        int int0 = teplaB0.init();\n&quot; +
+                &quot;        teplaB0.teplaB();\n&quot; +
+                &quot;        boolean boolean0 = teplaB0.isTrue((-135));\n&quot; +
+                &quot;        assertFalse(boolean0);\n&quot; +
+                &quot;\n&quot; +
+                &quot;        boolean boolean1 = teplaB0.isTrue(1);\n&quot; +
+                &quot;        assertTrue(boolean1);\n&quot; +
+                &quot;\n&quot; +
+                &quot;        int int1 = teplaB0.getA();\n&quot; +
+                &quot;        assertFalse(int1 == int0);\n&quot; +
+                &quot;    }\n&quot; +
+                &quot;}\n&quot; +
+                &quot;\n&quot;;
+
+<span class="nc" id="L322">        String targetClassName = &quot;myTest.Tepla&quot;;</span>
+<span class="nc" id="L323">        String methodSignature = &quot;calculate()&quot;;</span>
+<span class="nc" id="L324">        String targetClassCompiledDir = &quot;D:\\ZJUtest\\target\\classes&quot;; // 目标类的编译目录</span>
+<span class="nc" id="L325">        String targetClassSourceDir = &quot;D:\\ZJUtest\\src\\main\\java&quot;; // 目标类的源代码目录</span>
+
+<span class="nc" id="L327">        List&lt;String&gt; dependencies = Arrays.asList(</span>
+                &quot;D:\\ZJUtest\\target\\ZJUtest-1.0-SNAPSHOT.jar&quot;,
+                &quot;D:\\ZJUtest\\target\\classes&quot;,
+                &quot;D:\\maven-repository\\org\\apiguardian\\apiguardian-api\\1.1.2\\apiguardian-api-1.1.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\jacoco\\org.jacoco.core\\0.8.8\\org.jacoco.core-0.8.8.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\platform\\junit-platform-suite-commons\\1.9.2\\junit-platform-suite-commons-1.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\vintage\\junit-vintage-engine\\5.9.2\\junit-vintage-engine-5.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\opentest4j\\opentest4j\\1.2.0\\opentest4j-1.2.0.jar&quot;,
+                &quot;D:\\maven-repository\\org\\objenesis\\objenesis\\3.1\\objenesis-3.1.jar&quot;,
+                &quot;D:\\maven-repository\\io\\github\\ZJU-ACES-ISE\\chatunitest-starter\\1.4.0\\chatunitest-starter-1.4.0.pom&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\platform\\junit-platform-suite-api\\1.9.2\\junit-platform-suite-api-1.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\jacoco\\org.jacoco.report\\0.8.8\\org.jacoco.report-0.8.8.jar&quot;,
+                &quot;D:\\maven-repository\\net\\bytebuddy\\byte-buddy\\1.10.20\\byte-buddy-1.10.20.jar&quot;,
+                &quot;D:\\maven-repository\\org\\mockito\\mockito-core\\3.8.0\\mockito-core-3.8.0.jar&quot;,
+                &quot;D:\\maven-repository\\org\\ow2\\asm\\asm-commons\\9.2\\asm-commons-9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\platform\\junit-platform-engine\\1.9.2\\junit-platform-engine-1.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\ow2\\asm\\asm\\9.2\\asm-9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\ow2\\asm\\asm-tree\\9.2\\asm-tree-9.2.jar&quot;,
+                &quot;D:\\maven-repository\\junit\\junit\\4.13.2\\junit-4.13.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\hamcrest\\hamcrest-core\\1.3\\hamcrest-core-1.3.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\jupiter\\junit-jupiter-params\\5.9.2\\junit-jupiter-params-5.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\net\\bytebuddy\\byte-buddy-agent\\1.10.20\\byte-buddy-agent-1.10.20.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\jupiter\\junit-jupiter-engine\\5.9.2\\junit-jupiter-engine-5.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\platform\\junit-platform-commons\\1.9.2\\junit-platform-commons-1.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\mockito\\mockito-junit-jupiter\\3.8.0\\mockito-junit-jupiter-3.8.0.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\platform\\junit-platform-launcher\\1.9.2\\junit-platform-launcher-1.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\jupiter\\junit-jupiter-api\\5.9.2\\junit-jupiter-api-5.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\junit\\platform\\junit-platform-runner\\1.9.2\\junit-platform-runner-1.9.2.jar&quot;,
+                &quot;D:\\maven-repository\\org\\ow2\\asm\\asm-analysis\\9.2\\asm-analysis-9.2.jar&quot;
+
+        );
+<span class="nc" id="L358">        String targetTestName = &quot;myTest.TeplaB_SSTest&quot;;</span>
+<span class="nc" id="L359">        System.out.println(targetTestName);</span>
+<span class="nc" id="L360">        Map&lt;String, Object&gt; coverageInfo = new CodeCoverageAnalyzer().analyzeCoverage(testSourceCode,targetTestName, targetClassName, methodSignature, targetClassCompiledDir, targetClassSourceDir, dependencies);</span>
+<span class="nc" id="L361">        System.out.println(&quot;Coverage Information:&quot;);</span>
+<span class="nc" id="L362">        System.out.println(&quot;Instruction Coverage: &quot; + coverageInfo.get(&quot;instructionCoverage&quot;));</span>
+<span class="nc" id="L363">        System.out.println(&quot;Branch Coverage: &quot; + coverageInfo.get(&quot;branchCoverage&quot;));</span>
+<span class="nc" id="L364">        System.out.println(&quot;Line Coverage: &quot; + coverageInfo.get(&quot;lineCoverage&quot;));</span>
+<span class="nc" id="L365">        System.out.println(&quot;Method Code:\n&quot; + coverageInfo.get(&quot;methodCode&quot;));</span>
+<span class="nc" id="L366">        System.out.println(&quot;Uncovered Lines: &quot; + coverageInfo.get(&quot;uncoveredLines&quot;));</span>
+<span class="nc" id="L367">    }</span>
+
+
+
+    static class JavaSourceFromString extends SimpleJavaFileObject {
+        final String code;
+
+        JavaSourceFromString(String name, String code) {
+<span class="nc" id="L375">            super(URI.create(&quot;string:///&quot; + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);</span>
+<span class="nc" id="L376">            this.code = code;</span>
+<span class="nc" id="L377">        }</span>
+
+        @Override
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+<span class="nc" id="L381">            return code;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

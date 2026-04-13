@@ -1,0 +1,356 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExpressionObjectTreeFinder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs</a> &gt; <span class="el_source">ExpressionObjectTreeFinder.java</span></div><h1>ExpressionObjectTreeFinder.java</h1><pre class="source lang-java linenums">package slicing.graphs;
+
+import com.github.javaparser.ast.body.VariableDeclarator;
+import com.github.javaparser.ast.expr.*;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import com.github.javaparser.resolution.declarations.ResolvedValueDeclaration;
+import com.github.javaparser.utils.Pair;
+import lombok.var;
+import slicing.nodes.GraphNode;
+import slicing.nodes.ObjectTree;
+import slicing.nodes.VariableAction;
+import slicing.utils.ASTUtils;
+import slicing.utils.Logger;
+
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.function.Predicate;
+
+import static slicing.graphs.cfg.CFGBuilder.VARIABLE_NAME_OUTPUT;
+
+/**
+ * A helper class that locates and connects all object trees that can be the output of an expression.
+ * &lt;br/&gt;
+ * Examples:
+ * &lt;ul&gt;
+ *     &lt;li&gt;{@code a} results on that variable being linked.&lt;/li&gt;
+ *     &lt;li&gt;{@code a ? b : c} links both {@code b} and {@code c}.&lt;/li&gt;
+ *     &lt;li&gt;{@code a.b} links the subtree of {@code b}.&lt;/li&gt;
+ *     &lt;li&gt;{@code f()} links the output of the call.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * These patterns can be mixed in any order.
+ * &lt;br/&gt;
+ * &lt;h2&gt;Practical usage&lt;/h2&gt;
+ * This class can be used to link assignments, declarations and other statements,
+ * to link, for example, the expression in {@code return a ? b : c} to the -output-
+ * variable action. This linkage must be performed in the same GraphNode, so the previous
+ * return would have a DEF(-output-), and that action is the target of the links setup
+ * by this class.
+ * &lt;h3&gt;Assignments, declarations&lt;/h3&gt;
+ * Generate a new object and use the method {@link #handleAssignExpr(AssignExpr, VariableAction, String) handleAssignExpr()},
+ * {@link #handleVariableDeclarator(VariableDeclarator, String) handleVariableDeclarator()} or {@link #handleArrayAssignExpr(AssignExpr) handleArrayAssignExpr()}.
+ * &lt;h3&gt;Other statements&lt;/h3&gt;
+ * Generate a new object and use either {@link #locateAndMarkTransferenceToRoot(Expression, VariableAction)}, to link to
+ * the given variable action or {@link #locateAndMarkTransferenceToRoot(Expression, int)} to extract the variable action
+ * from the graph node used in the constructor. This is used for return and throw statements, and actual-in/out nodes.
+ */
+public class ExpressionObjectTreeFinder {
+
+    /** The node that contains both the expression to be scanned, the source variable action and
+     *  the desired variable action target. */
+    protected final GraphNode&lt;?&gt; graphNode;
+
+    /** Creates a new ExpressionObjectTreeFinder for the given GraphNode. */
+<span class="nc" id="L58">    public ExpressionObjectTreeFinder(GraphNode&lt;?&gt; graphNode) {</span>
+<span class="nc" id="L59">        this.graphNode = graphNode;</span>
+<span class="nc" id="L60">    }</span>
+
+    /** Prepares the connection between the right-hand side of a variable declarator and the variable.
+     *  The variable declarator must have an initializer, and the realName indicates the absolute (fields
+     *  prefixed by 'this.') name of the variable being declared. */
+    public void handleVariableDeclarator(VariableDeclarator variableDeclarator, String realName) {
+<span class="nc bnc" id="L66" title="All 2 branches missed.">        if (!variableDeclarator.getInitializer().isPresent())</span>
+<span class="nc" id="L67">            throw new IllegalArgumentException(&quot;The variableDeclarator must have an initializer!&quot;);</span>
+<span class="nc" id="L68">        VariableAction targetAction = locateVAVariableDeclarator(realName);</span>
+<span class="nc" id="L69">        ClassGraph.getInstance().generateObjectTreeForType(variableDeclarator.getType().resolve())</span>
+<span class="nc" id="L70">                .ifPresent(objectTree -&gt; targetAction.getObjectTree().addAll(objectTree));</span>
+<span class="nc" id="L71">        locateExpressionResultTrees(variableDeclarator.getInitializer().get())</span>
+<span class="nc" id="L72">                .forEach(pair -&gt; markTransference(pair, targetAction, &quot;&quot;));</span>
+<span class="nc" id="L73">    }</span>
+
+    /** Finds the variable action that corresponds to the definition of a variable
+     *  in a VariableDeclarator with initializer. */
+    protected VariableAction locateVAVariableDeclarator(String realName) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        String root = realName.contains(&quot;.&quot;) ? ObjectTree.removeFields(realName) : realName;</span>
+<span class="nc" id="L79">        boolean foundDecl = false;</span>
+<span class="nc" id="L80">        VariableAction lastDef = null;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        for (VariableAction a : graphNode.getVariableActions()) {</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">            if (a.isDeclaration()) {</span>
+<span class="nc bnc" id="L83" title="All 2 branches missed.">                if (a.getName().equals(realName))</span>
+<span class="nc" id="L84">                    foundDecl = true;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                else if (foundDecl)</span>
+<span class="nc" id="L86">                    return lastDef;</span>
+<span class="nc bnc" id="L87" title="All 4 branches missed.">            } else if (a.isDefinition() &amp;&amp; a.getName().equals(root)) {</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">                if (root.equals(realName) || a.hasPolyTreeMember(realName))</span>
+<span class="nc" id="L89">                    lastDef = a;</span>
+            }
+<span class="nc" id="L91">        }</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">        if (lastDef == null)</span>
+<span class="nc" id="L93">            throw new IllegalStateException(&quot;Could not find DEF for variable declaration of &quot; + realName);</span>
+<span class="nc" id="L94">        return lastDef;</span>
+    }
+
+    /** Prepares the connection between the right-hand side of an assignment to the left-hand side.
+     *  The caller must provide the variable action that represents the definition of the variable action.
+     *  If the LHS of this assignment is an array access expression, the method
+     *  {@link #handleArrayAssignExpr(AssignExpr)} should be used. */
+    public void handleAssignExpr(AssignExpr assignExpr, VariableAction assignTarget, String targetMember) {
+<span class="nc" id="L102">        ClassGraph.getInstance().generateObjectTreeForType(assignExpr.getTarget().calculateResolvedType())</span>
+<span class="nc" id="L103">                .ifPresent(fields -&gt; assignTarget.getObjectTree().addAll(fields));</span>
+<span class="nc" id="L104">        List&lt;Pair&lt;VariableAction, String&gt;&gt; list = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (assignExpr.getOperator() != AssignExpr.Operator.ASSIGN)</span>
+<span class="nc" id="L106">            list.addAll(locateExpressionResultTrees(assignExpr.getTarget()));</span>
+<span class="nc" id="L107">        list.addAll(locateExpressionResultTrees(assignExpr.getValue()));</span>
+<span class="nc" id="L108">        list.forEach(pair -&gt; markTransference(pair, assignTarget, targetMember));</span>
+<span class="nc" id="L109">    }</span>
+
+    /** Prepares the connection between the right-hand side of the assignment and the GraphNode
+     *  that represents the assignment, as currently array access expressions are treated as primitives. */
+    public void handleArrayAssignExpr(AssignExpr assignExpr) {
+<span class="nc" id="L114">        locateExpressionResultTrees(assignExpr.getValue())</span>
+<span class="nc" id="L115">                .forEach(pair -&gt; pair.a.setPDGValueConnection(pair.b));</span>
+<span class="nc" id="L116">    }</span>
+
+    /**
+     * Finds the variable action corresponding to the given index in the GraphNode used in the constructor
+     * and then connects each valid tree found in the given expression to the former variable action.
+     * Negative indices may be used, and will access variable actions from the end of the GraphNode's list,
+     * starting at -1 for the tail of the list.
+     */
+    public void locateAndMarkTransferenceToRoot(Expression expr, int index) {
+<span class="nc" id="L125">        List&lt;VariableAction&gt; list = graphNode.getVariableActions();</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        locateAndMarkTransferenceToRoot(expr, list.get(index &lt; 0 ? list.size() + index : index));</span>
+<span class="nc" id="L127">    }</span>
+
+    /** Connects each valid tree found in the given expression to the given variable action. */
+    public void locateAndMarkTransferenceToRoot(Expression expression, VariableAction targetAction) {
+<span class="nc" id="L131">        locateExpressionResultTrees(expression)</span>
+<span class="nc" id="L132">                .forEach(pair -&gt; markTransference(pair, targetAction, &quot;&quot;));</span>
+<span class="nc" id="L133">    }</span>
+
+    public void locateAndMarkTransferenceToRoot(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, VariableAction targetAction) {
+<span class="nc" id="L136">        boolean enteredCall = false;</span>
+<span class="nc bnc" id="L137" title="All 2 branches missed.">        for (VariableAction va : graphNode.getVariableActions()) {</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (va instanceof VariableAction.CallMarker &amp;&amp;</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">                    ASTUtils.equalsWithRange(((VariableAction.CallMarker) va).getCall(), call)) {</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                if (((VariableAction.CallMarker) va).isEnter())</span>
+<span class="nc" id="L141">                    enteredCall = true;</span>
+                else
+                    break;
+            }
+<span class="nc bnc" id="L145" title="All 6 branches missed.">            if (enteredCall &amp;&amp; va.isDefinition() &amp;&amp; va.getName().equals(&quot;-scope-in-&quot;))</span>
+<span class="nc" id="L146">                break;</span>
+<span class="nc bnc" id="L147" title="All 6 branches missed.">            if (enteredCall &amp;&amp; va.isUsage() &amp;&amp; va.getName().equals(&quot;this&quot;)) {</span>
+<span class="nc" id="L148">                markTransference(new Pair&lt;&gt;(va, &quot;&quot;), targetAction, &quot;&quot;);</span>
+<span class="nc" id="L149">                return;</span>
+            }
+<span class="nc" id="L151">        }</span>
+<span class="nc" id="L152">        throw new IllegalStateException(&quot;Can't locate USE(this)--scope--for call &quot; + call);</span>
+    }
+
+    /**
+     * Finds object trees that correspond to the output of the given expression.
+     * @param expression An expression that outputs an object.
+     * @return A list of pairs, containing the variable actions and the member of such
+     * actions where the link must be placed.
+     */
+    protected List&lt;Pair&lt;VariableAction, String&gt;&gt; locateExpressionResultTrees(Expression expression) {
+<span class="nc" id="L162">        List&lt;Pair&lt;VariableAction, String&gt;&gt; list = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L163">        expression.accept(new VoidVisitorAdapter&lt;String&gt;() {</span>
+            @Override
+            public void visit(ArrayAccessExpr n, String arg) {
+<span class="nc" id="L166">                n.getName().accept(this, arg);</span>
+<span class="nc" id="L167">            }</span>
+
+            @Override
+            public void visit(AssignExpr n, String arg) {
+<span class="nc" id="L171">                n.getValue().accept(this, arg);</span>
+<span class="nc" id="L172">            }</span>
+
+            @Override
+            public void visit(ConditionalExpr n, String arg) {
+<span class="nc" id="L176">                n.getThenExpr().accept(this, arg);</span>
+<span class="nc" id="L177">                n.getElseExpr().accept(this, arg);</span>
+<span class="nc" id="L178">            }</span>
+
+            @Override
+            public void visit(NameExpr n, String arg) {
+                try {
+<span class="nc" id="L183">                    ResolvedValueDeclaration resolved = n.resolve();</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                    if (resolved.isType())</span>
+<span class="nc" id="L185">                        return;</span>
+<span class="nc bnc" id="L186" title="All 4 branches missed.">                    if (resolved.isField() &amp;&amp; !resolved.asField().isStatic()) {</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                        String newArg = n.getNameAsString() + (!arg.isEmpty() ? &quot;.&quot; : &quot;&quot;) + arg;</span>
+<span class="nc" id="L188">                        var va = locateVariableActionThis(n)</span>
+<span class="nc" id="L189">                                .orElseThrow(() -&gt; new IllegalStateException(&quot;Could not find USE action for var &quot; + newArg));</span>
+<span class="nc" id="L190">                        list.add(new Pair&lt;&gt;(va, newArg));</span>
+<span class="nc" id="L191">                    } else {</span>
+<span class="nc" id="L192">                        var va = locateVariableAction(n)</span>
+<span class="nc" id="L193">                                .orElseThrow(() -&gt; new IllegalStateException(&quot;Cannot find USE action for var &quot; + n));</span>
+<span class="nc" id="L194">                        list.add(new Pair&lt;&gt;(va, arg));</span>
+                    }
+<span class="nc" id="L196">                } catch (UnsolvedSymbolException e) {</span>
+<span class="nc" id="L197">                    Logger.log(&quot;Unable to resolve &quot; + n + &quot; in &quot; + graphNode.toString() + &quot;. Assuming that it's a reference type&quot;);</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                    if (!n.calculateResolvedType().isReferenceType()) {</span>
+<span class="nc" id="L199">                        throw e; // It's a type?!</span>
+                    }
+<span class="nc" id="L201">                    var va = locateVariableAction(n)</span>
+<span class="nc" id="L202">                            .orElseThrow(() -&gt; new IllegalStateException(&quot;Cannot find USE action for var &quot; + n));</span>
+<span class="nc" id="L203">                    list.add(new Pair&lt;&gt;(va, arg));</span>
+<span class="nc" id="L204">                }</span>
+<span class="nc" id="L205">            }</span>
+
+            @Override
+            public void visit(ThisExpr n, String arg) {
+<span class="nc" id="L209">                var vaOpt = locateVariableActionThis(n);</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                if (!vaOpt.isPresent())</span>
+<span class="nc" id="L211">                    throw new IllegalStateException(&quot;Could not find USE(this)&quot;);</span>
+<span class="nc" id="L212">                list.add(new Pair&lt;&gt;(vaOpt.get(), arg));</span>
+<span class="nc" id="L213">            }</span>
+
+            @Override
+            public void visit(FieldAccessExpr n, String arg) {
+<span class="nc bnc" id="L217" title="All 2 branches missed.">                if (!arg.isEmpty())</span>
+<span class="nc" id="L218">                    arg = &quot;.&quot; + arg;</span>
+                ResolvedValueDeclaration resolved;
+                try {
+<span class="nc" id="L221">                    resolved = n.resolve();</span>
+<span class="nc" id="L222">                } catch (UnsolvedSymbolException e) {</span>
+<span class="nc" id="L223">                    Optional&lt;VariableAction&gt; optVa = locateVariableAction(n.getScope());</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                    if (optVa.isPresent())</span>
+<span class="nc" id="L225">                        list.add(new Pair&lt;&gt;(optVa.get(), n.getNameAsString() + arg));</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">                    else if (n.getScope().isFieldAccessExpr())</span>
+<span class="nc" id="L227">                        n.getScope().accept(this, n.getNameAsString() + arg);</span>
+                    else
+<span class="nc" id="L229">                        throw e;</span>
+<span class="nc" id="L230">                    return;</span>
+<span class="nc" id="L231">                }</span>
+<span class="nc bnc" id="L232" title="All 6 branches missed.">                if (resolved.isEnumConstant() || (resolved.isField() &amp;&amp; resolved.asField().isStatic())) {</span>
+                    // For static fields and enum constants, we can't resolve the base type, so we skip that
+<span class="nc" id="L234">                    var optVa = locateVariableAction(n.getScope());</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">                    if (optVa.isPresent())</span>
+<span class="nc" id="L236">                        list.add(new Pair&lt;&gt;(optVa.get(), n.getNameAsString() + arg));</span>
+<span class="nc bnc" id="L237" title="All 2 branches missed.">                    else if (n.getScope().isFieldAccessExpr())</span>
+<span class="nc" id="L238">                        n.getScope().accept(this, n.getNameAsString() + arg);</span>
+                    else
+<span class="nc" id="L240">                        throw new IllegalStateException(&quot;Could not find USE(&quot; + n.getScope().toString() + &quot;)&quot;);</span>
+<span class="nc" id="L241">                } else {</span>
+                    // Resolve the scope and accumulate the argument.
+<span class="nc" id="L243">                    n.getScope().accept(this, n.getNameAsString() + arg);</span>
+                }
+<span class="nc" id="L245">            }</span>
+
+            @Override
+            public void visit(ObjectCreationExpr n, String arg) {
+<span class="nc" id="L249">                visitCall(n, arg);</span>
+<span class="nc" id="L250">            }</span>
+
+            @Override
+            public void visit(MethodCallExpr n, String arg) {
+<span class="nc" id="L254">                visitCall(n, arg);</span>
+<span class="nc" id="L255">            }</span>
+
+            private void visitCall(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, String arg) {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">                if (ASTUtils.shouldVisitArgumentsForMethodCalls(call))</span>
+<span class="nc" id="L259">                    return;</span>
+<span class="nc" id="L260">                VariableAction lastUseOut = null;</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">                for (VariableAction variableAction : graphNode.getVariableActions()) {</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">                    if (variableAction instanceof VariableAction.CallMarker) {</span>
+<span class="nc" id="L263">                        VariableAction.CallMarker marker = (VariableAction.CallMarker) variableAction;</span>
+<span class="nc bnc" id="L264" title="All 4 branches missed.">                        if (ASTUtils.equalsWithRange(marker.getCall(), call) &amp;&amp; !marker.isEnter()) {</span>
+<span class="nc bnc" id="L265" title="All 2 branches missed.">                            assert lastUseOut != null;</span>
+<span class="nc" id="L266">                            list.add(new Pair&lt;&gt;(lastUseOut, arg));</span>
+<span class="nc" id="L267">                            return;</span>
+                        }
+                    }
+<span class="nc bnc" id="L270" title="All 4 branches missed.">                    if (variableAction.isUsage() &amp;&amp; variableAction.getName().equals(VARIABLE_NAME_OUTPUT)) {</span>
+<span class="nc" id="L271">                        lastUseOut = variableAction;</span>
+                    }
+<span class="nc" id="L273">                }</span>
+//                throw new IllegalStateException(&quot;Could not find USE(-output-) corresponding to call &quot; + call);
+<span class="nc" id="L275">            }</span>
+
+            @Override
+<span class="nc" id="L278">            public void visit(ArrayCreationExpr n, String arg) {}</span>
+
+            @Override
+<span class="nc" id="L281">            public void visit(ArrayInitializerExpr n, String arg) {}</span>
+
+            @Override
+            public void visit(BinaryExpr n, String arg) {
+<span class="nc" id="L285">                super.visit(n, &quot;&quot;);</span>
+<span class="nc" id="L286">            }</span>
+
+            @Override
+<span class="nc" id="L289">            public void visit(ClassExpr n, String arg) {}</span>
+
+            @Override
+            public void visit(InstanceOfExpr n, String arg) {
+<span class="nc" id="L293">                super.visit(n, &quot;&quot;);</span>
+<span class="nc" id="L294">            }</span>
+
+            @Override
+            public void visit(UnaryExpr n, String arg) {
+<span class="nc" id="L298">                super.visit(n, &quot;&quot;);</span>
+<span class="nc" id="L299">            }</span>
+
+            @Override
+<span class="nc" id="L302">            public void visit(LambdaExpr n, String arg) {}</span>
+
+            @Override
+<span class="nc" id="L305">            public void visit(MethodReferenceExpr n, String arg) {}</span>
+
+            @Override
+<span class="nc" id="L308">            public void visit(PatternExpr n, String arg) {}</span>
+
+            private Optional&lt;VariableAction&gt; locateVariableAction(Expression expression, Predicate&lt;VariableAction&gt; predicate) {
+<span class="nc" id="L311">                return graphNode.getVariableActions().stream()</span>
+<span class="nc" id="L312">                        .filter(VariableAction::isUsage)</span>
+<span class="nc" id="L313">                        .filter(predicate)</span>
+<span class="nc" id="L314">                        .filter(va -&gt; va.matches(expression))</span>
+<span class="nc" id="L315">                        .findAny();</span>
+            }
+
+            /** Locates a variable action that has the given expression with the given expression's text as name. */
+            private Optional&lt;VariableAction&gt; locateVariableAction(Expression expression) {
+<span class="nc" id="L320">                return locateVariableAction(expression, va -&gt; va.getName().equals(expression.toString()));</span>
+            }
+
+            /** Locates a variable action with the given expression and whose name matches this, Class.this, Class.Class.this... */
+            private Optional&lt;VariableAction&gt; locateVariableActionThis(Expression expression) {
+<span class="nc" id="L325">                return locateVariableAction(expression, va -&gt; va.getName().matches(&quot;^.*this$&quot;));</span>
+            }
+        }, &quot;&quot;);
+<span class="nc" id="L328">        return list;</span>
+    }
+
+    /** Prepares a tree connection, to be applied when the PDG is built. This class is used in the construction
+     *  of the CFG, and the object trees are not yet placed, so the arcs cannot be generated yet. */
+    protected void markTransference(Pair&lt;VariableAction, String&gt; sourcePair, VariableAction targetAction, String targetMember) {
+<span class="nc" id="L334">        VariableAction sourceAction = sourcePair.a;</span>
+<span class="nc" id="L335">        String sourceMember = sourcePair.b;</span>
+<span class="nc bnc" id="L336" title="All 2 branches missed.">        if (targetAction.hasObjectTree()) {</span>
+<span class="nc" id="L337">            boolean sourceTypesInClassGraph = sourceAction.getDynamicTypes().stream()</span>
+<span class="nc" id="L338">                    .anyMatch(ClassGraph.getInstance()::containsType);</span>
+<span class="nc bnc" id="L339" title="All 4 branches missed.">            if (sourceTypesInClassGraph &amp;&amp; !hasObjectTreeAt(sourceAction, sourceMember))</span>
+<span class="nc" id="L340">                ObjectTree.copyTargetTreeToSource(sourceAction.getObjectTree(), targetAction.getObjectTree(), sourceMember, targetMember);</span>
+<span class="nc" id="L341">            sourceAction.setPDGTreeConnectionTo(targetAction, sourceMember, targetMember);</span>
+<span class="nc" id="L342">        } else {</span>
+<span class="nc" id="L343">            sourceAction.setPDGValueConnection(sourceMember);</span>
+        }
+<span class="nc" id="L345">    }</span>
+
+    protected boolean hasObjectTreeAt(VariableAction action, String prefix) {
+<span class="nc bnc" id="L348" title="All 2 branches missed.">        if (!action.hasObjectTree())</span>
+<span class="nc" id="L349">            return false;</span>
+<span class="nc" id="L350">        ObjectTree ot = action.getObjectTree();</span>
+<span class="nc bnc" id="L351" title="All 2 branches missed.">        if (!prefix.isEmpty())</span>
+<span class="nc" id="L352">            prefix = &quot;.&quot; + prefix;</span>
+<span class="nc" id="L353">        return ot.hasChildrenPoly(ObjectTree.ROOT_NAME + prefix);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

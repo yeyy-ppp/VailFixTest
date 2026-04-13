@@ -1,0 +1,43 @@
+```
+包路径：gson
+类名：FieldAttributes
+父类：无
+依赖类：无
+---
+序号：1
+方法名：FieldAttributes(Field f)
+返回类型：void
+功能描述：初始化FieldAttributes对象，设置field字段
+序号：2
+方法名：getDeclaringClass()
+返回类型：Class<?>
+功能描述：返回声明该字段的类
+序号：3
+方法名：getName()
+返回类型：String
+功能描述：返回字段名称
+序号：4
+方法名：getDeclaredType()
+返回类型：Type
+功能描述：返回字段的泛型类型
+序号：5
+方法名：getDeclaredClass()
+返回类型：Class<?>
+功能描述：返回字段的声明类型
+序号：6
+方法名：getAnnotation(Class<T> annotation)
+返回类型：T
+功能描述：获取字段上指定类型的注解
+序号：7
+方法名：getAnnotations()
+返回类型：Collection<Annotation>
+功能描述：返回字段上的所有注解
+序号：8
+方法名：hasModifier(int modifier)
+返回类型：boolean
+功能描述：检查字段是否具有指定修饰符
+序号：9
+方法名：toString()
+返回类型：String
+功能描述：返回字段的字符串表示
+```

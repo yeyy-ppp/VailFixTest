@@ -1,0 +1,12 @@
+# CSV包中需要排除的工具类列表（用于测试生成和覆盖率统计）
+# 这些类是为了解决编译依赖问题而新建的，不属于原始csv包的核心功能
+
+# 工具类
+Uncheck.java
+IOStream.java
+Base64OutputStream.java
+AppendableOutputStream.java
+IOUtilsHelper.java
+AbstractStreamBuilder.java
+Charsets.java
+UnsynchronizedBufferedReader.java

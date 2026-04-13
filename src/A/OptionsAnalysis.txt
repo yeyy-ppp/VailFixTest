@@ -1,0 +1,83 @@
+```
+包路径：cli
+类名：Options
+父类：java.lang.Object
+依赖类：Option,OptionGroup,Util
+---
+序号：1
+方法名：Options()
+返回类型：void
+功能描述：构造Options对象
+序号：2
+方法名：addOption(Option opt)
+返回类型：Options
+功能描述：添加选项对象到集合
+序号：3
+方法名：addOption(String opt, boolean hasArg, String description)
+返回类型：Options
+功能描述：添加带参数的短选项
+序号：4
+方法名：addOption(String opt, String description)
+返回类型：Options
+功能描述：添加无参短选项
+序号：5
+方法名：addOption(String opt, String longOpt, boolean hasArg, String description)
+返回类型：Options
+功能描述：添加完整参数选项
+序号：6
+方法名：addOptionGroup(OptionGroup group)
+返回类型：Options
+功能描述：添加选项组并关联选项
+序号：7
+方法名：addOptions(Options options)
+返回类型：Options
+功能描述：合并另一个Options对象
+序号：8
+方法名：addRequiredOption(String opt, String longOpt, boolean hasArg, String description)
+返回类型：Options
+功能描述：添加必填选项
+序号：9
+方法名：getMatchingOptions(String opt)
+返回类型：List<String>
+功能描述：获取匹配的长选项名列表
+序号：10
+方法名：getOption(String opt)
+返回类型：Option
+功能描述：通过选项名获取选项对象
+序号：11
+方法名：getOptionGroup(Option opt)
+返回类型：OptionGroup
+功能描述：获取选项所属的选项组
+序号：12
+方法名：getOptionGroups()
+返回类型：Collection<OptionGroup>
+功能描述：获取所有选项组
+序号：13
+方法名：getOptions()
+返回类型：Collection<Option>
+功能描述：获取所有选项的不可修改集合
+序号：14
+方法名：getRequiredOptions()
+返回类型：List<?>
+功能描述：获取必填选项/选项组的不可修改列表
+序号：15
+方法名：hasLongOption(String opt)
+返回类型：boolean
+功能描述：检查是否存在长选项
+序号：16
+方法名：hasOption(String opt)
+返回类型：boolean
+功能描述：检查是否存在选项（长短均可）
+序号：17
+方法名：hasShortOption(String opt)
+返回类型：boolean
+功能描述：检查是否存在短选项
+序号：18
+方法名：helpOptions()
+返回类型：List<Option>
+功能描述：获取所有选项的列表
+序号：19
+方法名：toString()
+返回类型：String
+功能描述：返回包含短选项和长选项的字符串表示
+```

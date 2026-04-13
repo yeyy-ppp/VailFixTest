@@ -1,0 +1,12 @@
+[2026-01-23 21:26:12] 验证结果
+错误类型: 断言值错误, 错误行: 105, 错误原因: [hexDigitMsb0ToInt('A')预期值错误，实际应为10而非5], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: binaryBeMsb0ToHexDigit, binaryBeMsb0ToHexDigit, binaryToByte, binaryToHexDigit, binaryToHexDigit, binaryToHexDigitMsb0_4bits, binaryToHexDigitMsb0_4bits, byteArrayToUuid, byteToBinary, hexDigitMsb0ToInt, hexDigitToBinary, hexToInt, intToHex, intToHexDigit, intToHexDigitMsb0, uuidToByteArray
+  未覆盖: binaryToInt, binaryToLong, binaryToShort, byteArrayToInt, byteArrayToLong, byteArrayToShort, byteToHex, hexDigitMsb0ToBinary, hexDigitToInt, hexToByte, hexToLong, hexToShort, intArrayToLong, intToBinary, intToByteArray, intToShortArray, longToBinary, longToByteArray, longToHex, longToIntArray, longToShortArray, shortArrayToInt, shortArrayToLong, shortToBinary, shortToByteArray, shortToHex, Conversion
+
+[2026-01-23 21:32:46] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: binaryBeMsb0ToHexDigit, binaryBeMsb0ToHexDigit, binaryToByte, binaryToHexDigit, binaryToHexDigit, binaryToHexDigitMsb0_4bits, binaryToHexDigitMsb0_4bits, binaryToInt, binaryToLong, binaryToShort, byteArrayToInt, byteArrayToLong, byteArrayToShort, byteArrayToUuid, byteToBinary, byteToHex, hexDigitMsb0ToBinary, hexDigitMsb0ToInt, hexDigitToBinary, hexDigitToInt, hexToByte, hexToInt, hexToLong, hexToShort, intArrayToLong, intToBinary, intToByteArray, intToHex, intToHexDigit, intToHexDigitMsb0, intToShortArray, longToBinary, longToByteArray, longToHex, longToIntArray, longToShortArray, shortArrayToInt, shortArrayToLong, shortToBinary, shortToByteArray, shortToHex, uuidToByteArray, Conversion
+  未覆盖: 全部覆盖
+

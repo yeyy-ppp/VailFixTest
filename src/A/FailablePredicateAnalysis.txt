@@ -1,0 +1,19 @@
+```
+包路径：lang3.function
+类名：FailablePredicate
+父类：无
+依赖类：无
+---
+序号：1
+方法名：and(FailablePredicate<? super T, E> other)
+返回类型：FailablePredicate<T, E>
+功能描述：返回当前谓词与指定谓词的逻辑与组合
+序号：2
+方法名：or(FailablePredicate<? super T, E> other)
+返回类型：FailablePredicate<T, E>
+功能描述：返回当前谓词与指定谓词的逻辑或组合
+序号：3
+方法名：test(T object)
+返回类型：boolean
+功能描述：对给定参数进行断言测试
+```

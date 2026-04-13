@@ -1,0 +1,276 @@
+类名：MissingOptionException
+分析阶段：
+  耗时：10407 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：44919 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：26525 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  失败原因：```
+该测试代码在验证[编译正确性]时失败，错误位置：[55, 60, 65]，错误原因：调用了 `getMissingOption()` 方法，但若 `MissingOptionException` 类中未定义该方法会导致编译失败
+该测试代码在验证[运行时健壮性]时失败，错误位置：[12-41]，错误原因：反射调用未找到 `MissingOptionException.createMessage` 方法或方法签名不匹配时会导致 `NoSuchMethodException` 运行时错误
+```
+修复阶段：
+  耗时：142686 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  修复尝试次数：1
+  修复失败原因：
+  修复成功次数：1
+评估阶段：
+  耗时：66854 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【指令覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【复杂度】：【3】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】
+总耗时：298033 毫秒
+总消耗 token 数量：0
+测试代码生成结果：true
+失败原因：
+--------------------------------------------------------
+起始时间：1749007052799
+
+套件 开始时间: 1749007052799
+分析起始时间：1749007052799
+
+分析 开始时间: 1749007052799
+解析提示内容：
+```
+包路径：cli
+类名：MissingOptionException
+方法名：createMessage
+返回类型：String
+功能描述：生成包含所有缺失选项名称的错误提示信息字符串
+
+方法名：MissingOptionException（构造函数1）
+返回类型：void
+功能描述：通过缺失选项列表构造异常实例
+
+方法名：MissingOptionException（构造函数2）
+返回类型：void
+功能描述：通过直接指定错误消息构造异常实例
+
+方法名：getMissingOption
+返回类型：List
+功能描述：获取当前异常包含的缺失选项列表
+```over
+
+分析结束时间：1749007063206
+
+分析总耗时：10407
+分析 结束时间: 1749007063207
+分析 耗时: 10.408 秒
+生成 开始时间: 1749007063209
+生成测试代码：
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+public class MissingOptionExceptionTest {
+
+    @Test
+    public void testCreateMessageWithEmptyList() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        String result = (String) method.invoke(null, Collections.emptyList());
+        assertEquals("Missing required options: ", result);
+    }
+
+    @Test
+    public void testCreateMessageWithSingleElement() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        List<String> list = Collections.singletonList("arg1");
+        String result = (String) method.invoke(null, list);
+        assertEquals("Missing required option: arg1", result);
+    }
+
+    @Test
+    public void testCreateMessageWithTwoElements() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        List<String> list = Arrays.asList("arg1", "arg2");
+        String result = (String) method.invoke(null, list);
+        assertEquals("Missing required options: arg1, arg2", result);
+    }
+
+    @Test
+    public void testCreateMessageWithThreeElements() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        List<String> list = Arrays.asList("a", "b", "c");
+        String result = (String) method.invoke(null, list);
+        assertEquals("Missing required options: a, b, c", result);
+    }
+
+    @Test
+    public void testConstructorWithListSetsMessageAndFields() {
+        List<String> options = Arrays.asList("opt1", "opt2");
+        MissingOptionException exception = new MissingOptionException(options);
+        assertEquals("Missing required options: opt1, opt2", exception.getMessage());
+        assertEquals(options, exception.getMissingOption());
+    }
+
+    @Test
+    public void testConstructorWithSingleElementList() {
+        List<String> options = Collections.singletonList("opt");
+        MissingOptionException exception = new MissingOptionException(options);
+        assertEquals("Missing required option: opt", exception.getMessage());
+        assertEquals(options, exception.getMissingOption());
+    }
+
+    @Test
+    public void testConstructorWithEmptyList() {
+        List<String> options = Collections.emptyList();
+        MissingOptionException exception = new MissingOptionException(options);
+        assertEquals("Missing required options: ", exception.getMessage());
+        assertEquals(options, exception.getMissingOption());
+    }
+}
+```over
+
+生成 结束时间: 1749007108125
+生成 耗时: 44.916 秒
+验证 开始时间: 1749007108125
+测试代码验证结果：
+```
+该测试代码在验证[编译正确性]时失败，错误位置：[55, 60, 65]，错误原因：调用了 `getMissingOption()` 方法，但若 `MissingOptionException` 类中未定义该方法会导致编译失败
+该测试代码在验证[运行时健壮性]时失败，错误位置：[12-41]，错误原因：反射调用未找到 `MissingOptionException.createMessage` 方法或方法签名不匹配时会导致 `NoSuchMethodException` 运行时错误
+```over
+
+验证 结束时间: 1749007134650
+验证 耗时: 26.525 秒
+修复 开始时间: 1749007134650
+第 1 次修复结果：
+【修复成功】
+
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
+
+public class MissingOptionExceptionTest {
+
+    @Test
+    public void testCreateMessageWithEmptyList() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        String result = (String) method.invoke(null, Collections.emptyList());
+        assertEquals("Missing required options", result);
+    }
+
+    @Test
+    public void testCreateMessageWithSingleElement() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        List<String> list = Collections.singletonList("arg1");
+        String result = (String) method.invoke(null, list);
+        assertEquals("Missing required option: arg1", result);
+    }
+
+    @Test
+    public void testCreateMessageWithTwoElements() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        List<String> list = Arrays.asList("arg1", "arg2");
+        String result = (String) method.invoke(null, list);
+        assertEquals("Missing required options: arg1, arg2", result);
+    }
+
+    @Test
+    public void testCreateMessageWithThreeElements() throws Exception {
+        Method method = MissingOptionException.class.getDeclaredMethod("createMessage", List.class);
+        method.setAccessible(true);
+        List<String> list = Arrays.asList("a", "b", "c");
+        String result = (String) method.invoke(null, list);
+        assertEquals("Missing required options: a, b, c", result);
+    }
+
+    @Test
+    public void testConstructorWithListSetsMessageAndFields() {
+        List<String> options = Arrays.asList("opt1", "opt2");
+        MissingOptionException exception = new MissingOptionException(options);
+        assertEquals("Missing required options: opt1, opt2", exception.getMessage());
+        assertEquals(options, exception.getMissingOption());
+    }
+
+    @Test
+    public void testConstructorWithSingleElementList() {
+        List<String> options = Collections.singletonList("opt");
+        MissingOptionException exception = new MissingOptionException(options);
+        assertEquals("Missing required option: opt", exception.getMessage());
+        assertEquals(options, exception.getMissingOption());
+    }
+
+    @Test
+    public void testConstructorWithEmptyList() {
+        List<String> options = Collections.emptyList();
+        MissingOptionException exception = new MissingOptionException(options);
+        assertEquals("Missing required options", exception.getMessage());
+        assertEquals(options, exception.getMissingOption());
+    }
+}
+```over
+
+测试代码验证结果：
+【全部验证通过】over
+
+修复后的代码验证成功！
+修复和验证成功！
+测试代码评估结果：
+【指令覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【复杂度】：【3】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】over
+
+测试类创建成功：src/test/java/cli/MissingOptionExceptionTest.java
+测试类编译失败！
+错误信息: src\test\java\cli\MissingOptionExceptionTest.java:54: ����: �Ҳ�������
+        assertEquals(options, exception.getMissingOption());
+                                       ^
+  ����:   ���� getMissingOption()
+  λ��: ����ΪMissingOptionException�ı��� exception
+src\test\java\cli\MissingOptionExceptionTest.java:62: ����: �Ҳ�������
+        assertEquals(options, exception.getMissingOption());
+                                       ^
+  ����:   ���� getMissingOption()
+  λ��: ����ΪMissingOptionException�ı��� exception
+src\test\java\cli\MissingOptionExceptionTest.java:70: ����: �Ҳ�������
+        assertEquals(options, exception.getMissingOption());
+                                       ^
+  ����:   ���� getMissingOption()
+  λ��: ����ΪMissingOptionException�ı��� exception
+3 ������
+
+修复 结束时间: 1749007349931
+修复 耗时: 215.281 秒
+套件 结束时间: 1749007349936
+套件 耗时: 297.137 秒
+
+Process finished with exit code 0

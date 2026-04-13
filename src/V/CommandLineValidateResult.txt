@@ -1,0 +1,19 @@
+[2026-01-13 17:58:20] 验证结果
+错误类型: 未知错误, 错误行: 142, 错误原因: 未导入Iterator类；错误位置：172,182,192,205行，错误原因：未导入ParseException类, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: Builder, addArg, addOption, build, get, setDeprecatedHandler, builder, CommandLine, CommandLine, addArg, addOption, get, getArgList, getArgs, getOptionProperties, getOptionProperties, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValues, getOptionValues, getOptionValues, getOptionValues, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, handleDeprecated, hasOption, hasOption, hasOption, hasOption, iterator, resolveOption
+  未覆盖: getOptionObject, getOptionObject, getOptions, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, processPropertiesFromValues
+优化建议: 增加对边界值的测试（如空列表、null输入）; 增加异常分支覆盖（如转换器抛出的异常）; 补充未覆盖方法的测试用例
+
+[2026-01-13 18:03:30] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: Builder, addArg, addOption, build, get, setDeprecatedHandler, builder, CommandLine, CommandLine, addArg, addOption, get, getArgList, getArgs, getOptionObject, getOptionObject, getOptionProperties, getOptionProperties, getOptions, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValue, getOptionValues, getOptionValues, getOptionValues, getOptionValues, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValue, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, getParsedOptionValues, handleDeprecated, hasOption, hasOption, hasOption, hasOption, iterator, processPropertiesFromValues, resolveOption
+  未覆盖: 全部覆盖
+
+[2026-01-15 10:22:11] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: get, setDeprecatedHandler, builder, getArgList, getArgs, getOptions, iterator, resolveOption, handleDeprecated, processPropertiesFromValues
+  未覆盖: 全部覆盖
+

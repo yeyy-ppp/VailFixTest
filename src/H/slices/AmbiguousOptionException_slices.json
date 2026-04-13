@@ -1,0 +1,26 @@
+{
+  "className": "AmbiguousOptionException",
+  "packagePath": "",
+  "totalSlices": 2,
+  "slices": [
+    {
+      "sliceIndex": 1,
+      "sliceName": "Slice1",
+      "testClassName": "AmbiguousOptionExceptionTest_Slice1",
+      "focusDescription": "测试方法 createMessage (complexity\u003d10)，覆盖1个分支路径、测试1个循环边界",
+      "targetMethods": [
+        "createMessage"
+      ]
+    },
+    {
+      "sliceIndex": 2,
+      "sliceName": "SliceSimple",
+      "testClassName": "AmbiguousOptionExceptionTest_SliceSimple",
+      "focusDescription": "测试所有简单复杂度方法（complexity \u003c 5）",
+      "targetMethods": [
+        "AmbiguousOptionException",
+        "getMatchingOptions"
+      ]
+    }
+  ]
+}

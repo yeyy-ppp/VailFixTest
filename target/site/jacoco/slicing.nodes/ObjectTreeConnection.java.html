@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ObjectTreeConnection.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes</a> &gt; <span class="el_source">ObjectTreeConnection.java</span></div><h1>ObjectTreeConnection.java</h1><pre class="source lang-java linenums">package slicing.nodes;
+
+import slicing.arcs.Arc;
+import slicing.arcs.pdg.FlowDependencyArc;
+import slicing.arcs.pdg.ObjectFlowDependencyArc;
+import slicing.arcs.sdg.ParameterInOutArc;
+import slicing.graphs.Graph;
+import slicing.graphs.jsysdg.JSysDG;
+import slicing.graphs.jsysdg.JSysPDG;
+import slicing.nodes.oo.MemberNode;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Supplier;
+
+/** A connection between two object trees. This object can specify the connection between two different
+ *  levels of object trees, for example to represent the assignment {@code a.b = c.d}. */
+<span class="nc" id="L18">class ObjectTreeConnection implements VariableAction.PDGConnection {</span>
+
+    protected final VariableAction sourceAction;
+    protected final VariableAction targetAction;
+    protected final String sourceMember;
+    protected final String targetMember;
+
+<span class="nc" id="L25">    protected boolean applied = false;</span>
+
+<span class="nc" id="L27">    public ObjectTreeConnection(VariableAction sourceAction, VariableAction targetAction, String sourceMember, String targetMember) {</span>
+<span class="nc" id="L28">        this.sourceAction = sourceAction;</span>
+<span class="nc" id="L29">        this.targetAction = targetAction;</span>
+<span class="nc" id="L30">        this.sourceMember = sourceMember;</span>
+<span class="nc" id="L31">        this.targetMember = targetMember;</span>
+<span class="nc" id="L32">    }</span>
+
+    /** Apply the connection represented by this object on an SDG. This means that all arcs will be interprocedural. */
+    public void applySDG(JSysDG graph) {
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (!applied) {</span>
+<span class="nc" id="L37">            connectTrees(graph, ParameterInOutArc::new, ParameterInOutArc.ObjectFlow::new);</span>
+<span class="nc" id="L38">            applied = true;</span>
+        }
+<span class="nc" id="L40">    }</span>
+
+    @Override
+    public void apply(JSysPDG graph) {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (!applied)</span>
+<span class="nc" id="L45">            connectTrees(graph, FlowDependencyArc::new, ObjectFlowDependencyArc::new);</span>
+<span class="nc" id="L46">    }</span>
+
+    protected void connectTrees(Graph graph, Supplier&lt;Arc&gt; flowSupplier, Supplier&lt;Arc&gt; objFlowSupplier) {
+<span class="nc" id="L49">        Collection&lt;ObjectTree&gt; source = Collections.singleton(null);</span>
+<span class="nc" id="L50">        Collection&lt;ObjectTree&gt; target = Collections.singleton(null);</span>
+<span class="nc bnc" id="L51" title="All 4 branches missed.">        assert sourceMember.isEmpty() || sourceAction.hasObjectTree();</span>
+<span class="nc bnc" id="L52" title="All 4 branches missed.">        assert targetMember.isEmpty() || targetAction.hasObjectTree();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (sourceAction.hasObjectTree())</span>
+<span class="nc" id="L54">            source = sourceAction.getObjectTree().findObjectTreeOfPolyMember(sourceMember);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (targetAction.hasObjectTree())</span>
+<span class="nc" id="L56">            target = targetAction.getObjectTree().findObjectTreeOfPolyMember(targetMember);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        for (ObjectTree treeSrc : source)</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">            for (ObjectTree treeTgt : target)</span>
+<span class="nc" id="L59">                connectOT(treeSrc, treeTgt,</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                        treeSrc != null ? treeSrc.getMemberNode() : sourceAction.getGraphNode(),</span>
+<span class="nc bnc" id="L61" title="All 2 branches missed.">                        treeTgt != null ? treeTgt.getMemberNode() : targetAction.getGraphNode(),</span>
+                        graph, flowSupplier, objFlowSupplier);
+<span class="nc" id="L63">    }</span>
+
+    private void connectOT(ObjectTree source, ObjectTree target, GraphNode&lt;?&gt; rootSrc, GraphNode&lt;?&gt; rootTgt,
+                           Graph graph, Supplier&lt;Arc&gt; flowSupplier, Supplier&lt;Arc&gt; objFlowSupplier) {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        if (source == null || target == null) {</span>
+<span class="nc bnc" id="L68" title="All 2 branches missed.">            if (!rootSrc.equals(rootTgt)) {</span>
+<span class="nc" id="L69">                graph.addEdge(rootSrc, rootTgt, flowSupplier.get());</span>
+<span class="nc" id="L70">                applied = true;</span>
+            }
+        } else {
+<span class="nc" id="L73">            applied = true;</span>
+<span class="nc" id="L74">            graph.addEdge(rootSrc, rootTgt, objFlowSupplier.get());</span>
+<span class="nc" id="L75">            graph.addEdge(rootSrc, rootTgt, flowSupplier.get());</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            for (String treeMember : target.nameIterable()) {</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                if (!source.hasMember(treeMember))</span>
+<span class="nc" id="L78">                    continue;</span>
+<span class="nc" id="L79">                MemberNode src = source.getNodeFor(treeMember);</span>
+<span class="nc" id="L80">                MemberNode tgt = target.getNodeFor(treeMember);</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">                if (target.hasChildren(treeMember))</span>
+<span class="nc" id="L82">                    graph.addEdge(src, tgt, objFlowSupplier.get());</span>
+<span class="nc" id="L83">                graph.addEdge(src, tgt, flowSupplier.get());</span>
+<span class="nc" id="L84">            }</span>
+        }
+<span class="nc" id="L86">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

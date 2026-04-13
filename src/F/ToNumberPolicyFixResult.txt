@@ -1,0 +1,137 @@
+[2026-01-24 05:02:18] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package gson;
+
+import gson.stream.JsonReader;
+import gson.stream.MalformedJsonException;
+import gson.internal.LazilyParsedNumber;
+import java.io.IOException;
+import java.io.StringReader;
+import java.math.BigDecimal;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ToNumberPolicyTest {
+
+    @Test
+    void testDOUBLE_readNumber() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        Double result = ToNumberPolicy.DOUBLE.readNumber(reader);
+        assertEquals(123.45, result);
+    }
+
+    @Test
+    void testDOUBLE_readNumber_invalid() {
+        JsonReader reader = new JsonReader(new StringReader("abc"));
+        assertThrows(MalformedJsonException.class, () -> ToNumberPolicy.DOUBLE.readNumber(reader));
+    }
+
+    @Test
+    void testLAZILY_PARSED_NUMBER_readNumber() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        Number result = ToNumberPolicy.LAZILY_PARSED_NUMBER.readNumber(reader);
+        assertTrue(result instanceof LazilyParsedNumber);
+        assertEquals("123.45", result.toString());
+    }
+
+    @Test
+    void testLONG_OR_DOUBLE_readNumber_integer() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("123"));
+        Number result = ToNumberPolicy.LONG_OR_DOUBLE.readNumber(reader);
+        assertTrue(result instanceof Long);
+        assertEquals(123L, result);
+    }
+
+    @Test
+    void testLONG_OR_DOUBLE_readNumber_decimal() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        Number result = ToNumberPolicy.LONG_OR_DOUBLE.readNumber(reader);
+        assertTrue(result instanceof Double);
+        assertEquals(123.45, result);
+    }
+
+    @Test
+    void testLONG_OR_DOUBLE_readNumber_longOverflow() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("9223372036854775808"));
+        Number result = ToNumberPolicy.LONG_OR_DOUBLE.readNumber(reader);
+        assertTrue(result instanceof Double);
+        assertEquals(9.223372036854776E18, result);
+    }
+
+    @Test
+    void testLONG_OR_DOUBLE_readNumber_invalid() {
+        JsonReader reader = new JsonReader(new StringReader("abc"));
+        assertThrows(RuntimeException.class, () -> ToNumberPolicy.LONG_OR_DOUBLE.readNumber(reader));
+    }
+
+    @Test
+    void testLONG_OR_DOUBLE_readNumber_infinityStrict() {
+        JsonReader reader = new JsonReader(new StringReader("Infinity"));
+        reader.setLenient(false);
+        assertThrows(MalformedJsonException.class, () -> ToNumberPolicy.LONG_OR_DOUBLE.readNumber(reader));
+    }
+
+    @Test
+    void testLONG_OR_DOUBLE_readNumber_infinityLenient() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("Infinity"));
+        reader.setLenient(true);
+        Number result = ToNumberPolicy.LONG_OR_DOUBLE.readNumber(reader);
+        assertEquals(Double.POSITIVE_INFINITY, result);
+    }
+
+    @Test
+    void testBIG_DECIMAL_readNumber_valid() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        BigDecimal result = ToNumberPolicy.BIG_DECIMAL.readNumber(reader);
+        assertEquals(new BigDecimal("123.45"), result);
+    }
+
+    @Test
+    void testBIG_DECIMAL_readNumber_invalid() {
+        JsonReader reader = new JsonReader(new StringReader("abc"));
+        assertThrows(RuntimeException.class, () -> ToNumberPolicy.BIG_DECIMAL.readNumber(reader));
+    }
+
+    @Test
+    void testParseAsDouble_normalNumber() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader(""));
+        Number result = ToNumberPolicy.parseAsDouble("123.45", reader);
+        assertEquals(123.45, result.doubleValue());
+    }
+
+    @Test
+    void testParseAsDouble_infinity() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader(""));
+        reader.setLenient(true);
+        Number result = ToNumberPolicy.parseAsDouble("Infinity", reader);
+        assertEquals(Double.POSITIVE_INFINITY, result.doubleValue());
+    }
+
+    @Test
+    void testParseAsDouble_nan() throws IOException {
+        JsonReader reader = new JsonReader(new StringReader(""));
+        reader.setLenient(true);
+        Number result = ToNumberPolicy.parseAsDouble("NaN", reader);
+        assertTrue(Double.isNaN(result.doubleValue()));
+    }
+
+    @Test
+    void testParseAsDouble_infinityStrict() {
+        JsonReader reader = new JsonReader(new StringReader(""));
+        reader.setLenient(false);
+        assertThrows(MalformedJsonException.class, () -> ToNumberPolicy.parseAsDouble("Infinity", reader));
+    }
+
+    @Test
+    void testParseAsDouble_invalid() {
+        JsonReader reader = new JsonReader(new StringReader(""));
+        assertThrows(NumberFormatException.class, () -> ToNumberPolicy.parseAsDouble("abc", reader));
+    }
+}
+```
+

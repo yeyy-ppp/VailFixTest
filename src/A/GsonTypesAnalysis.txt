@@ -1,0 +1,95 @@
+```
+包路径：gson.internal
+类名：GsonTypes
+父类：无
+依赖类：无
+---
+序号：1
+方法名：GsonTypes()
+返回类型：void
+功能描述：私有构造方法，防止实例化
+序号：2
+方法名：newParameterizedTypeWithOwner(Type ownerType, Class<?> rawType, Type... typeArguments)
+返回类型：ParameterizedType
+功能描述：创建带OwnerType的参数化类型实例
+序号：3
+方法名：arrayOf(Type componentType)
+返回类型：GenericArrayType
+功能描述：创建泛型数组类型实例
+序号：4
+方法名：subtypeOf(Type bound)
+返回类型：WildcardType
+功能描述：创建表示上边界通配符类型
+序号：5
+方法名：supertypeOf(Type bound)
+返回类型：WildcardType
+功能描述：创建表示下边界通配符类型
+序号：6
+方法名：canonicalize(Type type)
+返回类型：Type
+功能描述：规范化Type对象
+序号：7
+方法名：getRawType(Type type)
+返回类型：Class<?>
+功能描述：获取Type对应的原始类型
+序号：8
+方法名：equal(Object a, Object b)
+返回类型：boolean
+功能描述：对象相等性判断
+序号：9
+方法名：equals(Type a, Type b)
+返回类型：boolean
+功能描述：深度比较两个Type对象
+序号：10
+方法名：typeToString(Type type)
+返回类型：String
+功能描述：将Type转换为字符串表示
+序号：11
+方法名：getGenericSupertype(Type context, Class<?> rawType, Class<?> supertype)
+返回类型：Type
+功能描述：递归获取泛型父类型
+序号：12
+方法名：getSupertype(Type context, Class<?> contextRawType, Class<?> supertype)
+返回类型：Type
+功能描述：解析指定父类型
+序号：13
+方法名：getArrayComponentType(Type array)
+返回类型：Type
+功能描述：获取数组组件类型
+序号：14
+方法名：getCollectionElementType(Type context, Class<?> contextRawType)
+返回类型：Type
+功能描述：获取集合元素类型
+序号：15
+方法名：getMapKeyAndValueTypes(Type context, Class<?> contextRawType)
+返回类型：Type[]
+功能描述：获取Map键值类型
+序号：16
+方法名：resolve(Type context, Class<?> contextRawType, Type toResolve)
+返回类型：Type
+功能描述：解析类型变量
+序号：17
+方法名：resolve(Type context, Class<?> contextRawType, Type toResolve, Map<TypeVariable<?>, Type> visitedTypeVariables)
+返回类型：Type
+功能描述：递归解析类型变量
+序号：18
+方法名：resolveTypeVariable(Type context, Class<?> contextRawType, TypeVariable<?> unknown)
+返回类型：Type
+功能描述：解析特定类型变量
+序号：19
+方法名：indexOf(Object[] array, Object toFind)
+返回类型：int
+功能描述：查找对象在数组中的索引
+序号：20
+方法名：declaringClassOf(TypeVariable<?> typeVariable)
+返回类型：Class<?>
+功能描述：获取类型变量的声明类
+序号：21
+方法名：checkNotPrimitive(Type type)
+返回类型：void
+功能描述：检查类型是否非基本类型
+序号：22
+方法名：requiresOwnerType(Type rawType)
+返回类型：boolean
+功能描述：检查类型是否需要OwnerType
+```

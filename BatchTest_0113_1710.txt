@@ -1,0 +1,10 @@
+
+========== 批量处理日志 [2026-01-13 19:17:41] ==========
+待测试类总数: 25
+测试类生成成功: 23 - AlreadySelectedException, AmbiguousOptionException, BasicParser, Char, CommandLine, CommandLineParser, DefaultParser, DeprecatedAttributes, GnuParser, HelpFormatter, MissingArgumentException, MissingOptionException, Option, OptionBuilder, OptionGroup, Options, OptionValidator, ParseException, PatternOptionBuilder, PosixParser, TypeHandler, UnrecognizedOptionException, Util
+测试类生成失败: 2 - Converter, Parser
+测试类编译成功: 15 - AlreadySelectedException, AmbiguousOptionException, BasicParser, Char, CommandLineParser, DeprecatedAttributes, GnuParser, MissingArgumentException, OptionBuilder, Options, OptionValidator, ParseException, PosixParser, UnrecognizedOptionException, Util
+测试类编译失败: 8 - CommandLine, DefaultParser, HelpFormatter, MissingOptionException, Option, OptionGroup, PatternOptionBuilder, TypeHandler
+JaCoCo覆盖率达标: true
+完整测试覆盖: false
+========================================

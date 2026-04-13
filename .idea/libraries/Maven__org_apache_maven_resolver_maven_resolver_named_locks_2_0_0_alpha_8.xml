@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.apache.maven.resolver:maven-resolver-named-locks:2.0.0-alpha-8">
+    <CLASSES>
+      <root url="jar://D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1/repository/org/apache/maven/resolver/maven-resolver-named-locks/2.0.0-alpha-8/maven-resolver-named-locks-2.0.0-alpha-8.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1/repository/org/apache/maven/resolver/maven-resolver-named-locks/2.0.0-alpha-8/maven-resolver-named-locks-2.0.0-alpha-8-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1/repository/org/apache/maven/resolver/maven-resolver-named-locks/2.0.0-alpha-8/maven-resolver-named-locks-2.0.0-alpha-8-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

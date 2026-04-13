@@ -1,0 +1,108 @@
+[2026-01-23 15:33:28] 修复结果
+修复类型: 致命错误修复 + 方法覆盖补充
+修复前错误: 编译错误 - [使用了未定义的异常类UncheckedException]
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Collections;
+
+import org.junit.jupiter.api.Test;
+
+import lang3.AppendableJoiner;
+import lang3.function.FailableBiConsumer;
+
+class AppendableJoinerTest {
+
+    @Test
+    void testJoinStringBuilderIOException() {
+        FailableBiConsumer<Appendable, String, IOException> throwingAppender = (a, e) -> {
+            throw new IOException("Test");
+        };
+        AppendableJoiner<String> joiner = new AppendableJoiner<>("", "", "", throwingAppender);
+        StringBuilder sb = new StringBuilder();
+        assertThrows(RuntimeException.class, () -> joiner.join(sb, "test"));
+    }
+
+    @Test
+    void testNonNull() {
+        CharSequence nullSeq = null;
+        assertEquals("", AppendableJoiner.nonNull(nullSeq));
+        assertEquals("abc", AppendableJoiner.nonNull("abc"));
+    }
+
+    @Test
+    void testAppendableJoinerConstructor() {
+        FailableBiConsumer<Appendable, String, IOException> appender = (a, e) -> a.append(e);
+        AppendableJoiner<String> joiner = new AppendableJoiner<>("[", "]", ",", appender);
+        StringBuilder sb = new StringBuilder();
+        joiner.join(sb, "a", "b");
+        assertEquals("[a,b]", sb.toString());
+    }
+
+    @Test
+    void testJoinArray() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        FailableBiConsumer<Appendable, String, IOException> appender = (a, e) -> a.append(e);
+        AppendableJoiner.joinArray(sb, "[", "]", ",", appender, new String[]{"a", "b"});
+        assertEquals("[a,b]", sb.toString());
+    }
+
+    @Test
+    void testJoinI() {
+        StringBuilder sb = new StringBuilder();
+        FailableBiConsumer<Appendable, String, IOException> appender = (a, e) -> a.append(e);
+        AppendableJoiner.joinI(sb, "[", "]", ",", appender, Arrays.asList("a", "b"));
+        assertEquals("[a,b]", sb.toString());
+    }
+
+    @Test
+    void testJoinIterable() throws IOException {
+        StringBuilder sb = new StringBuilder();
+        FailableBiConsumer<Appendable, String, IOException> appender = (a, e) -> a.append(e);
+        AppendableJoiner.joinIterable(sb, "[", "]", ",", appender, Arrays.asList("a", "b"));
+        assertEquals("[a,b]", sb.toString());
+    }
+
+    @Test
+    void testJoinSB() {
+        StringBuilder sb = new StringBuilder();
+        FailableBiConsumer<Appendable, String, IOException> appender = (a, e) -> a.append(e);
+        AppendableJoiner.joinSB(sb, "[", "]", ",", appender, "a", "b");
+        assertEquals("[a,b]", sb.toString());
+    }
+
+    @Test
+    void testJoinIterableWithEmptyCollection() {
+        AppendableJoiner<String> joiner = AppendableJoiner.builder().setPrefix("[").setSuffix("]").setDelimiter(",").get();
+        StringBuilder sb = new StringBuilder();
+        joiner.join(sb, Collections.emptyList());
+        assertEquals("[]", sb.toString());
+    }
+
+    @Test
+    void testJoinAWithIterable() throws IOException {
+        AppendableJoiner<String> joiner = AppendableJoiner.builder().setPrefix("[").setSuffix("]").setDelimiter(",").get();
+        StringBuilder sb = new StringBuilder();
+        joiner.joinA(sb, Arrays.asList("a", "b"));
+        assertEquals("[a,b]", sb.toString());
+    }
+
+    @Test
+    void testBuilderConfiguration() {
+        FailableBiConsumer<Appendable, String, IOException> appender = (a, e) -> a.append(e);
+        AppendableJoiner.Builder<String> builder = AppendableJoiner.builder();
+        builder.setPrefix("(").setSuffix(")").setDelimiter("|").setElementAppender(appender);
+        AppendableJoiner<String> joiner = builder.get();
+        StringBuilder sb = new StringBuilder();
+        joiner.join(sb, "x", "y");
+        assertEquals("(x|y)", sb.toString());
+    }
+}
+```
+

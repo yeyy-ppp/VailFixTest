@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JavaParserUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.telpa</a> &gt; <span class="el_source">JavaParserUtil.java</span></div><h1>JavaParserUtil.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util.telpa;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.Position;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.types.ResolvedType;
+import lombok.Data;
+import lombok.var;
+import slicing.graphs.CallGraph;
+import slicing.graphs.jsysdg.JSysDG;
+import slicing.graphs.sdg.SDG;
+import slicing.slicing.MultiVariableCriterion;
+import slicing.slicing.Slice;
+import zju.cst.aces.api.Project;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.dto.MethodExampleMap;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+
+import static zju.cst.aces.parser.ProjectParser.exportJson;
+
+@Data
+public class JavaParserUtil {
+    private final Config config;
+    private final JavaParser parser;
+    private final Path srcFolderPath;
+    private NodeList&lt;CompilationUnit&gt; compilationUnits;
+
+<span class="nc" id="L47">    public JavaParserUtil(Config config) {</span>
+<span class="nc" id="L48">        this.config = config;</span>
+<span class="nc" id="L49">        this.parser = config.getParser();</span>
+<span class="nc" id="L50">        this.srcFolderPath = Paths.get(config.getProject().getBasedir().getAbsolutePath(), &quot;src&quot;, &quot;main&quot;, &quot;java&quot;);</span>
+<span class="nc" id="L51">        this.compilationUnits = getParseResult(); // 初始化时就解析源文件</span>
+<span class="nc" id="L52">    }</span>
+    public static List&lt;String&gt; scanSourceDirectory(Project project) {
+<span class="nc" id="L54">        List&lt;String&gt; classPaths = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L55">        File[] files = Paths.get(project.getCompileSourceRoots().get(0)).toFile().listFiles();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        if (files != null) {</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">            for (File file : files) {</span>
+                try {
+<span class="nc" id="L59">                    Files.walk(file.toPath()).forEach(path -&gt; {</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                        if (path.toString().endsWith(&quot;.java&quot;)) {</span>
+<span class="nc" id="L61">                            classPaths.add(path.toString());</span>
+                        }
+<span class="nc" id="L63">                    });</span>
+<span class="nc" id="L64">                } catch (IOException e) {</span>
+<span class="nc" id="L65">                    throw new RuntimeException(e);</span>
+<span class="nc" id="L66">                }</span>
+            }
+        }
+<span class="nc" id="L69">        return classPaths;</span>
+    }
+    //get the Class Parsed by JavaParser
+    public  NodeList&lt;CompilationUnit&gt; getParseResult(){
+<span class="nc" id="L73">        List&lt;String&gt; classPaths = scanSourceDirectory(config.getProject());</span>
+
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        if (classPaths.isEmpty()) {</span>
+<span class="nc" id="L76">            config.getLogger().warn(&quot;No java file found in &quot; + srcFolderPath);</span>
+<span class="nc" id="L77">            return null;</span>
+        }
+<span class="nc" id="L79">        NodeList&lt;CompilationUnit&gt; cus = new NodeList&lt;&gt;();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        for (String classPath : classPaths) {</span>
+<span class="nc" id="L81">            File file = new File(classPath);</span>
+            try {
+<span class="nc" id="L83">                ParseResult&lt;CompilationUnit&gt; parseResult = parser.parse(file);</span>
+<span class="nc" id="L84">                CompilationUnit cu = parseResult.getResult().orElseThrow(()-&gt;new NoSuchElementException(&quot;CompilationUnit not present in parse result&quot;));</span>
+<span class="nc" id="L85">                cus.add(cu);</span>
+<span class="nc" id="L86">            } catch (Exception e) {</span>
+<span class="nc" id="L87">                throw new RuntimeException(&quot;In ProjectParser.parse: &quot; + e);</span>
+<span class="nc" id="L88">            }</span>
+<span class="nc" id="L89">        }</span>
+<span class="nc" id="L90">        return cus;</span>
+    }
+    public Map&lt;String, String&gt; findCodeByMethodInfo(String methodName, NodeList&lt;CompilationUnit&gt; cus) {
+<span class="nc" id="L93">        Map&lt;String, String&gt; codes = new HashMap&lt;&gt;();</span>
+        try {
+
+            // 调用 createSDG 方法
+<span class="nc" id="L97">            SDG sdg = createSDG(cus);</span>
+            // 遍历 CompilationUnits 中的所有方法
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            for (CompilationUnit cu : cus) {</span>
+<span class="nc" id="L100">                cu.findAll(CallableDeclaration.class).forEach(callable -&gt; {</span>
+                    // 获取调用图中的边
+<span class="nc" id="L102">                    Set&lt;CallGraph.Edge&lt;?&gt;&gt; edges = findEdgeByCallGraph(callable, sdg.getCallGraph());</span>
+
+<span class="nc" id="L104">                    edges.forEach(edge -&gt; {</span>
+                        // 检查当前调用的源方法是否带有 @Test 注解
+<span class="nc" id="L106">                        CallableDeclaration&lt;?&gt; caller = edge.getSource();</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                        if (caller.isAnnotationPresent(&quot;Test&quot;)) {</span>
+                            // 检查调用的方法是否是指定的方法名
+<span class="nc" id="L109">                            String calledMethodName = String.valueOf(edge.getTarget().getSignature());</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">                            if (calledMethodName != null &amp;&amp; methodName.equals(calledMethodName)) {</span>
+                                // 获取调用位置和参数
+<span class="nc" id="L112">                                Expression callSite = (Expression) edge.getCall();</span>
+<span class="nc" id="L113">                                int callSiteLine = callSite.getBegin().orElse(new Position(0, 0)).line;</span>
+
+<span class="nc" id="L115">                                List&lt;String&gt; arguments = createStringArgumets(callSite);</span>
+<span class="nc" id="L116">                                CompilationUnit callerCompilationUnit = findClassByCallable(caller);</span>
+<span class="nc" id="L117">                                String callerClassFullName = callerCompilationUnit.getType(0).getFullyQualifiedName().orElse(null);</span>
+
+<span class="nc bnc" id="L119" title="All 4 branches missed.">                                if (callerClassFullName != null &amp;&amp; !arguments.isEmpty()) {</span>
+                                    // 构造完整的测试类代码
+<span class="nc" id="L121">                                    StringBuilder completeCode = new StringBuilder();</span>
+
+                                    // 添加包声明和导入语句
+<span class="nc" id="L124">                                    callerCompilationUnit.getPackageDeclaration().ifPresent(packageDeclaration -&gt; {</span>
+<span class="nc" id="L125">                                        completeCode.append(packageDeclaration).append(&quot;\n\n&quot;);</span>
+<span class="nc" id="L126">                                    });</span>
+<span class="nc" id="L127">                                    callerCompilationUnit.getImports().forEach(importDeclaration -&gt; {</span>
+<span class="nc" id="L128">                                        completeCode.append(importDeclaration).append(&quot;\n&quot;);</span>
+<span class="nc" id="L129">                                    });</span>
+
+                                    // 获取类声明
+<span class="nc" id="L132">                                    List&lt;ClassOrInterfaceDeclaration&gt; classes = callerCompilationUnit.findAll(ClassOrInterfaceDeclaration.class);</span>
+<span class="nc" id="L133">                                    Optional&lt;ClassOrInterfaceDeclaration&gt; containingClass = classes.stream()</span>
+<span class="nc" id="L134">                                            .filter(c -&gt; c.getFullyQualifiedName().orElse(&quot;&quot;).equals(callerClassFullName))</span>
+<span class="nc" id="L135">                                            .findFirst();</span>
+
+<span class="nc bnc" id="L137" title="All 2 branches missed.">                                    if (containingClass.isPresent()) {</span>
+<span class="nc" id="L138">                                        ClassOrInterfaceDeclaration testClass = containingClass.get();</span>
+
+                                        // 构造完整类代码
+<span class="nc" id="L141">                                        completeCode.append(&quot;\n\n&quot;);</span>
+<span class="nc" id="L142">                                        completeCode.append(testClass.getAnnotations().stream()</span>
+<span class="nc" id="L143">                                                .map(Object::toString)</span>
+<span class="nc" id="L144">                                                .collect(Collectors.joining(&quot;\n&quot;))).append(&quot;\n&quot;); // 添加类注解</span>
+<span class="nc" id="L145">                                        completeCode.append(&quot;public class &quot;).append(testClass.getNameAsString()).append(&quot; {\n\n&quot;);</span>
+
+                                        // 添加测试方法代码
+<span class="nc" id="L148">                                        completeCode.append(caller.toString()).append(&quot;\n&quot;);</span>
+
+                                        // 封闭类定义
+<span class="nc" id="L151">                                        completeCode.append(&quot;}\n&quot;);</span>
+
+                                        // 存储完整代码到 Map
+<span class="nc" id="L154">                                        codes.put(callerClassFullName, completeCode.toString());</span>
+                                    }
+                                }
+                            }
+                        }
+<span class="nc" id="L159">                    });</span>
+<span class="nc" id="L160">                });</span>
+<span class="nc" id="L161">            }</span>
+<span class="nc" id="L162">        } catch (Exception e) {</span>
+<span class="nc" id="L163">            config.getLogger().warn(&quot;Failed to read class code&quot;);</span>
+<span class="nc" id="L164">        }</span>
+
+<span class="nc" id="L166">        return codes;</span>
+    }
+
+
+    public NodeList&lt;CompilationUnit&gt; addTestFiles(Path counterExamplePath) {
+<span class="nc" id="L171">        NodeList&lt;CompilationUnit&gt; mergedUnits = new NodeList&lt;&gt;();</span>
+
+        // 添加已有的编译单元
+<span class="nc" id="L174">        mergedUnits.addAll(this.compilationUnits);</span>
+
+        // 添加测试文件
+<span class="nc" id="L177">        List&lt;Path&gt; testFiles = getFiles(counterExamplePath);</span>
+<span class="nc bnc" id="L178" title="All 2 branches missed.">        for (Path file : testFiles) {</span>
+            try {
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                if (Files.isRegularFile(file)) {</span>
+<span class="nc" id="L181">                    ParseResult&lt;CompilationUnit&gt; parseResult = parser.parse(file);</span>
+<span class="nc" id="L182">                    parseResult.getResult().ifPresent(mergedUnits::add);</span>
+                }
+<span class="nc" id="L184">            } catch (IOException e) {</span>
+<span class="nc" id="L185">                config.getLogger().warn(&quot;Failed to parse test file: &quot; + file);</span>
+<span class="nc" id="L186">            }</span>
+<span class="nc" id="L187">        }</span>
+
+<span class="nc" id="L189">        return mergedUnits;</span>
+    }
+    private List&lt;Path&gt; getFiles(Path path) {
+<span class="nc" id="L192">        List&lt;Path&gt; fileList = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L193">        try (DirectoryStream&lt;Path&gt; stream = Files.newDirectoryStream(path)) {</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">            for (Path entry : stream) {</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                if (Files.isDirectory(entry)) {</span>
+<span class="nc" id="L196">                    fileList.addAll(getFiles(entry)); // 递归调用获取子目录中的文件</span>
+                } else {
+<span class="nc" id="L198">                    fileList.add(entry);</span>
+                }
+<span class="nc" id="L200">            }</span>
+<span class="nc" id="L201">        }catch (Exception e){</span>
+<span class="nc" id="L202">            config.logger.error(&quot;Failed to read class code for &quot; + path);</span>
+<span class="nc" id="L203">        }</span>
+<span class="nc" id="L204">        return fileList;</span>
+    }
+    private Set&lt;CallGraph.Edge&lt;?&gt;&gt; findEdgeByCallGraph(CallableDeclaration node, CallGraph callGraph) {
+<span class="nc" id="L207">        CallGraph.Vertex ver = new CallGraph.Vertex(node);</span>
+<span class="nc" id="L208">        return callGraph.edgesOf(ver);</span>
+    }
+    private SDG createSDG(NodeList&lt;CompilationUnit&gt; cus) {
+<span class="nc" id="L211">        SDG sdg = new JSysDG();</span>
+<span class="nc" id="L212">        sdg.build(cus);</span>
+<span class="nc" id="L213">        return sdg;</span>
+    }
+    private List&lt;String&gt; createStringArgumets(Expression callSite) {
+<span class="nc" id="L216">        Set&lt;String&gt; arguments = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L217" title="All 6 branches missed.">        if (!isPrimitiveOrString(callSite) &amp;&amp; (callSite.isNameExpr() || callSite.isThisExpr())) {</span>
+<span class="nc" id="L218">            arguments.add(callSite.toString());</span>
+<span class="nc bnc" id="L219" title="All 2 branches missed.">        } else if (callSite.isMethodCallExpr()) {</span>
+<span class="nc" id="L220">            callSite.asMethodCallExpr().getArguments().forEach(arg -&gt; {</span>
+<span class="nc" id="L221">                arguments.addAll(createStringArgumets(arg));</span>
+<span class="nc" id="L222">            });</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">            if (callSite.hasScope()) {</span>
+<span class="nc" id="L224">                arguments.addAll(createStringArgumets(callSite.asMethodCallExpr().getScope().get()));</span>
+            }
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        } else if (callSite.isObjectCreationExpr()) {</span>
+<span class="nc" id="L227">            callSite.asObjectCreationExpr().getArguments().forEach(arg -&gt; {</span>
+<span class="nc" id="L228">                arguments.addAll(createStringArgumets(arg));</span>
+<span class="nc" id="L229">            });</span>
+<span class="nc bnc" id="L230" title="All 2 branches missed.">            if (callSite.hasScope()) {</span>
+<span class="nc" id="L231">                arguments.addAll(createStringArgumets(callSite.asObjectCreationExpr().getScope().get()));</span>
+            }
+<span class="nc bnc" id="L233" title="All 2 branches missed.">        } else if (callSite.isFieldAccessExpr())  {</span>
+<span class="nc" id="L234">            arguments.addAll(createStringArgumets(callSite.asFieldAccessExpr().getNameAsExpression()));</span>
+<span class="nc bnc" id="L235" title="All 2 branches missed.">            if (callSite.hasScope()) {</span>
+<span class="nc" id="L236">                arguments.addAll(createStringArgumets(callSite.asFieldAccessExpr().getScope()));</span>
+            }
+        }
+//        else {
+//            throw new RuntimeException(&quot;Unsupported call site type: &quot; + callSite.getClass().getSimpleName());
+//        }
+<span class="nc" id="L242">        return new ArrayList&lt;&gt;(arguments);</span>
+    }
+    public static String getSignatureByCallable(CallableDeclaration&lt;?&gt; callable) {
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (callable.isMethodDeclaration()) {</span>
+<span class="nc" id="L246">            return callable.asMethodDeclaration().resolve().getSignature();</span>
+<span class="nc bnc" id="L247" title="All 2 branches missed.">        } else if (callable.isConstructorDeclaration()) {</span>
+<span class="nc" id="L248">            return callable.asConstructorDeclaration().resolve().getSignature();</span>
+        } else {
+<span class="nc" id="L250">            throw new RuntimeException(&quot;Unsupported callable type: &quot; + callable.getClass().getSimpleName());</span>
+        }
+    }
+    private CompilationUnit findClassByCallable(CallableDeclaration&lt;?&gt; node) {
+<span class="nc" id="L254">        CompilationUnit cu = node.findAncestor(CompilationUnit.class)</span>
+<span class="nc" id="L255">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No CompilationUnit ancestor found for node&quot;));</span>
+
+<span class="nc" id="L257">        return cu;</span>
+
+    }
+    private String findCodeBySlice(Slice slice, String callerClassFullName) {
+<span class="nc bnc" id="L261" title="All 2 branches missed.">        for (CompilationUnit cu : slice.toAst()) {</span>
+<span class="nc bnc" id="L262" title="All 4 branches missed.">            if (!&quot;&quot;.equals(cu.toString()) &amp;&amp; cu.getType(0).getNameAsString().equals(callerClassFullName)) {</span>
+<span class="nc" id="L263">                return cu.toString();</span>
+            }
+<span class="nc" id="L265">        }</span>
+<span class="nc" id="L266">        return null;</span>
+    }
+    private boolean isPrimitiveOrString(Expression expr) {
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        if (expr.isNameExpr()) {</span>
+            try {
+<span class="nc" id="L271">                ResolvedType type = expr.asNameExpr().resolve().getType();</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                if (type.isPrimitive()) {</span>
+<span class="nc" id="L273">                    return true;</span>
+                }
+<span class="nc bnc" id="L275" title="All 4 branches missed.">                if (type.isReferenceType() &amp;&amp; type.asReferenceType().getQualifiedName().equals(&quot;java.lang.String&quot;)) {</span>
+<span class="nc" id="L276">                    return true;</span>
+                }
+<span class="nc" id="L278">            } catch (UnsolvedSymbolException | IllegalStateException e) {</span>
+<span class="nc" id="L279">                return true; // ignore unsolved symbol</span>
+<span class="nc" id="L280">            }</span>
+        }
+<span class="nc" id="L282">        return false;</span>
+    }
+    public MethodExampleMap createMethodExampleMap(NodeList&lt;CompilationUnit&gt; cus) {
+<span class="nc" id="L285">        config.getLogger().info(&quot;Starting to create method example map...&quot;);</span>
+<span class="nc" id="L286">        MethodExampleMap methodExampleMap = new MethodExampleMap();</span>
+<span class="nc" id="L287">        SDG sdg = createSDG(cus);</span>
+
+<span class="nc" id="L289">        AtomicInteger cuIndex = new AtomicInteger();</span>
+<span class="nc" id="L290">        AtomicInteger methodIndex = new AtomicInteger();</span>
+<span class="nc" id="L291">        int totalMethods = slicing.graphs.ClassGraph.getInstance().getMethodDeclarationMap().size();</span>
+<span class="nc" id="L292">        cus.forEach(cu -&gt; {</span>
+<span class="nc" id="L293">            cu.findAll(CallableDeclaration.class).forEach(callable -&gt; {</span>
+<span class="nc" id="L294">                Set&lt;CallGraph.Edge&lt;?&gt;&gt; edges = findEdgeByCallGraph(callable, sdg.getCallGraph());</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">                if (!edges.isEmpty()) {</span>
+<span class="nc" id="L296">                    config.getLogger().info(&quot;Processing method: [ &quot; + callable.getNameAsString() + &quot; ]&quot; + &quot; total: &quot; + methodIndex.getAndIncrement() + &quot; / &quot; + totalMethods);</span>
+<span class="nc" id="L297">                    edges.forEach(edge -&gt; {</span>
+<span class="nc" id="L298">                        config.getLogger().info(&quot;Processing edge: &quot; + edge.getSource().getNameAsString() + &quot; -&gt; &quot; + edge.getTarget().getNameAsString());</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">                        if (edge.getTarget().equals(callable)) {</span>
+<span class="nc bnc" id="L300" title="All 2 branches missed.">                            if (! (edge.getCall() instanceof Expression)) {</span>
+<span class="nc" id="L301">                                return;</span>
+                            }
+<span class="nc" id="L303">                            Expression callSite = (Expression) edge.getCall();</span>
+<span class="nc" id="L304">                            int callSiteLine = callSite.getBegin().orElse(new Position(0, 0)).line;</span>
+<span class="nc" id="L305">                            List&lt;String&gt; arguments = createStringArgumets(callSite);</span>
+
+<span class="nc" id="L307">                            CallableDeclaration&lt;?&gt; caller = edge.getSource();</span>
+<span class="nc" id="L308">                            CompilationUnit callerCompilationUnit = findClassByCallable(caller);</span>
+<span class="nc" id="L309">                            String callerClassFullName = callerCompilationUnit.getType(0).getFullyQualifiedName().get();</span>
+
+<span class="nc bnc" id="L311" title="All 2 branches missed.">                            if (!arguments.isEmpty()) {</span>
+<span class="nc" id="L312">                                var sc = new MultiVariableCriterion(callerClassFullName, callSiteLine, arguments);</span>
+<span class="nc" id="L313">                                config.getLogger().info(&quot;Slicing method: &quot; + getSignatureByCallable(callable) + &quot; at callsite: &lt; &quot; + callSite + &quot; &gt;&quot;);</span>
+<span class="nc" id="L314">                                Slice slice = sdg.slice(sc);</span>
+<span class="nc bnc" id="L315" title="All 2 branches missed.">                                if (!slice.toAst().isEmpty()) {</span>
+<span class="nc" id="L316">                                    String code = findCodeBySlice(slice, callerCompilationUnit.getType(0).getNameAsString());</span>
+<span class="nc bnc" id="L317" title="All 2 branches missed.">                                    if (code != null) {</span>
+<span class="nc" id="L318">                                        methodExampleMap.add(getQualifiedSignatureByCallable(callable),</span>
+                                                callerClassFullName,
+<span class="nc" id="L320">                                                getSignatureByCallable(caller),</span>
+                                                callSiteLine,
+                                                code);
+                                    }
+                                }
+                            }
+                        }
+<span class="nc" id="L327">                    });</span>
+                }
+<span class="nc" id="L329">            });</span>
+<span class="nc" id="L330">        });</span>
+
+<span class="nc" id="L332">        return methodExampleMap;</span>
+    }
+    public void exportMethodExampleMap(MethodExampleMap methodExampleMap) {
+<span class="nc" id="L335">        Path savePath = config.tmpOutput.resolve(&quot;methodExampleCode.json&quot;);</span>
+<span class="nc" id="L336">        Map&lt;String, TreeSet&lt;MethodExampleMap.MEC&gt;&gt; mem = methodExampleMap.getMEM();</span>
+<span class="nc" id="L337">        exportJson(savePath, mem);</span>
+<span class="nc" id="L338">    }</span>
+    public void findBackwardAnalysis(MethodExampleMap methodExampleMap){
+
+<span class="nc" id="L341">        Map&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; paths = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L342">        methodExampleMap.getMEM().forEach((key, value) -&gt; {</span>
+<span class="nc bnc" id="L343" title="All 2 branches missed.">            for (MethodExampleMap.MEC methodExample : value) {</span>
+<span class="nc" id="L344">                List&lt;MethodExampleMap.MEC&gt; path = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L345">                path.add(methodExample);</span>
+<span class="nc" id="L346">                findPaths(key, methodExample, path, paths, methodExampleMap);</span>
+<span class="nc" id="L347">            }</span>
+<span class="nc" id="L348">        });</span>
+        // select ShortestPath
+<span class="nc" id="L350">        filterShortestPaths(methodExampleMap,paths);</span>
+<span class="nc" id="L351">    }</span>
+
+    private void findPaths(String key, MethodExampleMap.MEC currentMethod, List&lt;MethodExampleMap.MEC&gt; currentPath,
+                           Map&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; paths, MethodExampleMap methodExampleMap) {
+
+        // Search For Current Method
+<span class="nc" id="L357">        Set&lt;MethodExampleMap.MEC&gt; invokers = methodExampleMap.getMEM().get(currentMethod.getClassName() + &quot;.&quot; + currentMethod.getMethodName());</span>
+<span class="nc bnc" id="L358" title="All 4 branches missed.">        if (invokers == null || invokers.isEmpty()) {</span>
+            // If reach the top of the invocation,then stop,and add the currentpath to Paths
+<span class="nc" id="L360">            paths.computeIfAbsent(key, k -&gt; new HashSet&lt;&gt;()).add(new ArrayList&lt;&gt;(currentPath));</span>
+        } else {
+<span class="nc bnc" id="L362" title="All 2 branches missed.">            for (MethodExampleMap.MEC invoker : invokers) {</span>
+<span class="nc" id="L363">                String invokerKey = invoker.getClassName() + &quot;.&quot; + invoker.getMethodName();</span>
+<span class="nc" id="L364">                currentPath.add(invoker);</span>
+<span class="nc" id="L365">                findPaths(key, invoker, currentPath, paths, methodExampleMap);</span>
+<span class="nc" id="L366">                currentPath.remove(currentPath.size() - 1);</span>
+<span class="nc" id="L367">            }</span>
+        }
+<span class="nc" id="L369">    }</span>
+
+    private void filterShortestPaths(MethodExampleMap methodExampleMap,Map&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; allPaths) {
+<span class="nc" id="L372">        Map&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; shortestPaths = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L373" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; entry : allPaths.entrySet()) {</span>
+<span class="nc" id="L374">            String methodFullName = entry.getKey();</span>
+<span class="nc" id="L375">            Set&lt;List&lt;MethodExampleMap.MEC&gt;&gt; paths = entry.getValue();</span>
+<span class="nc" id="L376">            Map&lt;String, List&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; groupedByEndMethod = new HashMap&lt;&gt;();</span>
+
+<span class="nc bnc" id="L378" title="All 2 branches missed.">            for (List&lt;MethodExampleMap.MEC&gt; path : paths) {</span>
+<span class="nc bnc" id="L379" title="All 2 branches missed.">                if (!path.isEmpty()) {</span>
+<span class="nc" id="L380">                    String endMethodFullName = path.get(path.size() - 1).getClassName() + &quot;.&quot; + path.get(path.size() - 1).getMethodName();</span>
+<span class="nc" id="L381">                    groupedByEndMethod.computeIfAbsent(endMethodFullName, k -&gt; new ArrayList&lt;&gt;()).add(path);</span>
+                }
+<span class="nc" id="L383">            }</span>
+
+<span class="nc bnc" id="L385" title="All 2 branches missed.">            for (Map.Entry&lt;String, List&lt;List&lt;MethodExampleMap.MEC&gt;&gt;&gt; groupEntry : groupedByEndMethod.entrySet()) {</span>
+<span class="nc" id="L386">                List&lt;List&lt;MethodExampleMap.MEC&gt;&gt; sortedPaths = groupEntry.getValue();</span>
+<span class="nc" id="L387">                sortedPaths.sort(Comparator.comparingInt(List::size));</span>
+
+<span class="nc bnc" id="L389" title="All 2 branches missed.">                int minLength = sortedPaths.isEmpty() ? 0 : sortedPaths.get(0).size();</span>
+<span class="nc bnc" id="L390" title="All 2 branches missed.">                for (List&lt;MethodExampleMap.MEC&gt; path : sortedPaths) {</span>
+<span class="nc bnc" id="L391" title="All 2 branches missed.">                    if (path.size() == minLength) {</span>
+<span class="nc" id="L392">                        methodExampleMap.addBackWardPath(methodFullName,path);</span>
+                    } else {
+                        break;
+                    }
+<span class="nc" id="L396">                }</span>
+<span class="nc" id="L397">            }</span>
+<span class="nc" id="L398">        }</span>
+<span class="nc" id="L399">    }</span>
+
+
+    public void exportBackwardAnalysis(MethodExampleMap methodExampleMap) {
+<span class="nc" id="L403">        Path savePath = config.tmpOutput.resolve(&quot;backwardAnalysis.json&quot;);</span>
+<span class="nc" id="L404">        exportJson(savePath, methodExampleMap.getMemList());</span>
+<span class="nc" id="L405">    }</span>
+    private String getQualifiedSignatureByCallable(CallableDeclaration&lt;?&gt; callable) {
+<span class="nc bnc" id="L407" title="All 2 branches missed.">        if (callable.isMethodDeclaration()) {</span>
+<span class="nc" id="L408">            MethodDeclaration md = callable.asMethodDeclaration();</span>
+<span class="nc" id="L409">            return md.resolve().getQualifiedSignature()</span>
+<span class="nc" id="L410">                    .replace(md.resolve().getSignature(), md.getSignature().asString());</span>
+<span class="nc bnc" id="L411" title="All 2 branches missed.">        } else if (callable.isConstructorDeclaration()) {</span>
+<span class="nc" id="L412">            ConstructorDeclaration cd = callable.asConstructorDeclaration();</span>
+<span class="nc" id="L413">            return cd.resolve().getQualifiedSignature();</span>
+        } else {
+<span class="nc" id="L415">            throw new RuntimeException(&quot;Unsupported callable type: &quot; + callable.getClass().getSimpleName());</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

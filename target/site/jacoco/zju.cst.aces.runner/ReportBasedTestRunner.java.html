@@ -1,0 +1,515 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReportBasedTestRunner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">ReportBasedTestRunner.java</span></div><h1>ReportBasedTestRunner.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.*;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * 基于复杂度报告的测试运行器
+ * 
+ * 职责：
+ * 1. 读取复杂度报告
+ * 2. 判断是否需要切分
+ * 3. 如需切分，生成切片信息并保存到 src/H/slices/
+ * 4. 提供查询接口供 ValiFixTextCoreDemo3 调用
+ * 
+ * 使用方式（在 ValiFixTextCoreDemo3 中调用）：
+ *   ReportBasedTestRunner runner = new ReportBasedTestRunner();
+ *   runner.loadReport(&quot;src/main/java/M/cli/cli_report.json&quot;);
+ *   
+ *   if (runner.needsSlice(&quot;DefaultParser&quot;)) {
+ *       List&lt;SliceInfo&gt; slices = runner.getSlicesForClass(&quot;DefaultParser&quot;);
+ *       // 为每个切片生成测试类
+ *   } else {
+ *       // 普通流程，生成单个测试类
+ *   }
+ */
+<span class="nc" id="L35">public class ReportBasedTestRunner {</span>
+
+<span class="nc" id="L37">    private final Gson gson = new Gson();</span>
+<span class="nc" id="L38">    private final Gson prettyGson = new GsonBuilder().setPrettyPrinting().create();</span>
+
+    // 策略常量
+    public static final String STRATEGY_SIMPLE = &quot;simple&quot;;
+    public static final String STRATEGY_STANDARD = &quot;standard&quot;;
+    public static final String STRATEGY_DETAILED = &quot;detailed&quot;;
+
+    // 切片阈值：复杂度 &gt;= 此值时使用切片策略
+    public static final int SLICE_THRESHOLD = 5;
+
+    // 切片信息存储目录
+    public static final String SLICE_DIR = &quot;src/H/slices&quot;;
+
+    // 已加载的类复杂度信息
+<span class="nc" id="L52">    private Map&lt;String, ClassComplexityInfo&gt; loadedClasses = new LinkedHashMap&lt;&gt;();</span>
+
+    // ==================== 数据结构 ====================
+
+    /**
+     * 方法复杂度信息
+     */
+<span class="nc" id="L59">    public static class MethodComplexityInfo {</span>
+        public String className;
+        public String methodName;
+        public int complexity;
+        public int lineCount;
+        public int nestingDepth;
+        public int loopCount;
+        public int branchCount;
+        public int tryCatchCount;
+        public String strategy;
+
+        /** 是否需要切片（复杂度 &gt;= 阈值） */
+        public boolean needsSlice() {
+<span class="nc bnc" id="L72" title="All 2 branches missed.">            return complexity &gt;= SLICE_THRESHOLD;</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L77">            return String.format(&quot;%s.%s [complexity=%d, strategy=%s]&quot;,</span>
+<span class="nc" id="L78">                    className, methodName, complexity, strategy);</span>
+        }
+    }
+
+    /**
+     * 类复杂度信息
+     */
+<span class="nc" id="L85">    public static class ClassComplexityInfo {</span>
+        public String className;
+        public String packagePath;
+<span class="nc" id="L88">        public List&lt;MethodComplexityInfo&gt; methods = new ArrayList&lt;&gt;();</span>
+        public String overallStrategy;
+
+        /** 是否包含需要切片的方法（复杂度 &gt;= 阈值） */
+        public boolean hasMethodsNeedingSlice() {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">            return methods.stream().anyMatch(m -&gt; m.complexity &gt;= SLICE_THRESHOLD);</span>
+        }
+
+        /** 获取需要切片的方法（复杂度 &gt;= 阈值） */
+        public List&lt;MethodComplexityInfo&gt; getMethodsNeedingSlice() {
+<span class="nc" id="L98">            return methods.stream()</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">                    .filter(m -&gt; m.complexity &gt;= SLICE_THRESHOLD)</span>
+<span class="nc" id="L100">                    .collect(Collectors.toList());</span>
+        }
+
+        /** 获取不需要切片的方法（复杂度 &lt; 阈值） */
+        public List&lt;MethodComplexityInfo&gt; getMethodsNotNeedingSlice() {
+<span class="nc" id="L105">            return methods.stream()</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">                    .filter(m -&gt; m.complexity &lt; SLICE_THRESHOLD)</span>
+<span class="nc" id="L107">                    .collect(Collectors.toList());</span>
+        }
+
+        /** 是否包含 detailed 方法（保留原方法兼容） */
+        public boolean hasDetailedMethods() {
+<span class="nc" id="L112">            return methods.stream().anyMatch(m -&gt; STRATEGY_DETAILED.equals(m.strategy));</span>
+        }
+
+        /** 获取所有 detailed 方法（保留原方法兼容） */
+        public List&lt;MethodComplexityInfo&gt; getDetailedMethods() {
+<span class="nc" id="L117">            return methods.stream()</span>
+<span class="nc" id="L118">                    .filter(m -&gt; STRATEGY_DETAILED.equals(m.strategy))</span>
+<span class="nc" id="L119">                    .collect(Collectors.toList());</span>
+        }
+
+        /** 获取所有非 detailed 方法（保留原方法兼容） */
+        public List&lt;MethodComplexityInfo&gt; getNonDetailedMethods() {
+<span class="nc" id="L124">            return methods.stream()</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                    .filter(m -&gt; !STRATEGY_DETAILED.equals(m.strategy))</span>
+<span class="nc" id="L126">                    .collect(Collectors.toList());</span>
+        }
+    }
+
+    /**
+     * 切片信息 - 描述一个测试切片
+     */
+    public static class SliceInfo {
+        public int sliceIndex;                    // 切片序号
+        public String sliceName;                  // 切片名称（用于生成测试类名后缀）
+        public String testClassName;              // 完整测试类名
+        public List&lt;String&gt; targetMethods;        // 该切片要测试的方法列表
+        public String focusDescription;           // 测试重点描述（可作为提示词补充）
+
+<span class="nc" id="L140">        public SliceInfo(int sliceIndex, String sliceName) {</span>
+<span class="nc" id="L141">            this.sliceIndex = sliceIndex;</span>
+<span class="nc" id="L142">            this.sliceName = sliceName;</span>
+<span class="nc" id="L143">            this.targetMethods = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L144">        }</span>
+    }
+
+    // ==================== 报告读取 ====================
+
+    /**
+     * 加载单个报告文件
+     * @param reportPath 报告文件路径
+     * @return 加载的类数量
+     */
+    public int loadReport(String reportPath) throws IOException {
+<span class="nc" id="L155">        return loadReport(Paths.get(reportPath));</span>
+    }
+
+    /**
+     * 加载单个报告文件
+     */
+    public int loadReport(Path reportPath) throws IOException {
+<span class="nc bnc" id="L162" title="All 2 branches missed.">        if (!Files.exists(reportPath)) {</span>
+<span class="nc" id="L163">            System.err.println(&quot;报告文件不存在: &quot; + reportPath);</span>
+<span class="nc" id="L164">            return 0;</span>
+        }
+
+<span class="nc" id="L167">        String content = new String(Files.readAllBytes(reportPath), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L168">        JsonObject root = gson.fromJson(content, JsonObject.class);</span>
+
+<span class="nc" id="L170">        int count = 0;</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">        for (String className : root.keySet()) {</span>
+<span class="nc" id="L172">            ClassComplexityInfo classInfo = parseClassInfo(className, root.getAsJsonObject(className));</span>
+<span class="nc" id="L173">            loadedClasses.put(className, classInfo);</span>
+<span class="nc" id="L174">            count++;</span>
+<span class="nc" id="L175">        }</span>
+
+<span class="nc" id="L177">        System.out.println(&quot;已加载报告: &quot; + reportPath + &quot; (&quot; + count + &quot; 个类)&quot;);</span>
+<span class="nc" id="L178">        return count;</span>
+    }
+
+    /**
+     * 加载目录下所有报告文件
+     * @param reportBaseDir 报告目录
+     * @return 加载的类总数
+     */
+    public int loadAllReports(String reportBaseDir) throws IOException {
+<span class="nc" id="L187">        return loadAllReports(Paths.get(reportBaseDir));</span>
+    }
+
+    /**
+     * 加载目录下所有报告文件
+     */
+    public int loadAllReports(Path reportBaseDir) throws IOException {
+<span class="nc" id="L194">        int totalCount = 0;</span>
+
+<span class="nc" id="L196">        try (Stream&lt;Path&gt; paths = Files.walk(reportBaseDir)) {</span>
+<span class="nc" id="L197">            List&lt;Path&gt; reportFiles = paths</span>
+<span class="nc" id="L198">                    .filter(Files::isRegularFile)</span>
+<span class="nc" id="L199">                    .filter(p -&gt; p.toString().endsWith(&quot;_report.json&quot;))</span>
+<span class="nc" id="L200">                    .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L202" title="All 2 branches missed.">            for (Path reportFile : reportFiles) {</span>
+<span class="nc" id="L203">                int count = loadReport(reportFile);</span>
+
+                // 设置包路径
+<span class="nc" id="L206">                Path relativePath = reportBaseDir.relativize(reportFile.getParent());</span>
+<span class="nc" id="L207">                String packagePath = relativePath.toString().replace(&quot;\\&quot;, &quot;/&quot;);</span>
+                
+                // 更新刚加载的类的包路径
+<span class="nc" id="L210">                String content = new String(Files.readAllBytes(reportFile), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L211">                JsonObject root = gson.fromJson(content, JsonObject.class);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                for (String className : root.keySet()) {</span>
+<span class="nc bnc" id="L213" title="All 2 branches missed.">                    if (loadedClasses.containsKey(className)) {</span>
+<span class="nc" id="L214">                        loadedClasses.get(className).packagePath = packagePath;</span>
+                    }
+<span class="nc" id="L216">                }</span>
+
+<span class="nc" id="L218">                totalCount += count;</span>
+<span class="nc" id="L219">            }</span>
+        }
+
+<span class="nc" id="L222">        System.out.println(&quot;共加载 &quot; + totalCount + &quot; 个类的复杂度信息&quot;);</span>
+<span class="nc" id="L223">        return totalCount;</span>
+    }
+
+    /**
+     * 解析单个类的复杂度信息
+     */
+    private ClassComplexityInfo parseClassInfo(String className, JsonObject classObj) {
+<span class="nc" id="L230">        ClassComplexityInfo classInfo = new ClassComplexityInfo();</span>
+<span class="nc" id="L231">        classInfo.className = className;</span>
+
+<span class="nc" id="L233">        int maxComplexity = 0;</span>
+
+<span class="nc bnc" id="L235" title="All 2 branches missed.">        for (String methodName : classObj.keySet()) {</span>
+<span class="nc" id="L236">            JsonObject methodObj = classObj.getAsJsonObject(methodName);</span>
+
+<span class="nc" id="L238">            MethodComplexityInfo methodInfo = new MethodComplexityInfo();</span>
+<span class="nc" id="L239">            methodInfo.className = className;</span>
+<span class="nc" id="L240">            methodInfo.methodName = methodName;</span>
+<span class="nc" id="L241">            methodInfo.complexity = methodObj.get(&quot;complexity&quot;).getAsInt();</span>
+<span class="nc" id="L242">            methodInfo.lineCount = methodObj.get(&quot;lineCount&quot;).getAsInt();</span>
+<span class="nc" id="L243">            methodInfo.nestingDepth = methodObj.get(&quot;nestingDepth&quot;).getAsInt();</span>
+<span class="nc" id="L244">            methodInfo.loopCount = methodObj.get(&quot;loopCount&quot;).getAsInt();</span>
+<span class="nc" id="L245">            methodInfo.branchCount = methodObj.get(&quot;branchCount&quot;).getAsInt();</span>
+<span class="nc" id="L246">            methodInfo.tryCatchCount = methodObj.get(&quot;tryCatchCount&quot;).getAsInt();</span>
+<span class="nc" id="L247">            methodInfo.strategy = methodObj.get(&quot;strategy&quot;).getAsString();</span>
+
+<span class="nc" id="L249">            classInfo.methods.add(methodInfo);</span>
+
+<span class="nc bnc" id="L251" title="All 2 branches missed.">            if (methodInfo.complexity &gt; maxComplexity) {</span>
+<span class="nc" id="L252">                maxComplexity = methodInfo.complexity;</span>
+<span class="nc" id="L253">                classInfo.overallStrategy = methodInfo.strategy;</span>
+            }
+<span class="nc" id="L255">        }</span>
+
+<span class="nc" id="L257">        return classInfo;</span>
+    }
+
+    // ==================== 切分判断 ====================
+
+    /**
+     * 判断指定类是否需要切分（复杂度 &gt;= 5 的方法需要切分）
+     * @param className 类名
+     * @return true 需要切分，false 不需要
+     */
+    public boolean needsSlice(String className) {
+<span class="nc" id="L268">        ClassComplexityInfo classInfo = loadedClasses.get(className);</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">        if (classInfo == null) {</span>
+<span class="nc" id="L270">            return false;</span>
+        }
+<span class="nc" id="L272">        return classInfo.hasMethodsNeedingSlice();</span>
+    }
+
+    /**
+     * 获取指定类的复杂度信息
+     */
+    public ClassComplexityInfo getClassInfo(String className) {
+<span class="nc" id="L279">        return loadedClasses.get(className);</span>
+    }
+
+    /**
+     * 获取所有已加载的类名
+     */
+    public Set&lt;String&gt; getAllClassNames() {
+<span class="nc" id="L286">        return loadedClasses.keySet();</span>
+    }
+
+    /**
+     * 获取需要切分的类列表（包含复杂度 &gt;= 5 方法的类）
+     */
+    public List&lt;String&gt; getClassesNeedingSlice() {
+<span class="nc" id="L293">        return loadedClasses.entrySet().stream()</span>
+<span class="nc" id="L294">                .filter(e -&gt; e.getValue().hasMethodsNeedingSlice())</span>
+<span class="nc" id="L295">                .map(Map.Entry::getKey)</span>
+<span class="nc" id="L296">                .collect(Collectors.toList());</span>
+    }
+
+    /**
+     * 获取不需要切分的类列表
+     */
+    public List&lt;String&gt; getClassesNotNeedingSlice() {
+<span class="nc" id="L303">        return loadedClasses.entrySet().stream()</span>
+<span class="nc bnc" id="L304" title="All 2 branches missed.">                .filter(e -&gt; !e.getValue().hasMethodsNeedingSlice())</span>
+<span class="nc" id="L305">                .map(Map.Entry::getKey)</span>
+<span class="nc" id="L306">                .collect(Collectors.toList());</span>
+    }
+
+    // ==================== 切片生成 ====================
+
+    /**
+     * 为指定类生成切片信息
+     * @param className 类名
+     * @return 切片列表，如果不需要切分返回 null
+     */
+    public List&lt;SliceInfo&gt; generateSlices(String className) {
+<span class="nc" id="L317">        ClassComplexityInfo classInfo = loadedClasses.get(className);</span>
+<span class="nc bnc" id="L318" title="All 4 branches missed.">        if (classInfo == null || !classInfo.hasMethodsNeedingSlice()) {</span>
+<span class="nc" id="L319">            return null;</span>
+        }
+
+<span class="nc" id="L322">        List&lt;SliceInfo&gt; slices = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L323">        int sliceIndex = 1;</span>
+
+        // 1. 每个复杂度 &gt;= 5 的方法单独一个切片
+<span class="nc bnc" id="L326" title="All 2 branches missed.">        for (MethodComplexityInfo method : classInfo.getMethodsNeedingSlice()) {</span>
+<span class="nc" id="L327">            SliceInfo slice = new SliceInfo(sliceIndex, &quot;Slice&quot; + sliceIndex);</span>
+<span class="nc" id="L328">            slice.testClassName = className + &quot;Test_Slice&quot; + sliceIndex;</span>
+<span class="nc" id="L329">            slice.targetMethods.add(method.methodName);</span>
+<span class="nc" id="L330">            slice.focusDescription = buildFocusDescription(method);</span>
+<span class="nc" id="L331">            slices.add(slice);</span>
+<span class="nc" id="L332">            sliceIndex++;</span>
+<span class="nc" id="L333">        }</span>
+
+        // 2. 所有复杂度 &lt; 5 的方法合并为一个切片
+<span class="nc" id="L336">        List&lt;MethodComplexityInfo&gt; simpleMethods = classInfo.getMethodsNotNeedingSlice();</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">        if (!simpleMethods.isEmpty()) {</span>
+<span class="nc" id="L338">            SliceInfo simpleSlice = new SliceInfo(sliceIndex, &quot;SliceSimple&quot;);</span>
+<span class="nc" id="L339">            simpleSlice.testClassName = className + &quot;Test_SliceSimple&quot;;</span>
+<span class="nc" id="L340">            simpleSlice.focusDescription = &quot;测试所有简单复杂度方法（complexity &lt; &quot; + SLICE_THRESHOLD + &quot;）&quot;;</span>
+<span class="nc bnc" id="L341" title="All 2 branches missed.">            for (MethodComplexityInfo method : simpleMethods) {</span>
+<span class="nc" id="L342">                simpleSlice.targetMethods.add(method.methodName);</span>
+<span class="nc" id="L343">            }</span>
+<span class="nc" id="L344">            slices.add(simpleSlice);</span>
+        }
+
+<span class="nc" id="L347">        return slices;</span>
+    }
+
+    /**
+     * 为指定类生成切片并保存到文件
+     * @param className 类名
+     * @return 切片文件路径，如果不需要切分返回 null
+     */
+    public String generateAndSaveSlices(String className) throws IOException {
+<span class="nc" id="L356">        List&lt;SliceInfo&gt; slices = generateSlices(className);</span>
+<span class="nc bnc" id="L357" title="All 4 branches missed.">        if (slices == null || slices.isEmpty()) {</span>
+<span class="nc" id="L358">            return null;</span>
+        }
+
+<span class="nc" id="L361">        ClassComplexityInfo classInfo = loadedClasses.get(className);</span>
+<span class="nc" id="L362">        return saveSlices(className, classInfo.packagePath, slices);</span>
+    }
+
+    /**
+     * 保存切片信息到文件
+     */
+    private String saveSlices(String className, String packagePath, List&lt;SliceInfo&gt; slices) throws IOException {
+<span class="nc" id="L369">        Path sliceDir = Paths.get(SLICE_DIR);</span>
+<span class="nc" id="L370">        Files.createDirectories(sliceDir);</span>
+
+<span class="nc" id="L372">        Path sliceFile = sliceDir.resolve(className + &quot;_slices.json&quot;);</span>
+
+<span class="nc" id="L374">        JsonObject root = new JsonObject();</span>
+<span class="nc" id="L375">        root.addProperty(&quot;className&quot;, className);</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        root.addProperty(&quot;packagePath&quot;, packagePath != null ? packagePath : &quot;&quot;);</span>
+<span class="nc" id="L377">        root.addProperty(&quot;totalSlices&quot;, slices.size());</span>
+
+<span class="nc" id="L379">        JsonArray slicesArray = new JsonArray();</span>
+<span class="nc bnc" id="L380" title="All 2 branches missed.">        for (SliceInfo slice : slices) {</span>
+<span class="nc" id="L381">            JsonObject sliceObj = new JsonObject();</span>
+<span class="nc" id="L382">            sliceObj.addProperty(&quot;sliceIndex&quot;, slice.sliceIndex);</span>
+<span class="nc" id="L383">            sliceObj.addProperty(&quot;sliceName&quot;, slice.sliceName);</span>
+<span class="nc" id="L384">            sliceObj.addProperty(&quot;testClassName&quot;, slice.testClassName);</span>
+<span class="nc" id="L385">            sliceObj.addProperty(&quot;focusDescription&quot;, slice.focusDescription);</span>
+
+<span class="nc" id="L387">            JsonArray methodsArray = new JsonArray();</span>
+<span class="nc bnc" id="L388" title="All 2 branches missed.">            for (String method : slice.targetMethods) {</span>
+<span class="nc" id="L389">                methodsArray.add(method);</span>
+<span class="nc" id="L390">            }</span>
+<span class="nc" id="L391">            sliceObj.add(&quot;targetMethods&quot;, methodsArray);</span>
+
+<span class="nc" id="L393">            slicesArray.add(sliceObj);</span>
+<span class="nc" id="L394">        }</span>
+<span class="nc" id="L395">        root.add(&quot;slices&quot;, slicesArray);</span>
+
+<span class="nc" id="L397">        String json = prettyGson.toJson(root);</span>
+<span class="nc" id="L398">        Files.write(sliceFile, json.getBytes(StandardCharsets.UTF_8));</span>
+
+<span class="nc" id="L400">        System.out.println(&quot;切片信息已保存: &quot; + sliceFile);</span>
+<span class="nc" id="L401">        return sliceFile.toString();</span>
+    }
+
+    /**
+     * 构建测试重点描述
+     */
+    private String buildFocusDescription(MethodComplexityInfo method) {
+<span class="nc" id="L408">        StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L409">        sb.append(&quot;测试方法 &quot;).append(method.methodName);</span>
+<span class="nc" id="L410">        sb.append(&quot; (complexity=&quot;).append(method.complexity).append(&quot;)&quot;);</span>
+
+<span class="nc" id="L412">        List&lt;String&gt; focuses = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">        if (method.branchCount &gt; 0) {</span>
+<span class="nc" id="L414">            focuses.add(&quot;覆盖&quot; + method.branchCount + &quot;个分支路径&quot;);</span>
+        }
+<span class="nc bnc" id="L416" title="All 2 branches missed.">        if (method.loopCount &gt; 0) {</span>
+<span class="nc" id="L417">            focuses.add(&quot;测试&quot; + method.loopCount + &quot;个循环边界&quot;);</span>
+        }
+<span class="nc bnc" id="L419" title="All 2 branches missed.">        if (method.tryCatchCount &gt; 0) {</span>
+<span class="nc" id="L420">            focuses.add(&quot;覆盖&quot; + method.tryCatchCount + &quot;个异常处理&quot;);</span>
+        }
+
+<span class="nc bnc" id="L423" title="All 2 branches missed.">        if (!focuses.isEmpty()) {</span>
+<span class="nc" id="L424">            sb.append(&quot;，&quot;).append(String.join(&quot;、&quot;, focuses));</span>
+        }
+
+<span class="nc" id="L427">        return sb.toString();</span>
+    }
+
+    // ==================== 切片读取 ====================
+
+    /**
+     * 从文件读取切片信息
+     * @param className 类名
+     * @return 切片列表，文件不存在返回 null
+     */
+    public List&lt;SliceInfo&gt; loadSlices(String className) throws IOException {
+<span class="nc" id="L438">        Path sliceFile = Paths.get(SLICE_DIR, className + &quot;_slices.json&quot;);</span>
+<span class="nc bnc" id="L439" title="All 2 branches missed.">        if (!Files.exists(sliceFile)) {</span>
+<span class="nc" id="L440">            return null;</span>
+        }
+
+<span class="nc" id="L443">        String content = new String(Files.readAllBytes(sliceFile), StandardCharsets.UTF_8);</span>
+<span class="nc" id="L444">        JsonObject root = gson.fromJson(content, JsonObject.class);</span>
+
+<span class="nc" id="L446">        List&lt;SliceInfo&gt; slices = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L447">        JsonArray slicesArray = root.getAsJsonArray(&quot;slices&quot;);</span>
+
+<span class="nc bnc" id="L449" title="All 2 branches missed.">        for (int i = 0; i &lt; slicesArray.size(); i++) {</span>
+<span class="nc" id="L450">            JsonObject sliceObj = slicesArray.get(i).getAsJsonObject();</span>
+
+<span class="nc" id="L452">            SliceInfo slice = new SliceInfo(</span>
+<span class="nc" id="L453">                    sliceObj.get(&quot;sliceIndex&quot;).getAsInt(),</span>
+<span class="nc" id="L454">                    sliceObj.get(&quot;sliceName&quot;).getAsString()</span>
+            );
+<span class="nc" id="L456">            slice.testClassName = sliceObj.get(&quot;testClassName&quot;).getAsString();</span>
+<span class="nc" id="L457">            slice.focusDescription = sliceObj.get(&quot;focusDescription&quot;).getAsString();</span>
+
+<span class="nc" id="L459">            JsonArray methodsArray = sliceObj.getAsJsonArray(&quot;targetMethods&quot;);</span>
+<span class="nc bnc" id="L460" title="All 2 branches missed.">            for (int j = 0; j &lt; methodsArray.size(); j++) {</span>
+<span class="nc" id="L461">                slice.targetMethods.add(methodsArray.get(j).getAsString());</span>
+            }
+
+<span class="nc" id="L464">            slices.add(slice);</span>
+        }
+
+<span class="nc" id="L467">        return slices;</span>
+    }
+
+    /**
+     * 检查切片文件是否存在
+     */
+    public static boolean hasSliceFile(String className) {
+<span class="nc" id="L474">        return Files.exists(Paths.get(SLICE_DIR, className + &quot;_slices.json&quot;));</span>
+    }
+
+    // ==================== 统计信息 ====================
+
+    /**
+     * 打印统计信息
+     */
+    public void printStatistics() {
+<span class="nc" id="L483">        System.out.println(&quot;\n【复杂度报告统计】&quot;);</span>
+<span class="nc" id="L484">        System.out.println(&quot;  总类数: &quot; + loadedClasses.size());</span>
+
+<span class="nc" id="L486">        List&lt;String&gt; needSlice = getClassesNeedingSlice();</span>
+<span class="nc" id="L487">        List&lt;String&gt; noSlice = getClassesNotNeedingSlice();</span>
+
+<span class="nc" id="L489">        System.out.println(&quot;  需要切分: &quot; + needSlice.size() + &quot; 个&quot;);</span>
+<span class="nc bnc" id="L490" title="All 2 branches missed.">        for (String className : needSlice) {</span>
+<span class="nc" id="L491">            ClassComplexityInfo info = loadedClasses.get(className);</span>
+<span class="nc" id="L492">            System.out.println(&quot;    - &quot; + className + &quot; (&quot; + info.getDetailedMethods().size() + &quot; 个高复杂度方法)&quot;);</span>
+<span class="nc" id="L493">        }</span>
+
+<span class="nc" id="L495">        System.out.println(&quot;  普通处理: &quot; + noSlice.size() + &quot; 个&quot;);</span>
+<span class="nc" id="L496">    }</span>
+
+    // ==================== 主方法（测试用） ====================
+
+    public static void main(String[] args) throws IOException {
+<span class="nc" id="L501">        ReportBasedTestRunner runner = new ReportBasedTestRunner();</span>
+
+        // 加载报告
+<span class="nc" id="L504">        runner.loadAllReports(&quot;src/main/java/M/cli&quot;);</span>
+
+        // 打印统计
+<span class="nc" id="L507">        runner.printStatistics();</span>
+
+        // 为需要切分的类生成切片
+<span class="nc bnc" id="L510" title="All 2 branches missed.">        for (String className : runner.getClassesNeedingSlice()) {</span>
+<span class="nc" id="L511">            runner.generateAndSaveSlices(className);</span>
+<span class="nc" id="L512">        }</span>
+<span class="nc" id="L513">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

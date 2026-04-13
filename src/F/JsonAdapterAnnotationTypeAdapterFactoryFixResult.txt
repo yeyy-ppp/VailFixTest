@@ -1,0 +1,200 @@
+[2026-01-23 20:12:27] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package gson.internal.bind;
+
+import gson.Gson;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.annotations.JsonAdapter;
+import gson.internal.ConstructorConstructor;
+import gson.reflect.TypeToken;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
+import java.lang.reflect.Field;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentMap;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class JsonAdapterAnnotationTypeAdapterFactoryTest {
+
+    @Test
+    void create_noAnnotation_returnsNull() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        Gson gson = new Gson();
+        TypeToken<String> type = TypeToken.get(String.class);
+        
+        TypeAdapter<String> result = factory.create(gson, type);
+        
+        assertNull(result);
+    }
+
+    @Test
+    void create_adapterClassIsInvalid_throwsException() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        Gson gson = new Gson();
+        TypeToken<String> type = TypeToken.get(String.class);
+        JsonAdapter annotation = createAnnotation(String.class);
+        
+        Executable action = () -> factory.getTypeAdapter(
+            factory.constructorConstructor, gson, type, annotation, true
+        );
+        
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, action);
+        assertTrue(exception.getMessage().contains("Invalid attempt to bind"));
+    }
+
+    @Test
+    void isClassJsonAdapterFactory_dummyFactory_returnsTrue() throws Exception {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        TypeToken<?> type = TypeToken.get(Object.class);
+        Field field = JsonAdapterAnnotationTypeAdapterFactory.class
+            .getDeclaredField("TREE_TYPE_CLASS_DUMMY_FACTORY");
+        field.setAccessible(true);
+        TypeAdapterFactory dummyFactory = (TypeAdapterFactory) field.get(null);
+        
+        boolean result = factory.isClassJsonAdapterFactory(type, dummyFactory);
+        
+        assertTrue(result);
+    }
+
+    @Test
+    void isClassJsonAdapterFactory_existingFactoryMatch_returnsTrue() throws Exception {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        TypeToken<?> type = TypeToken.get(String.class);
+        TypeAdapterFactory testFactory = (gson, typeToken) -> null;
+        
+        Field mapField = JsonAdapterAnnotationTypeAdapterFactory.class
+            .getDeclaredField("adapterFactoryMap");
+        mapField.setAccessible(true);
+        ConcurrentMap<Class<?>, TypeAdapterFactory> map = 
+            (ConcurrentMap<Class<?>, TypeAdapterFactory>) mapField.get(factory);
+        map.put(String.class, testFactory);
+        
+        boolean result = factory.isClassJsonAdapterFactory(type, testFactory);
+        
+        assertTrue(result);
+    }
+
+    @Test
+    void isClassJsonAdapterFactory_noAnnotation_returnsFalse() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        TypeToken<?> type = TypeToken.get(Integer.class);
+        TypeAdapterFactory testFactory = (gson, typeToken) -> null;
+        
+        boolean result = factory.isClassJsonAdapterFactory(type, testFactory);
+        
+        assertFalse(result);
+    }
+
+    @Test
+    void isClassJsonAdapterFactory_annotationValueNotFactory_returnsFalse() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        TypeToken<?> type = TypeToken.get(TestClass.class);
+        TypeAdapterFactory testFactory = (gson, typeToken) -> null;
+        
+        boolean result = factory.isClassJsonAdapterFactory(type, testFactory);
+        
+        assertFalse(result);
+    }
+
+    @Test
+    void getAnnotation_classWithAnnotation_returnsAnnotation() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        JsonAdapter result = factory.getAnnotation(TestClass.class);
+        assertNotNull(result);
+        assertEquals(Object.class, result.value());
+    }
+
+    @Test
+    void getAnnotation_classWithoutAnnotation_returnsNull() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        JsonAdapter result = factory.getAnnotation(String.class);
+        assertNull(result);
+    }
+
+    @Test
+    void createAdapter_invalidClass_throwsException() {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        Executable action = () -> factory.createAdapter(factory.constructorConstructor, Object.class);
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, action);
+        assertTrue(exception.getMessage().contains("Unable to invoke no-args constructor"));
+    }
+
+    @Test
+    void putFactoryAndGetCurrent_newClass_returnsCurrentFactory() throws Exception {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        TypeAdapterFactory testFactory = (gson, type) -> null;
+        TypeAdapterFactory result = factory.putFactoryAndGetCurrent(String.class, testFactory);
+        assertSame(testFactory, result);
+        ConcurrentMap<Class<?>, TypeAdapterFactory> map = getAdapterFactoryMap(factory);
+        assertSame(testFactory, map.get(String.class));
+    }
+
+    @Test
+    void putFactoryAndGetCurrent_existingClass_returnsExistingFactory() throws Exception {
+        JsonAdapterAnnotationTypeAdapterFactory factory = new JsonAdapterAnnotationTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap())
+        );
+        TypeAdapterFactory existingFactory = (gson, type) -> null;
+        factory.putFactoryAndGetCurrent(Integer.class, existingFactory);
+        TypeAdapterFactory newFactory = (gson, type) -> null;
+        TypeAdapterFactory result = factory.putFactoryAndGetCurrent(Integer.class, newFactory);
+        assertSame(existingFactory, result);
+        ConcurrentMap<Class<?>, TypeAdapterFactory> map = getAdapterFactoryMap(factory);
+        assertSame(existingFactory, map.get(Integer.class));
+    }
+
+    private static JsonAdapter createAnnotation(Class<?> adapterClass) {
+        return new JsonAdapter() {
+            @Override
+            public Class<? extends java.lang.annotation.Annotation> annotationType() {
+                return JsonAdapter.class;
+            }
+            @Override
+            public Class<?> value() {
+                return adapterClass;
+            }
+            @Override
+            public boolean nullSafe() {
+                return false;
+            }
+        };
+    }
+
+    private ConcurrentMap<Class<?>, TypeAdapterFactory> getAdapterFactoryMap(
+        JsonAdapterAnnotationTypeAdapterFactory factory) throws Exception {
+        Field mapField = JsonAdapterAnnotationTypeAdapterFactory.class.getDeclaredField("adapterFactoryMap");
+        mapField.setAccessible(true);
+        return (ConcurrentMap<Class<?>, TypeAdapterFactory>) mapField.get(factory);
+    }
+
+    @JsonAdapter(Object.class)
+    private static class TestClass {}
+}
+```
+

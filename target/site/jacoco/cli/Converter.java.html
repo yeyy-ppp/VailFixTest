@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Converter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">Converter.java</span></div><h1>Converter.java</h1><pre class="source lang-java linenums">package cli;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+@FunctionalInterface
+public interface Converter&lt;T, E extends Exception&gt; {
+<span class="fc" id="L12">    Converter&lt;?, RuntimeException&gt; DEFAULT = s -&gt; s;</span>
+<span class="fc" id="L13">    Converter&lt;Class&lt;?&gt;, ClassNotFoundException&gt; CLASS = Class::forName;</span>
+<span class="fc" id="L14">    Converter&lt;File, NullPointerException&gt; FILE = File::new;</span>
+<span class="fc" id="L15">    Converter&lt;Path, InvalidPathException&gt; PATH = Paths::get;</span>
+<span class="fc" id="L16">    Converter&lt;Number, NumberFormatException&gt; NUMBER =</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">            s -&gt; s.indexOf('.') != -1 ? (Number) Double.valueOf(s) : (Number) Long.valueOf(s);</span>
+<span class="fc" id="L18">    Converter&lt;Object, ReflectiveOperationException&gt; OBJECT =</span>
+<span class="fc" id="L19">            s -&gt; CLASS.apply(s).getConstructor().newInstance();</span>
+<span class="fc" id="L20">    Converter&lt;URL, MalformedURLException&gt; URL = URL::new;</span>
+<span class="fc" id="L21">    Converter&lt;Date, java.text.ParseException&gt; DATE =</span>
+<span class="nc" id="L22">            s -&gt; new SimpleDateFormat(&quot;EEE MMM dd HH:mm:ss zzz yyyy&quot;).parse(s);</span>
+    T apply(String string) throws E;
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

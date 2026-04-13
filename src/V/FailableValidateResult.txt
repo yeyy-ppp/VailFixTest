@@ -1,0 +1,12 @@
+[2026-01-23 21:53:41] 验证结果
+错误类型: 编译错误, 错误行: 50, 错误原因: UncheckedIOException和UndeclaredThrowableException未导入, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: accept, accept, accept, accept, accept, apply, apply, applyAsDouble, applyNonNull, applyNonNull, applyNonNull, asBiConsumer, asBiFunction, asBiPredicate, asCallable, asConsumer, asFunction, asPredicate, asRunnable, asSupplier, call, get, getAsBoolean, getAsDouble, rethrow, run, run, test, test, Failable
+  未覆盖: stream
+
+[2026-01-23 22:17:30] 修复后验证结果
+错误类型: 编译错误, 错误行: 397, 错误原因: [测试方法testRunObjectFailableRunnable_Exception未完整实现], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: accept, accept, accept, accept, accept, apply, apply, applyAsDouble, applyNonNull, applyNonNull, applyNonNull, asBiConsumer, asBiFunction, asBiPredicate, asCallable, asConsumer, asFunction, asPredicate, asRunnable, asSupplier, call, get, getAsBoolean, getAsDouble, rethrow, run, run, stream, test, test, Failable
+  未覆盖: 全部覆盖
+

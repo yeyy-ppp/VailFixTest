@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PosixParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">PosixParser.java</span></div><h1>PosixParser.java</h1><pre class="source lang-java linenums">package cli;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+@Deprecated
+public class PosixParser extends Parser {
+<span class="fc" id="L8">    private final List&lt;String&gt; tokens = new ArrayList&lt;&gt;();</span>
+    private boolean eatTheRest;
+    private Option currentOption;
+    private Options options;
+<span class="fc" id="L12">    public PosixParser() {</span>
+<span class="fc" id="L13">    }</span>
+    protected void burstToken(final String token, final boolean stopAtNonOption) {
+<span class="fc bfc" id="L15" title="All 2 branches covered.">        for (int i = 1; i &lt; token.length(); i++) {</span>
+<span class="fc" id="L16">            final String ch = String.valueOf(token.charAt(i));</span>
+<span class="fc bfc" id="L17" title="All 2 branches covered.">            if (!options.hasOption(ch)) {</span>
+<span class="pc bpc" id="L18" title="1 of 2 branches missed.">                if (stopAtNonOption) {</span>
+<span class="fc" id="L19">                    processNonOptionToken(token.substring(i), true);</span>
+                } else {
+<span class="nc" id="L21">                    tokens.add(token);</span>
+                }
+<span class="nc" id="L23">                break;</span>
+            }
+<span class="fc" id="L25">            tokens.add(&quot;-&quot; + ch);</span>
+<span class="fc" id="L26">            currentOption = options.getOption(ch);</span>
+<span class="pc bpc" id="L27" title="1 of 4 branches missed.">            if (currentOption.hasArg() &amp;&amp; token.length() != i + 1) {</span>
+<span class="fc" id="L28">                tokens.add(token.substring(i + 1));</span>
+<span class="fc" id="L29">                break;</span>
+            }
+        }
+<span class="fc" id="L32">    }</span>
+    @Override
+    protected String[] flatten(
+            final Options options, final String[] arguments, final boolean stopAtNonOption)
+            throws ParseException {
+<span class="fc" id="L37">        init();</span>
+<span class="fc" id="L38">        this.options = options;</span>
+<span class="fc" id="L39">        final Iterator&lt;String&gt; iter = Arrays.asList(arguments).iterator();</span>
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        while (iter.hasNext()) {</span>
+<span class="fc" id="L41">            final String token = iter.next();</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">            if (token != null) {</span>
+<span class="fc bfc" id="L43" title="All 4 branches covered.">                if (&quot;-&quot;.equals(token) || &quot;--&quot;.equals(token)) {</span>
+<span class="fc" id="L44">                    tokens.add(token);</span>
+<span class="fc bfc" id="L45" title="All 2 branches covered.">                } else if (token.startsWith(&quot;--&quot;)) {</span>
+<span class="fc" id="L46">                    final int pos = DefaultParser.indexOfEqual(token);</span>
+<span class="fc bfc" id="L47" title="All 2 branches covered.">                    final String opt = pos == -1 ? token : token.substring(0, pos);</span>
+<span class="fc" id="L48">                    final List&lt;String&gt; matchingOpts = options.getMatchingOptions(opt);</span>
+<span class="pc bpc" id="L49" title="1 of 2 branches missed.">                    if (matchingOpts.isEmpty()) {</span>
+<span class="nc" id="L50">                        processNonOptionToken(token, stopAtNonOption);</span>
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">                    } else if (matchingOpts.size() &gt; 1) {</span>
+<span class="nc" id="L52">                        throw new AmbiguousOptionException(opt, matchingOpts);</span>
+                    } else {
+<span class="fc" id="L54">                        currentOption = options.getOption(matchingOpts.get(0));</span>
+<span class="fc" id="L55">                        tokens.add(&quot;--&quot; + currentOption.getLongOpt());</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">                        if (pos != -1) {</span>
+<span class="fc" id="L57">                            tokens.add(token.substring(pos + 1));</span>
+                        }
+                    }
+<span class="fc bfc" id="L60" title="All 2 branches covered.">                } else if (token.startsWith(&quot;-&quot;)) {</span>
+<span class="pc bpc" id="L61" title="1 of 4 branches missed.">                    if (token.length() == 2 || options.hasOption(token)) {</span>
+<span class="fc" id="L62">                        processOptionToken(token, stopAtNonOption);</span>
+<span class="pc bpc" id="L63" title="1 of 2 branches missed.">                    } else if (!options.getMatchingOptions(token).isEmpty()) {</span>
+<span class="nc" id="L64">                        final List&lt;String&gt; matchingOpts = options.getMatchingOptions(token);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                        if (matchingOpts.size() &gt; 1) {</span>
+<span class="nc" id="L66">                            throw new AmbiguousOptionException(token, matchingOpts);</span>
+                        }
+<span class="nc" id="L68">                        final Option opt = options.getOption(matchingOpts.get(0));</span>
+<span class="nc" id="L69">                        processOptionToken(&quot;-&quot; + opt.getLongOpt(), stopAtNonOption);</span>
+<span class="nc" id="L70">                    }</span>
+                    else {
+<span class="fc" id="L72">                        burstToken(token, stopAtNonOption);</span>
+                    }
+                } else {
+<span class="fc" id="L75">                    processNonOptionToken(token, stopAtNonOption);</span>
+                }
+            }
+<span class="fc" id="L78">            gobble(iter);</span>
+<span class="fc" id="L79">        }</span>
+<span class="fc" id="L80">        return tokens.toArray(Util.EMPTY_STRING_ARRAY);</span>
+    }
+    private void gobble(final Iterator&lt;String&gt; iter) {
+<span class="fc bfc" id="L83" title="All 2 branches covered.">        if (eatTheRest) {</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">            while (iter.hasNext()) {</span>
+<span class="fc" id="L85">                tokens.add(iter.next());</span>
+            }
+        }
+<span class="fc" id="L88">    }</span>
+    private void init() {
+<span class="fc" id="L90">        eatTheRest = false;</span>
+<span class="fc" id="L91">        tokens.clear();</span>
+<span class="fc" id="L92">    }</span>
+    private void processNonOptionToken(final String value, final boolean stopAtNonOption) {
+<span class="pc bpc" id="L94" title="1 of 6 branches missed.">        if (stopAtNonOption &amp;&amp; (currentOption == null || !currentOption.hasArg())) {</span>
+<span class="fc" id="L95">            eatTheRest = true;</span>
+<span class="fc" id="L96">            tokens.add(&quot;--&quot;);</span>
+        }
+<span class="fc" id="L98">        tokens.add(value);</span>
+<span class="fc" id="L99">    }</span>
+    private void processOptionToken(final String token, final boolean stopAtNonOption) {
+<span class="pc bpc" id="L101" title="1 of 4 branches missed.">        if (stopAtNonOption &amp;&amp; !options.hasOption(token)) {</span>
+<span class="nc" id="L102">            eatTheRest = true;</span>
+        }
+<span class="pc bpc" id="L104" title="1 of 2 branches missed.">        if (options.hasOption(token)) {</span>
+<span class="fc" id="L105">            currentOption = options.getOption(token);</span>
+        }
+<span class="fc" id="L107">        tokens.add(token);</span>
+<span class="fc" id="L108">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

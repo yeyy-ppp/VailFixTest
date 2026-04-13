@@ -1,0 +1,15 @@
+```
+包路径：gson
+类名：FieldNamingPolicy
+父类：java.lang.Enum
+依赖类：FieldNamingStrategy
+---
+序号：1
+方法名：separateCamelCase(String, char)
+返回类型：String
+功能描述：将驼峰命名字符串用指定分隔符分割
+序号：2
+方法名：upperCaseFirstLetter(String)
+返回类型：String
+功能描述：将字符串的首字母转为大写
+```

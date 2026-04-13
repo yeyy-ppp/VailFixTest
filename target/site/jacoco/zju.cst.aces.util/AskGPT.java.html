@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AskGPT.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util</a> &gt; <span class="el_source">AskGPT.java</span></div><h1>AskGPT.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.config.ModelConfig;
+import zju.cst.aces.dto.ChatMessage;
+import zju.cst.aces.dto.ChatResponse;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+public class AskGPT {
+<span class="nc" id="L20">    private static final MediaType MEDIA_TYPE = MediaType.parse(&quot;application/json&quot;);</span>
+<span class="nc" id="L21">    private static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+    public Config config;
+
+<span class="nc" id="L24">    public AskGPT(Config config) {</span>
+<span class="nc" id="L25">        this.config = config;</span>
+<span class="nc" id="L26">    }</span>
+
+    public ChatResponse askChatGPT(List&lt;ChatMessage&gt; chatMessages) {
+<span class="nc" id="L29">        String apiKey = config.getRandomKey();</span>
+<span class="nc" id="L30">        int maxTry = 5;</span>
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        while (maxTry &gt; 0) {</span>
+<span class="nc" id="L32">            Response response = null;</span>
+            try {
+<span class="nc" id="L34">                Map&lt;String, Object&gt; payload = new HashMap&lt;&gt;();</span>
+
+//                if (Objects.equals(config.getModel(), &quot;code-llama&quot;) || Objects.equals(config.getModel(), &quot;code-llama-13B&quot;)) {
+//                    payload.put(&quot;max_tokens&quot;, 8092);
+//                }
+
+<span class="nc" id="L40">                ModelConfig modelConfig = config.getModel().getDefaultConfig();</span>
+
+<span class="nc" id="L42">                payload.put(&quot;messages&quot;, chatMessages);</span>
+<span class="nc" id="L43">                payload.put(&quot;model&quot;, modelConfig.getModelName());</span>
+<span class="nc" id="L44">                payload.put(&quot;temperature&quot;, config.getTemperature());</span>
+<span class="nc" id="L45">                payload.put(&quot;frequency_penalty&quot;, config.getFrequencyPenalty());</span>
+<span class="nc" id="L46">                payload.put(&quot;presence_penalty&quot;, config.getPresencePenalty());</span>
+<span class="nc" id="L47">                payload.put(&quot;max_tokens&quot;, config.getMaxResponseTokens());</span>
+<span class="nc" id="L48">                String jsonPayload = GSON.toJson(payload);</span>
+
+<span class="nc" id="L50">                RequestBody body = RequestBody.create(MEDIA_TYPE, jsonPayload);</span>
+<span class="nc" id="L51">                Request request = new Request.Builder().url(modelConfig.getUrl()).post(body).addHeader(&quot;Content-Type&quot;, &quot;application/json&quot;).addHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey).build();</span>
+
+<span class="nc" id="L53">                response = config.getClient().newCall(request).execute();</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                if (!response.isSuccessful()) throw new IOException(&quot;Unexpected code &quot; + response);</span>
+                try {
+<span class="nc" id="L56">                    Thread.sleep(config.sleepTime);</span>
+<span class="nc" id="L57">                } catch (InterruptedException ie) {</span>
+<span class="nc" id="L58">                    throw new RuntimeException(&quot;In AskGPT.askChatGPT: &quot; + ie);</span>
+<span class="nc" id="L59">                }</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">                if (response.body() == null) throw new IOException(&quot;Response body is null.&quot;);</span>
+<span class="nc" id="L61">                ChatResponse chatResponse = GSON.fromJson(response.body().string(), ChatResponse.class);</span>
+<span class="nc" id="L62">                response.close();</span>
+<span class="nc" id="L63">                return chatResponse;</span>
+<span class="nc" id="L64">            } catch (IOException e) {</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">                if (response != null) {</span>
+<span class="nc" id="L66">                    response.close();</span>
+                }
+<span class="nc" id="L68">                config.getLogger().error(&quot;In AskGPT.askChatGPT: &quot; + e);</span>
+<span class="nc" id="L69">                maxTry--;</span>
+            }
+<span class="nc" id="L71">        }</span>
+<span class="nc" id="L72">        config.getLogger().debug(&quot;AskGPT: Failed to get response\n&quot;);</span>
+<span class="nc" id="L73">        return null;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

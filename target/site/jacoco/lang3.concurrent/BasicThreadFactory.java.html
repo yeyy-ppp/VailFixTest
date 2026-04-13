@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BasicThreadFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.concurrent</a> &gt; <span class="el_source">BasicThreadFactory.java</span></div><h1>BasicThreadFactory.java</h1><pre class="source lang-java linenums">package lang3.concurrent;
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicLong;
+public class BasicThreadFactory implements ThreadFactory {
+    public static class Builder implements lang3.builder.Builder&lt;BasicThreadFactory&gt; {
+        private ThreadFactory factory;
+        private UncaughtExceptionHandler exceptionHandler;
+        private String namingPattern;
+        private Integer priority;
+        private Boolean daemon;
+        @Deprecated
+<span class="fc" id="L14">        public Builder() {</span>
+<span class="fc" id="L15">        }</span>
+        @Override
+        public BasicThreadFactory build() {
+<span class="fc" id="L18">            final BasicThreadFactory factory = new BasicThreadFactory(this);</span>
+<span class="fc" id="L19">            reset();</span>
+<span class="fc" id="L20">            return factory;</span>
+        }
+        public Builder priority(final int priority) {
+<span class="fc" id="L23">            this.priority = Integer.valueOf(priority);</span>
+<span class="fc" id="L24">            return this;</span>
+        }
+        public void reset() {
+<span class="fc" id="L27">            factory = null;</span>
+<span class="fc" id="L28">            exceptionHandler = null;</span>
+<span class="fc" id="L29">            namingPattern = null;</span>
+<span class="fc" id="L30">            priority = null;</span>
+<span class="fc" id="L31">            daemon = null;</span>
+<span class="fc" id="L32">        }</span>
+    }
+    public static Builder builder() {
+<span class="fc" id="L35">        return new Builder();</span>
+    }
+    private final AtomicLong threadCounter;
+    private final ThreadFactory wrappedFactory;
+    private final UncaughtExceptionHandler uncaughtExceptionHandler;
+    private final String namingPattern;
+    private final Integer priority;
+    private final Boolean daemon;
+<span class="fc" id="L43">    private BasicThreadFactory(final Builder builder) {</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">        wrappedFactory = builder.factory != null ? builder.factory : Executors.defaultThreadFactory();</span>
+<span class="fc" id="L45">        namingPattern = builder.namingPattern;</span>
+<span class="fc" id="L46">        priority = builder.priority;</span>
+<span class="fc" id="L47">        daemon = builder.daemon;</span>
+<span class="fc" id="L48">        uncaughtExceptionHandler = builder.exceptionHandler;</span>
+<span class="fc" id="L49">        threadCounter = new AtomicLong();</span>
+<span class="fc" id="L50">    }</span>
+    public final Boolean getDaemonFlag() {
+<span class="nc" id="L52">        return daemon;</span>
+    }
+    public final String getNamingPattern() {
+<span class="nc" id="L55">        return namingPattern;</span>
+    }
+    public final Integer getPriority() {
+<span class="fc" id="L58">        return priority;</span>
+    }
+    public final UncaughtExceptionHandler getUncaughtExceptionHandler() {
+<span class="nc" id="L61">        return uncaughtExceptionHandler;</span>
+    }
+    public final ThreadFactory getWrappedFactory() {
+<span class="nc" id="L64">        return wrappedFactory;</span>
+    }
+    private void initializeThread(final Thread thread) {
+<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (getNamingPattern() != null) {</span>
+<span class="nc" id="L68">            final Long count = Long.valueOf(threadCounter.incrementAndGet());</span>
+<span class="nc" id="L69">            thread.setName(String.format(getNamingPattern(), count));</span>
+        }
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        if (getUncaughtExceptionHandler() != null) {</span>
+<span class="nc" id="L72">            thread.setUncaughtExceptionHandler(getUncaughtExceptionHandler());</span>
+        }
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        if (getPriority() != null) {</span>
+<span class="nc" id="L75">            thread.setPriority(getPriority().intValue());</span>
+        }
+<span class="nc bnc" id="L77" title="All 2 branches missed.">        if (getDaemonFlag() != null) {</span>
+<span class="nc" id="L78">            thread.setDaemon(getDaemonFlag().booleanValue());</span>
+        }
+<span class="nc" id="L80">    }</span>
+    @Override
+    public Thread newThread(final Runnable runnable) {
+<span class="nc" id="L83">        final Thread thread = getWrappedFactory().newThread(runnable);</span>
+<span class="nc" id="L84">        initializeThread(thread);</span>
+<span class="nc" id="L85">        return thread;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectionHelper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.reflect</a> &gt; <span class="el_source">ReflectionHelper.java</span></div><h1>ReflectionHelper.java</h1><pre class="source lang-java linenums">package gson.internal.reflect;
+import com.google.gson.internal.GsonBuildConfig;
+import gson.JsonIOException;
+import gson.internal.TroubleshootingGuide;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+public class ReflectionHelper {
+  private static final RecordHelper RECORD_HELPER;
+  static {
+    RecordHelper instance;
+    try {
+<span class="nc" id="L15">      instance = new RecordSupportedHelper();</span>
+<span class="fc" id="L16">    } catch (ReflectiveOperationException e) {</span>
+<span class="fc" id="L17">      instance = new RecordNotSupportedHelper();</span>
+<span class="nc" id="L18">    }</span>
+<span class="fc" id="L19">    RECORD_HELPER = instance;</span>
+<span class="fc" id="L20">  }</span>
+  private ReflectionHelper() {}
+  private static String getInaccessibleTroubleshootingSuffix(Exception e) {
+<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    if (e.getClass().getName().equals(&quot;java.lang.reflect.InaccessibleObjectException&quot;)) {</span>
+<span class="nc" id="L24">      String message = e.getMessage();</span>
+      String troubleshootingId =
+<span class="nc bnc" id="L26" title="All 4 branches missed.">          message != null &amp;&amp; message.contains(&quot;to module com.google.gson&quot;)</span>
+<span class="nc" id="L27">              ? &quot;reflection-inaccessible-to-module-gson&quot;</span>
+<span class="nc" id="L28">              : &quot;reflection-inaccessible&quot;;</span>
+<span class="nc" id="L29">      return &quot;\nSee &quot; + TroubleshootingGuide.createUrl(troubleshootingId);</span>
+    }
+<span class="fc" id="L31">    return &quot;&quot;;</span>
+  }
+  public static void makeAccessible(AccessibleObject object) throws JsonIOException {
+    try {
+<span class="fc" id="L35">      object.setAccessible(true);</span>
+<span class="fc" id="L36">    } catch (Exception exception) {</span>
+<span class="fc" id="L37">      String description = getAccessibleObjectDescription(object, false);</span>
+<span class="fc" id="L38">      throw new JsonIOException(</span>
+          &quot;Failed making &quot;
+              + description
+              + &quot; accessible; either increase its visibility&quot;
+              + &quot; or write a custom TypeAdapter for its declaring type.&quot;
+<span class="fc" id="L43">              + getInaccessibleTroubleshootingSuffix(exception),</span>
+          exception);
+<span class="fc" id="L45">    }</span>
+<span class="fc" id="L46">  }</span>
+  public static String getAccessibleObjectDescription(
+      AccessibleObject object, boolean uppercaseFirstLetter) {
+    String description;
+<span class="fc bfc" id="L50" title="All 2 branches covered.">    if (object instanceof Field) {</span>
+<span class="fc" id="L51">      description = &quot;field '&quot; + fieldToString((Field) object) + &quot;'&quot;;</span>
+<span class="fc bfc" id="L52" title="All 2 branches covered.">    } else if (object instanceof Method) {</span>
+<span class="fc" id="L53">      Method method = (Method) object;</span>
+<span class="fc" id="L54">      StringBuilder methodSignatureBuilder = new StringBuilder(method.getName());</span>
+<span class="fc" id="L55">      appendExecutableParameters(method, methodSignatureBuilder);</span>
+<span class="fc" id="L56">      String methodSignature = methodSignatureBuilder.toString();</span>
+<span class="fc" id="L57">      description = &quot;method '&quot; + method.getDeclaringClass().getName() + &quot;#&quot; + methodSignature + &quot;'&quot;;</span>
+<span class="fc bfc" id="L58" title="All 2 branches covered.">    } else if (object instanceof Constructor) {</span>
+<span class="fc" id="L59">      description = &quot;constructor '&quot; + constructorToString((Constructor&lt;?&gt;) object) + &quot;'&quot;;</span>
+    } else {
+<span class="fc" id="L61">      description = &quot;&lt;unknown AccessibleObject&gt; &quot; + object.toString();</span>
+    }
+<span class="pc bpc" id="L63" title="1 of 4 branches missed.">    if (uppercaseFirstLetter &amp;&amp; Character.isLowerCase(description.charAt(0))) {</span>
+<span class="fc" id="L64">      description = Character.toUpperCase(description.charAt(0)) + description.substring(1);</span>
+    }
+<span class="fc" id="L66">    return description;</span>
+  }
+  public static String fieldToString(Field field) {
+<span class="fc" id="L69">    return field.getDeclaringClass().getName() + &quot;#&quot; + field.getName();</span>
+  }
+  public static String constructorToString(Constructor&lt;?&gt; constructor) {
+<span class="fc" id="L72">    StringBuilder stringBuilder = new StringBuilder(constructor.getDeclaringClass().getName());</span>
+<span class="fc" id="L73">    appendExecutableParameters(constructor, stringBuilder);</span>
+<span class="fc" id="L74">    return stringBuilder.toString();</span>
+  }
+  private static void appendExecutableParameters(
+      AccessibleObject executable, StringBuilder stringBuilder) {
+<span class="fc" id="L78">    stringBuilder.append('(');</span>
+    Class&lt;?&gt;[] parameters =
+<span class="fc bfc" id="L80" title="All 2 branches covered.">        (executable instanceof Method)</span>
+<span class="fc" id="L81">            ? ((Method) executable).getParameterTypes()</span>
+<span class="fc" id="L82">            : ((Constructor&lt;?&gt;) executable).getParameterTypes();</span>
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">    for (int i = 0; i &lt; parameters.length; i++) {</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">      if (i &gt; 0) {</span>
+<span class="nc" id="L85">        stringBuilder.append(&quot;, &quot;);</span>
+      }
+<span class="nc" id="L87">      stringBuilder.append(parameters[i].getSimpleName());</span>
+    }
+<span class="fc" id="L89">    stringBuilder.append(')');</span>
+<span class="fc" id="L90">  }</span>
+  public static boolean isStatic(Class&lt;?&gt; clazz) {
+<span class="fc" id="L92">    return Modifier.isStatic(clazz.getModifiers());</span>
+  }
+  public static boolean isAnonymousOrNonStaticLocal(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L95" title="All 6 branches covered.">    return !isStatic(clazz) &amp;&amp; (clazz.isAnonymousClass() || clazz.isLocalClass());</span>
+  }
+  public static String tryMakeAccessible(Constructor&lt;?&gt; constructor) {
+    try {
+<span class="fc" id="L99">      constructor.setAccessible(true);</span>
+<span class="fc" id="L100">      return null;</span>
+<span class="nc" id="L101">    } catch (Exception exception) {</span>
+<span class="nc" id="L102">      return &quot;Failed making constructor '&quot;</span>
+<span class="nc" id="L103">          + constructorToString(constructor)</span>
+          + &quot;' accessible; either increase its visibility or write a custom InstanceCreator or&quot;
+          + &quot; TypeAdapter for its declaring type: &quot;
+<span class="nc" id="L106">          + exception.getMessage()</span>
+<span class="nc" id="L107">          + getInaccessibleTroubleshootingSuffix(exception);</span>
+    }
+  }
+  public static boolean isRecord(Class&lt;?&gt; raw) {
+<span class="fc" id="L111">    return RECORD_HELPER.isRecord(raw);</span>
+  }
+  public static String[] getRecordComponentNames(Class&lt;?&gt; raw) {
+<span class="nc" id="L114">    return RECORD_HELPER.getRecordComponentNames(raw);</span>
+  }
+  public static Method getAccessor(Class&lt;?&gt; raw, Field field) {
+<span class="nc" id="L117">    return RECORD_HELPER.getAccessor(raw, field);</span>
+  }
+  public static &lt;T&gt; Constructor&lt;T&gt; getCanonicalRecordConstructor(Class&lt;T&gt; raw) {
+<span class="nc" id="L120">    return RECORD_HELPER.getCanonicalRecordConstructor(raw);</span>
+  }
+  public static RuntimeException createExceptionForUnexpectedIllegalAccess(
+      IllegalAccessException exception) {
+<span class="nc" id="L124">    throw new RuntimeException(</span>
+        &quot;Unexpected IllegalAccessException occurred (Gson &quot;
+            + GsonBuildConfig.VERSION
+            + &quot;). Certain ReflectionAccessFilter features require Java &gt;= 9 to work correctly. If&quot;
+            + &quot; you are not using ReflectionAccessFilter, report this to the Gson maintainers.&quot;,
+        exception);
+  }
+  private static RuntimeException createExceptionForRecordReflectionException(
+      ReflectiveOperationException exception) {
+<span class="nc" id="L133">    throw new RuntimeException(</span>
+        &quot;Unexpected ReflectiveOperationException occurred&quot;
+            + &quot; (Gson &quot;
+            + GsonBuildConfig.VERSION
+            + &quot;).&quot;
+            + &quot; To support Java records, reflection is utilized to read out information&quot;
+            + &quot; about records. All these invocations happens after it is established&quot;
+            + &quot; that records exist in the JVM. This exception is unexpected behavior.&quot;,
+        exception);
+  }
+  private abstract static class RecordHelper {
+    abstract boolean isRecord(Class&lt;?&gt; clazz);
+    abstract String[] getRecordComponentNames(Class&lt;?&gt; clazz);
+    abstract &lt;T&gt; Constructor&lt;T&gt; getCanonicalRecordConstructor(Class&lt;T&gt; raw);
+    abstract Method getAccessor(Class&lt;?&gt; raw, Field field);
+  }
+  private static class RecordSupportedHelper extends RecordHelper {
+    private final Method isRecord;
+    private final Method getRecordComponents;
+    private final Method getName;
+    private final Method getType;
+<span class="fc" id="L154">    private RecordSupportedHelper() throws NoSuchMethodException, ClassNotFoundException {</span>
+<span class="nc" id="L155">      isRecord = Class.class.getMethod(&quot;isRecord&quot;);</span>
+<span class="nc" id="L156">      getRecordComponents = Class.class.getMethod(&quot;getRecordComponents&quot;);</span>
+<span class="nc" id="L157">      Class&lt;?&gt; classRecordComponent = Class.forName(&quot;java.lang.reflect.RecordComponent&quot;);</span>
+<span class="nc" id="L158">      getName = classRecordComponent.getMethod(&quot;getName&quot;);</span>
+<span class="nc" id="L159">      getType = classRecordComponent.getMethod(&quot;getType&quot;);</span>
+<span class="nc" id="L160">    }</span>
+    @Override
+    boolean isRecord(Class&lt;?&gt; raw) {
+      try {
+<span class="nc" id="L164">        return (boolean) isRecord.invoke(raw);</span>
+<span class="nc" id="L165">      } catch (ReflectiveOperationException e) {</span>
+<span class="nc" id="L166">        throw createExceptionForRecordReflectionException(e);</span>
+      }
+    }
+    @Override
+    String[] getRecordComponentNames(Class&lt;?&gt; raw) {
+      try {
+<span class="nc" id="L172">        Object[] recordComponents = (Object[]) getRecordComponents.invoke(raw);</span>
+<span class="nc" id="L173">        String[] componentNames = new String[recordComponents.length];</span>
+<span class="nc bnc" id="L174" title="All 2 branches missed.">        for (int i = 0; i &lt; recordComponents.length; i++) {</span>
+<span class="nc" id="L175">          componentNames[i] = (String) getName.invoke(recordComponents[i]);</span>
+        }
+<span class="nc" id="L177">        return componentNames;</span>
+<span class="nc" id="L178">      } catch (ReflectiveOperationException e) {</span>
+<span class="nc" id="L179">        throw createExceptionForRecordReflectionException(e);</span>
+      }
+    }
+    @Override
+    public &lt;T&gt; Constructor&lt;T&gt; getCanonicalRecordConstructor(Class&lt;T&gt; raw) {
+      try {
+<span class="nc" id="L185">        Object[] recordComponents = (Object[]) getRecordComponents.invoke(raw);</span>
+<span class="nc" id="L186">        Class&lt;?&gt;[] recordComponentTypes = new Class&lt;?&gt;[recordComponents.length];</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        for (int i = 0; i &lt; recordComponents.length; i++) {</span>
+<span class="nc" id="L188">          recordComponentTypes[i] = (Class&lt;?&gt;) getType.invoke(recordComponents[i]);</span>
+        }
+<span class="nc" id="L190">        return raw.getDeclaredConstructor(recordComponentTypes);</span>
+<span class="nc" id="L191">      } catch (ReflectiveOperationException e) {</span>
+<span class="nc" id="L192">        throw createExceptionForRecordReflectionException(e);</span>
+      }
+    }
+    @Override
+    public Method getAccessor(Class&lt;?&gt; raw, Field field) {
+      try {
+<span class="nc" id="L198">        return raw.getMethod(field.getName());</span>
+<span class="nc" id="L199">      } catch (ReflectiveOperationException e) {</span>
+<span class="nc" id="L200">        throw createExceptionForRecordReflectionException(e);</span>
+      }
+    }
+  }
+<span class="fc" id="L204">  private static class RecordNotSupportedHelper extends RecordHelper {</span>
+    @Override
+    boolean isRecord(Class&lt;?&gt; clazz) {
+<span class="fc" id="L207">      return false;</span>
+    }
+    @Override
+    String[] getRecordComponentNames(Class&lt;?&gt; clazz) {
+<span class="fc" id="L211">      throw new UnsupportedOperationException(</span>
+          &quot;Records are not supported on this JVM, this method should not be called&quot;);
+    }
+    @Override
+    &lt;T&gt; Constructor&lt;T&gt; getCanonicalRecordConstructor(Class&lt;T&gt; raw) {
+<span class="fc" id="L216">      throw new UnsupportedOperationException(</span>
+          &quot;Records are not supported on this JVM, this method should not be called&quot;);
+    }
+    @Override
+    public Method getAccessor(Class&lt;?&gt; raw, Field field) {
+<span class="fc" id="L221">      throw new UnsupportedOperationException(</span>
+          &quot;Records are not supported on this JVM, this method should not be called&quot;);
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

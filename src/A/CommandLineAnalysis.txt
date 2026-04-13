@@ -1,0 +1,273 @@
+包路径：cli
+类名：CommandLine
+父类：无
+依赖类：Option, OptionGroup, ParseException, Util
+---
+序号：1
+方法名：Builder()
+返回类型：void
+功能描述：Builder的默认构造函数
+序号：2
+方法名：addArg(String arg)
+返回类型：Builder
+功能描述：添加参数到Builder的参数列表
+序号：3
+方法名：addOption(Option option)
+返回类型：Builder
+功能描述：添加选项到Builder的选项列表
+序号：4
+方法名：build()
+返回类型：CommandLine
+功能描述：构建CommandLine实例（已弃用）
+序号：5
+方法名：get()
+返回类型：CommandLine
+功能描述：构建CommandLine实例
+序号：6
+方法名：setDeprecatedHandler(Consumer<Option> deprecatedHandler)
+返回类型：Builder
+功能描述：设置弃用处理器
+序号：7
+方法名：builder()
+返回类型：Builder
+功能描述：创建Builder实例
+序号：8
+方法名：CommandLine()
+返回类型：void
+功能描述：默认构造函数
+序号：9
+方法名：CommandLine(List<String> args, List<Option> options, Consumer<Option> deprecatedHandler)
+返回类型：void
+功能描述：带参数的构造函数
+序号：10
+方法名：addArg(String arg)
+返回类型：void
+功能描述：添加参数到参数列表
+序号：11
+方法名：addOption(Option option)
+返回类型：void
+功能描述：添加选项到选项列表
+序号：12
+方法名：get(Supplier<T> supplier)
+返回类型：T
+功能描述：从Supplier获取值，如果为null则返回null
+序号：13
+方法名：getArgList()
+返回类型：List<String>
+功能描述：获取参数列表
+序号：14
+方法名：getArgs()
+返回类型：String[]
+功能描述：获取参数数组
+序号：15
+方法名：getOptionObject(char optionChar)
+返回类型：Object
+功能描述：获取选项对象（已弃用）
+序号：16
+方法名：getOptionObject(String optionName)
+返回类型：Object
+功能描述：获取选项对象（已弃用）
+序号：17
+方法名：getOptionProperties(Option option)
+返回类型：Properties
+功能描述：获取选项的属性
+序号：18
+方法名：getOptionProperties(String optionName)
+返回类型：Properties
+功能描述：获取选项的属性
+序号：19
+方法名：getOptions()
+返回类型：Option[]
+功能描述：获取所有选项数组
+序号：20
+方法名：getOptionValue(char optionChar)
+返回类型：String
+功能描述：获取选项的值
+序号：21
+方法名：getOptionValue(char optionChar, String defaultValue)
+返回类型：String
+功能描述：获取选项的值，如果不存在则返回默认值
+序号：22
+方法名：getOptionValue(char optionChar, Supplier<String> defaultValue)
+返回类型：String
+功能描述：获取选项的值，如果不存在则从Supplier获取默认值
+序号：23
+方法名：getOptionValue(Option option)
+返回类型：String
+功能描述：获取选项的值
+序号：24
+方法名：getOptionValue(Option option, String defaultValue)
+返回类型：String
+功能描述：获取选项的值，如果不存在则返回默认值
+序号：25
+方法名：getOptionValue(Option option, Supplier<String> defaultValue)
+返回类型：String
+功能描述：获取选项的值，如果不存在则从Supplier获取默认值
+序号：26
+方法名：getOptionValue(OptionGroup optionGroup)
+返回类型：String
+功能描述：获取选项组的选定选项的值
+序号：27
+方法名：getOptionValue(OptionGroup optionGroup, String defaultValue)
+返回类型：String
+功能描述：获取选项组的选定选项的值，如果不存在则返回默认值
+序号：28
+方法名：getOptionValue(OptionGroup optionGroup, Supplier<String> defaultValue)
+返回类型：String
+功能描述：获取选项组的选定选项的值，如果不存在则从Supplier获取默认值
+序号：29
+方法名：getOptionValue(String optionName)
+返回类型：String
+功能描述：获取选项的值
+序号：30
+方法名：getOptionValue(String optionName, String defaultValue)
+返回类型：String
+功能描述：获取选项的值，如果不存在则返回默认值
+序号：31
+方法名：getOptionValue(String optionName, Supplier<String> defaultValue)
+返回类型：String
+功能描述：获取选项的值，如果不存在则从Supplier获取默认值
+序号：32
+方法名：getOptionValues(char optionChar)
+返回类型：String[]
+功能描述：获取选项的所有值
+序号：33
+方法名：getOptionValues(Option option)
+返回类型：String[]
+功能描述：获取选项的所有值
+序号：34
+方法名：getOptionValues(OptionGroup optionGroup)
+返回类型：String[]
+功能描述：获取选项组的选定选项的所有值
+序号：35
+方法名：getOptionValues(String optionName)
+返回类型：String[]
+功能描述：获取选项的所有值
+序号：36
+方法名：getParsedOptionValue(char optionChar)
+返回类型：T
+功能描述：获取解析后的选项值
+序号：37
+方法名：getParsedOptionValue(char optionChar, Supplier<T> defaultValue)
+返回类型：T
+功能描述：获取解析后的选项值，如果不存在则从Supplier获取默认值
+序号：38
+方法名：getParsedOptionValue(char optionChar, T defaultValue)
+返回类型：T
+功能描述：获取解析后的选项值，如果不存在则返回默认值
+序号：39
+方法名：getParsedOptionValue(Option option)
+返回类型：T
+功能描述：获取解析后的选项值
+序号：40
+方法名：getParsedOptionValue(Option option, Supplier<T> defaultValue)
+返回类型：T
+功能描述：获取解析后的选项值，如果不存在则从Supplier获取默认值
+序号：41
+方法名：getParsedOptionValue(Option option, T defaultValue)
+返回类型：T
+功能描述：获取解析后的选项值，如果不存在则返回默认值
+序号：42
+方法名：getParsedOptionValue(OptionGroup optionGroup)
+返回类型：T
+功能描述：获取选项组的选定选项的解析值
+序号：43
+方法名：getParsedOptionValue(OptionGroup optionGroup, Supplier<T> defaultValue)
+返回类型：T
+功能描述：获取选项组的选定选项的解析值，如果不存在则从Supplier获取默认值
+序号：44
+方法名：getParsedOptionValue(OptionGroup optionGroup, T defaultValue)
+返回类型：T
+功能描述：获取选项组的选定选项的解析值，如果不存在则返回默认值
+序号：45
+方法名：getParsedOptionValue(String optionName)
+返回类型：T
+功能描述：获取解析后的选项值
+序号：46
+方法名：getParsedOptionValue(String optionName, Supplier<T> defaultValue)
+返回类型：T
+功能描述：获取解析后的选项值，如果不存在则从Supplier获取默认值
+序号：47
+方法名：getParsedOptionValue(String optionName, T defaultValue)
+返回类型：T
+功能描述：获取解析后的选项值，如果不存在则返回默认值
+序号：48
+方法名：getParsedOptionValues(char optionChar)
+返回类型：T[]
+功能描述：获取解析后的选项值数组
+序号：49
+方法名：getParsedOptionValues(char optionChar, Supplier<T[]> defaultValue)
+返回类型：T[]
+功能描述：获取解析后的选项值数组，如果不存在则从Supplier获取默认值
+序号：50
+方法名：getParsedOptionValues(char optionChar, T[] defaultValue)
+返回类型：T[]
+功能描述：获取解析后的选项值数组，如果不存在则返回默认值数组
+序号：51
+方法名：getParsedOptionValues(Option option)
+返回类型：T[]
+功能描述：获取解析后的选项值数组
+序号：52
+方法名：getParsedOptionValues(Option option, Supplier<T[]> defaultValue)
+返回类型：T[]
+功能描述：获取解析后的选项值数组，如果不存在则从Supplier获取默认值
+序号：53
+方法名：getParsedOptionValues(Option option, T[] defaultValue)
+返回类型：T[]
+功能描述：获取解析后的选项值数组，如果不存在则返回默认值数组
+序号：54
+方法名：getParsedOptionValues(OptionGroup optionGroup)
+返回类型：T[]
+功能描述：获取选项组的选定选项的解析值数组
+序号：55
+方法名：getParsedOptionValues(OptionGroup optionGroup, Supplier<T[]> defaultValue)
+返回类型：T[]
+功能描述：获取选项组的选定选项的解析值数组，如果不存在则从Supplier获取默认值
+序号：56
+方法名：getParsedOptionValues(OptionGroup optionGroup, T[] defaultValue)
+返回类型：T[]
+功能描述：获取选项组的选定选项的解析值数组，如果不存在则返回默认值数组
+序号：57
+方法名：getParsedOptionValues(String optionName)
+返回类型：T[]
+功能描述：获取解析后的选项值数组
+序号：58
+方法名：getParsedOptionValues(String optionName, Supplier<T[]> defaultValue)
+返回类型：T[]
+功能描述：获取解析后的选项值数组，如果不存在则从Supplier获取默认值
+序号：59
+方法名：getParsedOptionValues(String optionName, T[] defaultValue)
+返回类型：T[]
+功能描述：获取解析后的选项值数组，如果不存在则返回默认值数组
+序号：60
+方法名：handleDeprecated(Option option)
+返回类型：void
+功能描述：处理弃用选项的警告
+序号：61
+方法名：hasOption(char optionChar)
+返回类型：boolean
+功能描述：检查是否有指定选项
+序号：62
+方法名：hasOption(Option option)
+返回类型：boolean
+功能描述：检查是否有指定选项
+序号：63
+方法名：hasOption(OptionGroup optionGroup)
+返回类型：boolean
+功能描述：检查选项组是否有选定选项
+序号：64
+方法名：hasOption(String optionName)
+返回类型：boolean
+功能描述：检查是否有指定选项
+序号：65
+方法名：iterator()
+返回类型：Iterator<Option>
+功能描述：返回选项的迭代器
+序号：66
+方法名：processPropertiesFromValues(Properties props, List<String> values)
+返回类型：void
+功能描述：从值列表处理属性
+序号：67
+方法名：resolveOption(String optionName)
+返回类型：Option
+功能描述：解析选项名称到选项对象

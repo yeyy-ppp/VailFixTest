@@ -1,0 +1,479 @@
+类名：TextStyle
+分析阶段：
+  耗时：18065 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：62726 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：9519 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  失败原因：
+修复阶段：
+  耗时：-1748958577546 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：0
+  修复失败原因：
+  修复成功次数：0
+评估阶段：
+  耗时：1748958604070 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【指令覆盖率】：【100%】  
+【分支覆盖率】：【-】  
+【复杂度】：【1】  
+【行覆盖率】：【100%】  
+【方法覆盖率】：【100%】  
+【类覆盖率】：【100%】
+总耗时：136312 毫秒
+总消耗 token 数量：0
+测试代码生成结果：true
+失败原因：
+--------------------------------------------------------
+起始时间：1748958487234
+
+套件 开始时间: 1748958487236
+分析起始时间：1748958487236
+
+分析 开始时间: 1748958487236
+解析提示内容：
+```
+包路径：help
+类名：TextStyle
+方法名：TextStyle
+返回类型：void
+功能描述：构造函数，使用Builder中的属性初始化TextStyle实例
+
+方法名：getAlignment
+返回类型：TextStyle.Alignment
+功能描述：获取对齐方式
+
+方法名：getIndent
+返回类型：int
+功能描述：获取缩进量
+
+方法名：getLeftPad
+返回类型：int
+功能描述：获取左侧填充量
+
+方法名：getMaxWidth
+返回类型：int
+功能描述：获取最大宽度
+
+方法名：getMinWidth
+返回类型：int
+功能描述：获取最小宽度
+
+方法名：isScalable
+返回类型：boolean
+功能描述：判断是否可缩放
+
+方法名：pad
+返回类型：CharSequence
+功能描述：根据对齐方式对文本进行填充和缩进处理
+
+方法名：toString
+返回类型：String
+功能描述：返回对象属性字符串表示
+
+包路径：help
+类名：TextStyle.Builder
+方法名：Builder
+返回类型：void
+功能描述：私有构造函数，初始化Builder实例
+
+方法名：get
+返回类型：TextStyle
+功能描述：构建并返回TextStyle实例
+
+方法名：getIndent
+返回类型：int
+功能描述：获取当前缩进量
+
+方法名：getLeftPad
+返回类型：int
+功能描述：获取当前左填充量
+
+方法名：getMaxWidth
+返回类型：int
+功能描述：获取最大宽度设置
+
+方法名：getMinWidth
+返回类型：int
+功能描述：获取最小宽度设置
+
+方法名：isScalable
+返回类型：boolean
+功能描述：判断是否启用缩放
+
+方法名：setAlignment
+返回类型：TextStyle.Builder
+功能描述：设置对齐方式属性
+
+方法名：setIndent
+返回类型：TextStyle.Builder
+功能描述：设置缩进量属性
+
+方法名：setLeftPad
+返回类型：TextStyle.Builder
+功能描述：设置左侧填充量属性
+
+方法名：setMaxWidth
+返回类型：TextStyle.Builder
+功能描述：设置最大宽度属性
+
+方法名：setMinWidth
+返回类型：TextStyle.Builder
+功能描述：设置最小宽度属性
+
+方法名：setScalable
+返回类型：TextStyle.Builder
+功能描述：设置是否可缩放属性
+
+方法名：setTextStyle
+返回类型：TextStyle.Builder
+功能描述：复制另一个TextStyle的属性配置
+
+包路径：help
+类名：TextStyle
+方法名：builder
+返回类型：TextStyle.Builder
+功能描述：创建并返回Builder实例
+```over
+
+分析结束时间：1748958505301
+
+分析总耗时：18065
+分析 结束时间: 1748958505301
+分析 耗时: 18.065 秒
+生成 开始时间: 1748958505305
+生成测试代码：
+```java
+package help;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class TextStyleTest {
+    @Test
+    void testDefaultBuilderValues() {
+        TextStyle textStyle = TextStyle.builder().get();
+        assertEquals(TextStyle.Alignment.LEFT, textStyle.getAlignment());
+        assertEquals(0, textStyle.getLeftPad());
+        assertEquals(0, textStyle.getIndent());
+        assertTrue(textStyle.isScalable());
+        assertEquals(0, textStyle.getMinWidth());
+        assertEquals(TextStyle.UNSET_MAX_WIDTH, textStyle.getMaxWidth());
+    }
+
+    @Test
+    void testAllPropertiesSet() {
+        TextStyle textStyle = TextStyle.builder()
+            .setAlignment(TextStyle.Alignment.RIGHT)
+            .setLeftPad(5)
+            .setIndent(2)
+            .setScalable(false)
+            .setMinWidth(10)
+            .setMaxWidth(200)
+            .get();
+        assertEquals(TextStyle.Alignment.RIGHT, textStyle.getAlignment());
+        assertEquals(5, textStyle.getLeftPad());
+        assertEquals(2, textStyle.getIndent());
+        assertFalse(textStyle.isScalable());
+        assertEquals(10, textStyle.getMinWidth());
+        assertEquals(200, textStyle.getMaxWidth());
+    }
+
+    @Test
+    void testMaxWidthBoundary() {
+        TextStyle textStyle = TextStyle.builder().setMaxWidth(0).get();
+        assertEquals(0, textStyle.getMaxWidth());
+    }
+
+    @Test
+    void testAlignmentCenter() {
+        TextStyle textStyle = TextStyle.builder().setAlignment(TextStyle.Alignment.CENTER).get();
+        assertEquals(TextStyle.Alignment.CENTER, textStyle.getAlignment());
+    }
+
+    @Test
+    void testCopyBuilderFromTextStyle() {
+        TextStyle original = TextStyle.builder()
+            .setAlignment(TextStyle.Alignment.CENTER)
+            .setLeftPad(3)
+            .setIndent(1)
+            .setScalable(true)
+            .setMinWidth(5)
+            .setMaxWidth(100)
+            .get();
+        TextStyle copy = TextStyle.builder().setTextStyle(original).get();
+        assertEquals(original.getAlignment(), copy.getAlignment());
+        assertEquals(original.getLeftPad(), copy.getLeftPad());
+        assertEquals(original.getIndent(), copy.getIndent());
+        assertEquals(original.isScalable(), copy.isScalable());
+        assertEquals(original.getMinWidth(), copy.getMinWidth());
+        assertEquals(original.getMaxWidth(), copy.getMaxWidth());
+    }
+
+    @Test
+    void testNegativeValues() {
+        TextStyle textStyle = TextStyle.builder().setLeftPad(-1).setIndent(-2).get();
+        assertEquals(-1, textStyle.getLeftPad());
+        assertEquals(-2, textStyle.getIndent());
+    }
+
+    @Test
+    void testMinMaxWidthConflict() {
+        TextStyle textStyle = TextStyle.builder().setMinWidth(100).setMaxWidth(50).get();
+        assertEquals(100, textStyle.getMinWidth());
+        assertEquals(50, textStyle.getMaxWidth());
+    }
+}
+```over
+
+生成 结束时间: 1748958568027
+生成 耗时: 62.722 秒
+验证 开始时间: 1748958568027
+测试代码验证结果：
+【全部验证通过】over
+
+验证 结束时间: 1748958577546
+验证 耗时: 9.519 秒
+评估 开始时间: 1748958577546
+测试代码评估结果：
+【指令覆盖率】：【100%】
+【分支覆盖率】：【-】
+【复杂度】：【1】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】over
+
+评估 结束时间: 1748958604070
+评估 耗时: 26.524 秒
+测试类创建开始：
+测试类创建成功：src/test/java/help/TextStyleTest.java
+测试类编译开始：
+测试类编译成功！
+测试类编译成功！
+测试类运行开始：
+运行时编译开始
+生成的测试类文件内容：
+package help;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class TextStyleTest {
+    @Test
+    void testDefaultBuilderValues() {
+        TextStyle textStyle = TextStyle.builder().get();
+        assertEquals(TextStyle.Alignment.LEFT, textStyle.getAlignment());
+        assertEquals(0, textStyle.getLeftPad());
+        assertEquals(0, textStyle.getIndent());
+        assertTrue(textStyle.isScalable());
+        assertEquals(0, textStyle.getMinWidth());
+        assertEquals(TextStyle.UNSET_MAX_WIDTH, textStyle.getMaxWidth());
+    }
+
+    @Test
+    void testAllPropertiesSet() {
+        TextStyle textStyle = TextStyle.builder()
+            .setAlignment(TextStyle.Alignment.RIGHT)
+            .setLeftPad(5)
+            .setIndent(2)
+            .setScalable(false)
+            .setMinWidth(10)
+            .setMaxWidth(200)
+            .get();
+        assertEquals(TextStyle.Alignment.RIGHT, textStyle.getAlignment());
+        assertEquals(5, textStyle.getLeftPad());
+        assertEquals(2, textStyle.getIndent());
+        assertFalse(textStyle.isScalable());
+        assertEquals(10, textStyle.getMinWidth());
+        assertEquals(200, textStyle.getMaxWidth());
+    }
+
+    @Test
+    void testMaxWidthBoundary() {
+        TextStyle textStyle = TextStyle.builder().setMaxWidth(0).get();
+        assertEquals(0, textStyle.getMaxWidth());
+    }
+
+    @Test
+    void testAlignmentCenter() {
+        TextStyle textStyle = TextStyle.builder().setAlignment(TextStyle.Alignment.CENTER).get();
+        assertEquals(TextStyle.Alignment.CENTER, textStyle.getAlignment());
+    }
+
+    @Test
+    void testCopyBuilderFromTextStyle() {
+        TextStyle original = TextStyle.builder()
+            .setAlignment(TextStyle.Alignment.CENTER)
+            .setLeftPad(3)
+            .setIndent(1)
+            .setScalable(true)
+            .setMinWidth(5)
+            .setMaxWidth(100)
+            .get();
+        TextStyle copy = TextStyle.builder().setTextStyle(original).get();
+        assertEquals(original.getAlignment(), copy.getAlignment());
+        assertEquals(original.getLeftPad(), copy.getLeftPad());
+        assertEquals(original.getIndent(), copy.getIndent());
+        assertEquals(original.isScalable(), copy.isScalable());
+        assertEquals(original.getMinWidth(), copy.getMinWidth());
+        assertEquals(original.getMaxWidth(), copy.getMaxWidth());
+    }
+
+    @Test
+    void testNegativeValues() {
+        TextStyle textStyle = TextStyle.builder().setLeftPad(-1).setIndent(-2).get();
+        assertEquals(-1, textStyle.getLeftPad());
+        assertEquals(-2, textStyle.getIndent());
+    }
+
+    @Test
+    void testMinMaxWidthConflict() {
+        TextStyle textStyle = TextStyle.builder().setMinWidth(100).setMaxWidth(50).get();
+        assertEquals(100, textStyle.getMinWidth());
+        assertEquals(50, textStyle.getMaxWidth());
+    }
+}
+ 内容结束！
+测试执行结果：
+  总测试数: 7
+  通过:    7
+  失败:    0
+  跳过:    0
+  执行时间: 170 ms
+
+详细结果：
+  • testMaxWidthBoundary() [PASSED]
+  • testDefaultBuilderValues() [PASSED]
+  • testAlignmentCenter() [PASSED]
+  • testNegativeValues() [PASSED]
+  • testAllPropertiesSet() [PASSED]
+  • testCopyBuilderFromTextStyle() [PASSED]
+  • testMinMaxWidthConflict() [PASSED]
+
+测试类覆盖率计算开始：
+执行Maven命令: D:\TopNew-SpringBoot\maven\apache-maven-3.9.1-bin\apache-maven-3.9.1\bin\mvn.cmd test
+Maven命令返回码: 0
+mvn test 结果：
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< io.github.zju-aces-ise:chatunitest-core >---------------
+[INFO] Building chatunitest-core 1.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- jacoco:0.8.8:prepare-agent (default) @ chatunitest-core ---
+[INFO] argLine set to -javaagent:D:\\TopNew-SpringBoot\\maven\\apache-maven-3.9.1-bin\\apache-maven-3.9.1\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.8\\org.jacoco.agent-0.8.8-runtime.jar=destfile=D:\\fx\\jafx\\chatunitest-core\\target\\jacoco.exec
+[INFO]
+[INFO] --- resources:3.3.0:resources (default-resources) @ chatunitest-core ---
+[INFO] Copying 25 resources
+[INFO]
+[INFO] --- compiler:3.10.1:compile (default-compile) @ chatunitest-core ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ chatunitest-core ---
+[INFO] skip non existing resourceDirectory D:\fx\jafx\chatunitest-core\src\test\resources
+[INFO]
+[INFO] --- compiler:3.10.1:testCompile (default-testCompile) @ chatunitest-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 27 source files to D:\fx\jafx\chatunitest-core\target\test-classes
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/cli/BasicParserTest.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/cli/BasicParserTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO]
+[INFO] --- surefire:3.1.0:test (default-test) @ chatunitest-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running cli.AlreadySelectedExceptionTest2
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.93 s - in cli.AlreadySelectedExceptionTest2
+[INFO] Running cli.AmbiguousOptionExceptionTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s - in cli.AmbiguousOptionExceptionTest
+[INFO] Running cli.BasicParserTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s - in cli.BasicParserTest
+[INFO] Running cli.CharTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s - in cli.CharTest
+[INFO] Running cli.CommandLineTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s - in cli.CommandLineTest
+[INFO] Running cli.
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s - in cli.
+[INFO] Running cli.
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s - in cli.
+[INFO] Running cli.
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s - in cli.
+[INFO] Running cli.
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in cli.
+[INFO] Running cli.MissingArgumentExceptionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s - in cli.MissingArgumentExceptionTest
+[INFO] Running cli.OptionsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in cli.OptionsTest
+[INFO] Running cli.
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.02 s - in cli.
+[INFO] Running cli.OptionValidatorTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s - in cli.OptionValidatorTest
+[INFO] Running cli.ParseExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s - in cli.ParseExceptionTest
+[INFO] Running cli.PatternOptionBuilderTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in cli.PatternOptionBuilderTest
+[INFO] Running cli.TypeHandlerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s - in cli.TypeHandlerTest
+[INFO] Running cli.UnrecognizedOptionExceptionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s - in cli.UnrecognizedOptionExceptionTest
+[INFO] Running cli.UtilTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s - in cli.UtilTest
+[INFO] Running codeing.AddExampleTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in codeing.AddExampleTest
+[INFO] Running codeing.ExampleTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s - in codeing.ExampleTest
+[INFO] Running help.AbstractHelpFormatterTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s - in help.AbstractHelpFormatterTest
+[INFO] Running help.FilterHelpAppendableTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s - in help.FilterHelpAppendableTest
+[INFO] Running help.HelpAppendableTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.18 s - in help.HelpAppendableTest
+[INFO] Running help.HelpFormatterTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s - in help.HelpFormatterTest
+[INFO] Running help.TableDefinitionTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in help.TableDefinitionTest
+[INFO] Running help.TextStyleTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in help.TextStyleTest
+[INFO] Running help.UtilTest
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s - in help.UtilTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 172, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jacoco:0.8.8:report (report) @ chatunitest-core ---
+[INFO] Loading execution data file D:\fx\jafx\chatunitest-core\target\jacoco.exec
+[INFO] Analyzed bundle 'chatunitest-core' with 319 classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  9.587 s
+[INFO] Finished at: 2025-06-03T21:50:22+08:00
+[INFO] ------------------------------------------------------------------------
+
+mvn test结果展示：0.0
+Coverage criteria not met for element: help
+  Instruction Coverage: 22.0%
+  Branch Coverage: 12.0%
+  Line Coverage: 26.7%
+  Method Coverage: 39.2%
+  Class Coverage: 100.0%
+Coverage sufficient: false
+覆盖率满足要求！
+套件 结束时间: 1748958622589
+套件 耗时: 135.353 秒
+
+Process finished with exit code 0

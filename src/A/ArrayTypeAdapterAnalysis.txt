@@ -1,0 +1,21 @@
+包路径：gson.internal.bind
+类名：ArrayTypeAdapter
+父类：TypeAdapter<Object>
+依赖类：Gson,TypeAdapter,TypeAdapterFactory,GsonTypes,TypeToken,JsonReader,JsonToken,JsonWriter,TypeAdapterRuntimeTypeWrapper
+---
+序号：1
+方法名：create(Gson gson, TypeToken<T> typeToken)
+返回类型：TypeAdapter<T>
+功能描述：检查类型是否为数组类型，若是则创建并返回对应的ArrayTypeAdapter实例。
+序号：2
+方法名：ArrayTypeAdapter(Gson context, TypeAdapter<E> componentTypeAdapter, Class<E> componentType)
+返回类型：无
+功能描述：初始化ArrayTypeAdapter实例，包装组件类型适配器。
+序号：3
+方法名：read(JsonReader in)
+返回类型：Object
+功能描述：从JSON读取器读取数组数据，返回对应的Java数组对象。
+序号：4
+方法名：write(JsonWriter out, Object array)
+返回类型：void
+功能描述：将Java数组对象写入JSON写入器作为JSON数组。

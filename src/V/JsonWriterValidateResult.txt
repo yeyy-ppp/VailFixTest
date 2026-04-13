@@ -1,0 +1,12 @@
+[2026-01-24 04:34:10] 验证结果
+错误类型: 编译错误, 错误行: 115, 错误原因: 使用了未导入的类BigDecimal, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: JsonWriter, setIndent, setFormattingStyle, getFormattingStyle, setStrictness, getStrictness, setHtmlSafe, isHtmlSafe, setSerializeNulls, getSerializeNulls, beginArray, endArray, beginObject, endObject, name, writeDeferredName, value, value, value, value, value, value, value, nullValue, jsonValue, close, alwaysCreatesValidJsonNumber, string
+  未覆盖: setLenient, isLenient, openScope, closeScope, push, peek, replaceTop, flush, newline, beforeName, beforeValue
+
+[2026-01-24 04:40:21] 修复后验证结果
+错误类型: 编译错误, 错误行: 31, 错误原因: [未导入FormattingStyle和Strictness类], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: JsonWriter, setIndent, setFormattingStyle, getFormattingStyle, setLenient, isLenient, setStrictness, getStrictness, setHtmlSafe, isHtmlSafe, setSerializeNulls, getSerializeNulls, beginArray, endArray, beginObject, endObject, openScope, closeScope, push, peek, replaceTop, name, writeDeferredName, value, value, value, value, value, value, value, nullValue, jsonValue, flush, close, alwaysCreatesValidJsonNumber, string, newline, beforeName, beforeValue
+  未覆盖: 全部覆盖
+

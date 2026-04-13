@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DeprecatedAttributes.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">DeprecatedAttributes.java</span></div><h1>DeprecatedAttributes.java</h1><pre class="source lang-java linenums">package cli;
+import java.util.function.Supplier;
+public final class DeprecatedAttributes {
+    public static class Builder implements Supplier&lt;DeprecatedAttributes&gt; {
+        private String description;
+        private boolean forRemoval;
+        private String since;
+        @Deprecated
+<span class="fc" id="L9">        public Builder() {</span>
+<span class="fc" id="L10">        }</span>
+        @Override
+        public DeprecatedAttributes get() {
+<span class="fc" id="L13">            return new DeprecatedAttributes(description, since, forRemoval);</span>
+        }
+        public Builder setDescription(final String description) {
+<span class="fc" id="L16">            this.description = description;</span>
+<span class="fc" id="L17">            return this;</span>
+        }
+        public Builder setForRemoval(final boolean forRemoval) {
+<span class="fc" id="L20">            this.forRemoval = forRemoval;</span>
+<span class="fc" id="L21">            return this;</span>
+        }
+        public Builder setSince(final String since) {
+<span class="fc" id="L24">            this.since = since;</span>
+<span class="fc" id="L25">            return this;</span>
+        }
+    }
+<span class="fc" id="L28">    static final DeprecatedAttributes DEFAULT = new DeprecatedAttributes(&quot;&quot;, &quot;&quot;, false);</span>
+    private static final String EMPTY_STRING = &quot;&quot;;
+    public static Builder builder() {
+<span class="fc" id="L31">        return new Builder();</span>
+    }
+    private final String description;
+    private final boolean forRemoval;
+    private final String since;
+    private DeprecatedAttributes(
+<span class="fc" id="L37">            final String description, final String since, final boolean forRemoval) {</span>
+<span class="fc" id="L38">        this.description = toEmpty(description);</span>
+<span class="fc" id="L39">        this.since = toEmpty(since);</span>
+<span class="fc" id="L40">        this.forRemoval = forRemoval;</span>
+<span class="fc" id="L41">    }</span>
+    public String getDescription() {
+<span class="fc" id="L43">        return description;</span>
+    }
+    public String getSince() {
+<span class="fc" id="L46">        return since;</span>
+    }
+    public boolean isForRemoval() {
+<span class="fc" id="L49">        return forRemoval;</span>
+    }
+    private String toEmpty(final String since) {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        return since != null ? since : EMPTY_STRING;</span>
+    }
+    @Override
+    public String toString() {
+<span class="fc" id="L56">        final StringBuilder builder = new StringBuilder(&quot;Deprecated&quot;);</span>
+<span class="fc bfc" id="L57" title="All 2 branches covered.">        if (forRemoval) {</span>
+<span class="fc" id="L58">            builder.append(&quot; for removal&quot;);</span>
+        }
+<span class="fc bfc" id="L60" title="All 2 branches covered.">        if (!since.isEmpty()) {</span>
+<span class="fc" id="L61">            builder.append(&quot; since &quot;);</span>
+<span class="fc" id="L62">            builder.append(since);</span>
+        }
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        if (!description.isEmpty()) {</span>
+<span class="fc" id="L65">            builder.append(&quot;: &quot;);</span>
+<span class="fc" id="L66">            builder.append(description);</span>
+        }
+<span class="fc" id="L68">        return builder.toString();</span>
+    }
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

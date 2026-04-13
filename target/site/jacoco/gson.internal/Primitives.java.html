@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Primitives.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal</a> &gt; <span class="el_source">Primitives.java</span></div><h1>Primitives.java</h1><pre class="source lang-java linenums">package gson.internal;
+import java.lang.reflect.Type;
+public final class Primitives {
+  private Primitives() {}
+  public static boolean isPrimitive(Type type) {
+<span class="fc bfc" id="L6" title="All 4 branches covered.">    return type instanceof Class&lt;?&gt; &amp;&amp; ((Class&lt;?&gt;) type).isPrimitive();</span>
+  }
+  public static boolean isWrapperType(Type type) {
+<span class="fc bfc" id="L9" title="All 18 branches covered.">    return type == Integer.class</span>
+        || type == Float.class
+        || type == Byte.class
+        || type == Double.class
+        || type == Long.class
+        || type == Character.class
+        || type == Boolean.class
+        || type == Short.class
+        || type == Void.class;
+  }
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;MissingBraces&quot;})
+  public static &lt;T&gt; Class&lt;T&gt; wrap(Class&lt;T&gt; type) {
+<span class="fc bfc" id="L21" title="All 2 branches covered.">    if (type == int.class) return (Class&lt;T&gt;) Integer.class;</span>
+<span class="fc bfc" id="L22" title="All 2 branches covered.">    if (type == float.class) return (Class&lt;T&gt;) Float.class;</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">    if (type == byte.class) return (Class&lt;T&gt;) Byte.class;</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">    if (type == double.class) return (Class&lt;T&gt;) Double.class;</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">    if (type == long.class) return (Class&lt;T&gt;) Long.class;</span>
+<span class="fc bfc" id="L26" title="All 2 branches covered.">    if (type == char.class) return (Class&lt;T&gt;) Character.class;</span>
+<span class="fc bfc" id="L27" title="All 2 branches covered.">    if (type == boolean.class) return (Class&lt;T&gt;) Boolean.class;</span>
+<span class="fc bfc" id="L28" title="All 2 branches covered.">    if (type == short.class) return (Class&lt;T&gt;) Short.class;</span>
+<span class="fc bfc" id="L29" title="All 2 branches covered.">    if (type == void.class) return (Class&lt;T&gt;) Void.class;</span>
+<span class="fc" id="L30">    return type;</span>
+  }
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;MissingBraces&quot;})
+  public static &lt;T&gt; Class&lt;T&gt; unwrap(Class&lt;T&gt; type) {
+<span class="nc bnc" id="L34" title="All 2 branches missed.">    if (type == Integer.class) return (Class&lt;T&gt;) int.class;</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">    if (type == Float.class) return (Class&lt;T&gt;) float.class;</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">    if (type == Byte.class) return (Class&lt;T&gt;) byte.class;</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">    if (type == Double.class) return (Class&lt;T&gt;) double.class;</span>
+<span class="nc bnc" id="L38" title="All 2 branches missed.">    if (type == Long.class) return (Class&lt;T&gt;) long.class;</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">    if (type == Character.class) return (Class&lt;T&gt;) char.class;</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">    if (type == Boolean.class) return (Class&lt;T&gt;) boolean.class;</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">    if (type == Short.class) return (Class&lt;T&gt;) short.class;</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">    if (type == Void.class) return (Class&lt;T&gt;) void.class;</span>
+<span class="nc" id="L43">    return type;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

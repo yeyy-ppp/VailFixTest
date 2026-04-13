@@ -1,0 +1,1608 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatUniTestMain.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">ChatUniTestMain.java</span></div><h1>ChatUniTestMain.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import okhttp3.*;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestExecutionListener;
+import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.core.LauncherConfig;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+
+import javax.tools.*;
+import java.io.*;
+import java.net.URI;
+import java.net.URLClassLoader;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+<span class="nc" id="L27">public class ChatUniTestMain {</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L30">    }</span>
+}
+
+//0524 main函数版本
+/*  public static void main(String[] args) throws IOException {
+    String apiKey = &quot;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&quot;;
+    //读取待测试列表
+    String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\codeing&quot;;
+    List&lt;String&gt; classNames = new ArrayList&lt;&gt;();
+
+    // 遍历指定目录下的所有Java文件-待实现
+    File dir = new File(sourceCodeDir);
+    if (dir.exists() &amp;&amp; dir.isDirectory()) {
+        File[] files = dir.listFiles((d, name) -&gt; name.endsWith(&quot;.java&quot;));
+        if (files != null) {
+            for (File file : files) {
+                // 提取类名
+                String className = extractClassName(file);
+                if (className != null &amp;&amp; !className.isEmpty()) {
+                    classNames.add(className);
+                }
+            }
+        }
+    }
+    String sourceCodePath = &quot;src/main/java/codeing/Example.java&quot;;
+    TestCore testCoreClass = new TestCore(apiKey);
+    testCoreClass.className = &quot;Example&quot;; // 设置当前处理的类名
+    String sourceCodeFile=testCoreClass.readSourceCode(sourceCodePath);
+    String conversationHistory = &quot;&quot;; // 初始化对话历史
+    boolean analyzeSuccess = false;
+    boolean generateSuccess = false;
+    boolean validateSuccess = false;
+    boolean fixSuccess = false;
+    boolean evaluateSuccess = false;
+    boolean overallSuccess = false;
+    long analyzeEndTime = 0;
+    long generateEndTime = 0;
+    long validateEndTime = 0;
+    long fixEndTime = 0;
+    long evaluateEndTime = 0;
+    int analyzeTokenCount = 0;
+    int generateTokenCount = 0;
+    int validateTokenCount = 0;
+    int fixTokenCount = 0;
+    int evaluateTokenCount = 0;
+    String validateFailReason = &quot;&quot;;
+    int fixAttempt = 0;
+    String fixFailReason = &quot;&quot;;
+    String fixSuccessTimes = &quot;0&quot;;
+    String evaluateCoverageData = &quot;&quot;;
+    long startTime = System.currentTimeMillis();
+    System.out.println(&quot;起始时间：&quot;+startTime+&quot;\n&quot;);
+
+    long analyzeStart = System.currentTimeMillis();
+
+    // 初始化 Timer
+    testCoreClass.timer.start(&quot;套件&quot;);
+    System.out.println(&quot;分析起始时间：&quot;+analyzeStart+&quot;\n&quot;);
+    //分析开始
+    testCoreClass.timer.start(&quot;分析&quot;);
+    String analyzePromt=testCoreClass.analyzeSourceCode(sourceCodeFile);
+
+    // 从分析结果中提取类信息
+    Map&lt;String, String&gt; classInfo = testCoreClass.extractClassInfo(analyzePromt);
+    analyzeSuccess = true;
+    analyzeEndTime = System.currentTimeMillis();
+    System.out.println(&quot;分析结束时间：&quot;+analyzeEndTime+&quot;\n&quot;);
+    System.out.println(&quot;分析总耗时：&quot;+(analyzeEndTime-analyzeStart));
+    analyzeTokenCount = testCoreClass.tokenCount;
+    if (analyzePromt == null || analyzePromt.isEmpty()) {
+        System.out.println(&quot;分析阶段失败：LLM 未返回有效结果&quot;);
+        return;
+    }
+    //分析结束
+    testCoreClass.timer.end(&quot;分析&quot;);
+    //生成
+    //  String testCode=testCoreClass.generateTestCode(sourceCodeFile,analyzePromt);
+    //生成开始
+    testCoreClass.timer.start(&quot;生成&quot;);
+    String testCode=testCoreClass.generateTestCode2(sourceCodeFile,analyzePromt,conversationHistory);
+
+    generateSuccess = true;
+    generateEndTime = System.currentTimeMillis();
+    generateTokenCount = testCoreClass.tokenCount - analyzeTokenCount;
+    if (testCode == null || testCode.isEmpty()) {
+        System.out.println(&quot;生成阶段失败：LLM 未返回有效结果&quot;);
+        return;
+    }
+    //生成结束
+    testCoreClass.timer.end(&quot;生成&quot;);
+    //验证开始
+    testCoreClass.timer.start(&quot;验证&quot;);
+    String validateResult=testCoreClass.validateTestCode(testCode);
+
+    validateSuccess = validateResult.contains(&quot;全部验证通过&quot;);
+    validateEndTime = System.currentTimeMillis();
+    validateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount;
+    if (validateResult == null || validateResult.isEmpty()) {
+        System.out.println(&quot;验证阶段失败：LLM 未返回有效结果&quot;);
+        return;
+    }
+    //验证结束
+    testCoreClass.timer.end(&quot;验证&quot;);
+    if (!validateSuccess) {
+        validateFailReason = validateResult;
+    }
+    if (validateSuccess) {
+        //评估开始
+        testCoreClass.timer.start(&quot;评估&quot;);
+        //评估
+
+        String evaluateResult=testCoreClass.evaluateTestCode(testCode);
+
+        evaluateSuccess = true;
+        evaluateEndTime = System.currentTimeMillis();
+        evaluateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount;
+        evaluateCoverageData = evaluateResult;
+        if (evaluateResult == null || evaluateResult.isEmpty()) {
+            System.out.println(&quot;评估阶段失败：LLM 未返回有效结果&quot;);
+            return;
+        }
+        //评估结束
+        testCoreClass.timer.end(&quot;评估&quot;);
+        //如果覆盖率未达到期望 优化测试代码
+
+        //创建测试类
+        //  createTestClass(testCode);
+        System.out.println(&quot;测试类创建开始：&quot;);
+        createTestClass2(testCode, classInfo);
+        overallSuccess = true;
+
+        System.out.println(&quot;测试类编译开始：&quot;);
+        TestClassCompiler testClassCompiler=new TestClassCompiler();
+        boolean compileResult=testClassCompiler.compileTestClass(classInfo);
+        // 编译测试类
+        //  boolean compileResult = testCoreClass.compileTestClass(classInfo);
+        if (compileResult) {
+            System.out.println(&quot;测试类编译成功！&quot;);
+            //编译成功，尝试运行测试代码
+
+            // 运行测试
+            try {
+                System.out.println(&quot;测试类运行开始：&quot;);
+                TestClassRunner runner = new TestClassRunner();
+                //获取测试代码位置
+                String testFilePath = Paths.get(
+                        &quot;D:\\fx\\jafx\\chatunitest-core&quot;,
+                        &quot;src&quot;, &quot;test&quot;, &quot;java&quot;,
+                        classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, File.separator),
+                        classInfo.get(&quot;类名&quot;) + &quot;Test.java&quot;
+                ).toString();
+
+                String testcoderunner=runner.readFileContent(testFilePath);
+                boolean testResult = runner.runTests(testcoderunner,classInfo);
+                System.out.println(runner.getDetailedResults());
+                if (testResult) {
+                    System.out.println(&quot;测试类覆盖率计算开始：&quot;);
+                    String mvnTestResult = testCoreClass.executeMavenCommand(&quot;test&quot;);
+                    System.out.println(&quot;mvn test 结果：\n&quot; + mvnTestResult);
+                    double instructionCoverage = extractCoverageFromMvnResult(mvnTestResult, &quot;Overall Coverage&quot;);
+                    System.out.println(&quot;mvn test结果展示：&quot; + instructionCoverage);
+
+                    // 提取覆盖率数据（假设 mvn test 输出中包含覆盖率信息）
+                    List&lt;Map&lt;String, String&gt;&gt; coverageInfoList = extractCoverageInfo();
+                    String targetPackage = &quot;codeing&quot;;
+                    List&lt;Map&lt;String, String&gt;&gt; filteredCoverageInfoList = CoverageEvaluator.filterCoverageInfoByPackage(coverageInfoList, targetPackage);
+
+                    // 检查覆盖率
+                    boolean coverageSufficient = checkCoverage(filteredCoverageInfoList);
+                    System.out.println(&quot;Coverage sufficient: &quot; + coverageSufficient);
+                    //暂时不优化
+                    coverageSufficient=true;
+                    if (!coverageSufficient) {
+                        // 覆盖率不足，优化测试代码
+                        System.out.println(&quot;测试类优化开始：覆盖率不足，优化测试代码...&quot;);
+                        String optimizedTestCode = testCoreClass.optimizeTestCode(testCode, mvnTestResult);
+                        // 验证优化后的测试代码
+                        String validate2Result = testCoreClass.validateTestCode(optimizedTestCode);
+                        boolean validate2Success = validate2Result.contains(&quot;全部验证通过&quot;);
+                        if (validate2Success) {
+                            // 更新测试类内容
+                            updateTestClass(optimizedTestCode, classInfo);
+                            // 重新编译测试类
+                            TestClassCompiler testClass2Compiler = new TestClassCompiler();
+                            boolean compile2Result = testClass2Compiler.compileTestClass(classInfo);
+                            if (compile2Result) {
+                                // 重新运行测试
+                                TestClassRunner optimizedRunner = new TestClassRunner();
+                                //获取测试代码位置
+                                String testFilePath2 = Paths.get(
+                                        &quot;D:\\fx\\jafx\\chatunitest-core&quot;,
+                                        &quot;src&quot;, &quot;test&quot;, &quot;java&quot;,
+                                        classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, File.separator),
+                                        classInfo.get(&quot;类名&quot;) + &quot;Test.java&quot;
+                                ).toString();
+                                System.out.println(&quot;尝试读取文件: &quot; + testFilePath); // 添加调试输出
+                                String testcoderunner2=runner.readFileContent(testFilePath2);
+                                boolean optimizedTestResult = optimizedRunner.runTests(testcoderunner2, classInfo);
+                                System.out.println(optimizedRunner.getDetailedResults());
+                                if (optimizedTestResult) {
+                                    System.out.println(&quot;优化后的测试代码运行成功！&quot;);
+                                    // 重新执行 mvn test
+                                    String newMvnTestResult = testCoreClass.executeMavenCommand(&quot;test&quot;);
+                                    System.out.println(&quot;新的 mvn test 结果：\n&quot; + newMvnTestResult);
+                                } else {
+                                    System.out.println(&quot;优化后的测试代码运行失败！&quot;);
+                                }
+                            } else {
+                                System.out.println(&quot;优化后的测试类编译失败！&quot;);
+                            }
+                        } else {
+                            System.out.println(&quot;优化后的测试代码验证失败！&quot;);
+                        }
+                    } else {
+                        System.out.println(&quot;覆盖率满足要求！&quot;);
+                    }
+
+                } else {
+                    System.out.println(&quot;测试未通过：&quot;);
+                    System.out.println(runner.getDetailedResults());
+                }
+            } catch (Exception e) {
+                System.out.println(&quot;运行测试时出错：&quot; + e.getMessage());
+                e.printStackTrace();
+            }
+
+
+        } else {
+            System.out.println(&quot;测试类编译失败！&quot;);
+        }
+    }
+    else
+    {
+        //修复开始
+        testCoreClass.timer.start(&quot;修复&quot;);
+        fixAttempt = 1;
+        while (fixAttempt &lt;= 3) {
+            //修复
+            String fixResult = testCoreClass.fixTestCode(validateResult, testCode);
+            fixSuccess = !fixResult.equals(&quot;null&quot;);
+            fixEndTime = System.currentTimeMillis();
+            fixTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount;
+            if (fixResult == null || fixResult.isEmpty()) {
+                System.out.println(&quot;修复阶段失败：LLM 未返回有效结果&quot;);
+                break;
+            }
+            if (fixSuccess) {
+                String evaluateResult = testCoreClass.evaluateTestCode(testCode);
+                evaluateSuccess = true;
+                evaluateEndTime = System.currentTimeMillis();
+                evaluateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount - fixTokenCount;
+                if (evaluateResult == null || evaluateResult.isEmpty()) {
+                    System.out.println(&quot;评估阶段失败：LLM 未返回有效结果&quot;);
+                    break;
+                }
+                // 假设 evaluateResult 包含覆盖率数据，如 &quot;整体代码覆盖率：80%，分支覆盖率：70%，行覆盖率：85%&quot;
+                evaluateCoverageData = evaluateResult;
+                //   testCoreClass.createTestClass(testCode);
+                testCoreClass.createTestClass2(testCode, classInfo);;
+                overallSuccess = true;
+
+                TestClassCompiler testClassCompiler=new TestClassCompiler();
+                boolean compileResult=testClassCompiler.compileTestClass(classInfo);
+                // 编译测试类
+                //  boolean compileResult = testCoreClass.compileTestClass(classInfo);
+                if (compileResult) {
+                    System.out.println(&quot;测试类编译成功！&quot;);
+                    //编译成功，尝试运行测试代码
+
+                    // 运行测试
+                    try {
+                        System.out.println(&quot;运行开始：&quot;);
+                        TestClassRunner runner = new TestClassRunner();
+                        //获取测试代码位置
+                        String testFilePath = Paths.get(
+                                &quot;D:\\fx\\jafx\\chatunitest-core&quot;,
+                                &quot;src&quot;, &quot;test&quot;, &quot;java&quot;,
+                                classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, File.separator),
+                                classInfo.get(&quot;类名&quot;) + &quot;Test.java&quot;
+                        ).toString();
+                        System.out.println(&quot;尝试读取文件: &quot; + testFilePath); // 添加调试输出
+                        String testcoderunner2=runner.readFileContent(testFilePath);
+                        boolean testResult = runner.runTests(testcoderunner2,classInfo);
+                        System.out.println(&quot;运行结束,输出结果：&quot;);
+                        System.out.println(runner.getDetailedResults());
+                        if (testResult) {
+                            System.out.println(&quot;所有测试通过！&quot;);
+                            String mvnTestResult = testCoreClass.executeMavenCommand(&quot;test&quot;);
+                            System.out.println(&quot;mvn test 结果：\n&quot; + mvnTestResult);
+                            // 提取覆盖率数据（假设 mvn test 输出中包含覆盖率信息）
+                            List&lt;Map&lt;String, String&gt;&gt; coverageInfoList = extractCoverageInfo();
+                            String targetPackage = &quot;codeing&quot;;
+                            List&lt;Map&lt;String, String&gt;&gt; filteredCoverageInfoList = CoverageEvaluator.filterCoverageInfoByPackage(coverageInfoList, targetPackage);
+
+                            // 检查覆盖率
+                            boolean coverageSufficient = checkCoverage(filteredCoverageInfoList);
+                            System.out.println(&quot;Coverage sufficient: &quot; + coverageSufficient);
+                            //暂时不优化
+                            coverageSufficient=true;
+                            if (!coverageSufficient) {
+                                // 覆盖率不足，优化测试代码
+                                System.out.println(&quot;覆盖率不足，优化测试代码...&quot;);
+                                String optimizedTestCode = testCoreClass.optimizeTestCode(testCode, mvnTestResult);
+                                // 验证优化后的测试代码
+                                String validate2Result = testCoreClass.validateTestCode(optimizedTestCode);
+                                boolean validate2Success = validate2Result.contains(&quot;全部验证通过&quot;);
+                                if (validate2Success) {
+                                    // 更新测试类
+                                    updateTestClass(optimizedTestCode, classInfo);
+                                    // 重新编译测试类
+                                    TestClassCompiler testClass2Compiler = new TestClassCompiler();
+                                    boolean compile2Result = testClass2Compiler.compileTestClass(classInfo);
+                                    if (compile2Result) {
+                                        // 重新运行测试
+                                        TestClassRunner optimizedRunner = new TestClassRunner();
+                                        boolean optimizedTestResult = optimizedRunner.runTests(optimizedTestCode, classInfo);
+                                        System.out.println(optimizedRunner.getDetailedResults());
+                                        if (optimizedTestResult) {
+                                            System.out.println(&quot;优化后的测试代码运行成功！&quot;);
+                                            // 重新执行 mvn test
+                                            String newMvnTestResult = testCoreClass.executeMavenCommand(&quot;test&quot;);
+                                            System.out.println(&quot;新的 mvn test 结果：\n&quot; + newMvnTestResult);
+                                        } else {
+                                            System.out.println(&quot;优化后的测试代码运行失败！&quot;);
+                                        }
+                                    } else {
+                                        System.out.println(&quot;优化后的测试类编译失败！&quot;);
+                                    }
+                                } else {
+                                    System.out.println(&quot;优化后的测试代码验证失败！&quot;);
+                                }
+                            } else {
+                                System.out.println(&quot;覆盖率满足要求！&quot;);
+                            }
+
+                        } else {
+                            System.out.println(&quot;测试未通过：&quot;);
+                            System.out.println(runner.getDetailedResults());
+                        }
+                    } catch (Exception e) {
+                        System.out.println(&quot;运行测试时出错：&quot; + e.getMessage());
+                        e.printStackTrace();
+                    }
+                }
+
+                fixSuccessTimes = String.valueOf(fixAttempt);
+                break;
+            } else {
+                System.out.println(&quot;第 &quot; + fixAttempt + &quot; 次修复失败：&quot; + fixResult + &quot;over\n&quot;);
+                fixFailReason += &quot;第 &quot; + fixAttempt + &quot; 次修复失败，原因是：&quot; + fixResult + &quot;\n&quot;;
+                testCoreClass.failedClasses.add(testCoreClass.className);
+                fixAttempt++;
+            }
+        }
+        //修复结束
+        testCoreClass.timer.end(&quot;修复&quot;);
+    }
+    // 记录测试代码生成过程的信息
+    testCoreClass.logTestCodeGenerationInfo(analyzeSuccess, generateSuccess, validateSuccess,
+            fixSuccess, evaluateSuccess, overallSuccess,analyzeStart,analyzeEndTime, generateEndTime,
+            validateEndTime, fixEndTime, evaluateEndTime, analyzeTokenCount, generateTokenCount,
+            validateTokenCount, fixTokenCount, evaluateTokenCount, validateFailReason,
+            fixAttempt, fixFailReason, fixSuccessTimes, evaluateCoverageData);
+    testCoreClass.closeClient();
+    testCoreClass.timer.end(&quot;套件&quot;);
+
+}
+
+
+/*package zju.cst.aces.runner;
+
+        import com.google.gson.Gson;
+        import com.google.gson.GsonBuilder;
+        import okhttp3.*;
+        import zju.cst.aces.api.config.Config;
+        import zju.cst.aces.api.phase.step.TestGeneration;
+
+        import java.io.IOException;
+        import java.util.ArrayList;
+        import java.util.HashMap;
+        import java.util.List;
+        import java.util.Map;
+
+// 主类，用于生成测试代码
+public class ChatUnitestCore {
+    //private static final String API_URL = &quot;https://api.gptsapi.net/v1/chat/completions&quot;;
+    // private static final String MODEL = &quot;gpt-4o-mini&quot;;
+    private static final String API_URL = &quot;https://openrouter.ai/api/v1/chat/completions&quot;;
+    private static final String MODEL = &quot;deepseek/deepseek-r1:free&quot;;
+    private final String apiKey; //=&quot;sk-o7C539636d3cb6ec90bc084880c104d25926fd8af0bilWd8&quot;;
+    private final OkHttpClient client;
+    private final Gson gson;
+
+
+
+    public ChatUnitestCore(String apiKey) {
+        this.apiKey = apiKey;
+        this.client = new OkHttpClient();
+        this.gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+    }
+
+    // 生成测试代码的主要方法
+    public String generateTestCode(String sourceCode) throws IOException {
+        // 构建请求体
+        RequestBody requestBodyG = buildRequestBody(sourceCode);
+        // 构建请求
+        Request requestG = buildRequest(requestBodyG);
+        // 发送请求并获取响应
+        try (Response responseG = client.newCall(requestG).execute()) {
+            if (responseG.isSuccessful() &amp;&amp; responseG.body() != null) {
+                String responseBody = responseG.body().string();
+                return extractTestCode(responseBody);
+            } else {
+                throw new IOException(&quot;Request failed: &quot; + responseG);
+            }
+        }
+
+    }
+
+
+    // 构建请求体
+    private RequestBody buildRequestBody(String sourceCode) {
+        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();
+        Map&lt;String, String&gt; message = new HashMap&lt;&gt;();
+        message.put(&quot;role&quot;, &quot;user&quot;);
+        message.put(&quot;content&quot;, &quot;You are a senior tester in Java projects, your task is writting tests for a specific focal method in a focal class with JUnit5 and Mockito framework (A focal method means a method under test).\n&quot; +
+                &quot;I will provide the following information of the focal method:\n&quot; +
+                &quot;1. Required dependencies to import.\n&quot; +
+                &quot;2. The focal class signature.\n&quot; +
+                &quot;3. Source code of the focal method.\n&quot; +
+                &quot;4. Signatures of other methods and fields in the class.\n&quot; +
+                &quot;I will provide following brief information if the focal method has dependencies:\n&quot; +
+                &quot;1. Signatures of dependent classes.\n&quot; +
+                &quot;2. Signatures of dependent methods and fields in the dependent classes.\n&quot; +
+                &quot;You need to create a complete unit test using JUnit 5, ensuring to cover all branches. Compile without errors, and use reflection to invoke private methods or fields if needed.\n&quot; +
+                &quot;Please implement the test corresponding to the path according to the execution path information provided in annotations. No additional explanations required.&quot;+ sourceCode);
+        messages.add(message);
+
+        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();
+        requestBodyMap.put(&quot;model&quot;, MODEL);
+        requestBodyMap.put(&quot;messages&quot;, messages);
+
+        return RequestBody.create(gson.toJson(requestBodyMap), MediaType.get(&quot;application/json; charset=utf-8&quot;));
+    }
+
+    // 构建请求
+    private Request buildRequest(RequestBody requestBody) {
+        return new Request.Builder()
+                .url(API_URL)
+                .post(requestBody)
+                .addHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey)
+                .build();
+    }
+
+    // 从响应中提取测试代码
+    private String extractTestCode(String responseBody) {
+        Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);
+        List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);
+        if (choices != null &amp;&amp; !choices.isEmpty()) {
+            Map&lt;String, Object&gt; firstChoice = choices.get(0);
+            Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);
+            return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;
+        }
+        return &quot;&quot;;
+    }
+
+
+    public static void main(String[] args) {
+        //api String apiKey = &quot;sk-o7C539636d3cb6ec90bc084880c104d25926fd8af0bilWd8&quot;;
+        String apiKey = &quot;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&quot;;
+        ChatUnitestCore chatUnitestCore = new ChatUnitestCore(apiKey);
+        String sourceCode = &quot;public class Example {\n    public int add(int a, int b) {\n        return a + b;\n    }\n}&quot;;
+        try {
+            String testCode = chatUnitestCore.generateTestCode(sourceCode);
+            System.out.println(&quot;Generated Test Code:\n&quot; + testCode);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}*/
+
+
+
+/*      package zju.cst.aces.runner;         0520版本
+
+        import com.google.gson.Gson;
+        import com.google.gson.GsonBuilder;
+        import okhttp3.*;
+
+        import javax.tools.*;
+        import java.io.*;
+        import java.nio.file.Files;
+        import java.nio.file.Paths;
+        import java.util.*;
+        import java.util.regex.Matcher;
+        import java.util.regex.Pattern;
+
+
+//核心代码
+public class TestCore {
+    private static final String API_URL=&quot;https://openrouter.ai/api/v1/chat/completions&quot;;
+    private static final String MODEL= &quot;deepseek/deepseek-r1:free&quot;;
+    private final String apiKey;
+    private final OkHttpClient client;
+    private final Gson gson;
+    private long startTime=System.currentTimeMillis();  // 测试代码生成开始时间
+    private long endTime;  // 测试代码生成结束时间
+    private String sourceCodeFile;  //待测试源代码
+    private String sourceCodePath;  //待测试源代码路径
+    private long totalTime;  // 测试代码生成总耗时
+    private int tokenCount;  // API 调用消耗的 token 数量
+    private List&lt;String&gt; failedClasses;  // 记录修复失败的待测试类
+    private String className; // 当前处理的类名
+    // 分析提示
+    private static final String analyzeCodePromt=&quot;你是一个Java程序分析专家,请严格根据以下要求从专业角度分析该Java代码，要求如下：\n&quot; +
+            &quot;1. **包路径**：识别类所在的包路径（例如 `package zju.cst.aces.runner`）。\n&quot; +
+            &quot;2. **类名**：类的名称。\n&quot; +
+            &quot;3. **方法名**：每个方法的名称。\n&quot; +
+            &quot;4. **返回类型**：每个方法的返回类型。\n&quot; +
+            &quot;5. **实现功能**：每个方法实现的具体功能。\n&quot; +
+            &quot;请按照以下格式返回结果：\n&quot; +
+            &quot;```\n&quot; +
+            &quot;包路径：[包路径]\n&quot; +
+            &quot;类名：[类名]\n&quot; +
+            &quot;方法名：[方法名]\n&quot; +
+            &quot;返回类型：[返回类型]\n&quot; +
+            &quot;功能描述：[功能描述]\n&quot; +
+            &quot;```\n&quot;;
+    //生成提示
+    private static final String generatePrompt=&quot;\&quot;根据以下待测试类的信息生成测试代码：\&quot;+\n&quot; +
+            &quot;\&quot;包路径：{packagePath}\&quot;+\n&quot;+
+            &quot;\&quot;类名：{className}\&quot;+\n&quot;+
+            &quot;\&quot;方法：{methodName}\&quot;+\n&quot;+
+            &quot;\&quot;返回类型：{returnType}\&quot;+\n&quot;+
+            &quot;\&quot;功能描述：{functionDescription}\&quot;+\n&quot;+
+            &quot;\&quot;以上是待测试类的一些基本信息,\&quot;+\n&quot;+
+            &quot;\&quot;你是一位资深的Java项目测试人员，你的任务是为特定的焦点类中的焦点方法编写测试用例（焦点方法即待测试的方法）。\&quot;+\n&quot; +
+            &quot;\&quot;你需要使用JUnit5测试框架编写完整的单元测试，确保覆盖所有分支。测试代码应能够无错误地编译，如果需要，可以使用反射来调用私有方法或字段。\&quot;+\n&quot; +
+            &quot;\&quot;请根据注解中提供的执行路径信息，实现对应的测试。\&quot;+\n&quot; +
+            &quot;\&quot;生成的测试类或测试方法名称应为源代码类名或方法名后面加Test，如果有相同名称则再加数字后缀。\&quot;+\n&quot; +
+            &quot;\&quot;例如，如果源代码类名为Example，则测试类名为ExampleTest；如果有冲突，则命名为ExampleTest1、ExampleTest2等。&quot; +
+            &quot;\&quot;生成的测试代码应该包含正确的包路径，导入正确的焦点类或焦点方法&quot; +
+            &quot;\&quot;不需要返回思考过程等额外信息，附带的待测试源代码如下：\n&quot;;
+    //验证提示
+    private static final String validatePrompt=&quot;你是一个测试代码审查器，请你检查以下测试代码是否符合以下要求：\n&quot;
+            + &quot;1. **导入语句**：是否正确导入了所有必要的类，例如 `org.junit.jupiter.api.*`, `org.mockito.*` 等。\n&quot;
+            + &quot;2. **测试方法逻辑**：是否覆盖了所有关键路径，包括正常情况、边界条件和异常情况。\n&quot;
+            + &quot;3. **语法错误**：是否存在任何语法错误或拼写错误。\n&quot;
+            + &quot;4. **编译错误**：是否存在任何可能导致编译失败的问题。\n&quot;
+            + &quot;5. **运行时错误**：是否存在任何可能导致运行时异常的问题。\n&quot;
+            + &quot;请逐项给出你的判断，并指出是否“通过验证”或“不通过验证”。&quot;
+            + &quot;若全部验证通过,请返回全部验证通过。&quot;
+            + &quot;若不通过，请详细说明理由，并按照以下格式标记出具体的错误位置和原因：\n&quot;
+            + &quot;```\n&quot;
+            + &quot;该测试代码在验证[验证项]时失败，错误位置：[行号]，错误原因：[错误原因]\n&quot;
+            + &quot;```\n&quot;
+            + &quot;不需要返回思考过程等额外信息，附带的测试代码如下：\n&quot;;
+    //评估提示
+    private static final String evaluatePrompt = &quot;你是一位专业的测试代码评估专家，专门负责精准评估测试代码的质量。请根据以下详细要求，对提供的测试代码进行全面的代码覆盖率分析：\n&quot; +
+            &quot;- **整体代码覆盖率**：计算测试代码覆盖被测试代码中语句的比例，以百分比形式精确呈现，格式为【整体代码覆盖率】：【XX%】。\n&quot; +
+            &quot;- **分支覆盖率**：分析测试代码对被测试代码中所有分支（如 `if-else`、`switch` 等条件语句）的覆盖情况，给出分支被执行的比例，格式为【分支覆盖率】：【XX%】。\n&quot; +
+            &quot;- **行覆盖率**：确定测试代码执行到被测试代码中每一行的比例，以百分比形式展示，格式为【行覆盖率】：【XX%】。\n&quot; +
+            &quot;- **语句覆盖率**：衡量在测试中执行了多少代码语句，以百分比形式展示，格式为【语句覆盖率】：【XX%】。\n&quot;+
+            &quot;- **路径覆盖率**：衡量在测试中是否覆盖了源代码的所有可能路径,，以百分比形式展示，格式为【路径覆盖率】：【XX%】。\n&quot;+
+            &quot;\n&quot; +
+            &quot;请严格按照上述格式输出结果，不包含任何额外的解释、注释或思考过程。测试代码如下：&quot;;
+
+    //修复提示
+    private static final String fixPrompt = &quot;以上是测试代码的错误信息,你是一个高级测试代码修复师，根据以下信息对测试代码进行修复：\n&quot; +
+            &quot;请根据错误信息提示修复测试代码，确保修复后的代码满足所有验证要求，包括导入语句、测试方法逻辑、语法正确性、编译和运行时无错误。。&quot; +
+            &quot;如果修复失败就直接返回【修复失败】四个字以及修复失败的原因，仅返回错误；否则返回【修复成功】四个字以及修复成功的测试代码，仅返回代码&quot;+
+            &quot;不需要额外的解释、注释和思考过程。&quot;+
+            &quot;测试代码如下：&quot;;
+
+    public TestCore(String apiKey) {
+        this.apiKey=apiKey;
+        this.client = new OkHttpClient();
+        this.gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();
+        this.failedClasses = new ArrayList&lt;&gt;(); // 初始化 failedClasses 列表
+    }
+
+    //1.读取源代码
+    private static String readSourceCode(String sourceCodePath) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader br = new BufferedReader(new FileReader(sourceCodePath))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                content.append(line).append(&quot;\n&quot;);
+            }
+        }
+        return content.toString();
+    }
+
+    //2.构建请求体
+    private RequestBody buildRequestBody(String code,String prompt) {
+        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();
+        Map&lt;String, String&gt; message = new HashMap&lt;&gt;();
+        message.put(&quot;role&quot;, &quot;user&quot;);
+        message.put(&quot;content&quot;, prompt+ code);
+        messages.add(message);
+
+        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();
+        requestBodyMap.put(&quot;model&quot;, MODEL);
+        requestBodyMap.put(&quot;messages&quot;, messages);
+
+        return RequestBody.create(gson.toJson(requestBodyMap), MediaType.get(&quot;application/json; charset=utf-8&quot;));
+    }
+
+    //2.2构建请求体，历史对话缓存
+    private RequestBody buildRequestBody2(String code, String prompt, String conversationHistory) {
+        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();
+        if (conversationHistory != null &amp;&amp; !conversationHistory.isEmpty()) {
+            // 添加历史对话
+            String[] historyParts = conversationHistory.split(&quot;\n&quot;);
+            for (String part : historyParts) {
+                if (part.startsWith(&quot;user:&quot;)) {
+                    Map&lt;String, String&gt; userMessage = new HashMap&lt;&gt;();
+                    userMessage.put(&quot;role&quot;, &quot;user&quot;);
+                    userMessage.put(&quot;content&quot;, part.substring(5));
+                    messages.add(userMessage);
+                } else if (part.startsWith(&quot;assistant:&quot;)) {
+                    Map&lt;String, String&gt; assistantMessage = new HashMap&lt;&gt;();
+                    assistantMessage.put(&quot;role&quot;, &quot;assistant&quot;);
+                    assistantMessage.put(&quot;content&quot;, part.substring(10));
+                    messages.add(assistantMessage);
+                }
+            }
+        }
+        // 添加当前请求
+        Map&lt;String, String&gt; userMessage = new HashMap&lt;&gt;();
+        userMessage.put(&quot;role&quot;, &quot;user&quot;);
+        userMessage.put(&quot;content&quot;, prompt + code);
+        messages.add(userMessage);
+
+        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();
+        requestBodyMap.put(&quot;model&quot;, MODEL);
+        requestBodyMap.put(&quot;messages&quot;, messages);
+
+        return RequestBody.create(gson.toJson(requestBodyMap), MediaType.get(&quot;application/json; charset=utf-8&quot;));
+    }
+
+    //3.构建请求
+    private Request buildRequest(RequestBody requestBody) {
+        return new Request.Builder()
+                .url(API_URL)
+                .post(requestBody)
+                .addHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey)
+                .build();
+    }
+    //4.发送请求获取响应
+    private String sendRequestAndGetResponse(String content, String prompt) throws IOException {
+        RequestBody requestBody = buildRequestBody(content, prompt);
+        Request request = buildRequest(requestBody);
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() &amp;&amp; response.body() != null) {
+                String responseBody=response.body().string();
+                Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);
+                List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);
+                if (choices != null &amp;&amp; !choices.isEmpty()) {
+                    Map&lt;String, Object&gt; firstChoice = choices.get(0);
+                    Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);
+                    return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;
+                }
+                return &quot;&quot;;
+            } else {
+                throw new IOException(&quot;请求响应失败！&quot; + response);
+            }
+        }
+    }
+
+    //4.2发送请求获取响应，缓存历史对话
+    private String sendRequestAndGetResponse2(String content, String prompt, String conversationHistory) throws IOException {
+        RequestBody requestBody = buildRequestBody2(content, prompt, conversationHistory);
+        Request request = buildRequest(requestBody);
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful() &amp;&amp; response.body() != null) {
+                String responseBody = response.body().string();
+                Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);
+                List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);
+                if (choices != null &amp;&amp; !choices.isEmpty()) {
+                    Map&lt;String, Object&gt; firstChoice = choices.get(0);
+                    Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);
+                    return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;
+                }
+                return &quot;&quot;;
+            } else {
+                throw new IOException(&quot;请求响应失败！&quot; + response);
+            }
+        }
+    }
+
+    //5.LLM-api响应
+    private static class ApiResponse {
+        private final String content;
+        private final int tokensUsed;
+
+        public ApiResponse(String content, int tokensUsed) {
+            this.content = content;
+            this.tokensUsed = tokensUsed;
+        }
+
+        public String getContent() {
+            return content;
+        }
+
+        public int getTokensUsed() {
+            return tokensUsed;
+        }
+    }
+
+    //6.LLM解析源代码
+    public String analyzeSourceCode(String sourceCodeFile) throws IOException {
+        String analyzePromt=sendRequestAndGetResponse(sourceCodeFile, analyzeCodePromt);
+        System.out.println(&quot;解析提示内容：\n&quot;+analyzePromt + &quot;over\n&quot;);
+        return analyzePromt;
+    }
+
+    //6.1 解析提取源代码信息构建测试类
+    public Map&lt;String, String&gt; extractClassInfo(String analyzeResult) {
+        Map&lt;String, String&gt; classInfo = new HashMap&lt;&gt;();
+        String pattern = &quot;包路径：(.*)\n类名：(.*)\n方法名：(.*)\n返回类型：(.*)\n功能描述：(.*)&quot;;
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(analyzeResult);
+        if (m.find()) {
+            classInfo.put(&quot;包路径&quot;, m.group(1).trim());
+            classInfo.put(&quot;类名&quot;, m.group(2).trim());
+            classInfo.put(&quot;方法名&quot;, m.group(3).trim());
+            classInfo.put(&quot;返回类型&quot;, m.group(4).trim());
+            classInfo.put(&quot;功能描述&quot;, m.group(5).trim());
+        } else {
+            System.err.println(&quot;未能从分析结果中提取包路径和类名&quot;);
+        }
+        return classInfo;
+    }
+
+    //7.LLM生成测试代码
+    public String generateTestCode(String sourceCodeFile,String analyzePromt) throws IOException {
+        String testCode=sendRequestAndGetResponse(sourceCodeFile, analyzePromt+generatePrompt);
+        System.out.println(&quot;生成测试代码：\n&quot;+testCode + &quot;over\n&quot;);
+        return testCode;
+    }
+
+    //7.2 LLM生成测试代码，缓存中获取代码
+    public String generateTestCode2(String sourceCodeFile, String analyzePromt, String conversationHistory) throws IOException {
+        // 调用 sendRequestAndGetResponse 方法发送请求并获取测试代码
+        // 提取分析结果中的信息
+        Map&lt;String, String&gt; classInfo = extractClassInfo(analyzePromt);
+        String packagePath = classInfo.get(&quot;包路径&quot;);
+        String className = classInfo.get(&quot;类名&quot;);
+        String methodName=classInfo.get(&quot;方法名&quot;);
+        String returnType=classInfo.get(&quot;返回类型&quot;);
+        String functionDescription=classInfo.get(&quot;功能描述&quot;);
+
+        // 检查提取的信息是否完整
+        if (packagePath == null || className == null || methodName == null || returnType == null || functionDescription == null) {
+            System.err.println(&quot;提取的信息不完整，无法生成测试代码。&quot;);
+            return null;
+        }
+        // 构建生成测试代码的提示
+        String newGprompt = generatePrompt
+                .replace(&quot;{packagePath}&quot;, packagePath)
+                .replace(&quot;{className}&quot;, className)
+                .replace(&quot;{methodName}&quot;, methodName)
+                .replace(&quot;{returnType}&quot;, returnType)
+                .replace(&quot;{functionDescription}&quot;, functionDescription);
+        String testCode = sendRequestAndGetResponse2(sourceCodeFile, newGprompt, conversationHistory);
+        System.out.println(&quot;生成测试代码：\n&quot; + testCode + &quot;over\n&quot;);
+        return testCode;
+    }
+
+    //8.LLM验证测试代码
+    public String validateTestCode(String testCode) throws IOException {
+        String validateResult=sendRequestAndGetResponse(testCode, validatePrompt);
+        System.out.println(&quot;测试代码验证结果：\n&quot;+validateResult + &quot;over\n&quot;);
+        return validateResult;
+    }
+
+    //9.LLM评估测试代码
+    public String evaluateTestCode(String testCode) throws IOException {
+        String evaluateResult=sendRequestAndGetResponse(testCode, evaluatePrompt);
+        System.out.println(&quot;测试代码评估结果：\n&quot;+evaluateResult + &quot;over\n&quot;);
+        return evaluateResult;
+    }
+
+    //10.LLM修复测试代码
+    public String fixTestCode(String errorPrompt, String testCode) throws IOException {
+        int fixNumber = 1;
+        boolean fixSuccess = false;
+        boolean validateSuccess = false;
+
+        while (!validateSuccess &amp;&amp; fixNumber &lt;= 3) {
+            // 构建修复提示
+            String fixRequestPrompt = errorPrompt + fixPrompt;
+            String fixResult = sendRequestAndGetResponse(testCode, fixRequestPrompt);
+            System.out.println(&quot;第 &quot; + fixNumber + &quot; 次修复结果：\n&quot; + fixResult + &quot;over\n&quot;);
+
+            // 检查修复是否成功
+            if (fixResult.contains(&quot;修复成功&quot;)) {
+                // 提取修复后的测试代码
+                testCode = fixResult.replace(&quot;修复成功&quot;, &quot;&quot;).trim();
+                fixSuccess = true;
+                String validateResult = validateTestCode(testCode);
+                if (validateResult.contains(&quot;全部验证通过&quot;)) {
+                    validateSuccess = true;
+                    System.out.println(&quot;修复后的代码验证成功！&quot;);
+                } else {
+                    System.out.println(&quot;修复后的代码验证失败！&quot;);
+                    errorPrompt = validateResult;
+                    fixNumber++;
+                }
+            } else {
+                // 更新错误提示，包含修复失败的原因
+                errorPrompt += &quot;\n修复尝试 &quot; + fixNumber + &quot; 失败，原因是：\n&quot; + fixResult;
+                fixNumber++;
+            }
+        }
+
+        if (validateSuccess) {
+            System.out.println(&quot;修复和验证成功！&quot;);
+        } else {
+            System.out.println(&quot;经过 &quot; + fixNumber + &quot; 次修复尝试，仍未成功。&quot;);
+            testCode=&quot;null&quot;;
+        }
+
+        return testCode;
+    }
+
+    //11.提取测试代码
+    private static String extractPureCode(String response) {
+        String startTag = &quot;```java&quot;;
+        String endTag = &quot;```&quot;;
+
+        int start = response.indexOf(startTag);
+        int end = response.lastIndexOf(endTag);
+
+        if (start != -1 &amp;&amp; end != -1 &amp;&amp; end &gt; start) {
+            // 跳过起始标记并提取代码
+            return response.substring(start + startTag.length(), end).trim();
+        }
+        // 如果未找到标记，返回原始内容
+        return response;
+    }
+
+    //12.创建测试类
+    public static void createTestClass(String passTest) {
+        try {
+            // 定义测试类文件的路径和名称
+            String fileName = &quot;src/main/java/zju/cst/aces/runner/ExampleTest.java&quot;;
+            // 将测试代码写入文件
+            try (FileWriter writer = new FileWriter(fileName)) {
+                String pureCode = extractPureCode(passTest);
+                writer.write(pureCode);
+            }
+            System.out.println(&quot;测试类创建成功：&quot; + fileName);
+        } catch (IOException e) {
+            System.err.println(&quot;创建测试类时出错：&quot; + e.getMessage());
+        }
+    }
+    //12.2创建测试类2
+    public static void createTestClass2(String passTest, Map&lt;String, String&gt; classInfo) {
+        try {
+            // 构造测试类的路径和文件名
+            String packagePath = classInfo.get(&quot;包路径&quot;);
+            if (packagePath == null || packagePath.isEmpty()) {
+                throw new IllegalArgumentException(&quot;包路径不能为空&quot;);
+            }
+            String basePackagePath = packagePath.replace(&quot;.&quot;, &quot;/&quot;);
+            if (!basePackagePath.startsWith(&quot;/&quot;)) {
+                basePackagePath = &quot;/&quot; + basePackagePath;
+            }
+            String className = classInfo.get(&quot;类名&quot;);
+            String fileName = &quot;src/test/java&quot; + basePackagePath + &quot;/&quot; + className + &quot;Test.java&quot;;
+
+            // 创建目录（如果不存在）
+            java.nio.file.Path path = Paths.get(&quot;src/test/java&quot; + basePackagePath);
+            if (!Files.exists(path)) {
+                Files.createDirectories(path);
+            }
+
+            // 将测试代码写入文件
+            try (FileWriter writer = new FileWriter(fileName)) {
+                String pureCode = extractPureCode(passTest);
+                writer.write(pureCode);
+            }
+            System.out.println(&quot;测试类创建成功：&quot; + fileName);
+        } catch (IOException e) {
+            System.err.println(&quot;创建测试类时出错：&quot; + e.getMessage());
+        }
+    }
+
+    //13.关闭客户端连接
+    public void closeClient() {
+        if (client != null) {
+            client.dispatcher().executorService().shutdown();
+            client.connectionPool().evictAll();
+        }
+    }
+
+    //14.日志记录
+    public void logTestCodeGenerationInfo(boolean analyzeSuccess,
+                                          boolean generateSuccess,
+                                          boolean validateSuccess,
+                                          boolean fixSuccess,
+                                          boolean evaluateSuccess,
+                                          boolean overallSuccess,
+                                          long analyzeStart,
+                                          long analyzeEndTime,
+                                          long generateEndTime,
+                                          long validateEndTime,
+                                          long fixEndTime,
+                                          long evaluateEndTime,
+                                          int analyzeTokenCount,
+                                          int generateTokenCount,
+                                          int validateTokenCount,
+                                          int fixTokenCount,
+                                          int evaluateTokenCount,
+                                          String validateFailReason,
+                                          int fixAttempt,
+                                          String fixFailReason,
+                                          String fixSuccessTimes,
+                                          String evaluateCoverageData) {
+
+        endTime = System.currentTimeMillis();
+        totalTime = endTime - startTime;
+
+        try (FileWriter writer = new FileWriter(&quot;Example_test_code_generation_log5201.txt&quot;, true)) {
+            writer.write(&quot;类名：&quot; + className + &quot;\n&quot;);
+            writer.write(&quot;分析阶段：\n&quot;);
+            writer.write(&quot;  耗时：&quot; + (analyzeEndTime - analyzeStart) + &quot; 毫秒\n&quot;);
+            writer.write(&quot;  消耗 token 数量：&quot; + analyzeTokenCount + &quot;\n&quot;);
+            writer.write(&quot;  是否成功：&quot; + analyzeSuccess + &quot;\n&quot;);
+            writer.write(&quot;生成阶段：\n&quot;);
+            writer.write(&quot;  耗时：&quot; + (generateEndTime - analyzeEndTime) + &quot; 毫秒\n&quot;);
+            writer.write(&quot;  消耗 token 数量：&quot; + generateTokenCount + &quot;\n&quot;);
+            writer.write(&quot;  是否成功：&quot; + generateSuccess + &quot;\n&quot;);
+            writer.write(&quot;验证阶段：\n&quot;);
+            writer.write(&quot;  耗时：&quot; + (validateEndTime - generateEndTime) + &quot; 毫秒\n&quot;);
+            writer.write(&quot;  消耗 token 数量：&quot; + validateTokenCount + &quot;\n&quot;);
+            writer.write(&quot;  是否成功：&quot; + validateSuccess + &quot;\n&quot;);
+            writer.write(&quot;  失败原因：&quot; + validateFailReason + &quot;\n&quot;);
+            writer.write(&quot;修复阶段：\n&quot;);
+            writer.write(&quot;  耗时：&quot; + (fixEndTime - validateEndTime) + &quot; 毫秒\n&quot;);
+            writer.write(&quot;  消耗 token 数量：&quot; + fixTokenCount + &quot;\n&quot;);
+            writer.write(&quot;  是否成功：&quot; + fixSuccess + &quot;\n&quot;);
+            writer.write(&quot;  修复尝试次数：&quot; + fixAttempt + &quot;\n&quot;);
+            writer.write(&quot;  修复失败原因：&quot; + fixFailReason + &quot;\n&quot;);
+            writer.write(&quot;  修复成功次数：&quot; + fixSuccessTimes + &quot;\n&quot;);
+            writer.write(&quot;评估阶段：\n&quot;);
+            writer.write(&quot;  耗时：&quot; + (evaluateEndTime - fixEndTime) + &quot; 毫秒\n&quot;);
+            writer.write(&quot;  消耗 token 数量：&quot; + evaluateTokenCount + &quot;\n&quot;);
+            writer.write(&quot;  是否成功：&quot; + evaluateSuccess + &quot;\n&quot;);
+            writer.write(&quot;  覆盖率数据：&quot; + evaluateCoverageData + &quot;\n&quot;);
+            writer.write(&quot;总耗时：&quot; + totalTime + &quot; 毫秒\n&quot;);
+            writer.write(&quot;总消耗 token 数量：&quot; + tokenCount + &quot;\n&quot;);
+            writer.write(&quot;测试代码生成成功：&quot; + overallSuccess + &quot;\n&quot;);
+            writer.write(&quot;失败原因：&quot; + String.join(&quot;, &quot;, failedClasses) + &quot;\n&quot;);
+            writer.write(&quot;--------------------------------------------------------\n&quot;);
+        } catch (IOException e) {
+            System.err.println(&quot;写入日志文件时出错：&quot; + e.getMessage());
+        }
+    }
+
+
+     //15.编译器执行验证代码
+    //测试代码类生成成功，尝试编译测试代码
+    public boolean compileTestClass(Map&lt;String, String&gt; classInfo) {
+
+        try {
+        // 构造测试类的路径
+        String basePackagePath = classInfo.get(&quot;包路径&quot;).replace(&quot;.&quot;, &quot;/&quot;);
+        String className = classInfo.get(&quot;类名&quot;);
+        String testClassName = className + &quot;Test&quot;;
+        String testClassPath = &quot;src/test/java&quot; + basePackagePath + &quot;/&quot; + testClassName + &quot;.java&quot;;
+
+        // 获取项目的类路径
+        List&lt;String&gt; classpathElements = new ArrayList&lt;&gt;();
+        // 假设项目的类路径包含 target/classes 和 target/test-classes
+        classpathElements.add(&quot;target/classes&quot;);
+        classpathElements.add(&quot;target/test-classes&quot;);
+
+
+        // 添加 JUnit 依赖的类路径
+        // 假设 JUnit JAR 文件在 lib 目录下
+            classpathElements.add(&quot;lib/junit-jupiter-api-5.10.2.jar&quot;);
+            classpathElements.add(&quot;lib/junit-jupiter-engine-5.10.2.jar&quot;);
+            classpathElements.add(&quot;lib/apiguardian-api-1.1.2.jar&quot;); // JUnit 的依赖
+            classpathElements.add(&quot;lib/opentest4j-1.3.0.jar&quot;);       // JUnit 的依赖
+// 拼接 classpath（注意操作系统分隔符）
+            String classpath = String.join(System.getProperty(&quot;os.name&quot;).toLowerCase().contains(&quot;win&quot;) ? &quot;;&quot; : &quot;:&quot;, classpathElements);
+        // 设置编译选项
+        List&lt;String&gt; options = new ArrayList&lt;&gt;();
+        options.add(&quot;-classpath&quot;);
+        options.add(classpath);
+        options.add(&quot;-d&quot;);
+        options.add(&quot;target/test-classes&quot;);
+
+        // 创建编译器和文件管理器
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);
+
+        JavaFileObject testClassFile = fileManager.getJavaFileObjectsFromStrings(Collections.singletonList(testClassPath)).iterator().next();
+
+        // 创建编译任务
+        DiagnosticCollector&lt;JavaFileObject&gt; diagnostics = new DiagnosticCollector&lt;&gt;();
+        JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, Arrays.asList(testClassFile));
+
+        // 执行编译任务
+        boolean result = task.call();
+
+        // 输出编译结果
+        if (result) {
+            System.out.println(&quot;测试类编译成功！&quot;);
+        } else {
+            System.out.println(&quot;测试类编译失败！&quot;);
+            diagnostics.getDiagnostics().forEach(diagnostic -&gt; {
+                System.out.println(&quot;错误: &quot; + diagnostic.getMessage(null) +
+                        &quot; 在行 &quot; + diagnostic.getLineNumber() +
+                        &quot; 列 &quot; + diagnostic.getColumnNumber());
+            });
+        }
+
+        // 关闭文件管理器
+        fileManager.close();
+
+        return result;
+    } catch (Exception e) {
+        e.printStackTrace();
+        System.out.println(&quot;测试类编译失败！发生异常: &quot; + e.getMessage());
+        return false;
+    }
+    }/*
+
+    //16.读取待测试类-待实现
+    private static String extractClassName(File javaFile) {
+        try {
+            List&lt;String&gt; lines = Files.readAllLines(javaFile.toPath());
+            for (String line : lines) {
+                if (line.contains(&quot;public class&quot;)) {
+                    String className = line.split(&quot;public class &quot;)[1].split(&quot;\\s+&quot;)[0].replaceAll(&quot;\\{&quot;, &quot;&quot;).trim();
+                    return className;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println(&quot;读取文件时出错: &quot; + javaFile.getAbsolutePath());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // 添加 Timer 实例
+    private final Timer timer = new Timer();
+
+    public static void main(String[] args) throws IOException {
+        String apiKey = &quot;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&quot;;
+        //读取待测试列表
+        String sourceCodeDir = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\main\\java\\codeing&quot;;
+        List&lt;String&gt; classNames = new ArrayList&lt;&gt;();
+
+        // 遍历指定目录下的所有Java文件-待实现
+        File dir = new File(sourceCodeDir);
+        if (dir.exists() &amp;&amp; dir.isDirectory()) {
+            File[] files = dir.listFiles((d, name) -&gt; name.endsWith(&quot;.java&quot;));
+            if (files != null) {
+                for (File file : files) {
+                    // 提取类名
+                    String className = extractClassName(file);
+                    if (className != null &amp;&amp; !className.isEmpty()) {
+                        classNames.add(className);
+                    }
+                }
+            }
+        }
+
+
+
+
+        String sourceCodePath = &quot;src/main/java/codeing/Example.java&quot;;
+        TestCore testCoreClass = new TestCore(apiKey);
+        testCoreClass.className = &quot;Example&quot;; // 设置当前处理的类名
+        String sourceCodeFile=testCoreClass.readSourceCode(sourceCodePath);
+        String conversationHistory = &quot;&quot;; // 初始化对话历史
+        boolean analyzeSuccess = false;
+        boolean generateSuccess = false;
+        boolean validateSuccess = false;
+        boolean fixSuccess = false;
+        boolean evaluateSuccess = false;
+        boolean overallSuccess = false;
+        long analyzeEndTime = 0;
+        long generateEndTime = 0;
+        long validateEndTime = 0;
+        long fixEndTime = 0;
+        long evaluateEndTime = 0;
+        int analyzeTokenCount = 0;
+        int generateTokenCount = 0;
+        int validateTokenCount = 0;
+        int fixTokenCount = 0;
+        int evaluateTokenCount = 0;
+        String validateFailReason = &quot;&quot;;
+        int fixAttempt = 0;
+        String fixFailReason = &quot;&quot;;
+        String fixSuccessTimes = &quot;0&quot;;
+        String evaluateCoverageData = &quot;&quot;;
+        long startTime = System.currentTimeMillis();
+        System.out.println(&quot;起始时间：&quot;+startTime+&quot;\n&quot;);
+
+        long analyzeStart = System.currentTimeMillis();
+
+        // 初始化 Timer
+        testCoreClass.timer.start(&quot;整体&quot;);
+        System.out.println(&quot;分析起始时间：&quot;+analyzeStart+&quot;\n&quot;);
+        //分析开始
+        testCoreClass.timer.start(&quot;分析&quot;);
+        String analyzePromt=testCoreClass.analyzeSourceCode(sourceCodeFile);
+
+        // 从分析结果中提取类信息
+        Map&lt;String, String&gt; classInfo = testCoreClass.extractClassInfo(analyzePromt);
+        analyzeSuccess = true;
+        analyzeEndTime = System.currentTimeMillis();
+        System.out.println(&quot;分析结束时间：&quot;+analyzeEndTime+&quot;\n&quot;);
+        System.out.println(&quot;分析总耗时：&quot;+(analyzeEndTime-analyzeStart));
+        analyzeTokenCount = testCoreClass.tokenCount;
+        if (analyzePromt == null || analyzePromt.isEmpty()) {
+            System.out.println(&quot;分析阶段失败：LLM 未返回有效结果&quot;);
+            return;
+        }
+        //分析结束
+        testCoreClass.timer.end(&quot;分析&quot;);
+        //生成
+        //  String testCode=testCoreClass.generateTestCode(sourceCodeFile,analyzePromt);
+        //生成开始
+        testCoreClass.timer.start(&quot;生成&quot;);
+        String testCode=testCoreClass.generateTestCode2(sourceCodeFile,analyzePromt,conversationHistory);
+
+        generateSuccess = true;
+        generateEndTime = System.currentTimeMillis();
+        generateTokenCount = testCoreClass.tokenCount - analyzeTokenCount;
+        if (testCode == null || testCode.isEmpty()) {
+            System.out.println(&quot;生成阶段失败：LLM 未返回有效结果&quot;);
+            return;
+        }
+        //生成结束
+        testCoreClass.timer.end(&quot;生成&quot;);
+        //验证开始
+        testCoreClass.timer.start(&quot;验证&quot;);
+        String validateResult=testCoreClass.validateTestCode(testCode);
+
+        validateSuccess = validateResult.contains(&quot;全部验证通过&quot;);
+        validateEndTime = System.currentTimeMillis();
+        validateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount;
+        if (validateResult == null || validateResult.isEmpty()) {
+            System.out.println(&quot;验证阶段失败：LLM 未返回有效结果&quot;);
+            return;
+        }
+        //验证结束
+        testCoreClass.timer.end(&quot;验证&quot;);
+        if (!validateSuccess) {
+            validateFailReason = validateResult;
+        }
+        if (validateSuccess) {
+            //评估开始
+            testCoreClass.timer.start(&quot;评估&quot;);
+            //评估
+
+            String evaluateResult=testCoreClass.evaluateTestCode(testCode);
+
+            evaluateSuccess = true;
+            evaluateEndTime = System.currentTimeMillis();
+            evaluateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount;
+            evaluateCoverageData = evaluateResult;
+            if (evaluateResult == null || evaluateResult.isEmpty()) {
+                System.out.println(&quot;评估阶段失败：LLM 未返回有效结果&quot;);
+                return;
+            }
+            //评估结束
+            testCoreClass.timer.end(&quot;评估&quot;);
+            //如果覆盖率未达到期望 优化测试代码
+
+            //创建测试类
+            //  createTestClass(testCode);
+            createTestClass2(testCode, classInfo);
+            overallSuccess = true;
+
+            TestClassCompiler testClassCompiler=new TestClassCompiler();
+            boolean compileResult=testClassCompiler.compileTestClass(classInfo);
+            // 编译测试类
+            //  boolean compileResult = testCoreClass.compileTestClass(classInfo);
+            if (compileResult) {
+                System.out.println(&quot;测试类编译成功！&quot;);
+            } else {
+                System.out.println(&quot;测试类编译失败！&quot;);
+            }
+        }
+        else
+        {
+            //修复开始
+            testCoreClass.timer.start(&quot;修复&quot;);
+            fixAttempt = 1;
+            while (fixAttempt &lt;= 3) {
+                //修复
+
+                String fixResult = testCoreClass.fixTestCode(validateResult, testCode);
+                fixSuccess = !fixResult.equals(&quot;null&quot;);
+                fixEndTime = System.currentTimeMillis();
+                fixTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount;
+                if (fixResult == null || fixResult.isEmpty()) {
+                    System.out.println(&quot;修复阶段失败：LLM 未返回有效结果&quot;);
+                    break;
+                }
+                if (fixSuccess) {
+                    String evaluateResult = testCoreClass.evaluateTestCode(testCode);
+                    evaluateSuccess = true;
+                    evaluateEndTime = System.currentTimeMillis();
+                    evaluateTokenCount = testCoreClass.tokenCount - analyzeTokenCount - generateTokenCount - validateTokenCount - fixTokenCount;
+                    if (evaluateResult == null || evaluateResult.isEmpty()) {
+                        System.out.println(&quot;评估阶段失败：LLM 未返回有效结果&quot;);
+                        break;
+                    }
+                    // 假设 evaluateResult 包含覆盖率数据，如 &quot;整体代码覆盖率：80%，分支覆盖率：70%，行覆盖率：85%&quot;
+                    evaluateCoverageData = evaluateResult;
+                    //   testCoreClass.createTestClass(testCode);
+                    testCoreClass.createTestClass2(testCode, classInfo);;
+                    overallSuccess = true;
+                    fixSuccessTimes = String.valueOf(fixAttempt);
+                    break;
+                } else {
+                    System.out.println(&quot;第 &quot; + fixAttempt + &quot; 次修复失败：&quot; + fixResult + &quot;over\n&quot;);
+                    fixFailReason += &quot;第 &quot; + fixAttempt + &quot; 次修复失败，原因是：&quot; + fixResult + &quot;\n&quot;;
+                    testCoreClass.failedClasses.add(testCoreClass.className);
+                    fixAttempt++;
+                }
+            }
+            //修复结束
+            testCoreClass.timer.end(&quot;修复&quot;);
+        }
+        // 记录测试代码生成过程的信息
+        testCoreClass.logTestCodeGenerationInfo(analyzeSuccess, generateSuccess, validateSuccess,
+                fixSuccess, evaluateSuccess, overallSuccess,analyzeStart,analyzeEndTime, generateEndTime,
+                validateEndTime, fixEndTime, evaluateEndTime, analyzeTokenCount, generateTokenCount,
+                validateTokenCount, fixTokenCount, evaluateTokenCount, validateFailReason,
+                fixAttempt, fixFailReason, fixSuccessTimes, evaluateCoverageData);
+        testCoreClass.closeClient();
+
+
+    }
+}*/
+
+
+
+//0521运行器版本
+/*package zju.cst.aces.runner;
+
+        import org.junit.platform.engine.TestExecutionResult;
+        import org.junit.platform.launcher.*;
+        import org.junit.platform.launcher.core.LauncherConfig;
+        import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+        import org.junit.platform.launcher.core.LauncherFactory;
+
+        import javax.tools.*;
+        import java.io.*;
+        import java.net.URI;
+        import java.net.URL;
+        import java.net.URLClassLoader;
+        import java.nio.file.Files;
+        import java.nio.file.Path;
+        import java.util.*;
+
+        import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+
+public class TestClassRunner {
+    private final Launcher launcher;
+    private final List&lt;TestResult&gt; testResults = new ArrayList&lt;&gt;();
+    private long startTime;
+    private long endTime;
+    private final Path tempDir; // 临时目录用于编译测试代码
+
+    public TestClassRunner() throws IOException {
+        // 创建临时目录
+        tempDir = Files.createTempDirectory(&quot;test-classes&quot;);
+
+        // 配置 Launcher，添加测试执行监听器
+        LauncherConfig config = LauncherConfig.builder()
+                .addTestExecutionListeners(new TestListener())
+                .build();
+        this.launcher = LauncherFactory.create(config);
+    }
+
+    *//**
+     * 执行指定类中的所有测试方法
+     * @param testClass 要执行的测试类
+     *//*
+    public void runTests(Class&lt;?&gt; testClass) {
+        startTime = System.currentTimeMillis();
+
+        // 创建测试请求，选择要执行的测试类
+        LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()
+                .selectors(selectClass(testClass))
+                .build();
+
+        // 执行测试
+        launcher.execute(request);
+
+        endTime = System.currentTimeMillis();
+    }
+
+    *//**
+     * 从测试代码字符串运行测试
+     * @param testCode 测试代码字符串
+     * @param classInfo 包含类信息的Map，应包含&quot;包路径&quot;和&quot;类名&quot;
+     * @return 测试是否全部通过
+     *//*
+    public boolean runTests(String testCode, Map&lt;String, String&gt; classInfo) {
+        try {
+            // 从classInfo中获取类信息
+            String packageName = classInfo.get(&quot;包路径&quot;);
+            String className = classInfo.get(&quot;类名&quot;);
+            String testClassName = className + &quot;Test&quot;;
+            String fullTestClassName = packageName + &quot;.&quot; + testClassName;
+
+            // 编译测试代码
+            Class&lt;?&gt; testClass = compileTestCode(testCode, fullTestClassName);
+
+            // 执行测试
+            runTests(testClass);
+
+            // 检查是否所有测试都通过
+            long failedCount = testResults.stream()
+                    .filter(r -&gt; r.status == TestStatus.FAILED)
+                    .count();
+            return failedCount == 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            testResults.add(new TestResult(classInfo.get(&quot;类名&quot;) + &quot;Test&quot;, TestStatus.FAILED, e));
+            return false;
+        }
+    }
+
+    *//**
+     * 编译测试代码字符串并返回Class对象
+     *//*
+    private Class&lt;?&gt; compileTestCode(String testCode, String className) throws Exception {
+        // 创建Java文件对象
+        JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();
+        DiagnosticCollector&lt;JavaFileObject&gt; diagnostics = new DiagnosticCollector&lt;&gt;();
+
+        // 创建内存中的Java源文件
+        JavaFileObject fileObject = new JavaSourceFromString(className, testCode);
+
+        // 设置编译选项
+        List&lt;String&gt; options = Arrays.asList(
+                //      &quot;--release&quot;, &quot;11&quot;,  // 指定Java版本为11
+                &quot;-d&quot;, tempDir.toString(),
+                &quot;-classpath&quot;, getClasspath()
+        );
+
+        // 执行编译
+        JavaCompiler.CompilationTask task = compiler.getTask(
+                null, null, diagnostics, options, null, Arrays.asList(fileObject));
+
+        boolean success = task.call();
+
+        // 检查编译错误
+        if (!success) {
+            StringBuilder errorMsg = new StringBuilder(&quot;编译错误:\n&quot;);
+            for (Diagnostic&lt;? extends JavaFileObject&gt; diagnostic : diagnostics.getDiagnostics()) {
+                errorMsg.append(diagnostic.getMessage(null)).append(&quot;\n&quot;);
+            }
+            throw new RuntimeException(errorMsg.toString());
+        }
+
+        // 使用自定义类加载器加载编译后的类
+        URLClassLoader classLoader = URLClassLoader.newInstance(
+                new URL[]{tempDir.toUri().toURL()},
+                getClass().getClassLoader()
+        );
+
+        return classLoader.loadClass(className);
+    }
+
+    *//**
+     * 获取类路径（包含JUnit依赖）
+     *//*
+    private String getClasspath() {
+        // 这里需要根据实际情况配置JUnit和项目依赖的路径
+        return System.getProperty(&quot;java.class.path&quot;) +
+                File.pathSeparator + &quot;lib/junit-jupiter-api-5.10.2.jar&quot; +
+                File.pathSeparator + &quot;lib/junit-jupiter-engine-5.10.2.jar&quot; +
+                File.pathSeparator + &quot;lib/apiguardian-api-1.1.2.jar&quot; +
+                File.pathSeparator + &quot;lib/opentest4j-1.3.0.jar&quot;;
+    }
+
+    *//**
+     * 输出测试结果摘要
+     *//*
+    public String getSummary() {
+        long total = testResults.size();
+        long passed = testResults.stream().filter(r -&gt; r.status == TestStatus.PASSED).count();
+        long failed = testResults.stream().filter(r -&gt; r.status == TestStatus.FAILED).count();
+        long skipped = testResults.stream().filter(r -&gt; r.status == TestStatus.SKIPPED).count();
+
+        StringBuilder summary = new StringBuilder();
+        summary.append(&quot;测试执行结果：\n&quot;);
+        summary.append(&quot;  总测试数: &quot;).append(total).append(&quot;\n&quot;);
+        summary.append(&quot;  通过:    &quot;).append(passed).append(&quot;\n&quot;);
+        summary.append(&quot;  失败:    &quot;).append(failed).append(&quot;\n&quot;);
+        summary.append(&quot;  跳过:    &quot;).append(skipped).append(&quot;\n&quot;);
+        summary.append(&quot;  执行时间: &quot;).append(getExecutionTime()).append(&quot; ms\n&quot;);
+
+        return summary.toString();
+    }
+
+    *//**
+     * 输出详细的测试结果
+     *//*
+    public String getDetailedResults() {
+        StringBuilder details = new StringBuilder();
+        details.append(getSummary());
+        details.append(&quot;\n详细结果：\n&quot;);
+
+        for (TestResult result : testResults) {
+            // 提取方法名（去除括号）
+            String testName = result.testName;
+            if (testName.endsWith(&quot;()&quot;)) {
+                testName = testName.substring(0, testName.length() - 2);
+            }
+
+            details.append(&quot;  • &quot;).append(testName).append(&quot;() [&quot;).append(result.status).append(&quot;]&quot;);
+
+            if (result.status == TestStatus.FAILED &amp;&amp; result.errorMessage != null) {
+                details.append(&quot;\n    错误: &quot;).append(result.errorMessage);
+            }
+            details.append(&quot;\n&quot;);
+        }
+
+        return details.toString();
+    }
+
+    *//**
+     * 获取测试执行时间（毫秒）
+     *//*
+    public long getExecutionTime() {
+        return endTime - startTime;
+    }
+
+    *//**
+     * 获取所有测试结果
+     *//*
+    public List&lt;TestResult&gt; getResults() {
+        return testResults;
+    }
+
+    *//**
+     * 测试结果状态枚举
+     *//*
+    public enum TestStatus {
+        PASSED, FAILED, SKIPPED
+    }
+
+    *//**
+     * 测试结果数据结构
+     *//*
+    public static class TestResult {
+        String testName;
+        TestStatus status;
+        String errorMessage;
+        String stackTrace;
+
+        public TestResult(String testName, TestStatus status) {
+            this.testName = testName;
+            this.status = status;
+        }
+
+        public TestResult(String testName, TestStatus status, Throwable throwable) {
+            this(testName, status);
+            this.errorMessage = throwable.getMessage();
+
+            // 捕获堆栈跟踪信息
+            StringWriter sw = new StringWriter();
+            throwable.printStackTrace(new PrintWriter(sw));
+            this.stackTrace = sw.toString();
+        }
+    }
+
+    *//**
+     * JUnit 测试执行监听器
+     *//*
+    private class TestListener implements TestExecutionListener {
+        @Override
+        public void executionStarted(TestIdentifier testIdentifier) {
+            // 测试开始时的处理
+        }
+
+        @Override
+        public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult result) {
+            if (testIdentifier.isTest()) {
+                String testName = testIdentifier.getDisplayName();
+
+                switch (result.getStatus()) {
+                    case SUCCESSFUL:
+                        testResults.add(new TestResult(testName, TestStatus.PASSED));
+                        break;
+                    case FAILED:
+                        result.getThrowable().ifPresent(throwable -&gt;
+                                testResults.add(new TestResult(testName, TestStatus.FAILED, throwable))
+                        );
+                        break;
+                    case ABORTED:
+                        testResults.add(new TestResult(testName, TestStatus.SKIPPED));
+                        break;
+                }
+            }
+        }
+    }
+
+    *//**
+     * 用于表示内存中Java源文件的辅助类
+     *//*
+    private static class JavaSourceFromString extends SimpleJavaFileObject {
+        final String code;
+
+        JavaSourceFromString(String name, String code) {
+            super(URI.create(&quot;string:///&quot; + name.replace('.', '/') + Kind.SOURCE.extension), Kind.SOURCE);
+            this.code = code;
+        }
+
+        @Override
+        public CharSequence getCharContent(boolean ignoreEncodingErrors) {
+            return code;
+        }
+    }
+
+
+
+    public static void main(String[] args) {
+        try {
+            // 测试代码文件路径
+            String testFilePath = &quot;D:\\fx\\jafx\\chatunitest-core\\src\\test\\java\\codeing\\ExampleTest.java&quot;;
+
+            // 从文件读取测试代码
+            String testCode = readFileContent(testFilePath);
+
+            // 配置类信息
+            Map&lt;String, String&gt; classInfo = new HashMap&lt;&gt;();
+            classInfo.put(&quot;包路径&quot;, &quot;codeing&quot;);  // 包路径应与测试文件的package声明一致
+            classInfo.put(&quot;类名&quot;, &quot;Example&quot;);    // 类名应与测试文件名前缀一致（不包含Test后缀）
+
+            // 创建并运行测试执行器
+            TestClassRunner runner = new TestClassRunner();
+            boolean success = runner.runTests(testCode, classInfo);
+
+            // 输出结果
+            System.out.println(runner.getDetailedResults());
+
+            if (success) {
+                System.out.println(&quot;\n所有测试通过！&quot;);
+            } else {
+                System.out.println(&quot;\n存在测试失败，请检查详细结果！&quot;);
+            }
+
+        } catch (Exception e) {
+            System.err.println(&quot;执行测试时出错：&quot; + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    *//**
+     * 从文件读取内容
+     *//*
+    private static String readFileContent(String filePath) throws IOException {
+        StringBuilder content = new StringBuilder();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                content.append(line).append(&quot;\n&quot;);
+            }
+        }
+        return content.toString();
+    }
+}*/
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

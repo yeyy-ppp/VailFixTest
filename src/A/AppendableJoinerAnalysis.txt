@@ -1,0 +1,84 @@
+```
+包路径：lang3
+类名：AppendableJoiner
+父类：无
+依赖类：StringUtils, UncheckedException, FailableBiConsumer
+---
+序号：1
+方法名：builder()
+返回类型：AppendableJoiner.Builder<T>
+功能描述：创建并返回一个Builder对象
+序号：2
+方法名：joinA(Appendable appendable, CharSequence prefix, CharSequence suffix, CharSequence delimiter, FailableBiConsumer<Appendable, T, IOException> appender, T... elements)
+返回类型：A
+功能描述：将数组元素追加到Appendable对象，使用指定前后缀和分隔符
+序号：3
+方法名：joinArray(Appendable appendable, CharSequence prefix, CharSequence suffix, CharSequence delimiter, FailableBiConsumer<Appendable, T, IOException> appender, T[] elements)
+返回类型：A
+功能描述：内部方法，实际执行将数组元素追加到Appendable对象的操作
+序号：4
+方法名：joinI(StringBuilder stringBuilder, CharSequence prefix, CharSequence suffix, CharSequence delimiter, FailableBiConsumer<Appendable, T, IOException> appender, Iterable<T> elements)
+返回类型：StringBuilder
+功能描述：将可迭代对象元素追加到StringBuilder，使用指定前后缀和分隔符
+序号：5
+方法名：joinIterable(Appendable appendable, CharSequence prefix, CharSequence suffix, CharSequence delimiter, FailableBiConsumer<Appendable, T, IOException> appender, Iterable<T> elements)
+返回类型：A
+功能描述：内部方法，实际执行将可迭代对象元素追加到Appendable对象的操作
+序号：6
+方法名：joinSB(StringBuilder stringBuilder, CharSequence prefix, CharSequence suffix, CharSequence delimiter, FailableBiConsumer<Appendable, T, IOException> appender, T... elements)
+返回类型：StringBuilder
+功能描述：将数组元素追加到StringBuilder，使用指定前后缀和分隔符
+序号：7
+方法名：nonNull(CharSequence value)
+返回类型：CharSequence
+功能描述：返回非空字符序列（若为null则返回空字符串）
+序号：8
+方法名：AppendableJoiner(CharSequence prefix, CharSequence suffix, CharSequence delimiter, FailableBiConsumer<Appendable, T, IOException> appender)
+返回类型：无
+功能描述：构造方法，初始化前缀/后缀/分隔符和元素追加器
+序号：9
+方法名：join(StringBuilder stringBuilder, Iterable<T> elements)
+返回类型：StringBuilder
+功能描述：将可迭代对象元素追加到StringBuilder，使用实例配置的前后缀和分隔符
+序号：10
+方法名：join(StringBuilder stringBuilder, T... elements)
+返回类型：StringBuilder
+功能描述：将数组元素追加到StringBuilder，使用实例配置的前后缀和分隔符
+序号：11
+方法名：joinA(Appendable appendable, Iterable<T> elements)
+返回类型：A
+功能描述：将可迭代对象元素追加到Appendable对象，使用实例配置的前后缀和分隔符
+序号：12
+方法名：joinA(Appendable appendable, T... elements)
+返回类型：A
+功能描述：将数组元素追加到Appendable对象，使用实例配置的前后缀和分隔符
+包路径：lang3
+类名：AppendableJoiner.Builder
+父类：无
+依赖类：FailableBiConsumer, AppendableJoiner
+---
+序号：1
+方法名：Builder()
+返回类型：无
+功能描述：构造方法，初始化Builder实例
+序号：2
+方法名：get()
+返回类型：AppendableJoiner<T>
+功能描述：根据当前配置构建并返回AppendableJoiner实例
+序号：3
+方法名：setDelimiter(CharSequence delimiter)
+返回类型：AppendableJoiner.Builder<T>
+功能描述：设置分隔符并返回当前Builder
+序号：4
+方法名：setElementAppender(FailableBiConsumer<Appendable, T, IOException> appender)
+返回类型：AppendableJoiner.Builder<T>
+功能描述：设置元素追加器并返回当前Builder
+序号：5
+方法名：setPrefix(CharSequence prefix)
+返回类型：AppendableJoiner.Builder<T>
+功能描述：设置前缀并返回当前Builder
+序号：6
+方法名：setSuffix(CharSequence suffix)
+返回类型：AppendableJoiner.Builder<T>
+功能描述：设置后缀并返回当前Builder
+```

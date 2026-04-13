@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ControlDependencyBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.pdg</a> &gt; <span class="el_source">ControlDependencyBuilder.java</span></div><h1>ControlDependencyBuilder.java</h1><pre class="source lang-java linenums">package slicing.graphs.pdg;
+
+import slicing.arcs.Arc;
+import slicing.arcs.cfg.ControlFlowArc;
+import slicing.arcs.pdg.ControlDependencyArc;
+import slicing.graphs.cfg.CFG;
+import slicing.nodes.GraphNode;
+
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * A simple but slow finder of control dependencies.
+ * &lt;br/&gt;
+ * It has a polynomial complexity (between cubed and n**4) with respect to the number of nodes in the CFG.
+ * It uses the following definition of control dependence:
+ * &lt;br/&gt;
+ * A node &lt;i&gt;b&lt;/i&gt; is control dependent on another node &lt;i&gt;a&lt;/i&gt; if and only if &lt;i&gt;b&lt;/i&gt; post-dominates
+ * one but not all of the successors of &lt;i&gt;a&lt;/i&gt;.
+ * &lt;br/&gt;
+ * A node &lt;i&gt;b&lt;/i&gt; post-dominates another node &lt;i&gt;a&lt;/i&gt; if and only if &lt;i&gt;b&lt;/i&gt; appears in every path
+ * from &lt;i&gt;a&lt;/i&gt; to the &quot;Exit&quot; node.
+ * &lt;br/&gt;
+ * There exist better, cheaper approaches that have linear complexity w.r.t. the number of edges in the CFG.
+ * &lt;b&gt;Usage:&lt;/b&gt; pass an empty {@link PDG} and a filled {@link CFG} and then run {@link #build()}.
+ * This builder should only be used once, and then discarded.
+ */
+<span class="nc" id="L28">public class ControlDependencyBuilder {</span>
+    protected final CFG cfg;
+    protected final PDG pdg;
+
+<span class="nc" id="L32">    public ControlDependencyBuilder(CFG cfg, PDG pdg) {</span>
+<span class="nc" id="L33">        this.cfg = cfg;</span>
+<span class="nc" id="L34">        this.pdg = pdg;</span>
+<span class="nc" id="L35">    }</span>
+
+    /** Adds the {@link ControlDependencyArc CCD arcs}. This method should only be called
+     * once per {@link PDG}, as multiple executions may create duplicate arcs. */
+    public void build() {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        assert cfg.isBuilt();</span>
+<span class="nc" id="L41">        GraphNode&lt;?&gt; enterNode = cfg.getRootNode();</span>
+<span class="nc" id="L42">        GraphNode&lt;?&gt; exitNode = cfg.getExitNode();</span>
+
+<span class="nc" id="L44">        Arc enterExitArc = null;</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">        if (!cfg.containsEdge(enterNode, exitNode)) {</span>
+<span class="nc" id="L46">            enterExitArc = new ControlFlowArc();</span>
+<span class="nc" id="L47">            cfg.addEdge(enterNode, exitNode, enterExitArc);</span>
+        }
+
+<span class="nc" id="L50">        Set&lt;GraphNode&lt;?&gt;&gt; nodes = pdg.vertexSet();</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">        for (GraphNode&lt;?&gt; a : nodes) {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; b : nodes) {</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">                if (a == b) continue;</span>
+<span class="nc bnc" id="L54" title="All 2 branches missed.">                if (hasControlDependence(a, b))</span>
+<span class="nc" id="L55">                    pdg.addControlDependencyArc(a, b);</span>
+<span class="nc" id="L56">            }</span>
+<span class="nc" id="L57">        }</span>
+
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (enterExitArc != null)</span>
+<span class="nc" id="L60">            cfg.removeEdge(enterExitArc);</span>
+<span class="nc" id="L61">    }</span>
+
+    /** Whether the first argument has a control-flow effect on the execution of the second argument. */
+    public boolean hasControlDependence(GraphNode&lt;?&gt; a, GraphNode&lt;?&gt; b) {
+<span class="nc" id="L65">        int yes = 0;</span>
+<span class="nc" id="L66">        Set&lt;Arc&gt; arcs = cfg.outgoingEdgesOf(a);</span>
+        // Nodes with less than 1 outgoing arc cannot control another node.
+<span class="nc bnc" id="L68" title="All 2 branches missed.">        if (arcs.size() &lt; 2)</span>
+<span class="nc" id="L69">            return false;</span>
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (Arc arc : arcs)</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">            if (postDominates(cfg.getEdgeTarget(arc), b))</span>
+<span class="nc" id="L72">                yes++;</span>
+<span class="nc" id="L73">        int no = arcs.size() - yes;</span>
+<span class="nc bnc" id="L74" title="All 4 branches missed.">        return yes &gt; 0 &amp;&amp; no &gt; 0;</span>
+    }
+
+    /** Whether the second argument post-dominates the first, i.e. whether {@code b} appears in all
+     *  paths from {@code a} to the Exit node. */
+    public boolean postDominates(GraphNode&lt;?&gt; a, GraphNode&lt;?&gt; b) {
+<span class="nc" id="L80">        return postDominates(a, b, new HashSet&lt;&gt;());</span>
+    }
+
+    /** @see #postDominates(GraphNode, GraphNode) */
+    protected boolean postDominates(GraphNode&lt;?&gt; a, GraphNode&lt;?&gt; b, Set&lt;GraphNode&lt;?&gt;&gt; visited) {
+        // Stop w/ success if a == b or a has already been visited
+<span class="nc bnc" id="L86" title="All 4 branches missed.">        if (a.equals(b) || visited.contains(a))</span>
+<span class="nc" id="L87">            return true;</span>
+<span class="nc" id="L88">        Set&lt;Arc&gt; outgoing = cfg.outgoingEdgesOf(a);</span>
+        // Stop w/ failure if there are no edges to traverse from a
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        if (outgoing.isEmpty())</span>
+<span class="nc" id="L91">            return false;</span>
+        // Find all possible paths starting from a, if ALL find b, then true, else false
+<span class="nc" id="L93">        visited.add(a);</span>
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        for (Arc out : outgoing) {</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">            if (!postDominates(cfg.getEdgeTarget(out), b, visited))</span>
+<span class="nc" id="L96">                return false;</span>
+<span class="nc" id="L97">        }</span>
+<span class="nc" id="L98">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,71 @@
+```
+包路径：gson.internal.reflect
+类名：ReflectionHelper
+父类：无
+依赖类：GsonBuildConfig,JsonIOException,TroubleshootingGuide,RecordHelper,RecordSupportedHelper,RecordNotSupportedHelper
+---
+序号：1
+方法名：ReflectionHelper()
+返回类型：void
+功能描述：私有构造方法防止实例化
+序号：2
+方法名：getInaccessibleTroubleshootingSuffix(Exception e)
+返回类型：String
+功能描述：生成不可访问异常的错误排查后缀信息
+序号：3
+方法名：makeAccessible(AccessibleObject object)
+返回类型：void
+功能描述：强制设置可访问对象为可访问状态
+序号：4
+方法名：getAccessibleObjectDescription(AccessibleObject object, boolean uppercaseFirstLetter)
+返回类型：String
+功能描述：生成可访问对象的描述信息
+序号：5
+方法名：fieldToString(Field field)
+返回类型：String
+功能描述：转换字段信息为完整类名#字段名字符串
+序号：6
+方法名：constructorToString(Constructor<?> constructor)
+返回类型：String
+功能描述：转换构造函数信息为完整类名(参数列表)字符串
+序号：7
+方法名：appendExecutableParameters(AccessibleObject executable, StringBuilder stringBuilder)
+返回类型：void
+功能描述：向字符串构建器追加可执行对象的参数类型列表
+序号：8
+方法名：isStatic(Class<?> clazz)
+返回类型：boolean
+功能描述：检查类是否为静态类
+序号：9
+方法名：isAnonymousOrNonStaticLocal(Class<?> clazz)
+返回类型：boolean
+功能描述：判断类是否为匿名类或非静态本地类
+序号：10
+方法名：tryMakeAccessible(Constructor<?> constructor)
+返回类型：String
+功能描述：尝试设置构造函数可访问并返回错误信息
+序号：11
+方法名：isRecord(Class<?> raw)
+返回类型：boolean
+功能描述：检查指定类是否为Record类型
+序号：12
+方法名：getRecordComponentNames(Class<?> raw)
+返回类型：String[]
+功能描述：获取Record类型的组件名称数组
+序号：13
+方法名：getAccessor(Class<?> raw, Field field)
+返回类型：Method
+功能描述：获取Record字段对应的访问器方法
+序号：14
+方法名：getCanonicalRecordConstructor(Class<T> raw)
+返回类型：Constructor<T>
+功能描述：获取Record类型的规范构造函数
+序号：15
+方法名：createExceptionForUnexpectedIllegalAccess(IllegalAccessException exception)
+返回类型：RuntimeException
+功能描述：创建非法访问异常的运行时异常包装
+序号：16
+方法名：createExceptionForRecordReflectionException(ReflectiveOperationException exception)
+返回类型：RuntimeException
+功能描述：创建Record反射操作异常的运行时异常包装
+```

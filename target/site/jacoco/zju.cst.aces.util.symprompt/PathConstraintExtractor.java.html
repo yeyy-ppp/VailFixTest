@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PathConstraintExtractor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.symprompt</a> &gt; <span class="el_source">PathConstraintExtractor.java</span></div><h1>PathConstraintExtractor.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util.symprompt;
+
+import com.github.javaparser.JavaParser;
+import com.github.javaparser.ParseResult;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.stmt.IfStmt;
+import com.github.javaparser.ast.stmt.WhileStmt;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+<span class="nc" id="L16">public class PathConstraintExtractor {</span>
+
+    public static void main(String[] args) {
+<span class="nc" id="L19">        String methodCode = &quot;public int method(int a,int b,int c,int d){\n&quot; +</span>
+                &quot;        int count=0;\n&quot; +
+                &quot;        if(a&gt;0){\n&quot; +
+                &quot;            count+=a;\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;        if(b==0){\n&quot; +
+                &quot;            count+=b;\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;        if(c&lt;0){\n&quot; +
+                &quot;            if(d!=0){\n&quot; +
+                &quot;                if(c&lt;d){\n&quot; +
+                &quot;                    count+=c;\n&quot; +
+                &quot;                }\n&quot; +
+                &quot;            }\n&quot; +
+                &quot;            else {\n&quot; +
+                &quot;                count+=d;\n&quot; +
+                &quot;            }\n&quot; +
+                &quot;        }\n&quot; +
+                &quot;        return count;\n&quot; +
+                &quot;    }&quot;;
+
+<span class="nc" id="L40">        List&lt;List&lt;String&gt;&gt; minPathConstraints = extractPathConstraints(methodCode);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        for (List&lt;String&gt; path : minPathConstraints) {</span>
+<span class="nc" id="L42">            System.out.println(path);</span>
+<span class="nc" id="L43">        }</span>
+<span class="nc" id="L44">    }</span>
+
+    public static List&lt;List&lt;String&gt;&gt; extractPathConstraints(String methodCode) {
+        // Parse the method code
+<span class="nc" id="L48">        JavaParser javaParser = new JavaParser();</span>
+<span class="nc" id="L49">        ParseResult&lt;CompilationUnit&gt; parseResult = javaParser.parse(new StringReader(&quot;class Temp { &quot; + methodCode + &quot; }&quot;));</span>
+
+        // Ensure the parsing was successful
+<span class="nc bnc" id="L52" title="All 4 branches missed.">        if (parseResult.isSuccessful() &amp;&amp; parseResult.getResult().isPresent()) {</span>
+<span class="nc" id="L53">            CompilationUnit cu = parseResult.getResult().get();</span>
+
+            // Create a visitor to extract path constraints
+<span class="nc" id="L56">            PathConstraintVisitor pathConstraintVisitor = new PathConstraintVisitor();</span>
+<span class="nc" id="L57">            cu.accept(pathConstraintVisitor, null);</span>
+
+            // Generate the path constraints
+<span class="nc" id="L60">            List&lt;List&lt;String&gt;&gt; pathConstraints = generatePathConstraints(pathConstraintVisitor.getConditions());</span>
+
+            // Generate minpaths, return all minPathConstraints
+<span class="nc" id="L63">            return generateMinpaths(pathConstraints);</span>
+        } else {
+<span class="nc" id="L65">            throw new RuntimeException(&quot;Parsing failed: &quot; + parseResult.getProblems());</span>
+        }
+    }
+
+<span class="nc" id="L69">    private static class PathConstraintVisitor extends VoidVisitorAdapter&lt;Void&gt; {</span>
+<span class="nc" id="L70">        private final List&lt;String&gt; conditions = new ArrayList&lt;&gt;();</span>
+
+        @Override
+        public void visit(IfStmt n, Void arg) {
+<span class="nc" id="L74">            conditions.add(n.getCondition().toString());</span>
+<span class="nc bnc" id="L75" title="All 4 branches missed.">            if (n.getElseStmt().isPresent() &amp;&amp; n.getElseStmt().get() instanceof IfStmt) {</span>
+<span class="nc" id="L76">                visit((IfStmt) n.getElseStmt().get(), arg);</span>
+            } else {
+<span class="nc" id="L78">                conditions.add(&quot;not (&quot; + n.getCondition().toString() + &quot;)&quot;);</span>
+            }
+<span class="nc" id="L80">            super.visit(n, arg);</span>
+<span class="nc" id="L81">        }</span>
+
+        @Override
+        public void visit(WhileStmt n, Void arg) {
+<span class="nc" id="L85">            super.visit(n, arg);</span>
+<span class="nc" id="L86">            conditions.add(n.getCondition().toString());</span>
+<span class="nc" id="L87">            conditions.add(&quot;not (&quot; + n.getCondition().toString() + &quot;)&quot;);</span>
+<span class="nc" id="L88">        }</span>
+
+        public List&lt;String&gt; getConditions() {
+<span class="nc" id="L91">            return conditions;</span>
+        }
+    }
+
+    private static List&lt;List&lt;String&gt;&gt; generatePathConstraints(List&lt;String&gt; conditions) {
+<span class="nc" id="L96">        List&lt;List&lt;String&gt;&gt; pathConstraints = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L97">        generatePathConstraintsHelper(conditions, 0, new ArrayList&lt;&gt;(), pathConstraints);</span>
+<span class="nc" id="L98">        return pathConstraints;</span>
+    }
+    // todo bug
+    private static void generatePathConstraintsHelper(List&lt;String&gt; conditions, int index, List&lt;String&gt; currentPath, List&lt;List&lt;String&gt;&gt; pathConstraints) {
+        // 如果当前索引超过条件的大小，返回
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (index &gt;= conditions.size()) {</span>
+<span class="nc" id="L104">            return;</span>
+        }
+
+        // 添加当前索引的条件
+<span class="nc" id="L108">        currentPath.add(conditions.get(index));</span>
+<span class="nc" id="L109">        generatePathConstraintsHelper(conditions, index + 2, currentPath, pathConstraints);</span>
+<span class="nc" id="L110">        currentPath.remove(currentPath.size() - 1);</span>
+
+        // 检查 index + 1 是否在范围内
+<span class="nc bnc" id="L113" title="All 2 branches missed.">        if (index + 1 &lt; conditions.size()) {</span>
+<span class="nc" id="L114">            currentPath.add(conditions.get(index + 1));</span>
+<span class="nc" id="L115">            generatePathConstraintsHelper(conditions, index + 2, currentPath, pathConstraints);</span>
+<span class="nc" id="L116">            currentPath.remove(currentPath.size() - 1);</span>
+        }
+<span class="nc" id="L118">    }</span>
+
+    private static List&lt;List&lt;String&gt;&gt; generateMinpaths(List&lt;List&lt;String&gt;&gt; pathConstraints) {
+<span class="nc" id="L121">        List&lt;List&lt;String&gt;&gt; minPaths = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L122">        Set&lt;String&gt; minconstraints = new HashSet&lt;&gt;();</span>
+
+<span class="nc bnc" id="L124" title="All 2 branches missed.">        for (List&lt;String&gt; path : pathConstraints) {</span>
+<span class="nc" id="L125">            boolean containsNew = false;</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">            for (String condition : path) {</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (!minconstraints.contains(condition)) {</span>
+<span class="nc" id="L128">                    containsNew = true;</span>
+<span class="nc" id="L129">                    break;</span>
+                }
+<span class="nc" id="L131">            }</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">            if (containsNew) {</span>
+<span class="nc" id="L133">                minPaths.add(new ArrayList&lt;&gt;(path));</span>
+<span class="nc" id="L134">                minconstraints.addAll(path);</span>
+            }
+<span class="nc" id="L136">        }</span>
+<span class="nc" id="L137">        return minPaths;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

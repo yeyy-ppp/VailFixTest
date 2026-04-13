@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PseudoPredicateSlicingAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.slicing</a> &gt; <span class="el_source">PseudoPredicateSlicingAlgorithm.java</span></div><h1>PseudoPredicateSlicingAlgorithm.java</h1><pre class="source lang-java linenums">package slicing.slicing;
+
+import slicing.arcs.Arc;
+import slicing.graphs.augmented.PSDG;
+import slicing.nodes.GraphNode;
+
+import java.util.Collections;
+import java.util.Set;
+
+public class PseudoPredicateSlicingAlgorithm extends ClassicSlicingAlgorithm {
+    protected Set&lt;GraphNode&lt;?&gt;&gt; slicingCriterion;
+
+    public PseudoPredicateSlicingAlgorithm(PSDG graph) {
+<span class="nc" id="L14">        super(graph);</span>
+<span class="nc" id="L15">    }</span>
+
+    @Override
+    public Slice traverseProcedure(GraphNode&lt;?&gt; slicingCriterion) {
+<span class="nc" id="L19">        this.slicingCriterion = Collections.singleton(slicingCriterion);</span>
+<span class="nc" id="L20">        return super.traverseProcedure(slicingCriterion);</span>
+    }
+
+    @Override
+    public Slice traverse(Set&lt;GraphNode&lt;?&gt;&gt; slicingCriterion) {
+<span class="nc" id="L25">        this.slicingCriterion = slicingCriterion;</span>
+<span class="nc" id="L26">        return super.traverse(slicingCriterion);</span>
+    }
+
+    @Override
+    protected boolean ignorePass1(Arc arc) {
+<span class="nc bnc" id="L31" title="All 4 branches missed.">        return super.ignorePass1(arc) || ignorePseudoPredicate(arc);</span>
+    }
+
+    @Override
+    protected boolean ignorePass2(Arc arc) {
+<span class="nc bnc" id="L36" title="All 4 branches missed.">        return super.ignorePass2(arc) || ignorePseudoPredicate(arc);</span>
+    }
+
+    @Override
+    public boolean ignoreProcedure(Arc arc) {
+<span class="nc bnc" id="L41" title="All 4 branches missed.">        return super.ignoreProcedure(arc) || ignorePseudoPredicate(arc);</span>
+    }
+
+    protected boolean ignorePseudoPredicate(Arc arc) {
+<span class="nc" id="L45">        GraphNode&lt;?&gt; target = graph.getEdgeTarget(arc);</span>
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        return ((PSDG) graph).isPseudoPredicate(target)</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">                &amp;&amp; arc.isControlDependencyArc()</span>
+<span class="nc bnc" id="L48" title="All 2 branches missed.">                &amp;&amp; !slicingCriterion.contains(target);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

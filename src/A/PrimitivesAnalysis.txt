@@ -1,0 +1,25 @@
+包路径：gson.internal
+类名：Primitives
+父类：无
+依赖类：无
+---
+序号：1
+方法名：Primitives()
+返回类型：void
+功能描述：私有构造函数，防止实例化
+序号：2
+方法名：isPrimitive(Type type)
+返回类型：boolean
+功能描述：检查给定类型是否是原始类型
+序号：3
+方法名：isWrapperType(Type type)
+返回类型：boolean
+功能描述：检查给定类型是否是包装类型
+序号：4
+方法名：wrap(Class<T> type)
+返回类型：Class<T>
+功能描述：将原始类型类转换为对应的包装类型类
+序号：5
+方法名：unwrap(Class<T> type)
+返回类型：Class<T>
+功能描述：将包装类型类转换为对应的原始类型类

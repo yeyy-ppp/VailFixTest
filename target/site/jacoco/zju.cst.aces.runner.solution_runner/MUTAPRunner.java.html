@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MUTAPRunner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner.solution_runner</a> &gt; <span class="el_source">MUTAPRunner.java</span></div><h1>MUTAPRunner.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner.solution_runner;
+
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.phase.Phase;
+import zju.cst.aces.api.phase.PhaseImpl;
+import zju.cst.aces.dto.MethodInfo;
+import zju.cst.aces.dto.PromptInfo;
+
+import java.io.IOException;
+
+public class MUTAPRunner extends MethodRunner {
+    public MUTAPRunner(Config config, String fullClassName, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L14">        super(config, fullClassName, methodInfo);</span>
+<span class="nc" id="L15">    }</span>
+
+    public boolean startRounds(final int num) throws IOException {
+<span class="nc" id="L18">        Phase phase = PhaseImpl.createPhase(config);</span>
+
+        // Prompt Construction Phase
+<span class="nc" id="L21">        PromptConstructorImpl pc = phase.generatePrompt(classInfo, methodInfo, num);</span>
+<span class="nc" id="L22">        PromptInfo promptInfo = pc.getPromptInfo();</span>
+<span class="nc" id="L23">        promptInfo.setRound(0);</span>
+
+        // Test Generation Phase
+<span class="nc" id="L26">        phase.generateTest(pc);</span>
+
+        // Validation
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (phase.validateTest(pc)) {</span>
+<span class="nc" id="L30">            exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L31">            return true;</span>
+        }
+
+        // Validation and Repair Phase
+<span class="nc bnc" id="L35" title="All 2 branches missed.">        for (int rounds = 1; rounds &lt; config.getMaxRounds(); rounds++) {</span>
+<span class="nc" id="L36">            promptInfo.setRound(rounds);</span>
+
+            // Repair
+<span class="nc" id="L39">            phase.repairTest(pc);</span>
+
+            // Validation and process
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            if (phase.validateTest(pc)) { // if passed validation</span>
+<span class="nc" id="L43">                exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L44">                return true;</span>
+            }
+        }
+
+        // 后面增加一段PITS的变异测试
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (runPitMutationTests()) {</span>
+<span class="nc" id="L50">            exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L51">            return true;</span>
+        }
+
+<span class="nc" id="L54">        exportRecord(pc.getPromptInfo(), classInfo, num);</span>
+<span class="nc" id="L55">        return false;</span>
+    }
+
+    // 使用 Maven 命令执行 PIT 变异测试
+    private boolean runPitMutationTests() {
+        try {
+            // 执行 Maven 命令调用 PIT 变异测试
+<span class="nc" id="L62">            ProcessBuilder processBuilder = new ProcessBuilder(&quot;mvn&quot;, &quot;pitest:mutationCoverage&quot;);</span>
+<span class="nc" id="L63">            processBuilder.inheritIO(); // 让命令行的输出直接显示在控制台</span>
+
+<span class="nc" id="L65">            Process process = processBuilder.start();</span>
+<span class="nc" id="L66">            int exitCode = process.waitFor();</span>
+
+            // 根据 Maven 命令的退出码判断变异测试是否成功
+<span class="nc bnc" id="L69" title="All 2 branches missed.">            return exitCode == 0;</span>
+<span class="nc" id="L70">        } catch (IOException | InterruptedException e) {</span>
+<span class="nc" id="L71">            e.printStackTrace();</span>
+<span class="nc" id="L72">            return false;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

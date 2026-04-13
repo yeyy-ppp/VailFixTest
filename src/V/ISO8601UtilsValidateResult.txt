@@ -1,0 +1,12 @@
+[2026-01-23 22:20:41] 验证结果
+错误类型: 编译错误, 错误行: 65, 错误原因: [未导入java.util.Calendar类型], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: format, format, format, parse
+  未覆盖: ISO8601Utils, checkOffset, parseInt, padInt, indexOfNonDigit
+
+[2026-01-23 22:35:10] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: format, format, format, parse
+  未覆盖: ISO8601Utils, checkOffset, parseInt, padInt, indexOfNonDigit
+

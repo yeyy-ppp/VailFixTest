@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionSensitiveSlicingAlgorithm.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.slicing</a> &gt; <span class="el_source">ExceptionSensitiveSlicingAlgorithm.java</span></div><h1>ExceptionSensitiveSlicingAlgorithm.java</h1><pre class="source lang-java linenums">package slicing.slicing;
+
+import slicing.arcs.Arc;
+import slicing.arcs.pdg.ConditionalControlDependencyArc;
+import slicing.arcs.pdg.ConditionalControlDependencyArc.CC1;
+import slicing.arcs.pdg.ConditionalControlDependencyArc.CC2;
+import slicing.arcs.sdg.InterproceduralArc;
+import slicing.graphs.exceptionsensitive.ESSDG;
+import slicing.nodes.GraphNode;
+import slicing.utils.Utils;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+/**
+ * An exception-sensitive slicing algorithm, which follows these rules:
+ * &lt;ol&gt;
+ *     &lt;li&gt;SDG: two-pass traversal, (a) first ignoring interprocedural outputs, (b) then interprocedural inputs.&lt;/li&gt;
+ *     &lt;li&gt;PPDG*: pseudo-predicate nodes that are included only due to control-dependency arcs should
+ *          not keep traversing control-dependency arcs.&lt;/li&gt;
+ *     &lt;li&gt;CCD: a node reached by a CC1 or CC2 arc is not included in the slice until it has either been
+ *          reached by an unconditional dependency or by the opposite (CC2 or CC1, respectively) arc.&lt;/li&gt;
+ *     &lt;li&gt;CCD: a node included only due to conditional-control-dependency should not keep traversing any arc,
+ *          except for CD arcs that are exclusive to the PPDG.&lt;/li&gt;
+ *     &lt;li&gt;CCD (apply only if none of the previous allow for a new node and this does): CC1 arcs are
+ *          transitively traversed, even when the intermediate nodes are not (yet) included in the slice.&lt;/li&gt;
+ * &lt;/ol&gt;
+ */
+public class ExceptionSensitiveSlicingAlgorithm implements SlicingAlgorithm {
+<span class="nc" id="L31">    protected static final Predicate&lt;Arc&gt; INTRAPROCEDURAL = InterproceduralArc.class::isInstance;</span>
+    /** Applies rule 1a of the algorithm. */
+<span class="nc" id="L33">    protected static final Predicate&lt;Arc&gt; SDG_PASS_1 = Arc::isInterproceduralOutputArc;</span>
+    /** Applies rule 1b of the algorithm. */
+<span class="nc" id="L35">    protected static final Predicate&lt;Arc&gt; SDG_PASS_2 = Arc::isInterproceduralInputArc;</span>
+
+    protected final ESSDG graph;
+    protected Set&lt;GraphNode&lt;?&gt;&gt; slicingCriterion;
+
+    /** Set of the arcs that have been traversed in the slicing process. */
+<span class="nc" id="L41">    protected final Set&lt;Arc&gt; traversedArcSet = new HashSet&lt;&gt;();</span>
+    /** Similar to {@link #traversedArcSet} */
+<span class="nc" id="L43">    protected final Map&lt;GraphNode&lt;?&gt;, Set&lt;Arc&gt;&gt; traversedArcMap = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L45">    public ExceptionSensitiveSlicingAlgorithm(ESSDG graph) {</span>
+<span class="nc" id="L46">        this.graph = Objects.requireNonNull(graph);</span>
+<span class="nc" id="L47">    }</span>
+
+    @Override
+    public Slice traverse(Set&lt;GraphNode&lt;?&gt;&gt; slicingCriterion) {
+<span class="nc" id="L51">        this.slicingCriterion = slicingCriterion;</span>
+<span class="nc" id="L52">        Slice slice = new Slice(slicingCriterion);</span>
+<span class="nc" id="L53">        pass(slice, SDG_PASS_1.or(this::commonIgnoreConditions));</span>
+<span class="nc" id="L54">        pass(slice, SDG_PASS_2.or(this::commonIgnoreConditions));</span>
+<span class="nc" id="L55">        return slice;</span>
+    }
+
+    @Override
+    public Slice traverseProcedure(GraphNode&lt;?&gt; slicingCriterion) {
+<span class="nc" id="L60">        this.slicingCriterion = Collections.singleton(slicingCriterion);</span>
+<span class="nc" id="L61">        Slice slice = new Slice(this.slicingCriterion);</span>
+<span class="nc" id="L62">        pass(slice, INTRAPROCEDURAL.or(this::commonIgnoreConditions));</span>
+<span class="nc" id="L63">        return slice;</span>
+    }
+
+    protected boolean commonIgnoreConditions(Arc arc) {
+<span class="nc bnc" id="L67" title="All 4 branches missed.">        return ppdgIgnore(arc) || essdgIgnore(arc);</span>
+    }
+
+    /**
+     * Perform a round of traversal, until no new nodes can be added to the slice. Then, apply rule 5.
+     * @param slice A slice object that will serve as initial work-list and where nodes will be added.
+     * @param ignoreCondition A predicate used to ignore arcs, when they test true.
+     */
+    protected void pass(Slice slice, Predicate&lt;Arc&gt; ignoreCondition) {
+<span class="nc" id="L76">        pass(slice, slice.getGraphNodes(), ignoreCondition);</span>
+<span class="nc" id="L77">    }</span>
+
+    /**
+     * Perform a round of traversal, until no new nodes can be added to the slice. Then, apply rule 5.
+     * @param slice A slice object where nodes will be added.
+     * @param workList The initial work-list.
+     * @param ignoreCondition A predicate used to ignore arcs, when they test true.
+     */
+    protected void pass(Slice slice, Set&lt;GraphNode&lt;?&gt;&gt; workList, Predicate&lt;Arc&gt; ignoreCondition) {
+<span class="nc" id="L86">        Set&lt;GraphNode&lt;?&gt;&gt; pending = new HashSet&lt;&gt;(workList);</span>
+<span class="nc" id="L87">        Set&lt;Arc&gt; cc1s = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">        while (!pending.isEmpty()) {</span>
+<span class="nc" id="L89">            GraphNode&lt;?&gt; node = Utils.setPop(pending);</span>
+            // Populate the map for this node (if empty)
+<span class="nc" id="L91">            traversedArcMap.computeIfAbsent(node, n -&gt; new HashSet&lt;&gt;());</span>
+<span class="nc bnc" id="L92" title="All 2 branches missed.">            for (Arc arc : graph.incomingEdgesOf(node)) {</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">                if (arc instanceof CC1)</span>
+<span class="nc" id="L94">                    cc1s.add(arc);</span>
+                // Only traverse the arc if (1) it hasn't been traversed, (2) it hasn't been ignored
+<span class="nc bnc" id="L96" title="All 4 branches missed.">                if (!traversedArcMap.get(node).contains(arc) &amp;&amp; !ignoreCondition.test(arc))</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">                    if (traverseArc(arc, slice))</span>
+<span class="nc" id="L98">                        pending.add(graph.getEdgeSource(arc));</span>
+<span class="nc" id="L99">            }</span>
+<span class="nc" id="L100">        }</span>
+        // Consider transitivity when there are no more arcs to traverse.
+<span class="nc" id="L102">        cc1s.removeAll(traversedArcSet);</span>
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        while (!cc1s.isEmpty()) {</span>
+<span class="nc" id="L104">            Arc arc = Utils.setPop(cc1s);</span>
+            // If the target of the arc has been reached, but only by CC1, traverse the arc
+<span class="nc bnc" id="L106" title="All 2 branches missed.">            if (hasOnlyBeenReachedBy(graph.getEdgeTarget(arc), CC1.class)) {</span>
+<span class="nc" id="L107">                traverseArc(arc, slice);</span>
+                // Find the transitive CC1 edges and add them to the work-list
+<span class="nc bnc" id="L109" title="All 2 branches missed.">                for (Arc a : graph.incomingEdgesOf(graph.getEdgeSource(arc)))</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                    if (a instanceof CC1)</span>
+<span class="nc" id="L111">                        cc1s.add(a);</span>
+            }
+<span class="nc" id="L113">        }</span>
+<span class="nc" id="L114">    }</span>
+
+    /** Applies rule 2 of the algorithm. */
+    protected boolean ppdgIgnore(Arc arc) {
+<span class="nc" id="L118">        GraphNode&lt;?&gt; target = graph.getEdgeTarget(arc);</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        return arc.isUnconditionalControlDependencyArc() &amp;&amp;</span>
+<span class="nc bnc" id="L120" title="All 2 branches missed.">                graph.isPseudoPredicate(target) &amp;&amp;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                reachedStream(target).allMatch(Arc::isUnconditionalControlDependencyArc) &amp;&amp;</span>
+<span class="nc bnc" id="L122" title="All 2 branches missed.">                !slicingCriterion.contains(target);</span>
+    }
+
+    /** Applies rule 4 of the algorithm. */
+    protected boolean essdgIgnore(Arc arc) {
+<span class="nc" id="L127">        GraphNode&lt;?&gt; target = graph.getEdgeTarget(arc);</span>
+<span class="nc bnc" id="L128" title="All 4 branches missed.">        if (arc.isUnconditionalControlDependencyArc() &amp;&amp; arc.asControlDependencyArc().isPPDGExclusive())</span>
+<span class="nc" id="L129">            return false;</span>
+<span class="nc" id="L130">        return hasOnlyBeenReachedBy(target, ConditionalControlDependencyArc.class);</span>
+    }
+
+    /**
+     * Registers the arc as traversed, and if allowed by rule 3 of the algorithm, includes the source
+     * of the arc in the slice.
+     * @return If the source node should be added to the work-list.
+     */
+    protected boolean traverseArc(Arc arc, Slice slice) {
+<span class="nc" id="L139">        traversedArcMap.get(graph.getEdgeTarget(arc)).add(arc);</span>
+<span class="nc" id="L140">        traversedArcSet.add(arc);</span>
+<span class="nc" id="L141">        GraphNode&lt;?&gt; source = graph.getEdgeSource(arc);</span>
+<span class="nc bnc" id="L142" title="All 4 branches missed.">        if (!hasOnlyBeenReachedBy(source, CC1.class) &amp;&amp; !hasOnlyBeenReachedBy(source, CC2.class)) {</span>
+<span class="nc bnc" id="L143" title="All 2 branches missed.">            if (!slice.contains(source))</span>
+<span class="nc" id="L144">                slice.add(source);</span>
+<span class="nc" id="L145">            int sourceArcsTraversed = traversedArcMap.getOrDefault(source, Collections.emptySet()).size();</span>
+<span class="nc bnc" id="L146" title="All 2 branches missed.">            return  sourceArcsTraversed != graph.incomingEdgesOf(source).size();</span>
+        }
+<span class="nc" id="L148">        return false;</span>
+    }
+
+    /** Check if a node only has been reached by arcs of a given class. */
+    protected boolean hasOnlyBeenReachedBy(GraphNode&lt;?&gt; node, Class&lt;? extends Arc&gt; type) {
+<span class="nc bnc" id="L153" title="All 4 branches missed.">        return reachedStream(node).count() &gt; 0 &amp;&amp; reachedStream(node).allMatch(type::isInstance);</span>
+    }
+
+    /** Obtain a stream of arcs that have reached the given node. */
+    protected Stream&lt;Arc&gt; reachedStream(GraphNode&lt;?&gt; node) {
+<span class="nc" id="L158">        return traversedArcSet.stream().filter(arc -&gt; graph.getEdgeSource(arc).equals(node));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,11 @@
+```
+包路径：csv
+类名：CSVException
+父类：IOException
+依赖类：无
+---
+序号：1
+方法名：CSVException(String format, Object... args)
+返回类型：void
+功能描述：使用格式化字符串和参数创建异常实例，并将格式化后的字符串作为异常消息
+```

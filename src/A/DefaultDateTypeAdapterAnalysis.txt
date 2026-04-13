@@ -1,0 +1,39 @@
+```
+包路径：gson.internal.bind
+类名：DefaultDateTypeAdapter
+父类：TypeAdapter
+依赖类：gson.Gson,gson.JsonSyntaxException,gson.TypeAdapter,gson.TypeAdapterFactory,gson.internal.JavaVersion,gson.internal.PreJava9DateFormatProvider,gson.internal.bind.util.ISO8601Utils,gson.reflect.TypeToken,gson.stream.JsonReader,gson.stream.JsonToken,gson.stream.JsonWriter,gson.internal.bind.TypeAdapters
+---
+序号：1
+方法名：create(Gson gson, TypeToken<T> typeToken)
+返回类型：TypeAdapter<T>
+功能描述：创建Date类的TypeAdapter实例
+序号：2
+方法名：toString()
+返回类型：String
+功能描述：返回工厂标识字符串
+序号：3
+方法名：DefaultDateTypeAdapter(DateType<T> dateType, String datePattern)
+返回类型：无
+功能描述：使用日期模式初始化适配器
+序号：4
+方法名：DefaultDateTypeAdapter(DateType<T> dateType, int dateStyle, int timeStyle)
+返回类型：无
+功能描述：使用日期/时间样式初始化适配器
+序号：5
+方法名：write(JsonWriter out, Date value)
+返回类型：void
+功能描述：将Date对象序列化为JSON字符串
+序号：6
+方法名：read(JsonReader in)
+返回类型：T
+功能描述：从JSON反序列化为目标Date类型
+序号：7
+方法名：deserializeToDate(JsonReader in)
+返回类型：Date
+功能描述：解析JSON字符串为Date对象
+序号：8
+方法名：toString()
+返回类型：String
+功能描述：返回适配器模式信息
+```

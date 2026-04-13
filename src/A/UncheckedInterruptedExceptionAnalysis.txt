@@ -1,0 +1,11 @@
+```
+包路径：lang3.exception
+类名：UncheckedInterruptedException
+父类：UncheckedException
+依赖类：无
+---
+序号：1
+方法名：UncheckedInterruptedException(Throwable)
+返回类型：无
+功能描述：使用指定的原因（Throwable）创建UncheckedInterruptedException实例
+```

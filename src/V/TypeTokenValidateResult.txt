@@ -1,0 +1,12 @@
+[2026-01-24 03:54:02] 验证结果
+错误类型: 编译错误, 错误行: 155, 错误原因: 使用了未定义的类型变量K和V；该测试代码在验证[测试方法有效性]时失败，错误位置：[160行-162行]，错误原因：invokeTypeEquals方法未实际调用typeEquals方法, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: TypeToken, TypeToken, getRawType, getType, isAssignableFrom, isAssignableFrom, isAssignableFrom, isAssignableFrom, isAssignableFrom, typeEquals, hashCode, equals, toString, get, get, getParameterized, getArray
+  未覆盖: isCapturingTypeVariablesForbidden, getTypeTokenTypeArgument, verifyNoTypeVariable, buildUnsupportedTypeException, matches
+
+[2026-01-24 04:00:26] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: TypeToken, isCapturingTypeVariablesForbidden, getTypeTokenTypeArgument, verifyNoTypeVariable, getRawType, getType, typeEquals, buildUnsupportedTypeException, matches, hashCode, equals, toString, getParameterized, getArray
+  未覆盖: 全部覆盖
+

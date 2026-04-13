@@ -1,0 +1,12 @@
+[2026-01-23 20:45:15] 验证结果
+错误类型: 编译错误, 错误行: 16, 错误原因: [调用了不存在的方法getStackSizeForTest], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: JsonTreeWriter, get, beginArray, endArray, beginObject, endObject, name, value, value, value, value, value, value, value, nullValue, jsonValue, flush, close
+  未覆盖: peek, put
+
+[2026-01-23 20:52:39] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: JsonTreeWriter, get, peek, put, beginArray, endArray, beginObject, endObject, name, value, value, value, value, value, value, value, nullValue, jsonValue, flush, close
+  未覆盖: 全部覆盖
+

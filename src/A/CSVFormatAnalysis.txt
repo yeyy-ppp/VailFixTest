@@ -1,0 +1,601 @@
+```
+包路径：csv
+类名：CSVFormat
+父类：无
+依赖类：Constants, DuplicateHeaderMode, QuoteMode, Uncheck, CSVParser, CSVPrinter, Base64OutputStream, AppendableOutputStream, IOUtilsHelper, ExtendedBufferedReader, IOStream
+---
+序号：1
+方法名：CSVFormat(Builder builder)
+返回类型：void
+功能描述：构造一个新的CSVFormat实例
+序号：2
+方法名：append(char c, Appendable appendable)
+返回类型：void
+功能描述：将字符追加到Appendable
+序号：3
+方法名：append(CharSequence csq, Appendable appendable)
+返回类型：void
+功能描述：将字符序列追加到Appendable
+序号：4
+方法名：builder()
+返回类型：Builder
+功能描述：返回一个用于构建CSVFormat的Builder
+序号：5
+方法名：copy()
+返回类型：CSVFormat
+功能描述：创建CSVFormat的副本
+序号：6
+方法名：equals(Object obj)
+返回类型：boolean
+功能描述：比较两个CSVFormat对象是否相等
+序号：7
+方法名：escape(char c, Appendable appendable)
+返回类型：void
+功能描述：转义字符并追加到Appendable
+序号：8
+方法名：format(Object... values)
+返回类型：String
+功能描述：格式化提供的值并返回CSV字符串
+序号：9
+方法名：format_(Object... values)
+返回类型：String
+功能描述：内部方法，用于格式化值并返回CSV字符串
+序号：10
+方法名：getAllowDuplicateHeaderNames()
+返回类型：boolean
+功能描述：检查是否允许重复的标题名（已弃用）
+序号：11
+方法名：getAllowMissingColumnNames()
+返回类型：boolean
+功能描述：获取是否允许缺少列名
+序号：12
+方法名：getAutoFlush()
+返回类型：boolean
+功能描述：获取是否自动刷新输出
+序号：13
+方法名：getCommentMarker()
+返回类型：Character
+功能描述：获取注释标记字符
+序号：14
+方法名：getDelimiter()
+返回类型：char
+功能描述：获取分隔符字符（已弃用）
+序号：15
+方法名：getDelimiterCharArray()
+返回类型：char[]
+功能描述：获取分隔符的字符数组
+序号：16
+方法名：getDelimiterString()
+返回类型：String
+功能描述：获取分隔符字符串
+序号：17
+方法名：getDuplicateHeaderMode()
+返回类型：DuplicateHeaderMode
+功能描述：获取重复标题处理模式
+序号：18
+方法名：getEscapeChar()
+返回类型：char
+功能描述：获取转义字符
+序号：19
+方法名：getEscapeCharacter()
+返回类型：Character
+功能描述：获取转义字符对象
+序号：20
+方法名：getHeader()
+返回类型：String[]
+功能描述：获取标题数组
+序号：21
+方法名：getHeaderComments()
+返回类型：String[]
+功能描述：获取标题注释数组
+序号：22
+方法名：getIgnoreEmptyLines()
+返回类型：boolean
+功能描述：获取是否忽略空行
+序号：23
+方法名：getIgnoreHeaderCase()
+返回类型：boolean
+功能描述：获取是否忽略标题大小写
+序号：24
+方法名：getIgnoreSurroundingSpaces()
+返回类型：boolean
+功能描述：获取是否忽略前后空格
+序号：25
+方法名：getLenientEof()
+返回类型：boolean
+功能描述：获取是否宽松处理文件结束
+序号：26
+方法名：getMaxRows()
+返回类型：long
+功能描述：获取最大行数限制
+序号：27
+方法名：getNullString()
+返回类型：String
+功能描述：获取表示空值的字符串
+序号：28
+方法名：getQuoteCharacter()
+返回类型：Character
+功能描述：获取引号字符
+序号：29
+方法名：getQuoteMode()
+返回类型：QuoteMode
+功能描述：获取引号模式
+序号：30
+方法名：getRecordSeparator()
+返回类型：String
+功能描述：获取记录分隔符
+序号：31
+方法名：getSkipHeaderRecord()
+返回类型：boolean
+功能描述：获取是否跳过标题记录
+序号：32
+方法名：getTrailingData()
+返回类型：boolean
+功能描述：获取是否允许尾部数据
+序号：33
+方法名：getTrailingDelimiter()
+返回类型：boolean
+功能描述：获取是否在记录末尾添加分隔符
+序号：34
+方法名：getTrim()
+返回类型：boolean
+功能描述：获取是否修剪字段值
+序号：35
+方法名：hashCode()
+返回类型：int
+功能描述：计算对象的哈希码
+序号：36
+方法名：isCommentMarkerSet()
+返回类型：boolean
+功能描述：检查是否设置了注释标记
+序号：37
+方法名：isDelimiter(char ch0, CharSequence charSeq, int startIndex, char[] delimiter, int delimiterLength)
+返回类型：boolean
+功能描述：检查给定位置是否匹配分隔符
+序号：38
+方法名：isEscapeCharacterSet()
+返回类型：boolean
+功能描述：检查是否设置了转义字符
+序号：39
+方法名：isNullStringSet()
+返回类型：boolean
+功能描述：检查是否设置了空值字符串
+序号：40
+方法名：isQuoteCharacterSet()
+返回类型：boolean
+功能描述：检查是否设置了引号字符
+序号：41
+方法名：limit(IOStream<T> stream)
+返回类型：IOStream<T>
+功能描述：限制流的最大行数
+序号：42
+方法名：parse(Reader reader)
+返回类型：CSVParser
+功能描述：解析Reader中的CSV数据
+序号：43
+方法名：print(Appendable out)
+返回类型：CSVPrinter
+功能描述：创建CSVPrinter以输出到Appendable
+序号：44
+方法名：print(File out, Charset charset)
+返回类型：CSVPrinter
+功能描述：创建CSVPrinter以输出到文件
+序号：45
+方法名：print(InputStream inputStream, Appendable out, boolean newRecord)
+返回类型：void
+功能描述：打印InputStream内容到Appendable
+序号：46
+方法名：print(Object value, Appendable out, boolean newRecord)
+返回类型：void
+功能描述：打印单个值到Appendable
+序号：47
+方法名：print(Object object, CharSequence value, Appendable out, boolean newRecord)
+返回类型：void
+功能描述：内部方法，打印对象到Appendable
+序号：48
+方法名：print(Path out, Charset charset)
+返回类型：CSVPrinter
+功能描述：创建CSVPrinter以输出到Path
+序号：49
+方法名：print(Reader reader, Appendable out, boolean newRecord)
+返回类型：void
+功能描述：打印Reader内容到Appendable
+序号：50
+方法名：printer()
+返回类型：CSVPrinter
+功能描述：创建标准输出的CSVPrinter
+序号：51
+方法名：println(Appendable appendable)
+返回类型：void
+功能描述：打印记录分隔符到Appendable
+序号：52
+方法名：printRecord(Appendable appendable, Object... values)
+返回类型：void
+功能描述：打印完整记录到Appendable
+序号：53
+方法名：printWithEscapes(CharSequence charSeq, Appendable appendable)
+返回类型：void
+功能描述：使用转义字符打印字符序列
+序号：54
+方法名：printWithEscapes(Reader reader, Appendable appendable)
+返回类型：void
+功能描述：使用转义字符打印Reader内容
+序号：55
+方法名：printWithQuotes(Object object, CharSequence charSeq, Appendable out, boolean newRecord)
+返回类型：void
+功能描述：使用引号打印对象
+序号：56
+方法名：printWithQuotes(Reader reader, Appendable appendable)
+返回类型：void
+功能描述：使用引号打印Reader内容
+序号：57
+方法名：toString()
+返回类型：String
+功能描述：返回CSVFormat的字符串表示
+序号：58
+方法名：trim(String value)
+返回类型：String
+功能描述：修剪字符串（如果启用trim）
+序号：59
+方法名：useMaxRows()
+返回类型：boolean
+功能描述：检查是否设置了最大行数
+序号：60
+方法名：useRow(long rowNum)
+返回类型：boolean
+功能描述：检查行号是否在最大行数限制内
+序号：61
+方法名：validate()
+返回类型：void
+功能描述：验证CSVFormat配置的合法性
+序号：62
+方法名：withAllowDuplicateHeaderNames()
+返回类型：CSVFormat
+功能描述：返回允许重复标题名的新实例（已弃用）
+序号：63
+方法名：withAllowDuplicateHeaderNames(boolean allowDuplicateHeaderNames)
+返回类型：CSVFormat
+功能描述：设置是否允许重复标题名（已弃用）
+序号：64
+方法名：withAllowMissingColumnNames()
+返回类型：CSVFormat
+功能描述：返回允许缺少列名的新实例（已弃用）
+序号：65
+方法名：withAllowMissingColumnNames(boolean allowMissingColumnNames)
+返回类型：CSVFormat
+功能描述：设置是否允许缺少列名（已弃用）
+序号：66
+方法名：withAutoFlush(boolean autoFlush)
+返回类型：CSVFormat
+功能描述：设置是否自动刷新（已弃用）
+序号：67
+方法名：withCommentMarker(char commentMarker)
+返回类型：CSVFormat
+功能描述：设置注释标记字符（已弃用）
+序号：68
+方法名：withCommentMarker(Character commentMarker)
+返回类型：CSVFormat
+功能描述：设置注释标记字符对象（已弃用）
+序号：69
+方法名：withDelimiter(char delimiter)
+返回类型：CSVFormat
+功能描述：设置分隔符字符（已弃用）
+序号：70
+方法名：withEscape(char escape)
+返回类型：CSVFormat
+功能描述：设置转义字符（已弃用）
+序号：71
+方法名：withEscape(Character escape)
+返回类型：CSVFormat
+功能描述：设置转义字符对象（已弃用）
+序号：72
+方法名：withFirstRecordAsHeader()
+返回类型：CSVFormat
+功能描述：设置第一行为标题（已弃用）
+序号：73
+方法名：withHeader(Class<? extends Enum<?>> headerEnum)
+返回类型：CSVFormat
+功能描述：从枚举类设置标题（已弃用）
+序号：74
+方法名：withHeader(ResultSet resultSet)
+返回类型：CSVFormat
+功能描述：从ResultSet设置标题（已弃用）
+序号：75
+方法名：withHeader(ResultSetMetaData resultSetMetaData)
+返回类型：CSVFormat
+功能描述：从ResultSetMetaData设置标题（已弃用）
+序号：76
+方法名：withHeader(String... header)
+返回类型：CSVFormat
+功能描述：设置标题数组（已弃用）
+序号：77
+方法名：withHeaderComments(Object... headerComments)
+返回类型：CSVFormat
+功能描述：设置标题注释对象数组（已弃用）
+序号：78
+方法名：withIgnoreEmptyLines()
+返回类型：CSVFormat
+功能描述：返回忽略空行的新实例（已弃用）
+序号：79
+方法名：withIgnoreEmptyLines(boolean ignoreEmptyLines)
+返回类型：CSVFormat
+功能描述：设置是否忽略空行（已弃用）
+序号：80
+方法名：withIgnoreHeaderCase()
+返回类型：CSVFormat
+功能描述：返回忽略标题大小写的新实例（已弃用）
+序号：81
+方法名：withIgnoreHeaderCase(boolean ignoreHeaderCase)
+返回类型：CSVFormat
+功能描述：设置是否忽略标题大小写（已弃用）
+序号：82
+方法名：withIgnoreSurroundingSpaces()
+返回类型：CSVFormat
+功能描述：返回忽略前后空格的新实例（已弃用）
+序号：83
+方法名：withIgnoreSurroundingSpaces(boolean ignoreSurroundingSpaces)
+返回类型：CSVFormat
+功能描述：设置是否忽略前后空格（已弃用）
+序号：84
+方法名：withNullString(String nullString)
+返回类型：CSVFormat
+功能描述：设置空值表示字符串（已弃用）
+序号：85
+ method name: withQuote(char quoteChar)
+返回类型：CSVFormat
+功能描述：设置引号字符（已弃用）
+序号：86
+方法名：withQuote(Character quoteChar)
+返回类型：CSVFormat
+功能描述：设置引号字符对象（已弃用）
+序号：87
+方法名：withQuoteMode(QuoteMode quoteMode)
+返回类型：CSVFormat
+功能描述：设置引号模式（已弃用）
+序号：88
+方法名：withRecordSeparator(char recordSeparator)
+返回类型：CSVFormat
+功能描述：设置记录分隔符字符（已弃用）
+序号：89
+方法名：withRecordSeparator(String recordSeparator)
+返回类型：CSVFormat
+功能描述：设置记录分隔符字符串（已弃用）
+序号：90
+方法名：withSkipHeaderRecord()
+返回类型：CSVFormat
+功能描述：返回跳过标题记录的新实例（已弃用）
+序号：91
+方法名：withSkipHeaderRecord(boolean skipHeaderRecord)
+返回类型：CSVFormat
+功能描述：设置是否跳过标题记录（已弃用）
+序号：92
+方法名：withSystemRecordSeparator()
+返回类型：CSVFormat
+功能描述：设置系统默认记录分隔符（已弃用）
+序号：93
+方法名：withTrailingDelimiter()
+返回类型：CSVFormat
+功能描述：返回在记录末尾添加分隔符的新实例（已弃用）
+序号：94
+方法名：withTrailingDelimiter(boolean trailingDelimiter)
+返回类型：CSVFormat
+功能描述：设置是否在记录末尾添加分隔符（已弃用）
+序号：95
+方法名：withTrim()
+返回类型：CSVFormat
+功能描述：返回修剪字段值的新实例（已弃用）
+序号：96
+方法名：withTrim(boolean trim)
+返回类型：CSVFormat
+功能描述：设置是否修剪字段值（已弃用）
+序号：97
+方法名：clone(T... values)
+返回类型：T[]
+功能描述：克隆数组
+序号：98
+方法名：contains(String source, char searchCh)
+返回类型：boolean
+功能描述：检查字符串是否包含指定字符
+序号：99
+方法名：containsLineBreak(String source)
+返回类型：boolean
+功能描述：检查字符串是否包含换行符
+序号：100
+方法名：copy(CSVFormat format)
+返回类型：CSVFormat
+功能描述：复制CSVFormat实例
+序号：101
+方法名：isBlank(String value)
+返回类型：boolean
+功能描述：检查字符串是否为null或空白
+序号：102
+方法名：isLineBreak(char c)
+返回类型：boolean
+功能描述：检查字符是否为换行符
+序号：103
+方法名：isLineBreak(Character c)
+返回类型：boolean
+功能描述：检查字符对象是否为换行符
+序号：104
+方法名：isTrimChar(char ch)
+返回类型：boolean
+功能描述：检查字符是否为可修剪字符
+序号：105
+方法名：isTrimChar(CharSequence charSequence, int pos)
+返回类型：boolean
+功能描述：检查字符序列中指定位置是否为可修剪字符
+序号：106
+方法名：newFormat(char delimiter)
+返回类型：CSVFormat
+功能描述：创建具有指定分隔符的新格式
+序号：107
+方法名：toStringArray(Object[] values)
+返回类型：String[]
+功能描述：将对象数组转换为字符串数组
+序号：108
+方法名：trim(CharSequence charSequence)
+返回类型：CharSequence
+功能描述：修剪字符序列
+序号：109
+方法名：valueOf(String format)
+返回类型：CSVFormat
+功能描述：根据名称获取预定义格式
+包路径：csv.CSVFormat
+类名：Builder
+父类：无
+依赖类：Constants, DuplicateHeaderMode
+---
+序号：1
+方法名：Builder()
+返回类型：void
+功能描述：构造一个空的Builder
+序号：2
+方法名：Builder(CSVFormat csvFormat)
+返回类型：void
+功能描述：通过复制现有CSVFormat构造Builder
+序号：3
+方法名：build()
+返回类型：CSVFormat
+功能描述：构建CSVFormat实例（已弃用）
+序号：4
+方法名：get()
+返回类型：CSVFormat
+功能描述：构建CSVFormat实例
+序号：5
+方法名：setAllowDuplicateHeaderNames(boolean allowDuplicateHeaderNames)
+返回类型：Builder
+功能描述：设置是否允许重复标题名（已弃用）
+序号：6
+方法名：setAllowMissingColumnNames(boolean allowMissingColumnNames)
+返回类型：Builder
+功能描述：设置是否允许缺少列名
+序号：7
+方法名：setAutoFlush(boolean autoFlush)
+返回类型：Builder
+功能描述：设置是否自动刷新
+序号：8
+方法名：setCommentMarker(char commentMarker)
+返回类型：Builder
+功能描述：设置注释标记字符
+序号：9
+方法名：setCommentMarker(Character commentMarker)
+返回类型：Builder
+功能描述：设置注释标记字符对象
+序号：10
+方法名：setDelimiter(char delimiter)
+返回类型：Builder
+功能描述：设置分隔符字符
+序号：11
+方法名：setDelimiter(String delimiter)
+返回类型：Builder
+功能描述：设置分隔符字符串
+序号：12
+方法名：setDuplicateHeaderMode(DuplicateHeaderMode duplicateHeaderMode)
+返回类型：Builder
+功能描述：设置重复标题处理模式
+序号：13
+方法名：setEscape(char escapeCharacter)
+返回类型：Builder
+功能描述：设置转义字符
+序号：14
+方法名：setEscape(Character escapeCharacter)
+返回类型：Builder
+功能描述：设置转义字符对象
+序号：15
+方法名：setHeader(Class<? extends Enum<?>> headerEnum)
+返回类型：Builder
+功能描述：从枚举类设置标题
+序号：16
+方法名：setHeader(ResultSet resultSet)
+返回类型：Builder
+功能描述：从ResultSet设置标题
+序号：17
+方法名：setHeader(ResultSetMetaData resultSetMetaData)
+返回类型：Builder
+功能描述：从ResultSetMetaData设置标题
+序号：18
+方法名：setHeader(String... header)
+返回类型：Builder
+功能描述：设置标题数组
+序号：19
+方法名：setHeaderComments(Object... headerComments)
+返回类型：Builder
+功能描述：设置标题注释对象数组
+序号：20
+方法名：setHeaderComments(String... headerComments)
+返回类型：Builder
+功能描述：设置标题注释字符串数组
+序号：21
+方法名：setIgnoreEmptyLines(boolean ignoreEmptyLines)
+返回类型：Builder
+功能描述：设置是否忽略空行
+序号：22
+方法名：setIgnoreHeaderCase(boolean ignoreHeaderCase)
+返回类型：Builder
+功能描述：设置是否忽略标题大小写
+序号：23
+方法名：setIgnoreSurroundingSpaces(boolean ignoreSurroundingSpaces)
+返回类型：Builder
+功能描述：设置是否忽略前后空格
+序号：24
+方法名：setLenientEof(boolean lenientEof)
+返回类型：Builder
+功能描述：设置是否宽松处理文件结束
+序号：25
+方法名：setMaxRows(long maxRows)
+返回类型：Builder
+功能描述：设置最大行数限制
+序号：26
+方法名：setNullString(String nullString)
+返回类型：Builder
+功能描述：设置空值表示字符串
+序号：27
+方法名：setQuote(char quoteCharacter)
+返回类型：Builder
+功能描述：设置引号字符
+序号：28
+方法名：setQuote(Character quoteCharacter)
+返回类型：Builder
+功能描述：设置引号字符对象
+序号：29
+方法名：setQuoteMode(QuoteMode quoteMode)
+返回类型：Builder
+功能描述：设置引号模式
+序号：30
+方法名：setRecordSeparator(char recordSeparator)
+返回类型：Builder
+功能描述：设置记录分隔符字符
+序号：31
+方法名：setRecordSeparator(String recordSeparator)
+返回类型：Builder
+功能描述：设置记录分隔符字符串
+序号：32
+方法名：setSkipHeaderRecord(boolean skipHeaderRecord)
+返回类型：Builder
+功能描述：设置是否跳过标题记录
+序号：33
+方法名：setTrailingData(boolean trailingData)
+返回类型：Builder
+功能描述：设置是否允许尾部数据
+序号：34
+方法名：setTrailingDelimiter(boolean trailingDelimiter)
+返回类型：Builder
+功能描述：设置是否在记录末尾添加分隔符
+序号：35
+方法名：setTrim(boolean trim)
+返回类型：Builder
+功能描述：设置是否修剪字段值
+包路径：csv.CSVFormat
+类名：Predefined
+父类：Enum
+依赖类：无
+---
+序号：1
+方法名：Predefined(CSVFormat format)
+返回类型：void
+功能描述：构造一个预定义格式枚举值
+序号：2
+方法名：getFormat()
+返回类型：CSVFormat
+功能描述：获取关联的CSVFormat实例
+```

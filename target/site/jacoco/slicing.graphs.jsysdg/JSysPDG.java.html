@@ -1,0 +1,257 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JSysPDG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.jsysdg</a> &gt; <span class="el_source">JSysPDG.java</span></div><h1>JSysPDG.java</h1><pre class="source lang-java linenums">package slicing.graphs.jsysdg;
+
+import slicing.arcs.pdg.FlowDependencyArc;
+import slicing.arcs.pdg.ObjectFlowDependencyArc;
+import slicing.arcs.pdg.StructuralArc;
+import slicing.arcs.pdg.TotalDefinitionDependenceArc;
+import slicing.graphs.exceptionsensitive.ESCFG;
+import slicing.graphs.exceptionsensitive.ESPDG;
+import slicing.graphs.pdg.PDG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.CallNode;
+import slicing.nodes.oo.MemberNode;
+
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+
+import static slicing.nodes.ObjectTree.ROOT_NAME;
+import static slicing.nodes.ObjectTree.ROOT_NODE;
+
+public class JSysPDG extends ESPDG {
+    public JSysPDG() {
+<span class="nc" id="L26">        this(new JSysCFG());</span>
+<span class="nc" id="L27">    }</span>
+
+    public JSysPDG(JSysCFG cfg) {
+<span class="nc" id="L30">        super(cfg);</span>
+<span class="nc" id="L31">    }</span>
+
+    @Override
+    protected PDG.Builder createBuilder() {
+<span class="nc" id="L35">        return new Builder();</span>
+    }
+
+    protected void addStructuralArc(GraphNode&lt;?&gt; source, GraphNode&lt;?&gt; target) {
+<span class="nc" id="L39">        addEdge(source, target, new StructuralArc());</span>
+<span class="nc" id="L40">    }</span>
+
+    // definicion de raiz --object-flow--&gt; uso de raiz
+    protected void addObjectFlowDependencyArc(VariableAction definition, VariableAction usage) {
+<span class="nc" id="L44">        addEdge(graphNodeOf(definition), graphNodeOf(usage), new ObjectFlowDependencyArc());</span>
+<span class="nc" id="L45">    }</span>
+
+    // definicion de miembro --object-flow--&gt; definicion de raiz
+    protected void addObjectFlowDependencyArc(VariableAction nextDefinitionRoot, String[] memberDefined, VariableAction definition) {
+<span class="nc" id="L49">        MemberNode defMember = definition.getObjectTree().getNodeFor(true, memberDefined);</span>
+<span class="nc" id="L50">        addEdge(defMember, graphNodeOf(nextDefinitionRoot), new ObjectFlowDependencyArc());</span>
+<span class="nc" id="L51">    }</span>
+
+    // def --flow--&gt; use || dec --flow--&gt; def
+    protected void addFlowDependencyArc(VariableAction source, VariableAction target) {
+<span class="nc" id="L55">        addEdge(graphNodeOf(source), graphNodeOf(target), new FlowDependencyArc(source.getName()));</span>
+<span class="nc" id="L56">    }</span>
+
+    protected void addDeclarationFlowDependencyArc(VariableAction declaration, VariableAction definition) {
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        for (MemberNode target : definition.getObjectTree().getNodesForPoly(declaration.getName()))</span>
+<span class="nc" id="L60">            addEdge(graphNodeOf(declaration), target, new FlowDependencyArc());</span>
+<span class="nc" id="L61">    }</span>
+
+    // definicion de miembro --flow--&gt; uso de miembro
+    protected void addFlowDependencyArc(VariableAction definition, VariableAction usage, String[] objMember) {
+<span class="nc" id="L65">        GraphNode&lt;?&gt; defMember = definition.getObjectTree().getNodeFor(true, objMember);</span>
+<span class="nc" id="L66">        GraphNode&lt;?&gt; useMember = usage.getObjectTree().getNodeFor(true, objMember);</span>
+<span class="nc" id="L67">        addEdge(defMember, useMember, new FlowDependencyArc(objMember));</span>
+<span class="nc" id="L68">    }</span>
+
+    protected void addValueDependencyArc(VariableAction usage, GraphNode&lt;?&gt; statement) {
+<span class="nc" id="L71">        addEdge(usage.getObjectTree().getMemberNode(), statement, new FlowDependencyArc(ROOT_NAME));</span>
+<span class="nc" id="L72">    }</span>
+
+    protected void addTotalDefinitionDependencyArc(VariableAction totalDefinition, VariableAction target, String[] member) {
+<span class="nc bnc" id="L75" title="All 4 branches missed.">        if (member.length == 1 &amp;&amp; member[0].equals(ROOT_NAME))</span>
+<span class="nc" id="L76">            addEdge(graphNodeOf(totalDefinition), graphNodeOf(target), new TotalDefinitionDependenceArc());</span>
+        else
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            for (MemberNode from : totalDefinition.getObjectTree().getNodesForPoly(member))</span>
+<span class="nc bnc" id="L79" title="All 2 branches missed.">                for (MemberNode to : target.getObjectTree().getNodesForPoly(member))</span>
+<span class="nc" id="L80">                    addEdge(from, to, new TotalDefinitionDependenceArc());</span>
+<span class="nc" id="L81">    }</span>
+
+    protected GraphNode&lt;?&gt; graphNodeOf(VariableAction action) {
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (action.hasObjectTree())</span>
+<span class="nc" id="L85">            return action.getObjectTree().getMemberNode();</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if (action instanceof VariableAction.Movable)</span>
+<span class="nc" id="L87">            return ((VariableAction.Movable) action).getRealNode();</span>
+<span class="nc" id="L88">        return action.getGraphNode();</span>
+    }
+
+    @Override
+    public void addDataDependencyArc(VariableAction src, VariableAction tgt) {
+<span class="nc" id="L93">        throw new UnsupportedOperationException(&quot;Use flow or object-flow dependency&quot;);</span>
+    }
+
+<span class="nc" id="L96">    protected class Builder extends ESPDG.Builder {</span>
+
+        @Override
+        protected void buildDataDependency() {
+<span class="nc" id="L100">            addSyntheticNodesToPDG();</span>
+<span class="nc" id="L101">            applyTreeConnections();</span>
+<span class="nc" id="L102">            buildJSysDataDependency();</span>
+<span class="nc" id="L103">            valueDependencyForThrowStatements();</span>
+<span class="nc" id="L104">        }</span>
+
+        /** Compute flow, object flow and total definition dependence. */
+        protected void buildJSysDataDependency() {
+<span class="nc" id="L108">            JSysCFG jSysCFG = (JSysCFG) cfg;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; node : vertexSet()) {</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">                for (VariableAction varAct : node.getVariableActions()) {</span>
+                    // Total definition dependence
+<span class="nc" id="L112">                    buildTotalDefinitionDependence(jSysCFG, varAct);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                    if (varAct.isUsage())</span>
+<span class="nc" id="L114">                        buildUsageDependencies(jSysCFG, varAct);</span>
+<span class="nc bnc" id="L115" title="All 2 branches missed.">                    else if (varAct.isDefinition())</span>
+<span class="nc" id="L116">                        buildDefinitionDependencies(jSysCFG, varAct);</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">                    else if (varAct.isDeclaration())</span>
+<span class="nc" id="L118">                        buildDeclarationDependencies(jSysCFG, varAct);</span>
+<span class="nc" id="L119">                }</span>
+<span class="nc" id="L120">            }</span>
+<span class="nc" id="L121">        }</span>
+
+        /** Generate total definition dependence. Only generated for non-primitive usages and non-primitive,
+         *  non-synthetic definitions. Connects each member to its previous total definition. */
+        private void buildTotalDefinitionDependence(JSysCFG jSysCFG, VariableAction varAct) {
+<span class="nc bnc" id="L126" title="All 8 branches missed.">            if (!varAct.isPrimitive() &amp;&amp; (varAct.isUsage() || (varAct.isDefinition() &amp;&amp; !varAct.isSynthetic()))) {</span>
+<span class="nc" id="L127">                jSysCFG.findLastTotalDefinitionOf(varAct, ROOT_NODE).forEach(totalDef -&gt; addTotalDefinitionDependencyArc(totalDef, varAct, ROOT_NODE));</span>
+<span class="nc bnc" id="L128" title="All 2 branches missed.">                if (!varAct.hasObjectTree())</span>
+<span class="nc" id="L129">                    return;</span>
+<span class="nc bnc" id="L130" title="All 2 branches missed.">                for (String[] member : varAct.getObjectTree().nameAsArrayIterable())</span>
+<span class="nc" id="L131">                    jSysCFG.findLastTotalDefinitionOf(varAct, member).forEach(totalDef -&gt; addTotalDefinitionDependencyArc(totalDef, varAct, member));</span>
+            }
+<span class="nc" id="L133">        }</span>
+
+        /** Generate dependencies to usages, including flow dependency for primitives,
+         *  object flow for object roots and flow for object members. */
+        private void buildUsageDependencies(JSysCFG jSysCFG, VariableAction varAct) {
+<span class="nc bnc" id="L138" title="All 2 branches missed.">            if (varAct.isPrimitive()) {</span>
+<span class="nc" id="L139">                jSysCFG.findLastDefinitionOfPrimitive(varAct).forEach(def -&gt; addFlowDependencyArc(def, varAct));</span>
+            } else {
+<span class="nc" id="L141">                jSysCFG.findLastDefinitionOfObjectRoot(varAct).forEach(def -&gt; addObjectFlowDependencyArc(def, varAct));</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                if (!varAct.hasObjectTree())</span>
+<span class="nc" id="L143">                    return;</span>
+<span class="nc bnc" id="L144" title="All 2 branches missed.">                for (String[] member : varAct.getObjectTree().nameAsArrayIterable())</span>
+<span class="nc" id="L145">                    jSysCFG.findLastDefinitionOfObjectMember(varAct, member).forEach(def -&gt; addFlowDependencyArc(def, varAct, member));</span>
+            }
+<span class="nc" id="L147">        }</span>
+
+        /** Generates dec --&gt; def flow and def --&gt; def object flow dependencies. */
+        private void buildDefinitionDependencies(JSysCFG jSysCFG, VariableAction varAct) {
+            // Flow declaration --&gt; definition
+<span class="nc bnc" id="L152" title="All 2 branches missed.">            if (!varAct.isSynthetic())</span>
+<span class="nc" id="L153">                jSysCFG.findDeclarationFor(varAct).ifPresent(dec -&gt; addFlowDependencyArc(dec, varAct));</span>
+            // Object flow definition --&gt; definition
+<span class="nc bnc" id="L155" title="All 4 branches missed.">            if (varAct.isPrimitive() || !varAct.hasObjectTree())</span>
+<span class="nc" id="L156">                return;</span>
+<span class="nc bnc" id="L157" title="All 2 branches missed.">            for (String[] member : varAct.getObjectTree().nameAsArrayIterable())</span>
+<span class="nc" id="L158">                jSysCFG.findNextObjectDefinitionsFor(varAct, member).forEach(def -&gt; addObjectFlowDependencyArc(varAct, member, def));</span>
+<span class="nc" id="L159">        }</span>
+
+        /** Generates dec --&gt; def declaration dependencies for objects (constructors only). */
+        private void buildDeclarationDependencies(JSysCFG jSysCFG, VariableAction varAct) {
+<span class="nc bnc" id="L163" title="All 2 branches missed.">            if (!varAct.getName().startsWith(&quot;this.&quot;))</span>
+<span class="nc" id="L164">                return;</span>
+<span class="nc" id="L165">            jSysCFG.findAllFutureObjectDefinitionsFor(varAct).forEach(def -&gt; addDeclarationFlowDependencyArc(varAct, def));</span>
+<span class="nc" id="L166">        }</span>
+
+        @Override
+        protected void expandCalls() {
+<span class="nc bnc" id="L170" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; graphNode : vertexSet()) {</span>
+<span class="nc bnc" id="L171" title="All 2 branches missed.">                for (VariableAction action : new ArrayList&lt;&gt;(graphNode.getVariableActions())) {</span>
+<span class="nc bnc" id="L172" title="All 2 branches missed.">                    if (action instanceof VariableAction.Movable) {</span>
+<span class="nc" id="L173">                        ((VariableAction.Movable) action).moveOnly();</span>
+                    }
+<span class="nc" id="L175">                }</span>
+<span class="nc" id="L176">            }</span>
+<span class="nc" id="L177">        }</span>
+
+        /** Add movables to the PDG, and all MemberNodes contained in object trees. */
+        protected void addSyntheticNodesToPDG() {
+<span class="nc bnc" id="L181" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; node : cfg.vertexSet()) {</span>
+<span class="nc" id="L182">                Deque&lt;CallNode&gt; callNodeStack = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">                for (VariableAction va : node.getVariableActions()) {</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                    if (va instanceof VariableAction.CallMarker) {</span>
+                        // Compute the call node, if entering the marker. Additionally, it places the node
+                        // in the graph and makes it control-dependent on its container.
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                        if (!((VariableAction.CallMarker) va).isEnter()) {</span>
+<span class="nc" id="L188">                            callNodeStack.pop();</span>
+                        } else {
+<span class="nc" id="L190">                            CallNode callNode = CallNode.create(((VariableAction.CallMarker) va).getCall());</span>
+<span class="nc bnc" id="L191" title="All 2 branches missed.">                            if (node.isImplicitInstruction())</span>
+<span class="nc" id="L192">                                callNode.markAsImplicit();</span>
+<span class="nc" id="L193">                            addVertex(callNode);</span>
+<span class="nc" id="L194">                            addStructuralArc(node, callNode);</span>
+<span class="nc" id="L195">                            callNodeStack.push(callNode);</span>
+                        }
+<span class="nc" id="L197">                        continue;</span>
+                    }
+                    GraphNode&lt;?&gt; parentNode; // node that represents the root of the object tree
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                    if (va instanceof VariableAction.Movable) {</span>
+<span class="nc" id="L201">                        VariableAction.Movable movable = (VariableAction.Movable) va;</span>
+<span class="nc" id="L202">                        addVertex(movable.getRealNode());</span>
+<span class="nc" id="L203">                        connectRealNode(node, callNodeStack.peek(), movable.getRealNode());</span>
+<span class="nc" id="L204">                        parentNode = movable.getRealNode();</span>
+<span class="nc" id="L205">                    } else {</span>
+<span class="nc" id="L206">                        parentNode = node;</span>
+                    }
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                    if (!va.hasObjectTree())</span>
+<span class="nc" id="L209">                        continue;</span>
+                    // Extract the member nodes contained within the object tree
+<span class="nc" id="L211">                    insertMemberNode(va.getObjectTree().getMemberNode(), parentNode);</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">                    for (MemberNode memberNode : va.getObjectTree().nodeIterable()) {</span>
+<span class="nc" id="L213">                        insertMemberNode(memberNode, parentNode);</span>
+<span class="nc" id="L214">                    }</span>
+<span class="nc" id="L215">                }</span>
+<span class="nc bnc" id="L216" title="All 2 branches missed.">                assert callNodeStack.isEmpty();</span>
+<span class="nc" id="L217">            }</span>
+<span class="nc" id="L218">        }</span>
+
+        @Override
+        protected void connectRealNode(GraphNode&lt;?&gt; graphNode, CallNode callNode, GraphNode&lt;?&gt; realNode) {
+<span class="nc bnc" id="L222" title="All 4 branches missed.">            if (realNode instanceof ActualIONode || realNode instanceof CallNode.Return) {</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">                assert callNode != null;</span>
+<span class="nc" id="L224">                addStructuralArc(callNode, realNode);</span>
+            } else {
+<span class="nc bnc" id="L226" title="All 2 branches missed.">                addStructuralArc(graphNode == cfg.getExitNode() ? rootNode : graphNode, realNode);</span>
+            }
+<span class="nc" id="L228">        }</span>
+
+        /** Apply the pre-assigned connections between object trees. */
+        protected void applyTreeConnections() {
+<span class="nc" id="L232">            cfg.vertexSet().stream()</span>
+<span class="nc" id="L233">                    .flatMap(node -&gt; node.getVariableActions().stream())</span>
+<span class="nc" id="L234">                    .forEach(va -&gt; va.applyPDGTreeConnections(JSysPDG.this));</span>
+<span class="nc" id="L235">        }</span>
+
+        /** Inserts a member node from an object tree onto the PDG. */
+        protected void insertMemberNode(MemberNode memberNode, GraphNode&lt;?&gt; parentNode) {
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if (memberNode.getParent() == null)</span>
+<span class="nc" id="L240">                memberNode.setParent(parentNode);</span>
+<span class="nc bnc" id="L241" title="All 2 branches missed.">            assert containsVertex(memberNode.getParent());</span>
+<span class="nc" id="L242">            addVertex(memberNode);</span>
+<span class="nc" id="L243">            addStructuralArc(memberNode.getParent(), memberNode);</span>
+<span class="nc" id="L244">        }</span>
+
+        /** Connects the tree that represents the active exception to its parent graph node. */
+        protected void valueDependencyForThrowStatements() {
+<span class="nc bnc" id="L248" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; node : vertexSet())</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">                for (VariableAction action : node.getVariableActions())</span>
+<span class="nc bnc" id="L250" title="All 2 branches missed.">                    if (action.isDefinition()</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">                            &amp;&amp; action.hasObjectTree()</span>
+<span class="nc bnc" id="L252" title="All 2 branches missed.">                            &amp;&amp; action.getName().equals(ESCFG.ACTIVE_EXCEPTION_VARIABLE))</span>
+<span class="nc" id="L253">                        addValueDependencyArc(action, node);</span>
+<span class="nc" id="L254">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

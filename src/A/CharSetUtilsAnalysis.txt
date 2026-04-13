@@ -1,0 +1,45 @@
+```包路径：lang3
+类名：CharSetUtils
+父类：无
+依赖类：StringUtils, CharSet
+---
+序号：1
+方法名：containsAny(String str, String... set)
+返回类型：boolean
+功能描述：检查字符串是否包含任意指定字符集的字符
+---
+序号：2
+方法名：count(String str, String... set)
+返回类型：int
+功能描述：统计字符串中属于指定字符集的字符数量
+---
+序号：3
+方法名：delete(String str, String... set)
+返回类型：String
+功能描述：删除字符串中所有属于指定字符集的字符
+---
+序号：4
+方法名：isEmpty(String str, String... set)
+返回类型：boolean
+功能描述：检查字符串是否为空（仅检查字符串参数）
+---
+序号：5
+方法名：keep(String str, String... set)
+返回类型：String
+功能描述：保留字符串中属于指定字符集的字符
+---
+序号：6
+方法名：modify(String str, String[] set, boolean expect)
+返回类型：String
+功能描述：根据expect标志保留/删除指定字符集的字符
+---
+序号：7
+方法名：squeeze(String str, String... set)
+返回类型：String
+功能描述：压缩字符串中连续的重复字符（主要针对指定字符集）
+---
+序号：8
+方法名：CharSetUtils()
+返回类型：void
+功能描述：已弃用的无参构造方法
+```

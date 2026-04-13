@@ -1,0 +1,21 @@
+```
+包路径：cli
+类名：ParseException
+父类：Exception
+依赖类：无
+---
+序号：1
+方法名：wrap(Throwable e)
+返回类型：ParseException
+功能描述：包装Throwable异常，若为UnsupportedOperationException则抛出，若为ParseException则直接返回，否则新建ParseException
+---
+序号：2
+方法名：ParseException(String message)
+返回类型：无
+功能描述：使用指定消息构造ParseException
+---
+序号：3
+方法名：ParseException(Throwable e)
+返回类型：无
+功能描述：使用指定原因异常构造ParseException
+```

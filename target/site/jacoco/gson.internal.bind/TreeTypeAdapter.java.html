@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TreeTypeAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">TreeTypeAdapter.java</span></div><h1>TreeTypeAdapter.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.Gson;
+import gson.JsonDeserializationContext;
+import gson.JsonDeserializer;
+import gson.JsonElement;
+import gson.JsonParseException;
+import gson.JsonSerializationContext;
+import gson.JsonSerializer;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.internal.Streams;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Objects;
+public final class TreeTypeAdapter&lt;T&gt; extends SerializationDelegatingTypeAdapter&lt;T&gt; {
+  private final JsonSerializer&lt;T&gt; serializer;
+  private final JsonDeserializer&lt;T&gt; deserializer;
+  final Gson gson;
+  private final TypeToken&lt;T&gt; typeToken;
+  private final TypeAdapterFactory skipPastForGetDelegateAdapter;
+<span class="fc" id="L24">  private final GsonContextImpl context = new GsonContextImpl();</span>
+  private final boolean nullSafe;
+  private volatile TypeAdapter&lt;T&gt; delegate;
+  public TreeTypeAdapter(
+      JsonSerializer&lt;T&gt; serializer,
+      JsonDeserializer&lt;T&gt; deserializer,
+      Gson gson,
+      TypeToken&lt;T&gt; typeToken,
+      TypeAdapterFactory skipPast,
+<span class="fc" id="L33">      boolean nullSafe) {</span>
+<span class="fc" id="L34">    this.serializer = serializer;</span>
+<span class="fc" id="L35">    this.deserializer = deserializer;</span>
+<span class="fc" id="L36">    this.gson = gson;</span>
+<span class="fc" id="L37">    this.typeToken = typeToken;</span>
+<span class="fc" id="L38">    this.skipPastForGetDelegateAdapter = skipPast;</span>
+<span class="fc" id="L39">    this.nullSafe = nullSafe;</span>
+<span class="fc" id="L40">  }</span>
+  public TreeTypeAdapter(
+      JsonSerializer&lt;T&gt; serializer,
+      JsonDeserializer&lt;T&gt; deserializer,
+      Gson gson,
+      TypeToken&lt;T&gt; typeToken,
+      TypeAdapterFactory skipPast) {
+<span class="fc" id="L47">    this(serializer, deserializer, gson, typeToken, skipPast, true);</span>
+<span class="fc" id="L48">  }</span>
+  @Override
+  public T read(JsonReader in) throws IOException {
+<span class="pc bpc" id="L51" title="1 of 2 branches missed.">    if (deserializer == null) {</span>
+<span class="nc" id="L52">      return delegate().read(in);</span>
+    }
+<span class="fc" id="L54">    JsonElement value = Streams.parse(in);</span>
+<span class="fc bfc" id="L55" title="All 4 branches covered.">    if (nullSafe &amp;&amp; value.isJsonNull()) {</span>
+<span class="fc" id="L56">      return null;</span>
+    }
+<span class="fc" id="L58">    return deserializer.deserialize(value, typeToken.getType(), context);</span>
+  }
+
+  @Override
+  public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L64">  }</span>
+
+  @Override
+  public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L68">    return null;</span>
+  }
+
+  @Override
+  public void write(JsonWriter out, T value) throws IOException {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">    if (serializer == null) {</span>
+<span class="fc" id="L74">      delegate().write(out, value);</span>
+<span class="fc" id="L75">      return;</span>
+    }
+<span class="fc bfc" id="L77" title="All 4 branches covered.">    if (nullSafe &amp;&amp; value == null) {</span>
+<span class="fc" id="L78">      out.nullValue();</span>
+<span class="fc" id="L79">      return;</span>
+    }
+<span class="fc" id="L81">    JsonElement tree = serializer.serialize(value, typeToken.getType(), context);</span>
+<span class="fc" id="L82">    Streams.write(tree, out);</span>
+<span class="fc" id="L83">  }</span>
+  TypeAdapter&lt;T&gt; delegate() {
+<span class="fc" id="L85">    TypeAdapter&lt;T&gt; d = delegate;</span>
+<span class="fc bfc" id="L86" title="All 2 branches covered.">    if (d == null) {</span>
+<span class="fc" id="L87">      d = delegate = gson.getDelegateAdapter(skipPastForGetDelegateAdapter, typeToken);</span>
+    }
+<span class="fc" id="L89">    return d;</span>
+  }
+  @Override
+  public TypeAdapter&lt;T&gt; getSerializationDelegate() {
+<span class="fc bfc" id="L93" title="All 2 branches covered.">    return serializer != null ? this : delegate();</span>
+  }
+  public static TypeAdapterFactory newFactory(TypeToken&lt;?&gt; exactType, Object typeAdapter) {
+<span class="fc" id="L96">    return new SingleTypeFactory(typeAdapter, exactType, false, null);</span>
+  }
+  public static TypeAdapterFactory newFactoryWithMatchRawType(
+      TypeToken&lt;?&gt; exactType, Object typeAdapter) {
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">    boolean matchRawType = exactType.getType() == exactType.getRawType();</span>
+<span class="fc" id="L101">    return new SingleTypeFactory(typeAdapter, exactType, matchRawType, null);</span>
+  }
+  public static TypeAdapterFactory newTypeHierarchyFactory(
+      Class&lt;?&gt; hierarchyType, Object typeAdapter) {
+<span class="fc" id="L105">    return new SingleTypeFactory(typeAdapter, null, false, hierarchyType);</span>
+  }
+  static final class SingleTypeFactory implements TypeAdapterFactory {
+    private final TypeToken&lt;?&gt; exactType;
+    private final boolean matchRawType;
+    private final Class&lt;?&gt; hierarchyType;
+    private final JsonSerializer&lt;?&gt; serializer;
+    private final JsonDeserializer&lt;?&gt; deserializer;
+    SingleTypeFactory(
+<span class="fc" id="L114">        Object typeAdapter, TypeToken&lt;?&gt; exactType, boolean matchRawType, Class&lt;?&gt; hierarchyType) {</span>
+<span class="fc bfc" id="L115" title="All 2 branches covered.">      serializer = typeAdapter instanceof JsonSerializer ? (JsonSerializer&lt;?&gt;) typeAdapter : null;</span>
+<span class="fc" id="L116">      deserializer =</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">          typeAdapter instanceof JsonDeserializer ? (JsonDeserializer&lt;?&gt;) typeAdapter : null;</span>
+<span class="pc bpc" id="L118" title="1 of 4 branches missed.">      if (serializer == null &amp;&amp; deserializer == null) {</span>
+<span class="fc" id="L119">        Objects.requireNonNull(typeAdapter);</span>
+<span class="fc" id="L120">        throw new IllegalArgumentException(</span>
+            &quot;Type adapter &quot;
+<span class="fc" id="L122">                + typeAdapter.getClass().getName()</span>
+                + &quot; must implement JsonSerializer or JsonDeserializer&quot;);
+      }
+<span class="fc" id="L125">      this.exactType = exactType;</span>
+<span class="fc" id="L126">      this.matchRawType = matchRawType;</span>
+<span class="fc" id="L127">      this.hierarchyType = hierarchyType;</span>
+<span class="fc" id="L128">    }</span>
+    @SuppressWarnings(&quot;unchecked&quot;)
+    @Override
+    public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
+      boolean matches =
+<span class="fc bfc" id="L133" title="All 2 branches covered.">          exactType != null</span>
+<span class="pc bpc" id="L134" title="5 of 6 branches missed.">              ? exactType.equals(type) || (matchRawType &amp;&amp; exactType.getType() == type.getRawType())</span>
+<span class="fc" id="L135">              : hierarchyType.isAssignableFrom(type.getRawType());</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">      return matches</span>
+<span class="fc" id="L137">          ? new TreeTypeAdapter&lt;&gt;(</span>
+              (JsonSerializer&lt;T&gt;) serializer, (JsonDeserializer&lt;T&gt;) deserializer, gson, type, this)
+<span class="nc" id="L139">          : null;</span>
+    }
+  }
+<span class="fc" id="L142">  private final class GsonContextImpl</span>
+      implements JsonSerializationContext, JsonDeserializationContext {
+    @Override
+    public JsonElement serialize(Object src) {
+<span class="nc" id="L146">      return gson.toJsonTree(src);</span>
+    }
+    @Override
+    public JsonElement serialize(Object src, Type typeOfSrc) {
+<span class="nc" id="L150">      return gson.toJsonTree(src, typeOfSrc);</span>
+    }
+    @Override
+    @SuppressWarnings(&quot;TypeParameterUnusedInFormals&quot;)
+    public &lt;R&gt; R deserialize(JsonElement json, Type typeOfT) throws JsonParseException {
+<span class="nc" id="L155">      return gson.fromJson(json, typeOfT);</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SummaryArcAnalyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.sdg</a> &gt; <span class="el_source">SummaryArcAnalyzer.java</span></div><h1>SummaryArcAnalyzer.java</h1><pre class="source lang-java linenums">package slicing.graphs.sdg;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import slicing.graphs.CallGraph;
+import slicing.nodes.SyntheticNode;
+import slicing.nodes.exceptionsensitive.ExitNode;
+import slicing.nodes.exceptionsensitive.ReturnNode;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.CallNode;
+import slicing.nodes.io.FormalIONode;
+import slicing.nodes.io.OutputNode;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.NoSuchElementException;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+/**
+ * Generates the summary arcs between actual-in and actual-out, return and exception/exit return nodes.
+ */
+public class SummaryArcAnalyzer extends AbstractSummaryArcAnalyzer&lt;ActualIONode, SyntheticNode&lt;CallableDeclaration&lt;?&gt;&gt;, FormalIONode&gt; {
+    public SummaryArcAnalyzer(SDG sdg, CallGraph graph) {
+<span class="nc" id="L24">        super(sdg, graph);</span>
+<span class="nc" id="L25">    }</span>
+
+    @Override
+    protected Set&lt;FormalIONode&gt; computeFormalIn(SyntheticNode&lt;CallableDeclaration&lt;?&gt;&gt; formalOut) {
+<span class="nc" id="L29">        return sdg.createSlicingAlgorithm().traverseProcedure(formalOut).getGraphNodes().stream()</span>
+<span class="nc" id="L30">                .filter(FormalIONode.class::isInstance)</span>
+<span class="nc" id="L31">                .map(FormalIONode.class::cast)</span>
+<span class="nc" id="L32">                .filter(FormalIONode::isInput)</span>
+<span class="nc" id="L33">                .collect(Collectors.toSet());</span>
+    }
+
+    @Override
+    protected Collection&lt;ActualIONode&gt; findActualIn(CallGraph.Edge&lt;?&gt; edge, FormalIONode formalIn) {
+<span class="nc" id="L38">        return sdg.vertexSet().stream()</span>
+<span class="nc" id="L39">                .filter(ActualIONode.class::isInstance)</span>
+<span class="nc" id="L40">                .map(ActualIONode.class::cast)</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                .filter(n -&gt; n.getAstNode() == edge.getCall())</span>
+<span class="nc" id="L42">                .filter(n -&gt; n.matchesFormalIO(formalIn))</span>
+<span class="nc" id="L43">                .collect(Collectors.toSet());</span>
+    }
+
+    @Override
+    protected Collection&lt;? extends SyntheticNode&lt;?&gt;&gt; findOutputNode(CallGraph.Edge&lt;?&gt; edge, SyntheticNode&lt;CallableDeclaration&lt;?&gt;&gt; formalOut) {
+<span class="nc bnc" id="L48" title="All 2 branches missed.">        if (formalOut instanceof FormalIONode)</span>
+<span class="nc" id="L49">            return findActualOut(edge, (FormalIONode) formalOut);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (formalOut instanceof OutputNode)</span>
+<span class="nc" id="L51">            return Collections.singleton(findReturnNode(edge));</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        if (formalOut instanceof ExitNode)</span>
+<span class="nc" id="L53">            return getReturnNode(edge, (ExitNode) formalOut);</span>
+<span class="nc" id="L54">        throw new IllegalArgumentException(&quot;invalid type&quot;);</span>
+    }
+
+    /** Find the actual-out node that corresponds to the given formal-out in the given call.
+     *  To locate any actual-out, you should use {@link #findOutputNode(CallGraph.Edge, SyntheticNode)}. */
+    protected Collection&lt;ActualIONode&gt; findActualOut(CallGraph.Edge&lt;?&gt; edge, FormalIONode formalOut) {
+<span class="nc" id="L60">        return sdg.vertexSet().stream()</span>
+<span class="nc" id="L61">                .filter(ActualIONode.class::isInstance)</span>
+<span class="nc" id="L62">                .map(ActualIONode.class::cast)</span>
+<span class="nc bnc" id="L63" title="All 2 branches missed.">                .filter(n -&gt; n.getAstNode() == edge.getCall())</span>
+<span class="nc" id="L64">                .filter(n -&gt; n.matchesFormalIO(formalOut))</span>
+<span class="nc" id="L65">                .collect(Collectors.toSet());</span>
+    }
+
+    /** Find the return node of the given call. There is only one per method.
+     *  To locate any actual-out, you should use {@link #findOutputNode(CallGraph.Edge, SyntheticNode)}. */
+    protected CallNode.Return findReturnNode(CallGraph.Edge&lt;?&gt; edge) {
+<span class="nc" id="L71">        return sdg.vertexSet().stream()</span>
+<span class="nc" id="L72">                .filter(CallNode.Return.class::isInstance)</span>
+<span class="nc" id="L73">                .map(CallNode.Return.class::cast)</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">                .filter(n -&gt; n.getAstNode() == edge.getCall())</span>
+<span class="nc" id="L75">                .findAny().orElseThrow(() -&gt; new NoSuchElementException(&quot;No matching CallNode.Return found&quot;));</span>
+    }
+
+    /** Find the exception/normal return node that corresponds to the given exception/normal exit in the given call.
+     *  To locate any actual-out, you should use {@link #findOutputNode(CallGraph.Edge, SyntheticNode)}. */
+    protected Collection&lt;ReturnNode&gt; getReturnNode(CallGraph.Edge&lt;?&gt; edge, ExitNode exitNode) {
+<span class="nc" id="L81">        return sdg.vertexSet().stream()</span>
+<span class="nc" id="L82">                .filter(ReturnNode.class::isInstance)</span>
+<span class="nc" id="L83">                .map(ReturnNode.class::cast)</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                .filter(n -&gt; n.getAstNode() == edge.getCall())</span>
+<span class="nc" id="L85">                .filter(exitNode::matchesReturnNode)</span>
+<span class="nc" id="L86">                .collect(Collectors.toSet());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

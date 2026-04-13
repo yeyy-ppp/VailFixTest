@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FormattingStyle.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">FormattingStyle.java</span></div><h1>FormattingStyle.java</h1><pre class="source lang-java linenums">package gson;
+import gson.stream.JsonWriter;
+import java.util.Objects;
+public class FormattingStyle {
+  private final String newline;
+  private final String indent;
+  private final boolean spaceAfterSeparators;
+<span class="fc" id="L8">  public static final FormattingStyle COMPACT = new FormattingStyle(&quot;&quot;, &quot;&quot;, false);</span>
+<span class="fc" id="L9">  public static final FormattingStyle PRETTY = new FormattingStyle(&quot;\n&quot;, &quot;  &quot;, true);</span>
+<span class="fc" id="L10">  private FormattingStyle(String newline, String indent, boolean spaceAfterSeparators) {</span>
+<span class="fc" id="L11">    Objects.requireNonNull(newline, &quot;newline == null&quot;);</span>
+<span class="fc" id="L12">    Objects.requireNonNull(indent, &quot;indent == null&quot;);</span>
+<span class="fc bfc" id="L13" title="All 2 branches covered.">    if (!newline.matches(&quot;[\r\n]*&quot;)) {</span>
+<span class="fc" id="L14">      throw new IllegalArgumentException(</span>
+          &quot;Only combinations of \\n and \\r are allowed in newline.&quot;);
+    }
+<span class="fc bfc" id="L17" title="All 2 branches covered.">    if (!indent.matches(&quot;[ \t]*&quot;)) {</span>
+<span class="fc" id="L18">      throw new IllegalArgumentException(</span>
+          &quot;Only combinations of spaces and tabs are allowed in indent.&quot;);
+    }
+<span class="fc" id="L21">    this.newline = newline;</span>
+<span class="fc" id="L22">    this.indent = indent;</span>
+<span class="fc" id="L23">    this.spaceAfterSeparators = spaceAfterSeparators;</span>
+<span class="fc" id="L24">  }</span>
+  public FormattingStyle withNewline(String newline) {
+<span class="fc" id="L26">    return new FormattingStyle(newline, this.indent, this.spaceAfterSeparators);</span>
+  }
+  public FormattingStyle withIndent(String indent) {
+<span class="fc" id="L29">    return new FormattingStyle(this.newline, indent, this.spaceAfterSeparators);</span>
+  }
+  public FormattingStyle withSpaceAfterSeparators(boolean spaceAfterSeparators) {
+<span class="fc" id="L32">    return new FormattingStyle(this.newline, this.indent, spaceAfterSeparators);</span>
+  }
+  public String getNewline() {
+<span class="fc" id="L35">    return this.newline;</span>
+  }
+  public String getIndent() {
+<span class="fc" id="L38">    return this.indent;</span>
+  }
+  public boolean usesSpaceAfterSeparators() {
+<span class="fc" id="L41">    return this.spaceAfterSeparators;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConditionalControlDependencyBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.exceptionsensitive</a> &gt; <span class="el_source">ConditionalControlDependencyBuilder.java</span></div><h1>ConditionalControlDependencyBuilder.java</h1><pre class="source lang-java linenums">package slicing.graphs.exceptionsensitive;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.stmt.CatchClause;
+import slicing.arcs.Arc;
+import slicing.arcs.pdg.ConditionalControlDependencyArc;
+import slicing.arcs.pdg.ControlDependencyArc;
+import slicing.nodes.GraphNode;
+import slicing.nodes.exceptionsensitive.ExceptionReturnNode;
+import slicing.nodes.exceptionsensitive.NormalReturnNode;
+import slicing.nodes.exceptionsensitive.ReturnNode;
+import slicing.slicing.PseudoPredicateSlicingAlgorithm;
+import slicing.utils.ASTUtils;
+import slicing.utils.NodeHashSet;
+import slicing.utils.Utils;
+
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.Set;
+
+/**
+ * Adds {@link ConditionalControlDependencyArc CCD arcs} to a
+ * {@link ESPDG ES-PDG}, according to the algorithm
+ * outlined in Algorithm I of [SAS2020]. All auxiliary functions are implemented
+ * here ({@link #getBlockInstructs(CatchClause) getBlockInstructs/1}, {@link
+ * #getTryBlockInstructs(CatchClause) getTryBlockInstructs/1}, {@link
+ * #isExceptionSource(GraphNode) isExceptionSource/1}), except {@link
+ * ESSDG#isPseudoPredicate(GraphNode) isPseudoPredicate/1}. &lt;br/&gt;
+ * &lt;b&gt;[SAS2020]&lt;/b&gt;: dinsa://Areas/Program Slicing/Trabajos/Slicing Exceptions/Papers/SAS 2020
+ * @see ConditionalControlDependencyArc
+ */
+<span class="nc" id="L36">public class ConditionalControlDependencyBuilder {</span>
+    protected ESCFG cfg;
+    protected ESPDG pdg;
+
+<span class="nc" id="L40">    public ConditionalControlDependencyBuilder(ESCFG cfg, ESPDG pdg) {</span>
+<span class="nc" id="L41">        this.cfg = Objects.requireNonNull(cfg);</span>
+<span class="nc" id="L42">        this.pdg = Objects.requireNonNull(pdg);</span>
+<span class="nc" id="L43">    }</span>
+
+    /** Adds the {@link ConditionalControlDependencyArc CCD arcs}. This method should only be called
+     * once per {@link ESPDG}, as multiple executions may create duplicate arcs. */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public void build() {
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        for (GraphNode&lt;?&gt; node : pdg.vertexSet()) {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (node.getAstNode() instanceof CatchClause) {</span>
+<span class="nc" id="L51">                buildCC1((GraphNode&lt;CatchClause&gt;) node);</span>
+<span class="nc" id="L52">                buildCC2((GraphNode&lt;CatchClause&gt;) node);</span>
+            }
+<span class="nc" id="L54">        }</span>
+<span class="nc" id="L55">    }</span>
+
+    /** Create the {@link ConditionalControlDependencyArc.CC1 CC1} arcs associated to a given {@link
+     * CatchClause}. This process removes some {@link ControlDependencyArc CD arcs} in the process. */
+    protected void buildCC1(GraphNode&lt;CatchClause&gt; cc) {
+<span class="nc" id="L60">        Set&lt;Node&gt; blockInstructs = getBlockInstructs(cc.getAstNode());</span>
+<span class="nc" id="L61">        Set&lt;Arc&gt; cdArcs = new HashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        for (Arc arc : pdg.outgoingEdgesOf(cc))</span>
+<span class="nc bnc" id="L63" title="All 4 branches missed.">            if (arc.isControlDependencyArc() &amp;&amp; !blockInstructs.contains(pdg.getEdgeTarget(arc).getAstNode()))</span>
+<span class="nc" id="L64">                cdArcs.add(arc);</span>
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        for (Arc arc : cdArcs) {</span>
+<span class="nc" id="L66">            pdg.addCC1Arc(pdg.getEdgeSource(arc), pdg.getEdgeTarget(arc));</span>
+<span class="nc" id="L67">            pdg.removeEdge(arc);</span>
+<span class="nc" id="L68">        }</span>
+<span class="nc" id="L69">    }</span>
+
+    /** Create the {@link ConditionalControlDependencyArc.CC2 CC2}
+     * arcs associated to a given {@link CatchClause}. */
+    protected void buildCC2(GraphNode&lt;CatchClause&gt; cc) {
+<span class="nc" id="L74">        NodeHashSet&lt;Node&gt; tryBlockInstructs = getTryBlockInstructs(cc.getAstNode());</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">        for (Node node : tryBlockInstructs)</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            for (GraphNode&lt;?&gt; dst : pdg.findAllNodes(n -&gt; ASTUtils.equalsWithRangeInCU(n.getAstNode(), node)))</span>
+<span class="nc bnc" id="L77" title="All 4 branches missed.">                if (isExceptionSource(dst) &amp;&amp; hasControlDependencePath(dst, cc, tryBlockInstructs))</span>
+<span class="nc" id="L78">                    pdg.addCC2Arc(cc, dst);</span>
+<span class="nc" id="L79">    }</span>
+
+    /** Obtains the set of AST nodes found within a given {@link CatchClause}. */
+    protected static NodeHashSet&lt;Node&gt; getBlockInstructs(CatchClause cc) {
+<span class="nc" id="L83">        return childNodesOf(cc);</span>
+    }
+
+    /** Obtains the set of AST nodes found within the {@link com.github.javaparser.ast.stmt.TryStmt try}
+     * associated with the given {@link CatchClause}. */
+    protected static NodeHashSet&lt;Node&gt; getTryBlockInstructs(CatchClause cc) {
+<span class="nc" id="L89">        Optional&lt;Node&gt; parent = cc.getParentNode();</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        assert parent.isPresent();</span>
+<span class="nc" id="L91">        return childNodesOf(parent.get());</span>
+    }
+
+    /** Checks whether the argument is or contains an exception source. */
+    protected static boolean isExceptionSource(GraphNode&lt;?&gt; node) {
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (node instanceof ReturnNode) {</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            if (node instanceof ExceptionReturnNode)</span>
+<span class="nc" id="L98">                return true;</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            if (node instanceof NormalReturnNode)</span>
+<span class="nc" id="L100">                return false;</span>
+        }
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        return !new ExceptionSourceSearcher().search(node).isEmpty();</span>
+    }
+
+    /**
+     * Checks whether there is a control dependence path from {@code a} to {@code b},
+     * where all nodes in the path are in the given {@code universe}. The path is found
+     * following the rules of the PPDG traversal.
+     * @see PseudoPredicateSlicingAlgorithm
+     */
+    protected boolean hasControlDependencePath(GraphNode&lt;?&gt; a, GraphNode&lt;?&gt; b, NodeHashSet&lt;Node&gt; universe) {
+<span class="nc" id="L112">        Set&lt;GraphNode&lt;?&gt;&gt; visited = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L113">        Set&lt;GraphNode&lt;?&gt;&gt; pending = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L114">        pending.add(b);</span>
+<span class="nc" id="L115">        boolean first = true;</span>
+
+        // First step: consider any path
+        // Rest of steps: do not keep traversing backwards from a pseudo-predicate
+<span class="nc bnc" id="L119" title="All 2 branches missed.">        while (!pending.isEmpty()) {</span>
+<span class="nc" id="L120">            GraphNode&lt;?&gt; node = Utils.setPop(pending);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">            if (node.equals(a))</span>
+<span class="nc" id="L122">                return true;</span>
+            // PPDG rule: Skip if already visited or if it is a pseudo-predicate; do not check first time (criterion)
+<span class="nc bnc" id="L124" title="All 6 branches missed.">            if (!first &amp;&amp; (cfg.isPseudoPredicate(node) || visited.contains(node)))</span>
+<span class="nc" id="L125">                continue;</span>
+<span class="nc" id="L126">            pdg.incomingEdgesOf(node).stream()</span>
+<span class="nc" id="L127">                    .filter(Arc::isControlDependencyArc)</span>
+<span class="nc" id="L128">                    .map(pdg::getEdgeSource)</span>
+<span class="nc" id="L129">                    .filter(gn -&gt; universe.contains(gn.getAstNode()))</span>
+<span class="nc" id="L130">                    .forEach(pending::add);</span>
+<span class="nc" id="L131">            visited.add(node);</span>
+<span class="nc" id="L132">            first = false;</span>
+<span class="nc" id="L133">        }</span>
+<span class="nc" id="L134">        return false;</span>
+    }
+
+    /** Internal method to find all possible AST nodes that descend from the given argument. */
+    protected static NodeHashSet&lt;Node&gt; childNodesOf(Node parent) {
+<span class="nc" id="L139">        NodeHashSet&lt;Node&gt; result = new NodeHashSet&lt;&gt;();</span>
+<span class="nc" id="L140">        Set&lt;Node&gt; pending = new NodeHashSet&lt;&gt;();</span>
+<span class="nc" id="L141">        pending.add(parent);</span>
+
+<span class="nc bnc" id="L143" title="All 2 branches missed.">        while (!pending.isEmpty()) {</span>
+<span class="nc" id="L144">            Set&lt;Node&gt; newPending = new NodeHashSet&lt;&gt;();</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            for (Node n : pending) {</span>
+<span class="nc" id="L146">                newPending.addAll(n.getChildNodes());</span>
+<span class="nc" id="L147">                result.add(n);</span>
+<span class="nc" id="L148">            }</span>
+<span class="nc" id="L149">            pending.clear();</span>
+<span class="nc" id="L150">            pending.addAll(newPending);</span>
+<span class="nc" id="L151">        }</span>
+
+        // Some elements are never going to match nodes: remove Expression except MethodCallExpr
+<span class="nc bnc" id="L154" title="All 6 branches missed.">        result.removeIf(n -&gt; n instanceof Expression &amp;&amp; !(n instanceof MethodCallExpr) &amp;&amp; !(n instanceof ObjectCreationExpr));</span>
+<span class="nc" id="L155">        return result;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

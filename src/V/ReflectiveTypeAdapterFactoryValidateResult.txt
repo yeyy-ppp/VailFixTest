@@ -1,0 +1,12 @@
+[2026-01-23 21:36:43] 验证结果
+错误类型: 编译错误, 错误行: 31, 错误原因: [使用了未定义的ReflectionHelper类和未导入的JsonIOException类], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: ReflectiveTypeAdapterFactory, includeField, getFieldNames, create, checkAccessible, createBoundField, getBoundFields, createDuplicateFieldException, FieldsData, BoundField, write, readIntoArray, readIntoField, Adapter, write, read, createAccumulator, readField, finalize, FieldReflectionAdapter, createAccumulator, readField, finalize, RecordAdapter, primitiveDefaults, createAccumulator, readField, finalize
+  未覆盖: 全部覆盖
+
+[2026-01-23 21:45:25] 修复后验证结果
+错误类型: 包路径, 错误行: 10, 错误原因: 错误导入 gson.reflect.TypeToken（应使用 gson.TypeToken）, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: ReflectiveTypeAdapterFactory, create, write, write, read
+  未覆盖: includeField, getFieldNames, checkAccessible, createBoundField, getBoundFields, createDuplicateFieldException, FieldsData, BoundField, readIntoArray, readIntoField, Adapter, createAccumulator, readField, finalize, FieldReflectionAdapter, createAccumulator, readField, finalize, RecordAdapter, primitiveDefaults, createAccumulator, readField, finalize
+

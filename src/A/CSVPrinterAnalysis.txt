@@ -1,0 +1,95 @@
+```
+包路径：csv
+类名：CSVPrinter
+父类：无
+依赖类：Constants, CSVFormat, IOStream
+---
+序号：1
+方法名：CSVPrinter(Appendable appendable, CSVFormat format)
+返回类型：无
+功能描述：初始化CSVPrinter对象，设置输出目标和格式，并打印头部注释和头部记录
+序号：2
+方法名：close()
+返回类型：void
+功能描述：关闭输出流并可选刷新缓冲区
+序号：3
+方法名：close(boolean flush)
+返回类型：void
+功能描述：根据参数决定是否先刷新再关闭输出流
+序号：4
+方法名：endOfRecord()
+返回类型：void
+功能描述：结束当前记录（换行）并增加记录计数器
+序号：5
+方法名：flush()
+返回类型：void
+功能描述：强制刷新输出缓冲区
+序号：6
+方法名：getOut()
+返回类型：Appendable
+功能描述：返回当前输出目标对象
+序号：7
+方法名：getRecordCount()
+返回类型：long
+功能描述：返回已打印记录总数
+序号：8
+方法名：print(Object value)
+返回类型：void
+功能描述：加锁打印单个值对象
+序号：9
+方法名：printComment(String comment)
+返回类型：void
+功能描述：格式化打印注释内容（含换行处理）
+序号：10
+方法名：printHeaders(ResultSet resultSet)
+返回类型：void
+功能描述：从ResultSet提取列名作为头部打印
+序号：11
+方法名：println()
+返回类型：void
+功能描述：输出换行符并标记新记录开始
+序号：12
+方法名：printRaw(Object value)
+返回类型：void
+功能描述：实际执行值对象的格式化输出
+序号：13
+方法名：printRecord(Iterable<?> values)
+返回类型：void
+功能描述：打印可迭代对象中的所有值作为一条记录
+序号：14
+方法名：printRecord(Object... values)
+返回类型：void
+功能描述：打印可变参数数组中的所有值作为一条记录
+序号：15
+方法名：printRecord(Stream<?> stream)
+返回类型：void
+功能描述：打印流中的所有元素作为一条记录
+序号：16
+方法名：printRecordObject(Object value)
+返回类型：void
+功能描述：根据对象类型调用对应的printRecord方法
+序号：17
+方法名：printRecords(IOStream<?> stream)
+返回类型：void
+功能描述：打印IOStream中所有元素作为多条记录
+序号：18
+方法名：printRecords(Iterable<?> values)
+返回类型：void
+功能描述：打印可迭代对象中所有元素作为多条记录
+序号：19
+方法名：printRecords(Object... values)
+返回类型：void
+功能描述：打印可变参数数组中所有元素作为多条记录
+序号：20
+方法名：printRecords(ResultSet resultSet)
+返回类型：void
+功能描述：读取并打印ResultSet中所有行记录（支持Clob/Blob）
+序号：21
+方法名：printRecords(ResultSet resultSet, boolean printHeader)
+返回类型：void
+功能描述：可选打印列头后输出ResultSet所有行记录
+序号：22
+方法名：printRecords(Stream<?> values)
+返回类型：void
+功能描述：打印流中所有元素作为多条记录
+```

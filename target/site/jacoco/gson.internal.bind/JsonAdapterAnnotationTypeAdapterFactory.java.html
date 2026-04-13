@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonAdapterAnnotationTypeAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">JsonAdapterAnnotationTypeAdapterFactory.java</span></div><h1>JsonAdapterAnnotationTypeAdapterFactory.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.Gson;
+import gson.JsonDeserializer;
+import gson.JsonSerializer;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.annotations.JsonAdapter;
+import gson.internal.ConstructorConstructor;
+import gson.reflect.TypeToken;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+public final class JsonAdapterAnnotationTypeAdapterFactory implements TypeAdapterFactory {
+  private static class DummyTypeAdapterFactory implements TypeAdapterFactory {
+    @Override
+    public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
+<span class="nc" id="L17">      throw new AssertionError(&quot;Factory should not be used&quot;);</span>
+    }
+  }
+<span class="fc" id="L20">  private static final TypeAdapterFactory TREE_TYPE_CLASS_DUMMY_FACTORY =</span>
+      new DummyTypeAdapterFactory();
+<span class="fc" id="L22">  private static final TypeAdapterFactory TREE_TYPE_FIELD_DUMMY_FACTORY =</span>
+      new DummyTypeAdapterFactory();
+  private final ConstructorConstructor constructorConstructor;
+  private final ConcurrentMap&lt;Class&lt;?&gt;, TypeAdapterFactory&gt; adapterFactoryMap;
+<span class="fc" id="L26">  public JsonAdapterAnnotationTypeAdapterFactory(ConstructorConstructor constructorConstructor) {</span>
+<span class="fc" id="L27">    this.constructorConstructor = constructorConstructor;</span>
+<span class="fc" id="L28">    this.adapterFactoryMap = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L29">  }</span>
+  private static JsonAdapter getAnnotation(Class&lt;?&gt; rawType) {
+<span class="fc" id="L31">    return rawType.getAnnotation(JsonAdapter.class);</span>
+  }
+  @SuppressWarnings(&quot;unchecked&quot;)
+  @Override
+  public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; targetType) {
+<span class="fc" id="L36">    Class&lt;? super T&gt; rawType = targetType.getRawType();</span>
+<span class="fc" id="L37">    JsonAdapter annotation = getAnnotation(rawType);</span>
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">    if (annotation == null) {</span>
+<span class="fc" id="L39">      return null;</span>
+    }
+<span class="nc" id="L41">    return (TypeAdapter&lt;T&gt;)</span>
+<span class="nc" id="L42">        getTypeAdapter(constructorConstructor, gson, targetType, annotation, true);</span>
+  }
+  private static Object createAdapter(
+      ConstructorConstructor constructorConstructor, Class&lt;?&gt; adapterClass) {
+<span class="fc" id="L46">    boolean allowUnsafe = true;</span>
+<span class="fc" id="L47">    return constructorConstructor.get(TypeToken.get(adapterClass), allowUnsafe).construct();</span>
+  }
+  private TypeAdapterFactory putFactoryAndGetCurrent(Class&lt;?&gt; rawType, TypeAdapterFactory factory) {
+<span class="fc" id="L50">    TypeAdapterFactory existingFactory = adapterFactoryMap.putIfAbsent(rawType, factory);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">    return existingFactory != null ? existingFactory : factory;</span>
+  }
+  TypeAdapter&lt;?&gt; getTypeAdapter(
+      ConstructorConstructor constructorConstructor,
+      Gson gson,
+      TypeToken&lt;?&gt; type,
+      JsonAdapter annotation,
+      boolean isClassAnnotation) {
+<span class="fc" id="L59">    Object instance = createAdapter(constructorConstructor, annotation.value());</span>
+    TypeAdapter&lt;?&gt; typeAdapter;
+<span class="fc" id="L61">    boolean nullSafe = annotation.nullSafe();</span>
+<span class="pc bpc" id="L62" title="1 of 2 branches missed.">    if (instance instanceof TypeAdapter) {</span>
+<span class="nc" id="L63">      typeAdapter = (TypeAdapter&lt;?&gt;) instance;</span>
+<span class="pc bpc" id="L64" title="1 of 2 branches missed.">    } else if (instance instanceof TypeAdapterFactory) {</span>
+<span class="nc" id="L65">      TypeAdapterFactory factory = (TypeAdapterFactory) instance;</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">      if (isClassAnnotation) {</span>
+<span class="nc" id="L67">        factory = putFactoryAndGetCurrent(type.getRawType(), factory);</span>
+      }
+<span class="nc" id="L69">      typeAdapter = factory.create(gson, type);</span>
+<span class="pc bpc" id="L70" title="2 of 4 branches missed.">    } else if (instance instanceof JsonSerializer || instance instanceof JsonDeserializer) {</span>
+      JsonSerializer&lt;?&gt; serializer =
+<span class="nc bnc" id="L72" title="All 2 branches missed.">          instance instanceof JsonSerializer ? (JsonSerializer&lt;?&gt;) instance : null;</span>
+      JsonDeserializer&lt;?&gt; deserializer =
+<span class="nc bnc" id="L74" title="All 2 branches missed.">          instance instanceof JsonDeserializer ? (JsonDeserializer&lt;?&gt;) instance : null;</span>
+      TypeAdapterFactory skipPast;
+<span class="nc bnc" id="L76" title="All 2 branches missed.">      if (isClassAnnotation) {</span>
+<span class="nc" id="L77">        skipPast = TREE_TYPE_CLASS_DUMMY_FACTORY;</span>
+      } else {
+<span class="nc" id="L79">        skipPast = TREE_TYPE_FIELD_DUMMY_FACTORY;</span>
+      }
+      @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+<span class="nc" id="L82">      TypeAdapter&lt;?&gt; tempAdapter =</span>
+          new TreeTypeAdapter(serializer, deserializer, gson, type, skipPast, nullSafe);
+<span class="nc" id="L84">      typeAdapter = tempAdapter;</span>
+<span class="nc" id="L85">      nullSafe = false;</span>
+<span class="nc" id="L86">    } else {</span>
+<span class="fc" id="L87">      throw new IllegalArgumentException(</span>
+          &quot;Invalid attempt to bind an instance of &quot;
+<span class="fc" id="L89">              + instance.getClass().getName()</span>
+              + &quot; as a @JsonAdapter for &quot;
+<span class="fc" id="L91">              + type.toString()</span>
+              + &quot;. @JsonAdapter value must be a TypeAdapter, TypeAdapterFactory,&quot;
+              + &quot; JsonSerializer or JsonDeserializer.&quot;);
+    }
+<span class="nc bnc" id="L95" title="All 4 branches missed.">    if (typeAdapter != null &amp;&amp; nullSafe) {</span>
+<span class="nc" id="L96">      typeAdapter = typeAdapter.nullSafe();</span>
+    }
+<span class="nc" id="L98">    return typeAdapter;</span>
+  }
+  public boolean isClassJsonAdapterFactory(TypeToken&lt;?&gt; type, TypeAdapterFactory factory) {
+<span class="fc" id="L101">    Objects.requireNonNull(type);</span>
+<span class="fc" id="L102">    Objects.requireNonNull(factory);</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">    if (factory == TREE_TYPE_CLASS_DUMMY_FACTORY) {</span>
+<span class="fc" id="L104">      return true;</span>
+    }
+<span class="fc" id="L106">    Class&lt;?&gt; rawType = type.getRawType();</span>
+<span class="fc" id="L107">    TypeAdapterFactory existingFactory = adapterFactoryMap.get(rawType);</span>
+<span class="fc bfc" id="L108" title="All 2 branches covered.">    if (existingFactory != null) {</span>
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">      return existingFactory == factory;</span>
+    }
+<span class="fc" id="L111">    JsonAdapter annotation = getAnnotation(rawType);</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">    if (annotation == null) {</span>
+<span class="fc" id="L113">      return false;</span>
+    }
+<span class="fc" id="L115">    Class&lt;?&gt; adapterClass = annotation.value();</span>
+<span class="pc bpc" id="L116" title="1 of 2 branches missed.">    if (!TypeAdapterFactory.class.isAssignableFrom(adapterClass)) {</span>
+<span class="fc" id="L117">      return false;</span>
+    }
+<span class="nc" id="L119">    Object adapter = createAdapter(constructorConstructor, adapterClass);</span>
+<span class="nc" id="L120">    TypeAdapterFactory newFactory = (TypeAdapterFactory) adapter;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">    return putFactoryAndGetCurrent(rawType, newFactory) == factory;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,25 @@
+包路径：gson.internal.bind
+类名：CollectionTypeAdapterFactory
+父类：无
+依赖类：Gson,TypeAdapter,TypeAdapterFactory,ConstructorConstructor,GsonTypes,ObjectConstructor,TypeToken,JsonReader,JsonToken,JsonWriter
+---
+序号：1
+方法名：CollectionTypeAdapterFactory(ConstructorConstructor constructorConstructor)
+返回类型：无
+功能描述：初始化CollectionTypeAdapterFactory实例
+序号：2
+方法名：<T> TypeAdapter<T> create(Gson gson, TypeToken<T> typeToken)
+返回类型：TypeAdapter<T>
+功能描述：为指定类型创建TypeAdapter，若非集合类型则返回null
+序号：3
+方法名：Adapter(TypeAdapter<E> elementTypeAdapter, ObjectConstructor<? extends Collection<E>> constructor)
+返回类型：无
+功能描述：初始化Adapter实例
+序号：4
+方法名：Collection<E> read(JsonReader in)
+返回类型：Collection<E>
+功能描述：从JSON输入读取集合数据
+序号：5
+方法名：void write(JsonWriter out, Collection<E> collection)
+返回类型：void
+功能描述：将集合数据写入JSON输出

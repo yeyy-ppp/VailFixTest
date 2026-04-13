@@ -1,0 +1,323 @@
+package gson;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import gson.JsonElement;
+import gson.JsonObject;
+import gson.JsonArray;
+import gson.JsonPrimitive;
+import gson.JsonNull;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+class JsonElementTest {
+
+    @Test
+    void testDeepCopyOnJsonObject() {
+        JsonObject original = new JsonObject();
+        original.addProperty("key", "value");
+        JsonElement copy = original.deepCopy();
+        assertNotSame(original, copy);
+        assertEquals(original, copy);
+    }
+
+    @Test
+    void testDeepCopyOnJsonArray() {
+        JsonArray original = new JsonArray();
+        original.add("element");
+        JsonElement copy = original.deepCopy();
+        assertNotSame(original, copy);
+        assertEquals(original, copy);
+    }
+
+    @Test
+    void testDeepCopyOnJsonPrimitive() {
+        JsonPrimitive original = new JsonPrimitive(123);
+        JsonElement copy = original.deepCopy();
+        assertSame(original, copy);
+        assertEquals(original, copy);
+    }
+
+    @Test
+    void testDeepCopyOnJsonNull() {
+        JsonNull original = JsonNull.INSTANCE;
+        JsonElement copy = original.deepCopy();
+        assertSame(JsonNull.INSTANCE, copy);
+    }
+
+    @Test
+    void testIsJsonArrayOnJsonArray() {
+        JsonElement element = new JsonArray();
+        assertTrue(element.isJsonArray());
+    }
+
+    @Test
+    void testIsJsonArrayOnNonArray() {
+        JsonElement element = new JsonObject();
+        assertFalse(element.isJsonArray());
+    }
+
+    @Test
+    void testIsJsonObjectOnJsonObject() {
+        JsonElement element = new JsonObject();
+        assertTrue(element.isJsonObject());
+    }
+
+    @Test
+    void testIsJsonObjectOnNonObject() {
+        JsonElement element = new JsonArray();
+        assertFalse(element.isJsonObject());
+    }
+
+    @Test
+    void testIsJsonPrimitiveOnJsonPrimitive() {
+        JsonElement element = new JsonPrimitive("test");
+        assertTrue(element.isJsonPrimitive());
+    }
+
+    @Test
+    void testIsJsonPrimitiveOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertFalse(element.isJsonPrimitive());
+    }
+
+    @Test
+    void testIsJsonNullOnJsonNull() {
+        JsonElement element = JsonNull.INSTANCE;
+        assertTrue(element.isJsonNull());
+    }
+
+    @Test
+    void testIsJsonNullOnNonNull() {
+        JsonElement element = new JsonObject();
+        assertFalse(element.isJsonNull());
+    }
+
+    @Test
+    void testGetAsJsonObjectOnJsonObject() {
+        JsonObject obj = new JsonObject();
+        JsonElement element = obj;
+        assertSame(obj, element.getAsJsonObject());
+    }
+
+    @Test
+    void testGetAsJsonObjectOnNonObject() {
+        JsonElement element = new JsonArray();
+        assertThrows(IllegalStateException.class, element::getAsJsonObject);
+    }
+
+    @Test
+    void testGetAsJsonArrayOnJsonArray() {
+        JsonArray array = new JsonArray();
+        JsonElement element = array;
+        assertSame(array, element.getAsJsonArray());
+    }
+
+    @Test
+    void testGetAsJsonArrayOnNonArray() {
+        JsonElement element = new JsonObject();
+        assertThrows(IllegalStateException.class, element::getAsJsonArray);
+    }
+
+    @Test
+    void testGetAsJsonPrimitiveOnJsonPrimitive() {
+        JsonPrimitive primitive = new JsonPrimitive(10);
+        JsonElement element = primitive;
+        assertSame(primitive, element.getAsJsonPrimitive());
+    }
+
+    @Test
+    void testGetAsJsonPrimitiveOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(IllegalStateException.class, element::getAsJsonPrimitive);
+    }
+
+    @Test
+    void testGetAsJsonNullOnJsonNull() {
+        JsonElement element = JsonNull.INSTANCE;
+        assertSame(JsonNull.INSTANCE, element.getAsJsonNull());
+    }
+
+    @Test
+    void testGetAsJsonNullOnNonNull() {
+        JsonElement element = new JsonObject();
+        assertThrows(IllegalStateException.class, element::getAsJsonNull);
+    }
+
+    @Test
+    void testGetAsBooleanOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsBoolean);
+    }
+
+    @Test
+    void testGetAsNumberOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsNumber);
+    }
+
+    @Test
+    void testGetAsStringOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsString);
+    }
+
+    @Test
+    void testGetAsDoubleOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsDouble);
+    }
+
+    @Test
+    void testGetAsFloatOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsFloat);
+    }
+
+    @Test
+    void testGetAsLongOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsLong);
+    }
+
+    @Test
+    void testGetAsIntOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsInt);
+    }
+
+    @Test
+    void testGetAsByteOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsByte);
+    }
+
+    @Test
+    void testGetAsCharacterOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsCharacter);
+    }
+
+    @Test
+    void testGetAsBigDecimalOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsBigDecimal);
+    }
+
+    @Test
+    void testGetAsBigIntegerOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsBigInteger);
+    }
+
+    @Test
+    void testGetAsShortOnNonPrimitive() {
+        JsonElement element = new JsonObject();
+        assertThrows(UnsupportedOperationException.class, element::getAsShort);
+    }
+
+    @Test
+    void testToStringOnJsonObject() {
+        JsonObject obj = new JsonObject();
+        obj.addProperty("name", "value");
+        String result = obj.toString();
+        assertEquals("{\"name\":\"value\"}", result);
+    }
+
+    @Test
+    void testToStringOnJsonArray() {
+        JsonArray array = new JsonArray();
+        array.add(1);
+        array.add(2);
+        String result = array.toString();
+        assertEquals("[1,2]", result);
+    }
+
+    @Test
+    void testToStringOnJsonPrimitive() {
+        JsonPrimitive primitive = new JsonPrimitive("text");
+        String result = primitive.toString();
+        assertEquals("\"text\"", result);
+    }
+
+    @Test
+    void testToStringOnJsonNull() {
+        JsonNull jsonNull = JsonNull.INSTANCE;
+        String result = jsonNull.toString();
+        assertEquals("null", result);
+    }
+
+    @Test
+    void testGetAsBooleanOnPrimitive() {
+        JsonElement element = new JsonPrimitive(true);
+        assertTrue(element.getAsBoolean());
+    }
+
+    @Test
+    void testGetAsNumberOnPrimitive() {
+        JsonElement element = new JsonPrimitive(10);
+        assertEquals(10, element.getAsNumber().intValue());
+    }
+
+    @Test
+    void testGetAsStringOnPrimitive() {
+        JsonElement element = new JsonPrimitive("test");
+        assertEquals("test", element.getAsString());
+    }
+
+    @Test
+    void testGetAsDoubleOnPrimitive() {
+        JsonElement element = new JsonPrimitive(10.5);
+        assertEquals(10.5, element.getAsDouble(), 0.0);
+    }
+
+    @Test
+    void testGetAsFloatOnPrimitive() {
+        JsonElement element = new JsonPrimitive(10.5f);
+        assertEquals(10.5f, element.getAsFloat(), 0.0f);
+    }
+
+    @Test
+    void testGetAsLongOnPrimitive() {
+        JsonElement element = new JsonPrimitive(100L);
+        assertEquals(100L, element.getAsLong());
+    }
+
+    @Test
+    void testGetAsIntOnPrimitive() {
+        JsonElement element = new JsonPrimitive(100);
+        assertEquals(100, element.getAsInt());
+    }
+
+    @Test
+    void testGetAsByteOnPrimitive() {
+        JsonElement element = new JsonPrimitive((byte) 10);
+        assertEquals((byte) 10, element.getAsByte());
+    }
+
+    @Test
+    void testGetAsCharacterOnPrimitive() {
+        JsonElement element = new JsonPrimitive('a');
+        assertEquals('a', element.getAsCharacter());
+    }
+
+    @Test
+    void testGetAsBigDecimalOnPrimitive() {
+        BigDecimal value = new BigDecimal("123.45");
+        JsonElement element = new JsonPrimitive(value);
+        assertEquals(value, element.getAsBigDecimal());
+    }
+
+    @Test
+    void testGetAsBigIntegerOnPrimitive() {
+        BigInteger value = new BigInteger("1234567890");
+        JsonElement element = new JsonPrimitive(value);
+        assertEquals(value, element.getAsBigInteger());
+    }
+
+    @Test
+    void testGetAsShortOnPrimitive() {
+        JsonElement element = new JsonPrimitive((short) 100);
+        assertEquals((short) 100, element.getAsShort());
+    }
+}

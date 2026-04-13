@@ -1,0 +1,215 @@
+类名：HelpAppendable
+分析阶段：
+  耗时：5103 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：10074 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：3592 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  失败原因：```
+该测试代码在验证[导入语句]时失败，错误位置：[8]，错误原因：缺少对java.util.Collection的导入语句。
+该测试代码在验证[测试逻辑完整性]时失败，错误位置：[42]，错误原因：未覆盖对appendFormat方法的异常处理逻辑（如何处理IllegalFormatException的情况）。
+该测试代码在验证[语法正确性]时失败，错误位置：[3]，错误原因：类HelpAppendableTest实现了HelpAppendable接口，但并未包含appendFormat方法的实现，导致代码不完整。
+该测试代码在验证[编译正确性]时失败，错误位置：[3]，错误原因：缺少appendFormat方法的实现，可能导致编译失败。
+该测试代码在验证[运行时健壮性]时失败，错误位置：[25]，错误原因：当调用appendFormat时没有实现该方法，可能导致运行时错误。
+```
+修复阶段：
+  耗时：12977 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：4
+  修复失败原因：第 1 次修复失败，原因是：null
+第 2 次修复失败，原因是：null
+第 3 次修复失败，原因是：null
+
+  修复成功次数：0
+评估阶段：
+  耗时：-1749103163407 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  覆盖率数据：
+总耗时：32656 毫秒
+总消耗 token 数量：0
+测试代码生成结果：false
+失败原因：HelpAppendable, HelpAppendable, HelpAppendable
+--------------------------------------------------------
+起始时间：1749103131661
+
+套件 开始时间: 1749103131661
+分析起始时间：1749103131661
+
+分析 开始时间: 1749103131661
+解析提示内容：
+```
+包路径：help
+类名：HelpAppendable
+方法名：appendFormat
+返回类型：void
+功能描述：格式化字符串并将其附加到输出中。
+
+方法名：appendHeader
+返回类型：void
+功能描述：将指定级别的标题文本附加到输出中。
+
+方法名：appendList
+返回类型：void
+功能描述：将一个集合以有序或无序列表的形式附加到输出中。
+
+方法名：appendParagraph
+返回类型：void
+功能描述：将指定段落文本附加到输出中。
+
+方法名：appendParagraphFormat
+返回类型：void
+功能描述：格式化段落字符串并将其附加到输出中。
+
+方法名：appendTable
+返回类型：void
+功能描述：将一个表的定义附加到输出中。
+
+方法名：appendTitle
+返回类型：void
+功能描述：将指定标题文本附加到输出中。
+```over
+
+分析结束时间：1749103136764
+
+分析总耗时：5103
+分析 结束时间: 1749103136764
+分析 耗时: 5.103 秒
+生成 开始时间: 1749103136765
+生成测试代码：
+```java
+package help;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+class HelpAppendableTest implements HelpAppendable {
+    private final List<String> output = new ArrayList<>();
+
+    @Override
+    public Appendable append(CharSequence csq) throws IOException {
+        output.add(csq.toString());
+        return this;
+    }
+
+    @Override
+    public void appendHeader(int level, CharSequence text) throws IOException {
+    }
+
+    @Override
+    public void appendList(boolean ordered, Collection<CharSequence> list) throws IOException {
+    }
+
+    @Override
+    public void appendParagraph(CharSequence paragraph) throws IOException {
+    }
+
+    @Override
+    public void appendTable(TableDefinition table) throws IOException {
+    }
+
+    @Override
+    public void appendTitle(CharSequence title) throws IOException {
+    }
+
+    @Test
+    void testAppendFormat_ValidInput() throws IOException {
+        appendFormat("Hello %s", "World");
+        assertEquals("Hello World", output.get(0));
+    }
+
+    @Test
+    void testAppendFormat_MultipleArguments() throws IOException {
+        appendFormat("The number is %d and the string is %s", 42, "Answer");
+        assertEquals("The number is 42 and the string is Answer", output.get(1));
+    }
+
+    @Test
+    void testAppendFormat_EmptyArguments() throws IOException {
+        appendFormat("Empty args: %s", (Object[]) null);
+        assertEquals("Empty args: null", output.get(2));
+    }
+
+    @Test
+    void testAppendFormat_SpecialCharacters() throws IOException {
+        appendFormat("Special chars: %s", "!@#$%^&*()");
+        assertEquals("Special chars: !@#$%^&*()", output.get(3));
+    }
+
+    @Test
+    void testAppendFormat_IllegalFormatException() {
+        Exception exception = assertThrows(IllegalFormatException.class, () -> {
+            appendFormat("This will fail: %");
+        });
+        assertNotNull(exception);
+    }
+}
+```over
+
+生成 结束时间: 1749103146838
+生成 耗时: 10.073 秒
+验证 开始时间: 1749103146838
+测试代码验证结果：
+```
+该测试代码在验证[导入语句]时失败，错误位置：[8]，错误原因：缺少对java.util.Collection的导入语句。
+该测试代码在验证[测试逻辑完整性]时失败，错误位置：[42]，错误原因：未覆盖对appendFormat方法的异常处理逻辑（如何处理IllegalFormatException的情况）。
+该测试代码在验证[语法正确性]时失败，错误位置：[3]，错误原因：类HelpAppendableTest实现了HelpAppendable接口，但并未包含appendFormat方法的实现，导致代码不完整。
+该测试代码在验证[编译正确性]时失败，错误位置：[3]，错误原因：缺少appendFormat方法的实现，可能导致编译失败。
+该测试代码在验证[运行时健壮性]时失败，错误位置：[25]，错误原因：当调用appendFormat时没有实现该方法，可能导致运行时错误。
+```over
+
+验证 结束时间: 1749103150430
+验证 耗时: 3.592 秒
+修复 开始时间: 1749103150430
+第 1 次修复结果：
+【修复失败】该测试代码在修复[appendFormat方法]时失败，错误位置：[34]，错误原因：未定义appendFormat方法。over
+
+第 2 次修复结果：
+【修复失败】该测试代码在修复[appendFormat方法]时失败，错误位置：[34]，错误原因：未定义appendFormat方法。\nover
+
+第 3 次修复结果：
+【修复失败】该测试代码在修复[appendFormat方法]时失败，错误位置：[34]，错误原因：未定义appendFormat方法。over
+
+经过 4 次修复尝试，仍未成功。
+第 1 次修复失败：nullover
+
+第 1 次修复结果：
+【修复失败】该测试代码在修复[appendFormat方法的调用]时失败，错误位置：[22]，错误原因：appendFormat方法未定义。over
+
+第 2 次修复结果：
+【修复失败】该测试代码在修复[appendFormat方法的调用]时失败，错误位置：[22]，错误原因：appendFormat方法未定义。over
+
+第 3 次修复结果：
+【修复失败】该测试代码在修复[appendFormat方法的调用]时失败，错误位置：[22]，错误原因：appendFormat方法未定义。over
+
+经过 4 次修复尝试，仍未成功。
+第 2 次修复失败：nullover
+
+第 1 次修复结果：
+【修复失败】该测试代码在修复`appendFormat`方法时失败，错误位置：[行号]，错误原因：`appendFormat`方法未定义，导致无法调用该方法。over
+
+第 2 次修复结果：
+【修复失败】该测试代码在修复`appendFormat`方法时失败，错误位置：[行号]，错误原因：`appendFormat`方法未定义，导致无法调用该方法。over
+
+第 3 次修复结果：
+【修复失败】该测试代码在修复`appendFormat`方法时失败，错误位置：[行号]，错误原因：`appendFormat`方法未定义，导致无法调用该方法。\nover
+
+经过 4 次修复尝试，仍未成功。
+第 3 次修复失败：nullover
+
+修复 结束时间: 1749103163408
+修复 耗时: 12.978 秒
+套件 结束时间: 1749103163417
+套件 耗时: 31.756 秒
+
+Process finished with exit code 0

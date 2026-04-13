@@ -1,0 +1,39 @@
+```
+包路径：gson.internal.bind
+类名：JsonAdapterAnnotationTypeAdapterFactory
+父类：无
+依赖类：Gson,JsonDeserializer,JsonSerializer,TypeAdapter,TypeAdapterFactory,JsonAdapter,ConstructorConstructor,TypeToken,TreeTypeAdapter
+---
+序号：1
+方法名：create(Gson gson, TypeToken<T> type)
+返回类型：TypeAdapter<T>
+功能描述：抛出AssertionError异常，表示工厂不应被使用
+序号：2
+方法名：JsonAdapterAnnotationTypeAdapterFactory(ConstructorConstructor constructorConstructor)
+返回类型：无
+功能描述：初始化constructorConstructor和adapterFactoryMap
+序号：3
+方法名：getAnnotation(Class<?> rawType)
+返回类型：JsonAdapter
+功能描述：获取指定类上的JsonAdapter注解
+序号：4
+方法名：create(Gson gson, TypeToken<T> targetType)
+返回类型：TypeAdapter<T>
+功能描述：根据目标类型上的JsonAdapter注解创建TypeAdapter
+序号：5
+方法名：createAdapter(ConstructorConstructor constructorConstructor, Class<?> adapterClass)
+返回类型：Object
+功能描述：通过ConstructorConstructor创建适配器实例
+序号：6
+方法名：putFactoryAndGetCurrent(Class<?> rawType, TypeAdapterFactory factory)
+返回类型：TypeAdapterFactory
+功能描述：将工厂对象存入映射并返回当前工厂（若已存在则返回已有工厂）
+序号：7
+方法名：getTypeAdapter(ConstructorConstructor constructorConstructor, Gson gson, TypeToken<?> type, JsonAdapter annotation, boolean isClassAnnotation)
+返回类型：TypeAdapter<?>
+功能描述：根据注解创建或获取类型适配器，处理多种适配器类型并确保空安全
+序号：8
+方法名：isClassJsonAdapterFactory(TypeToken<?> type, TypeAdapterFactory factory)
+返回类型：boolean
+功能描述：判断给定工厂是否为类级别JsonAdapter注解对应的工厂
+```

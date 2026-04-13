@@ -1,0 +1,115 @@
+```
+包路径：lang3
+类名：BitField
+父类：无
+依赖类：无
+---
+序号：1
+方法名：BitField(int mask)
+返回类型：void
+功能描述：构造BitField实例，初始化整型掩码和移位计数
+序号：2
+方法名：BitField(long mask)
+返回类型：void
+功能描述：构造BitField实例，初始化长整型掩码和移位计数
+序号：3
+方法名：clear(int holder)
+返回类型：int
+功能描述：清除整型值中掩码对应的位
+序号：4
+方法名：clear(long holder)
+返回类型：long
+功能描述：清除长整型值中掩码对应的位
+序号：5
+方法名：clearByte(byte holder)
+返回类型：byte
+功能描述：清除字节值中掩码对应的位
+序号：6
+方法名：clearShort(short holder)
+返回类型：short
+功能描述：清除短整型值中掩码对应的位
+序号：7
+方法名：getRawValue(int holder)
+返回类型：int
+功能描述：获取整型值中掩码对应位的原始值（不移位）
+序号：8
+方法名：getRawValue(long holder)
+返回类型：long
+功能描述：获取长整型值中掩码对应位的原始值（不移位）
+序号：9
+方法名：getShortRawValue(short holder)
+返回类型：short
+功能描述：获取短整型值中掩码对应位的原始值（不移位）
+序号：10
+方法名：getShortValue(short holder)
+返回类型：short
+功能描述：获取短整型值中掩码对应位并移位后的值
+序号：11
+方法名：getValue(int holder)
+返回类型：int
+功能描述：获取整型值中掩码对应位并移位后的值
+序号：12
+方法名：getValue(long holder)
+返回类型：long
+功能描述：获取长整型值中掩码对应位并移位后的值
+序号：13
+方法名：isAllSet(int holder)
+返回类型：boolean
+功能描述：检查整型值中掩码所有位是否全被设置
+序号：14
+方法名：isAllSet(long holder)
+返回类型：boolean
+功能描述：检查长整型值中掩码所有位是否全被设置
+序号：15
+方法名：isSet(int holder)
+返回类型：boolean
+功能描述：检查整型值中掩码是否有位被设置
+序号：16
+方法名：isSet(long holder)
+返回类型：boolean
+功能描述：检查长整型值中掩码是否有位被设置
+序号：17
+方法名：set(int holder)
+返回类型：int
+功能描述：设置整型值中掩码对应的位
+序号：18
+方法名：set(long holder)
+返回类型：long
+功能描述：设置长整型值中掩码对应的位
+序号：19
+方法名：setBoolean(int holder, boolean flag)
+返回类型：int
+功能描述：根据布尔值设置或清除整型值中掩码位
+序号：20
+方法名：setBoolean(long holder, boolean flag)
+返回类型：long
+功能描述：根据布尔值设置或清除长整型值中掩码位
+序号：21
+方法名：setByte(byte holder)
+返回类型：byte
+功能描述：设置字节值中掩码对应的位
+序号：22
+方法名：setByteBoolean(byte holder, boolean flag)
+返回类型：byte
+功能描述：根据布尔值设置或清除字节值中掩码位
+序号：23
+方法名：setShort(short holder)
+返回类型：short
+功能描述：设置短整型值中掩码对应的位
+序号：24
+方法名：setShortBoolean(short holder, boolean flag)
+返回类型：short
+功能描述：根据布尔值设置或清除短整型值中掩码位
+序号：25
+方法名：setShortValue(short holder, short value)
+返回类型：short
+功能描述：设置短整型值中掩码位的值并移位
+序号：26
+方法名：setValue(int holder, int value)
+返回类型：int
+功能描述：设置整型值中掩码位的值并移位
+序号：27
+方法名：setValue(long holder, long value)
+返回类型：long
+功能描述：设置长整型值中掩码位的值并移位
+```

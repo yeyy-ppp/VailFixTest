@@ -1,0 +1,163 @@
+```
+包路径：gson.stream
+类名：JsonWriter
+父类：无
+依赖类：JsonScope,FormattingStyle,Strictness,CanIgnoreReturnValue
+---
+序号：1
+方法名：JsonWriter(Writer out)
+返回类型：JsonWriter
+功能描述：初始化JsonWriter实例，设置输出流和默认格式
+序号：2
+方法名：setIndent(String indent)
+返回类型：void
+功能描述：根据缩进字符串设置格式化风格
+序号：3
+方法名：setFormattingStyle(FormattingStyle formattingStyle)
+返回类型：void
+功能描述：设置JSON输出的格式化风格
+序号：4
+方法名：getFormattingStyle()
+返回类型：FormattingStyle
+功能描述：获取当前格式化风格
+序号：5
+方法名：setLenient(boolean lenient)
+返回类型：void
+功能描述：设置严格性模式（已弃用）
+序号：6
+方法名：isLenient()
+返回类型：boolean
+功能描述：检查是否处于宽松模式
+序号：7
+方法名：setStrictness(Strictness strictness)
+返回类型：void
+功能描述：设置JSON严格性级别
+序号：8
+方法名：getStrictness()
+返回类型：Strictness
+功能描述：获取当前严格性级别
+序号：9
+方法名：setHtmlSafe(boolean htmlSafe)
+返回类型：void
+功能描述：设置HTML安全转义模式
+序号：10
+方法名：isHtmlSafe()
+返回类型：boolean
+功能描述：检查是否启用HTML安全转义
+序号：11
+方法名：setSerializeNulls(boolean serializeNulls)
+返回类型：void
+功能描述：设置是否序列化null值
+序号：12
+方法名：getSerializeNulls()
+返回类型：boolean
+功能描述：获取null值序列化设置
+序号：13
+方法名：beginArray()
+返回类型：JsonWriter
+功能描述：开始写入JSON数组
+序号：14
+方法名：endArray()
+返回类型：JsonWriter
+功能描述：结束当前JSON数组
+序号：15
+方法名：beginObject()
+返回类型：JsonWriter
+功能描述：开始写入JSON对象
+序号：16
+方法名：endObject()
+返回类型：JsonWriter
+功能描述：结束当前JSON对象
+序号：17
+方法名：openScope(int empty, char openBracket)
+返回类型：JsonWriter
+功能描述：打开新的JSON作用域
+序号：18
+方法名：closeScope(int empty, int nonempty, char closeBracket)
+返回类型：JsonWriter
+功能描述：关闭当前JSON作用域
+序号：19
+方法名：push(int newTop)
+返回类型：void
+功能描述：将新状态压入状态栈
+序号：20
+方法名：peek()
+返回类型：int
+功能描述：获取当前状态栈顶值
+序号：21
+方法名：replaceTop(int topOfStack)
+返回类型：void
+功能描述：替换状态栈顶值
+序号：22
+方法名：name(String name)
+返回类型：JsonWriter
+功能描述：写入对象属性名
+序号：23
+方法名：writeDeferredName()
+返回类型：void
+功能描述：写入延迟的属性名
+序号：24
+方法名：value(String value)
+返回类型：JsonWriter
+功能描述：写入字符串值
+序号：25
+方法名：value(boolean value)
+返回类型：JsonWriter
+功能描述：写入布尔值
+序号：26
+方法名：value(Boolean value)
+返回类型：JsonWriter
+功能描述：写入布尔对象值
+序号：27
+方法名：value(float value)
+返回类型：JsonWriter
+功能描述：写入浮点数值
+序号：28
+方法名：value(double value)
+返回类型：JsonWriter
+功能描述：写入双精度浮点数值
+序号：29
+方法名：value(long value)
+返回类型：JsonWriter
+功能描述：写入长整数值
+序号：30
+方法名：value(Number value)
+返回类型：JsonWriter
+功能描述：写入数值类型
+序号：31
+方法名：nullValue()
+返回类型：JsonWriter
+功能描述：写入null值
+序号：32
+方法名：jsonValue(String value)
+返回类型：JsonWriter
+功能描述：直接写入原始JSON值
+序号：33
+方法名：flush()
+返回类型：void
+功能描述：刷新输出流
+序号：34
+方法名：close()
+返回类型：void
+功能描述：关闭输出流并验证文档完整性
+序号：35
+方法名：alwaysCreatesValidJsonNumber(Class<? extends Number> c)
+返回类型：boolean
+功能描述：检查数值类型是否始终生成有效JSON数字
+序号：36
+方法名：string(String value)
+返回类型：void
+功能描述：写入带转义的字符串
+序号：37
+方法名：newline()
+返回类型：void
+功能描述：根据格式写入换行和缩进
+序号：38
+方法名：beforeName()
+返回类型：void
+功能描述：在属性名前处理格式和分隔符
+序号：39
+方法名：beforeValue()
+返回类型：void
+功能描述：在值前处理格式和状态转换
+```

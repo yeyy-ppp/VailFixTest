@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BackwardDataFlowAnalysis.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs</a> &gt; <span class="el_source">BackwardDataFlowAnalysis.java</span></div><h1>BackwardDataFlowAnalysis.java</h1><pre class="source lang-java linenums">package slicing.graphs;
+
+import org.jgrapht.graph.AbstractGraph;
+import slicing.utils.ASTUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * A fixed-point analysis algorithm that propagates changes backwards through a given graph.
+ * @param &lt;V&gt; The graph's vertices type.
+ * @param &lt;E&gt; The graph's edges type.
+ * @param &lt;D&gt; The value to be computed for each vertex.
+ *           It should have a valid {@link Object#equals(Object)} implementation.
+ */
+<span class="nc" id="L16">public abstract class BackwardDataFlowAnalysis&lt;V, E, D&gt; {</span>
+    /** The graph on which this algorithm iterates. */
+    protected final AbstractGraph&lt;V, E&gt; graph;
+    /** A mapping of the latest value computed per node. */
+<span class="nc" id="L20">    protected final Map&lt;V, D&gt; vertexDataMap = new HashMap&lt;&gt;();</span>
+
+<span class="nc" id="L22">    protected boolean built = false;</span>
+
+<span class="nc" id="L24">    public BackwardDataFlowAnalysis(AbstractGraph&lt;V, E&gt; graph) {</span>
+<span class="nc" id="L25">        this.graph = graph;</span>
+<span class="nc" id="L26">    }</span>
+
+    /** Iterate through the graph until a fixed-point is reached.
+     *  This method only performs the analysis on its first call. */
+    public void analyze() {
+<span class="nc bnc" id="L31" title="All 2 branches missed.">        assert !built;</span>
+<span class="nc" id="L32">        List&lt;V&gt; workList = new LinkedList&lt;&gt;(graph.vertexSet());</span>
+<span class="nc" id="L33">        graph.vertexSet().forEach(v -&gt; vertexDataMap.put(v, initialValue(v)));</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">        while (!workList.isEmpty()) {</span>
+<span class="nc" id="L35">            List&lt;V&gt; newWorkList = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">            for (V vertex : workList) {</span>
+                try {
+<span class="nc" id="L38">                    Set&lt;V&gt; mayAffectVertex = graph.outgoingEdgesOf(vertex).stream()</span>
+<span class="nc" id="L39">                            .map(graph::getEdgeTarget).collect(Collectors.toCollection(ASTUtils::newIdentityHashSet));</span>
+<span class="nc" id="L40">                    D newValue = compute(vertex, mayAffectVertex);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                    if (!dataMatch(vertexDataMap.get(vertex), newValue)) {</span>
+<span class="nc" id="L42">                        vertexDataMap.put(vertex, newValue);</span>
+<span class="nc" id="L43">                        graph.incomingEdgesOf(vertex).stream().map(graph::getEdgeSource).forEach(newWorkList::add);</span>
+                    }
+<span class="nc" id="L45">                } catch (IllegalArgumentException ignored) {}</span>
+<span class="nc" id="L46">            }</span>
+<span class="nc" id="L47">            workList = newWorkList;</span>
+<span class="nc" id="L48">        }</span>
+<span class="nc" id="L49">        built = true;</span>
+<span class="nc" id="L50">    }</span>
+
+    /** Checks whether the computed value has changed or not. */
+    protected boolean dataMatch(D oldData, D newData) {
+<span class="nc" id="L54">        return Objects.equals(oldData, newData);</span>
+    }
+
+    /** Compute a new value for a given vertex, given a set of nodes that might affect its value. */
+    protected abstract D compute(V vertex, Set&lt;V&gt; predecessors);
+
+    /** Compute the initial value for a given vertex. */
+    protected abstract D initialValue(V vertex);
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

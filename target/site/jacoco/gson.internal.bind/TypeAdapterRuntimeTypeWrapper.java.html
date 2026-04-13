@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TypeAdapterRuntimeTypeWrapper.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">TypeAdapterRuntimeTypeWrapper.java</span></div><h1>TypeAdapterRuntimeTypeWrapper.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.Gson;
+import gson.TypeAdapter;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.lang.reflect.TypeVariable;
+final class TypeAdapterRuntimeTypeWrapper&lt;T&gt; extends TypeAdapter&lt;T&gt; {
+  private final Gson context;
+  private final TypeAdapter&lt;T&gt; delegate;
+  private final Type type;
+<span class="fc" id="L14">  TypeAdapterRuntimeTypeWrapper(Gson context, TypeAdapter&lt;T&gt; delegate, Type type) {</span>
+<span class="fc" id="L15">    this.context = context;</span>
+<span class="fc" id="L16">    this.delegate = delegate;</span>
+<span class="fc" id="L17">    this.type = type;</span>
+<span class="fc" id="L18">  }</span>
+  @Override
+  public T read(JsonReader in) throws IOException {
+<span class="fc" id="L21">    return delegate.read(in);</span>
+  }
+
+  @Override
+  public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L27">  }</span>
+
+  @Override
+  public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L31">    return null;</span>
+  }
+
+  @Override
+  public void write(JsonWriter out, T value) throws IOException {
+<span class="fc" id="L36">    TypeAdapter&lt;T&gt; chosen = delegate;</span>
+<span class="fc" id="L37">    Type runtimeType = getRuntimeTypeIfMoreSpecific(type, value);</span>
+<span class="fc bfc" id="L38" title="All 2 branches covered.">    if (runtimeType != type) {</span>
+      @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L40">      TypeAdapter&lt;T&gt; runtimeTypeAdapter =</span>
+<span class="fc" id="L41">          (TypeAdapter&lt;T&gt;) context.getAdapter(TypeToken.get(runtimeType));</span>
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">      if (!(runtimeTypeAdapter instanceof ReflectiveTypeAdapterFactory.Adapter)) {</span>
+<span class="fc" id="L43">        chosen = runtimeTypeAdapter;</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">      } else if (!isReflective(delegate)) {</span>
+<span class="nc" id="L45">        chosen = delegate;</span>
+      } else {
+<span class="nc" id="L47">        chosen = runtimeTypeAdapter;</span>
+      }
+    }
+<span class="fc" id="L50">    chosen.write(out, value);</span>
+<span class="fc" id="L51">  }</span>
+  private static boolean isReflective(TypeAdapter&lt;?&gt; typeAdapter) {
+<span class="nc bnc" id="L53" title="All 2 branches missed.">    while (typeAdapter instanceof SerializationDelegatingTypeAdapter) {</span>
+<span class="nc" id="L54">      TypeAdapter&lt;?&gt; delegate =</span>
+<span class="nc" id="L55">          ((SerializationDelegatingTypeAdapter&lt;?&gt;) typeAdapter).getSerializationDelegate();</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">      if (delegate == typeAdapter) {</span>
+<span class="nc" id="L57">        break;</span>
+      }
+<span class="nc" id="L59">      typeAdapter = delegate;</span>
+<span class="nc" id="L60">    }</span>
+<span class="nc" id="L61">    return typeAdapter instanceof ReflectiveTypeAdapterFactory.Adapter;</span>
+  }
+  private static Type getRuntimeTypeIfMoreSpecific(Type type, Object value) {
+<span class="fc bfc" id="L64" title="All 6 branches covered.">    if (value != null &amp;&amp; (type instanceof Class&lt;?&gt; || type instanceof TypeVariable&lt;?&gt;)) {</span>
+<span class="fc" id="L65">      type = value.getClass();</span>
+    }
+<span class="fc" id="L67">    return type;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

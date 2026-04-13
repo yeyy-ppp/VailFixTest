@@ -1,0 +1,9 @@
+包路径：cli
+类名：Converter<T, E extends Exception>
+父类：无
+依赖类：无
+---
+序号：1
+方法名：apply(String string)
+返回类型：T
+功能描述：将字符串转换为类型T的对象

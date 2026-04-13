@@ -1,0 +1,15 @@
+```
+包路径：gson
+类名：FieldNamingStrategy
+父类：无
+依赖类：无
+---
+序号：1
+方法名：translateName(Field f)
+返回类型：String
+功能描述：将字段名转换为另一种命名策略的字符串
+序号：2
+方法名：alternateNames(Field f)
+返回类型：List<String>
+功能描述：返回字段的备选名称列表，默认返回空列表
+```

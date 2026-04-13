@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JSysCFG.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.jsysdg</a> &gt; <span class="el_source">JSysCFG.java</span></div><h1>JSysCFG.java</h1><pre class="source lang-java linenums">package slicing.graphs.jsysdg;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.ConstructorDeclaration;
+import com.github.javaparser.ast.body.FieldDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.ThisExpr;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.ast.visitor.ModifierVisitor;
+import com.github.javaparser.ast.visitor.Visitable;
+import lombok.var;
+import slicing.arcs.Arc;
+import slicing.graphs.ClassGraph;
+import slicing.graphs.ExpressionObjectTreeFinder;
+import slicing.graphs.cfg.CFGBuilder;
+import slicing.graphs.exceptionsensitive.ESCFG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+import slicing.nodes.io.MethodExitNode;
+import slicing.utils.ASTUtils;
+import slicing.utils.NodeHashSet;
+import slicing.utils.NodeNotFoundException;
+
+import java.util.*;
+import java.util.function.Predicate;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * An SDG that is tailored for Java, including a class graph, inheritance,
+ * polymorphism and other features.
+ */
+<span class="nc" id="L38">public class JSysCFG extends ESCFG {</span>
+    @Override
+    public void build(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L41">        throw new UnsupportedOperationException(&quot;Use build(CallableDeclaration, ClassGraph, Set&lt;ConstructorDeclaration&gt;)&quot;);</span>
+    }
+
+    public void build(CallableDeclaration&lt;?&gt; declaration, Set&lt;ConstructorDeclaration&gt; implicitConstructors, ClassGraph classGraph) {
+<span class="nc" id="L45">        Builder builder = (Builder) newCFGBuilder();</span>
+<span class="nc" id="L46">        builder.implicitDeclaration = implicitConstructors.contains(declaration);</span>
+<span class="nc" id="L47">        builder.classGraph = classGraph;</span>
+<span class="nc" id="L48">        declaration.accept(builder, null);</span>
+<span class="nc" id="L49">        vertexSet().stream()</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">                .filter(gn -&gt; !gn.isImplicitInstruction()) // Call the instance method on the node</span>
+<span class="nc" id="L51">                .filter(gn -&gt; builder.methodInsertedInstructions.contains(gn.getAstNode()))</span>
+<span class="nc" id="L52">                .forEach(GraphNode::markAsImplicit);</span>
+
+
+        // Verify that it has been built
+<span class="nc" id="L56">        exitNode = vertexSet().stream().filter(MethodExitNode.class::isInstance).findFirst()</span>
+<span class="nc" id="L57">                .orElseThrow(() -&gt; new IllegalStateException(&quot;Built graph has no exit node!&quot;));</span>
+<span class="nc" id="L58">        built = true;</span>
+<span class="nc" id="L59">    }</span>
+
+    @Override
+    protected CFGBuilder newCFGBuilder() {
+<span class="nc" id="L63">        return new Builder(this);</span>
+    }
+
+    /** Given a usage of an object member, find the last definitions of that member.
+     *  This method returns a list of variable actions, where the caller can find the member. */
+    public List&lt;VariableAction&gt; findLastDefinitionOfObjectMember(VariableAction usage, String[] member) {
+<span class="nc bnc" id="L69" title="All 4 branches missed.">        return findLastVarActionsFrom(usage, def -&gt; def.isDefinition() &amp;&amp; def.hasTreeMember(member));</span>
+    }
+
+    /** Given a usage of a primitive variable, find the last def actions that affect it. */
+    public List&lt;VariableAction&gt; findLastDefinitionOfPrimitive(VariableAction usage) {
+<span class="nc" id="L74">        return findLastVarActionsFrom(usage, VariableAction::isDefinition);</span>
+    }
+
+    /** Given the usage of a root object variable, find the last root definitions that affect it. */
+    public List&lt;VariableAction&gt; findLastDefinitionOfObjectRoot(VariableAction usage) {
+<span class="nc" id="L79">        return findLastVarActionsFrom(usage, VariableAction::isDefinition);</span>
+    }
+
+    /** Given a field declaration, locate all definitions that affect the given member. */
+    public List&lt;VariableAction&gt; findAllFutureObjectDefinitionsFor(VariableAction action) {
+<span class="nc" id="L84">        List&lt;VariableAction&gt; list = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L85" title="All 6 branches missed.">        Predicate&lt;VariableAction&gt; filter = a -&gt; a.isDefinition() &amp;&amp; a.getName().equals(&quot;this&quot;) &amp;&amp; a.hasPolyTreeMember(action.getName());</span>
+<span class="nc" id="L86">        findAllFutureVarActionsFor(new HashSet&lt;&gt;(), list, action.getGraphNode(), action, filter);</span>
+<span class="nc" id="L87">        return list;</span>
+    }
+
+    /** Locate variable actions that match the given filter, starting in {@code currentNode}, at variable action
+     *  {@code var} and searching forwards through the control-flow graph. The resulting variable actions are
+     *  placed in the given argument. This search does not stop when an action in that control-flow branch is found. */
+    protected void findAllFutureVarActionsFor(Set&lt;GraphNode&lt;?&gt;&gt; visited, List&lt;VariableAction&gt; result,
+                                            GraphNode&lt;?&gt; currentNode, VariableAction var,
+                                            Predicate&lt;VariableAction&gt; filter) {
+        // Base case
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (visited.contains(currentNode))</span>
+<span class="nc" id="L98">            return;</span>
+<span class="nc" id="L99">        visited.add(currentNode);</span>
+
+<span class="nc" id="L101">        Stream&lt;VariableAction&gt; stream = currentNode.getVariableActions().stream();</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        if (var.getGraphNode().equals(currentNode)) {</span>
+<span class="nc" id="L103">            boolean[] found = {false}; // Array to use as mutable flag</span>
+<span class="nc" id="L104">            stream = stream.filter(va -&gt; {</span>
+<span class="nc bnc" id="L105" title="All 4 branches missed.">                if (found[0] || va == var) {</span>
+<span class="nc" id="L106">                    found[0] = true; // Set flag to true after the first occurrence</span>
+<span class="nc" id="L107">                    return true;</span>
+                }
+<span class="nc" id="L109">                return false;</span>
+            });
+        }
+
+<span class="nc" id="L113">        stream.filter(filter).forEach(result::add);</span>
+
+        // always traverse forwards!
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        for (Arc arc : outgoingEdgesOf(currentNode))</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            if (arc.isExecutableControlFlowArc())</span>
+<span class="nc" id="L118">                findAllFutureVarActionsFor(visited, result, getEdgeTarget(arc), var, filter);</span>
+<span class="nc" id="L119">    }</span>
+
+    /** Given an action that defines a member, locates the previous total definition that gave
+     *  it value. */
+    public List&lt;VariableAction&gt; findLastTotalDefinitionOf(VariableAction action, String[] member) {
+<span class="nc" id="L124">        return findLastVarActionsFrom(action, def -&gt;</span>
+<span class="nc bnc" id="L125" title="All 4 branches missed.">                (def.isDeclaration() &amp;&amp; def.hasTreeMember(member))</span>
+<span class="nc bnc" id="L126" title="All 4 branches missed.">                || (def.isDefinition() &amp;&amp; def.asDefinition().isTotallyDefinedMember(member)));</span>
+    }
+
+    /** Given a definition of a given member, locate all definitions of the same object until a definition
+     *  containing the given member is found (not including that last one). If the member is found in the
+     *  given definition, it will return a list with only the given definition. */
+    public List&lt;VariableAction&gt; findNextObjectDefinitionsFor(VariableAction definition, String[] member) {
+<span class="nc bnc" id="L133" title="All 2 branches missed.">        if (!this.containsVertex(definition.getGraphNode()))</span>
+<span class="nc" id="L134">            throw new NodeNotFoundException(definition.getGraphNode(), this);</span>
+<span class="nc bnc" id="L135" title="All 2 branches missed.">        if (definition.hasTreeMember(member))</span>
+<span class="nc" id="L136">            return Collections.singletonList(definition);</span>
+<span class="nc" id="L137">        List&lt;VariableAction&gt; list = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L138">        findNextVarActionsFor(new HashSet&lt;&gt;(), list, definition.getGraphNode(), definition, VariableAction::isDefinition, member);</span>
+<span class="nc" id="L139">        return list;</span>
+    }
+
+    /** Locate variable actions that match the given filter and variable name, starting in {@code currentNode},
+     *  at variable action {@code var} and searching backwards. The resulting variable actions are placed in
+     *  the given argument. This search stops after finding a matching action in each branch. */
+    protected boolean findNextVarActionsFor(Set&lt;GraphNode&lt;?&gt;&gt; visited, List&lt;VariableAction&gt; result,
+                                            GraphNode&lt;?&gt; currentNode, VariableAction var,
+                                            Predicate&lt;VariableAction&gt; filter, String[] memberName) {
+        // Base case
+<span class="nc bnc" id="L149" title="All 2 branches missed.">        if (visited.contains(currentNode))</span>
+<span class="nc" id="L150">            return true;</span>
+<span class="nc" id="L151">        visited.add(currentNode);</span>
+
+<span class="nc" id="L153">        Stream&lt;VariableAction&gt; stream = currentNode.getVariableActions().stream();</span>
+<span class="nc bnc" id="L154" title="All 2 branches missed.">        if (var.getGraphNode().equals(currentNode)) {</span>
+<span class="nc" id="L155">            boolean[] found = {false}; // Array to use as mutable flag</span>
+<span class="nc" id="L156">            stream = stream.filter(va -&gt; {</span>
+<span class="nc bnc" id="L157" title="All 4 branches missed.">                if (found[0] || va == var) {</span>
+<span class="nc" id="L158">                    found[0] = true; // Set flag to true after the first occurrence</span>
+<span class="nc" id="L159">                    return true;</span>
+                }
+<span class="nc" id="L161">                return false;</span>
+            });
+        }
+
+<span class="nc" id="L165">        List&lt;VariableAction&gt; list = stream.filter(var::matches).filter(filter).collect(Collectors.toList());</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">        if (!list.isEmpty()) {</span>
+<span class="nc" id="L167">            boolean found = false;</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">            for (VariableAction variableAction : list) {</span>
+<span class="nc bnc" id="L169" title="All 4 branches missed.">                if (!variableAction.isOptional() &amp;&amp; variableAction.hasTreeMember(memberName)) {</span>
+<span class="nc" id="L170">                    found = true;</span>
+<span class="nc" id="L171">                    break;</span>
+                }
+<span class="nc" id="L173">                result.add(variableAction);</span>
+<span class="nc" id="L174">            }</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">            if (found)</span>
+<span class="nc" id="L176">                return true;</span>
+        }
+
+        // Not found: traverse forwards!
+<span class="nc bnc" id="L180" title="All 2 branches missed.">        boolean allBranches = !outgoingEdgesOf(currentNode).isEmpty();</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">        for (Arc arc : outgoingEdgesOf(currentNode))</span>
+<span class="nc bnc" id="L182" title="All 2 branches missed.">            if (arc.isExecutableControlFlowArc())</span>
+<span class="nc" id="L183">                allBranches &amp;= findNextVarActionsFor(visited, result, getEdgeTarget(arc), var, filter, memberName);</span>
+<span class="nc" id="L184">        return allBranches;</span>
+    }
+
+<span class="nc" id="L187">    public class Builder extends ESCFG.Builder {</span>
+        protected ClassGraph classGraph;
+        /** List of implicit instructions inserted explicitly in this CFG.
+         *  They should be included in the graph as ImplicitNodes. */
+<span class="nc" id="L191">        protected NodeHashSet&lt;Node&gt; methodInsertedInstructions = new NodeHashSet&lt;&gt;();</span>
+        /** Whether we are building a CFG for an implicit method or not. */
+<span class="nc" id="L193">        protected boolean implicitDeclaration = false;</span>
+
+<span class="nc" id="L195">        protected Builder(JSysCFG jSysCFG) {</span>
+<span class="nc" id="L196">            super(JSysCFG.this);</span>
+<span class="nc bnc" id="L197" title="All 2 branches missed.">            assert jSysCFG == JSysCFG.this;</span>
+<span class="nc" id="L198">        }</span>
+
+        @Override
+        protected &lt;T extends Node&gt; GraphNode&lt;T&gt; connectTo(T n, String text) {
+            GraphNode&lt;T&gt; dest;
+<span class="nc" id="L203">            dest = new GraphNode&lt;&gt;(text, n);</span>
+<span class="nc bnc" id="L204" title="All 6 branches missed.">            if (methodInsertedInstructions.contains(n) ||</span>
+                    (implicitDeclaration &amp;&amp; !(n instanceof FieldDeclaration)))
+<span class="nc" id="L206">                dest.markAsImplicit();</span>
+<span class="nc" id="L207">            addVertex(dest);</span>
+<span class="nc" id="L208">            connectTo(dest);</span>
+<span class="nc" id="L209">            return dest;</span>
+        }
+
+        @Override
+        public void visit(ExplicitConstructorInvocationStmt n, Void arg) {
+<span class="nc" id="L214">            stmtStack.push(n);</span>
+            // 1. Connect to the following statements
+<span class="nc" id="L216">            connectTo(n);</span>
+            // 2. Insert dynamic class code (only for super())
+<span class="nc bnc" id="L218" title="All 2 branches missed.">            if (!n.isThis()) {</span>
+<span class="nc" id="L219">                TypeDeclaration typeDeclaration = n.findAncestor(TypeDeclaration.class)</span>
+<span class="nc" id="L220">                        .orElseThrow(() -&gt; new NoSuchElementException(&quot;TypeDeclaration ancestor not found&quot;));</span>
+<span class="nc" id="L221">                ASTUtils.getTypeInit(typeDeclaration, false)</span>
+<span class="nc" id="L222">                        .forEach(node -&gt; node.accept(this, arg));</span>
+            }
+
+            // 3. Handle exceptions
+<span class="nc" id="L226">            super.visitCallForExceptions(n);</span>
+<span class="nc" id="L227">            stmtStack.pop();</span>
+<span class="nc" id="L228">        }</span>
+
+        @Override
+        public void visit(FieldDeclaration n, Void arg){
+<span class="nc" id="L232">            connectTo(n);</span>
+<span class="nc" id="L233">            super.visit(n,arg);</span>
+<span class="nc" id="L234">        }</span>
+
+        @Override
+        public void visit(ConstructorDeclaration n, Void arg) {
+            // Insert call to super() if it is implicit.
+<span class="nc bnc" id="L239" title="All 2 branches missed.">            if (ASTUtils.shouldInsertExplicitConstructorInvocation(n)) {</span>
+<span class="nc" id="L240">                var superCall = new ExplicitConstructorInvocationStmt(null, null, false, null, new NodeList&lt;&gt;());</span>
+<span class="nc" id="L241">                methodInsertedInstructions.add(superCall);</span>
+<span class="nc" id="L242">                n.getBody().addStatement(0, superCall);</span>
+            }
+            // insert return this; at the end of the constructor
+<span class="nc" id="L245">            var returnThis = new ReturnStmt();</span>
+<span class="nc" id="L246">            methodInsertedInstructions.add(returnThis);</span>
+<span class="nc" id="L247">            n.getBody().addStatement(returnThis);</span>
+            // modify every return statement so that it returns 'this'
+<span class="nc" id="L249">            modifyAllReturnExpr(n, ThisExpr::new);</span>
+            // Perform the same task as previous graphs.
+<span class="nc" id="L251">            super.visit(n, arg);</span>
+            // restore return statements
+<span class="nc" id="L253">            modifyAllReturnExpr(n, () -&gt; null);</span>
+            // Convert enter/exit nodes to implicit if appropriate
+<span class="nc bnc" id="L255" title="All 2 branches missed.">            if (implicitDeclaration) {</span>
+<span class="nc" id="L256">                getRootNode().markAsImplicit();</span>
+<span class="nc" id="L257">                vertexSet().stream()</span>
+<span class="nc" id="L258">                        .filter(MethodExitNode.class::isInstance)</span>
+<span class="nc" id="L259">                        .forEach(GraphNode::markAsImplicit);</span>
+            }
+<span class="nc" id="L261">        }</span>
+
+        @Override
+        protected void buildEnter(CallableDeclaration&lt;?&gt; callableDeclaration) {
+<span class="nc" id="L265">            super.buildEnter(callableDeclaration);</span>
+            // enums have no super(), so the implicitly inserted instructions
+            // must be placed after the root node
+<span class="nc bnc" id="L268" title="All 2 branches missed.">            if (callableDeclaration.isConstructorDeclaration()) {</span>
+<span class="nc" id="L269">                ConstructorDeclaration cd = callableDeclaration.asConstructorDeclaration();</span>
+<span class="nc" id="L270">                TypeDeclaration&lt;?&gt; type = cd.findAncestor(TypeDeclaration.class)</span>
+<span class="nc" id="L271">                        .orElseThrow(() -&gt; new NoSuchElementException(&quot;TypeDeclaration ancestor not found&quot;));</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">                if (!ASTUtils.shouldInsertExplicitConstructorInvocation(cd) &amp;&amp;</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                        type.isEnumDeclaration() &amp;&amp;</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">                        ASTUtils.shouldInsertDynamicInitInEnum(cd)) {</span>
+<span class="nc" id="L275">                    ASTUtils.getTypeInit(type, false).forEach(n -&gt; n.accept(this, null));</span>
+                }
+            }
+<span class="nc" id="L278">        }</span>
+
+        /**
+         * Sets the expression for all return statements contained in its argument.
+         * @param node The AST to search for return statements.
+         * @param expressionSupplier The expression to be set.
+         */
+        protected void modifyAllReturnExpr(Node node, Supplier&lt;Expression&gt; expressionSupplier) {
+<span class="nc" id="L286">            node.accept(new ModifierVisitor&lt;Void&gt;() {</span>
+                @Override
+                public Visitable visit(ReturnStmt n, Void arg) {
+<span class="nc" id="L289">                    n.setExpression(expressionSupplier.get());</span>
+<span class="nc" id="L290">                    return n;</span>
+                }
+            }, null);
+<span class="nc" id="L293">        }</span>
+
+        @Override
+        protected void addMethodOutput(CallableDeclaration&lt;?&gt; callableDeclaration, GraphNode&lt;?&gt; exit) {
+<span class="nc" id="L297">            super.addMethodOutput(callableDeclaration, exit);</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            for (VariableAction action : exit.getVariableActions()) {</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">                if (action.getName().equals(VARIABLE_NAME_OUTPUT)) {</span>
+<span class="nc" id="L300">                    expandOutputVariable(callableDeclaration, action);</span>
+<span class="nc" id="L301">                    break;</span>
+                }
+<span class="nc" id="L303">            }</span>
+<span class="nc" id="L304">        }</span>
+
+        /**
+         * Generates the object tree for the output of a declaration, and copies that same tree
+         * to each of its return statements. It also sets the connection between them, to be applied
+         * later.
+         * @param callableDeclaration The root of the declarations' AST.
+         * @param useOutput The variable at the method's exit that uses -output-.
+         */
+        protected void expandOutputVariable(CallableDeclaration&lt;?&gt; callableDeclaration, VariableAction useOutput) {
+            // Generate the full tree for the method's returned type (static)
+<span class="nc" id="L315">            var fields = classGraph.generateObjectTreeForReturnOf(callableDeclaration);</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            if (fields.isPresent()) {</span>
+                // Insert tree into the OutputNode
+<span class="nc" id="L318">                useOutput.getObjectTree().addAll(fields.get());</span>
+                // Insert tree into GraphNode&lt;ReturnStmt&gt; nodes, the last action is always DEF(-output-)
+<span class="nc" id="L320">                vertexSet().stream()</span>
+<span class="nc" id="L321">                        .filter(gn -&gt; gn.getAstNode() instanceof ReturnStmt)</span>
+<span class="nc" id="L322">                        .map(GraphNode::getLastVariableAction)</span>
+<span class="nc" id="L323">                        .map(VariableAction::getObjectTree)</span>
+<span class="nc" id="L324">                        .forEach(tree -&gt; tree.addAll(fields.get()));</span>
+            }
+            // Generate the assignment trees and prepare for linking
+<span class="nc" id="L327">            vertexSet().stream()</span>
+<span class="nc" id="L328">                    .filter(gn -&gt; gn.getAstNode() instanceof ReturnStmt)</span>
+<span class="nc" id="L329">                    .forEach(gn -&gt; {</span>
+<span class="nc" id="L330">                        Expression expr = ((ReturnStmt) gn.getAstNode()).getExpression()</span>
+<span class="nc" id="L331">                                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No expression present in the return statement&quot;));</span>
+
+<span class="nc" id="L333">                        new ExpressionObjectTreeFinder(gn).locateAndMarkTransferenceToRoot(expr, -1);</span>
+<span class="nc" id="L334">                    });</span>
+<span class="nc" id="L335">        }</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

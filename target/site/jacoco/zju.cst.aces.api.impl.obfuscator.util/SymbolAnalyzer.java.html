@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SymbolAnalyzer.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.impl.obfuscator.util</a> &gt; <span class="el_source">SymbolAnalyzer.java</span></div><h1>SymbolAnalyzer.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.impl.obfuscator.util;
+
+import org.objectweb.asm.Handle;
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.*;
+import zju.cst.aces.api.impl.obfuscator.frame.Symbol;
+import zju.cst.aces.api.impl.obfuscator.frame.SymbolFrame;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.jar.JarFile;
+
+<span class="nc" id="L13">public class SymbolAnalyzer {</span>
+    private static final String jarFile = &quot;&quot;;
+
+    public static void main(String[] args) throws IOException {
+<span class="nc" id="L17">        Set&lt;ClassNode&gt; candidateClasses = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L18">        ASMParser asmParser = new ASMParser(null);</span>
+<span class="nc" id="L19">        candidateClasses.addAll(asmParser.loadClasses(new JarFile(jarFile)));</span>
+<span class="nc" id="L20">        SymbolAnalyzer analyzer = new SymbolAnalyzer();</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">        for (ClassNode classNode : candidateClasses) {</span>
+<span class="nc" id="L22">            analyzer.analyze(classNode);</span>
+<span class="nc" id="L23">        }</span>
+<span class="nc" id="L24">    }</span>
+
+    public SymbolFrame analyze(ClassNode classNode) {
+<span class="nc" id="L27">        SymbolFrame frame = new SymbolFrame();</span>
+<span class="nc" id="L28">        String className = classNode.name;</span>
+<span class="nc" id="L29">        frame.setClassName(className);</span>
+<span class="nc" id="L30">        frame.setSuperName(classNode.superName);</span>
+<span class="nc" id="L31">        frame.setInterfaces(classNode.interfaces);</span>
+<span class="nc bnc" id="L32" title="All 2 branches missed.">        for (FieldNode fieldNode : classNode.fields) {</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">            String type = fieldNode.signature != null ? fieldNode.signature : fieldNode.desc;</span>
+<span class="nc" id="L34">            frame.addFieldDef(new Symbol(fieldNode.name, className, type, null));</span>
+<span class="nc" id="L35">        }</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        for (MethodNode methodNode : classNode.methods) {</span>
+<span class="nc" id="L37">            frame.merge(analyzeMethod(methodNode, className));</span>
+<span class="nc" id="L38">        }</span>
+<span class="nc" id="L39">        return frame;</span>
+    }
+
+    public SymbolFrame analyzeMethod(MethodNode methodNode, String className) {
+<span class="nc" id="L43">        List&lt;LocalVariableNode&gt; localVariables = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (methodNode.localVariables != null) {</span>
+<span class="nc" id="L45">            localVariables.addAll(methodNode.localVariables);</span>
+        }
+<span class="nc" id="L47">        SymbolFrame frame = new SymbolFrame();</span>
+<span class="nc" id="L48">        frame.addMethodDef(new Symbol(methodNode.name, className, methodNode.signature, null));</span>
+<span class="nc" id="L49">        localVariables.forEach(var -&gt; {</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">            if (methodNode.parameters != null) {</span>
+<span class="nc" id="L51">                methodNode.parameters.forEach(param -&gt; {</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">                    if (param.name.equals(var.name)) {</span>
+<span class="nc" id="L53">                        frame.addVarDef(new Symbol(var.name, var.desc, var.desc, null));</span>
+                    }
+<span class="nc" id="L55">                });</span>
+            }
+<span class="nc" id="L57">        });</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">        for (AbstractInsnNode insn : methodNode.instructions) {</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">            if (insn instanceof FieldInsnNode) {</span>
+<span class="nc" id="L60">                FieldInsnNode fi = (FieldInsnNode) insn;</span>
+<span class="nc" id="L61">                frame.addFieldUse(new Symbol(fi.name, fi.owner, fi.desc, getLine(insn)));</span>
+            }
+<span class="nc bnc" id="L63" title="All 2 branches missed.">            if (insn instanceof MethodInsnNode) {</span>
+<span class="nc" id="L64">                MethodInsnNode mi = (MethodInsnNode) insn;</span>
+<span class="nc" id="L65">                frame.addMethodUse(new Symbol(mi.name, mi.owner, mi.desc, getLine(insn)));</span>
+            }
+<span class="nc bnc" id="L67" title="All 2 branches missed.">            if (insn instanceof VarInsnNode) {</span>
+<span class="nc" id="L68">                VarInsnNode vi = (VarInsnNode) insn;</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">                if (vi.var &gt;= localVariables.size()) {</span>
+<span class="nc" id="L70">                    continue;</span>
+                }
+<span class="nc bnc" id="L72" title="All 2 branches missed.">                if (vi.getOpcode() == Opcodes.ASTORE) {</span>
+<span class="nc" id="L73">                    LocalVariableNode var = localVariables.get(vi.var);</span>
+<span class="nc" id="L74">                    frame.addVarDef(new Symbol(var.name, var.desc, var.desc, getLine(insn))); //TODO: var def may be incomplete</span>
+<span class="nc bnc" id="L75" title="All 2 branches missed.">                } else if (vi.getOpcode() == Opcodes.ALOAD) {</span>
+<span class="nc" id="L76">                    LocalVariableNode var = localVariables.get(vi.var);</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">                    if (var.name.equals(&quot;this&quot;)) {</span>
+<span class="nc" id="L78">                        continue;</span>
+                    }
+<span class="nc" id="L80">                    frame.addVarUse(new Symbol(var.name, var.desc, var.desc, getLine(insn)));</span>
+                }
+            }
+<span class="nc bnc" id="L83" title="All 2 branches missed.">            if (insn instanceof InvokeDynamicInsnNode) {</span>
+<span class="nc" id="L84">                InvokeDynamicInsnNode di = (InvokeDynamicInsnNode) insn;</span>
+<span class="nc" id="L85">                Arrays.stream(di.bsmArgs).filter(arg -&gt; arg instanceof Handle).map(arg -&gt; (Handle) arg).forEach(handle -&gt; {</span>
+<span class="nc" id="L86">                    frame.addMethodUse(new Symbol(handle.getName(), handle.getOwner(), handle.getDesc(), getLine(insn)));</span>
+<span class="nc" id="L87">                });</span>
+            }
+            // TODO: Handle other types of instructions
+<span class="nc" id="L90">        }</span>
+<span class="nc" id="L91">        return frame;</span>
+    }
+
+    public int getLine(AbstractInsnNode insn) {
+<span class="nc bnc" id="L95" title="All 4 branches missed.">        while (insn != null &amp;&amp; !(insn instanceof LineNumberNode)) {</span>
+<span class="nc" id="L96">            insn = insn.getPrevious();</span>
+        }
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        return insn == null ? -1 : ((LineNumberNode) insn).line;</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

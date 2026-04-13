@@ -1,0 +1,423 @@
+类名：Example
+分析阶段：
+  耗时：5613 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：100762 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：80644 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  失败原因：
+修复阶段：
+  耗时：-1748074446181 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：0
+  修复失败原因：
+  修复成功次数：0
+评估阶段：
+  耗时：1748074457999 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【指令覆盖率】：【100%】  
+【分支覆盖率】：【-】  
+【复杂度】：【1】  
+【行覆盖率】：【100%】  
+【方法覆盖率】：【100%】  
+【类覆盖率】：【100%】
+总耗时：381418 毫秒
+总消耗 token 数量：0
+测试代码生成成功：true
+失败原因：
+--------------------------------------------------------
+起始时间：1748074259162
+
+套件 开始时间: 1748074259162
+分析起始时间：1748074259162
+
+分析 开始时间: 1748074259163
+解析提示内容：
+```text
+包路径：codeing
+类名：Example
+方法名：add
+返回类型：int
+功能描述：实现两个整型参数的加法运算，返回两数之和
+```
+
+```text
+包路径：codeing
+类名：Example
+方法名：<init>（默认构造方法）
+返回类型：void
+功能描述：初始化Example类实例的默认无参构造器
+```over
+
+分析结束时间：1748074264775
+
+分析总耗时：5613
+分析 结束时间: 1748074264775
+分析 耗时: 5.612 秒
+生成 开始时间: 1748074264775
+生成测试代码：
+```java
+package codeing;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ExampleTest {
+
+    @Test
+    public void testAddPositiveNumbers() {
+        Example example = new Example();
+        assertEquals(8, example.add(3, 5));
+    }
+
+    @Test
+    public void testAddNegativeNumbers() {
+        Example example = new Example();
+        assertEquals(-5, example.add(-2, -3));
+    }
+
+    @Test
+    public void testAddPositiveAndNegative() {
+        Example example = new Example();
+        assertEquals(2, example.add(5, -3));
+    }
+
+    @Test
+    public void testAddZeros() {
+        Example example = new Example();
+        assertEquals(0, example.add(0, 0));
+    }
+
+    @Test
+    public void testAddZeroAndPositive() {
+        Example example = new Example();
+        assertEquals(7, example.add(0, 7));
+    }
+
+    @Test
+    public void testAddZeroAndNegative() {
+        Example example = new Example();
+        assertEquals(-4, example.add(0, -4));
+    }
+
+    @Test
+    public void testAddMaxValue() {
+        Example example = new Example();
+        int result = example.add(Integer.MAX_VALUE, 1);
+        assertEquals(Integer.MIN_VALUE, result);
+    }
+
+    @Test
+    public void testAddMinValue() {
+        Example example = new Example();
+        int result = example.add(Integer.MIN_VALUE, -1);
+        assertEquals(Integer.MAX_VALUE, result);
+    }
+
+    @Test
+    public void testAddMaxValueWithZero() {
+        Example example = new Example();
+        assertEquals(Integer.MAX_VALUE, example.add(Integer.MAX_VALUE, 0));
+    }
+
+    @Test
+    public void testAddMinValueWithZero() {
+        Example example = new Example();
+        assertEquals(Integer.MIN_VALUE, example.add(Integer.MIN_VALUE, 0));
+    }
+}
+```over
+
+生成 结束时间: 1748074365537
+生成 耗时: 100.762 秒
+验证 开始时间: 1748074365538
+测试代码验证结果：
+全部验证通过over
+
+验证 结束时间: 1748074446181
+验证 耗时: 80.643 秒
+评估 开始时间: 1748074446181
+测试代码评估结果：
+【指令覆盖率】：【100%】
+【分支覆盖率】：【-】
+【复杂度】：【1】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】over
+
+评估 结束时间: 1748074457999
+评估 耗时: 11.818 秒
+测试类创建开始：
+测试类创建成功：src/test/java/codeing/ExampleTest.java
+测试类编译开始：
+测试类编译成功！
+测试类编译成功！
+测试类运行开始：
+运行时编译开始
+生成的测试类文件内容：
+package codeing;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ExampleTest {
+
+    @Test
+    public void testAddPositiveNumbers() {
+        Example example = new Example();
+        assertEquals(8, example.add(3, 5));
+    }
+
+    @Test
+    public void testAddNegativeNumbers() {
+        Example example = new Example();
+        assertEquals(-5, example.add(-2, -3));
+    }
+
+    @Test
+    public void testAddPositiveAndNegative() {
+        Example example = new Example();
+        assertEquals(2, example.add(5, -3));
+    }
+
+    @Test
+    public void testAddZeros() {
+        Example example = new Example();
+        assertEquals(0, example.add(0, 0));
+    }
+
+    @Test
+    public void testAddZeroAndPositive() {
+        Example example = new Example();
+        assertEquals(7, example.add(0, 7));
+    }
+
+    @Test
+    public void testAddZeroAndNegative() {
+        Example example = new Example();
+        assertEquals(-4, example.add(0, -4));
+    }
+
+    @Test
+    public void testAddMaxValue() {
+        Example example = new Example();
+        int result = example.add(Integer.MAX_VALUE, 1);
+        assertEquals(Integer.MIN_VALUE, result);
+    }
+
+    @Test
+    public void testAddMinValue() {
+        Example example = new Example();
+        int result = example.add(Integer.MIN_VALUE, -1);
+        assertEquals(Integer.MAX_VALUE, result);
+    }
+
+    @Test
+    public void testAddMaxValueWithZero() {
+        Example example = new Example();
+        assertEquals(Integer.MAX_VALUE, example.add(Integer.MAX_VALUE, 0));
+    }
+
+    @Test
+    public void testAddMinValueWithZero() {
+        Example example = new Example();
+        assertEquals(Integer.MIN_VALUE, example.add(Integer.MIN_VALUE, 0));
+    }
+}
+ 内容结束！
+测试执行结果：
+  总测试数: 10
+  通过:    10
+  失败:    0
+  跳过:    0
+  执行时间: 200 ms
+
+详细结果：
+  • testAddMaxValue() [PASSED]
+  • testAddZeroAndPositive() [PASSED]
+  • testAddZeroAndNegative() [PASSED]
+  • testAddZeros() [PASSED]
+  • testAddPositiveAndNegative() [PASSED]
+  • testAddPositiveNumbers() [PASSED]
+  • testAddNegativeNumbers() [PASSED]
+  • testAddMinValue() [PASSED]
+  • testAddMinValueWithZero() [PASSED]
+  • testAddMaxValueWithZero() [PASSED]
+
+测试类覆盖率计算开始：
+执行Maven命令: D:\TopNew-SpringBoot\maven\apache-maven-3.9.1-bin\apache-maven-3.9.1\bin\mvn.cmd test
+Maven命令返回码: 0
+mvn test 结果：
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< io.github.zju-aces-ise:chatunitest-core >---------------
+[INFO] Building chatunitest-core 1.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- jacoco:0.8.8:prepare-agent (default) @ chatunitest-core ---
+[INFO] argLine set to -javaagent:D:\\TopNew-SpringBoot\\maven\\apache-maven-3.9.1-bin\\apache-maven-3.9.1\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.8\\org.jacoco.agent-0.8.8-runtime.jar=destfile=D:\\fx\\jafx\\chatunitest-core\\target\\jacoco.exec
+[INFO]
+[INFO] --- resources:3.3.0:resources (default-resources) @ chatunitest-core ---
+[INFO] Copying 25 resources
+[INFO]
+[INFO] --- compiler:3.10.1:compile (default-compile) @ chatunitest-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\fx\jafx\chatunitest-core\target\classes
+[INFO]
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ chatunitest-core ---
+[INFO] skip non existing resourceDirectory D:\fx\jafx\chatunitest-core\src\test\resources
+[INFO]
+[INFO] --- compiler:3.10.1:testCompile (default-testCompile) @ chatunitest-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 1 source file to D:\fx\jafx\chatunitest-core\target\test-classes
+[INFO]
+[INFO] --- surefire:3.1.0:test (default-test) @ chatunitest-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running codeing.ExampleTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.1 s - in codeing.ExampleTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jacoco:0.8.8:report (report) @ chatunitest-core ---
+[INFO] Loading execution data file D:\fx\jafx\chatunitest-core\target\jacoco.exec
+[INFO] Analyzed bundle 'chatunitest-core' with 18 classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.014 s
+[INFO] Finished at: 2025-05-24T16:14:29+08:00
+[INFO] ------------------------------------------------------------------------
+
+mvn test结果展示：0.0
+Coverage criteria not met for element: codeing
+  Instruction Coverage: 100.0%
+  Branch Coverage: 0.0%
+  Line Coverage: 100.0%
+  Method Coverage: 100.0%
+  Class Coverage: 100.0%
+Coverage sufficient: false
+测试类优化开始：覆盖率不足，优化测试代码...
+优化后的测试代码：
+```java
+package codeing;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class ExampleTest {
+
+    @Test
+    public void testAddPositiveNumbers() {
+        Example example = new Example();
+        assertEquals(8, example.add(3, 5));
+    }
+
+    @Test
+    public void testAddNegativeNumbers() {
+        Example example = new Example();
+        assertEquals(-5, example.add(-2, -3));
+    }
+
+    @Test
+    public void testAddPositiveAndNegative() {
+        Example example = new Example();
+        assertEquals(2, example.add(5, -3));
+    }
+
+    @Test
+    public void testAddNegativeAndPositive() {
+        Example example = new Example();
+        assertEquals(2, example.add(-3, 5));
+    }
+
+    @Test
+    public void testAddZeros() {
+        Example example = new Example();
+        assertEquals(0, example.add(0, 0));
+    }
+
+    @Test
+    public void testAddZeroAndPositive() {
+        Example example = new Example();
+        assertEquals(7, example.add(0, 7));
+    }
+
+    @Test
+    public void testAddZeroAndNegative() {
+        Example example = new Example();
+        assertEquals(-4, example.add(0, -4));
+    }
+
+    @Test
+    public void testAddMaxValue() {
+        Example example = new Example();
+        int result = example.add(Integer.MAX_VALUE, 1);
+        assertEquals(Integer.MIN_VALUE, result);
+    }
+
+    @Test
+    public void testAddMinValue() {
+        Example example = new Example();
+        int result = example.add(Integer.MIN_VALUE, -1);
+        assertEquals(Integer.MAX_VALUE, result);
+    }
+
+    @Test
+    public void testAddMaxValueWithZero() {
+        Example example = new Example();
+        assertEquals(Integer.MAX_VALUE, example.add(Integer.MAX_VALUE, 0));
+    }
+
+    @Test
+    public void testAddMinValueWithZero() {
+        Example example = new Example();
+        assertEquals(Integer.MIN_VALUE, example.add(Integer.MIN_VALUE, 0));
+    }
+
+    @Test
+    public void testAddInverseNumbers() {
+        Example example = new Example();
+        assertEquals(0, example.add(1, -1));
+        assertEquals(0, example.add(-1, 1));
+    }
+
+    @Test
+    public void testAddMaxValueAndNegative() {
+        Example example = new Example();
+        int expected = Integer.MAX_VALUE - 100;
+        assertEquals(expected, example.add(Integer.MAX_VALUE, -100));
+    }
+
+    @Test
+    public void testAddMinValueAndPositive() {
+        Example example = new Example();
+        int expected = Integer.MIN_VALUE + 200;
+        assertEquals(expected, example.add(Integer.MIN_VALUE, 200));
+    }
+}
+```over
+
+测试代码验证结果：
+该测试代码在验证[编译错误]时失败，错误位置：[8,13,18,23,28,33,38,42,47,52,57,62,67]，错误原因：未找到Example类的定义，测试代码中引用的Example类未被正确声明或导入over
+
+优化后的测试代码验证失败！
+套件 结束时间: 1748074639674
+套件 耗时: 380.512 秒
+
+Process finished with exit code 0

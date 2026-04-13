@@ -1,0 +1,70 @@
+```包路径：gson.internal
+类名：Excluder
+父类：无
+依赖类：ExclusionStrategy,FieldAttributes,Gson,TypeAdapter,TypeAdapterFactory,Expose,Since,Until,ReflectionHelper,TypeToken
+---
+序号：1
+方法名：clone()
+返回类型：Excluder
+功能描述：创建当前对象的副本
+---
+序号：2
+方法名：withVersion(double ignoreVersionsAfter)
+返回类型：Excluder
+功能描述：创建包含指定版本配置的新实例
+---
+序号：3
+方法名：withModifiers(int... modifiers)
+返回类型：Excluder
+功能描述：创建包含指定修饰符配置的新实例
+---
+序号：4
+方法名：disableInnerClassSerialization()
+返回类型：Excluder
+功能描述：创建禁止内部类序列化的新实例
+---
+序号：5
+方法名：excludeFieldsWithoutExposeAnnotation()
+返回类型：Excluder
+功能描述：创建要求字段必须包含Expose注解的新实例
+---
+序号：6
+方法名：withExclusionStrategy(ExclusionStrategy exclusionStrategy, boolean serialization, boolean deserialization)
+返回类型：Excluder
+功能描述：创建包含指定排除策略的新实例
+---
+序号：7
+方法名：create(Gson gson, TypeToken<T> type)
+返回类型：TypeAdapter<T>
+功能描述：创建类型适配器实现序列化/反序列化排除逻辑
+---
+序号：8
+方法名：excludeField(Field field, boolean serialize)
+返回类型：boolean
+功能描述：判断指定字段是否应被排除
+---
+序号：9
+方法名：excludeClass(Class<?> clazz, boolean serialize)
+返回类型：boolean
+功能描述：判断指定类是否应被排除
+---
+序号：10
+方法名：isInnerClass(Class<?> clazz)
+返回类型：boolean
+功能描述：判断是否为非静态内部类
+---
+序号：11
+方法名：isValidVersion(Since since, Until until)
+返回类型：boolean
+功能描述：验证类/字段的版本注解有效性
+---
+序号：12
+方法名：isValidSince(Since annotation)
+返回类型：boolean
+功能描述：验证@Since注解有效性
+---
+序号：13
+方法名：isValidUntil(Until annotation)
+返回类型：boolean
+功能描述：验证@Until注解有效性
+```

@@ -1,0 +1,12 @@
+[2026-01-23 21:09:49] 验证结果
+错误类型: 断言值错误, 错误行: 24, 错误原因: count("banana", "na") 预期3，实际应为5, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: containsAny, count, delete, isEmpty, keep, modify, squeeze, CharSetUtils
+  未覆盖: 全部覆盖
+
+[2026-01-23 21:15:52] 修复后验证结果
+错误类型: 断言值错误, 错误行: 26, 错误原因: [期望值4错误，实际结果应为3], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: containsAny, count, delete, isEmpty, keep, modify, squeeze
+  未覆盖: 全部覆盖
+

@@ -1,0 +1,21 @@
+包路径：cli
+类名：OptionValidator
+父类：无
+依赖类：无
+---
+序号：1
+方法名：isValidChar(char c)
+返回类型：boolean
+功能描述：检查字符是否是有效的选项字符（Java标识符部分或额外长选项字符）。
+序号：2
+方法名：isValidOpt(char c)
+返回类型：boolean
+功能描述：检查字符是否是有效的选项字符（针对选项首字符）。
+序号：3
+方法名：search(char[] chars, char c)
+返回类型：boolean
+功能描述：搜索字符数组中是否包含指定字符。
+序号：4
+方法名：validate(String option)
+返回类型：String
+功能描述：验证选项字符串是否合法，否则抛出异常。

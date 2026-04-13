@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ArrayFill.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">ArrayFill.java</span></div><h1>ArrayFill.java</h1><pre class="source lang-java linenums">package lang3;
+import java.util.Arrays;
+import lang3.function.FailableIntFunction;
+public final class ArrayFill {
+    public static boolean[] fill(final boolean[] a, final boolean val) {
+<span class="fc bfc" id="L6" title="All 2 branches covered.">        if (a != null) {</span>
+<span class="fc" id="L7">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L9">        return a;</span>
+    }
+    public static byte[] fill(final byte[] a, final byte val) {
+<span class="fc bfc" id="L12" title="All 2 branches covered.">        if (a != null) {</span>
+<span class="fc" id="L13">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L15">        return a;</span>
+    }
+    public static char[] fill(final char[] a, final char val) {
+<span class="fc bfc" id="L18" title="All 2 branches covered.">        if (a != null) {</span>
+<span class="fc" id="L19">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L21">        return a;</span>
+    }
+    public static double[] fill(final double[] a, final double val) {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (a != null) {</span>
+<span class="fc" id="L25">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L27">        return a;</span>
+    }
+    public static float[] fill(final float[] a, final float val) {
+<span class="pc bpc" id="L30" title="1 of 2 branches missed.">        if (a != null) {</span>
+<span class="fc" id="L31">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L33">        return a;</span>
+    }
+    public static int[] fill(final int[] a, final int val) {
+<span class="pc bpc" id="L36" title="1 of 2 branches missed.">        if (a != null) {</span>
+<span class="fc" id="L37">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L39">        return a;</span>
+    }
+    public static long[] fill(final long[] a, final long val) {
+<span class="pc bpc" id="L42" title="1 of 2 branches missed.">        if (a != null) {</span>
+<span class="fc" id="L43">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L45">        return a;</span>
+    }
+    public static short[] fill(final short[] a, final short val) {
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">        if (a != null) {</span>
+<span class="fc" id="L49">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L51">        return a;</span>
+    }
+    public static &lt;T, E extends Throwable&gt; T[] fill(final T[] array, final FailableIntFunction&lt;? extends T, E&gt; generator) throws E {
+<span class="fc bfc" id="L54" title="All 4 branches covered.">        if (array != null &amp;&amp; generator != null) {</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">            for (int i = 0; i &lt; array.length; i++) {</span>
+<span class="fc" id="L56">                array[i] = generator.apply(i);</span>
+            }
+        }
+<span class="fc" id="L59">        return array;</span>
+    }
+    public static &lt;T&gt; T[] fill(final T[] a, final T val) {
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        if (a != null) {</span>
+<span class="fc" id="L63">            Arrays.fill(a, val);</span>
+        }
+<span class="fc" id="L65">        return a;</span>
+    }
+    private ArrayFill() {
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

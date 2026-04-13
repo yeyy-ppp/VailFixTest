@@ -1,0 +1,61 @@
+包路径：cli
+类名：Parser
+父类：无
+依赖类：CommandLineParser,CommandLine,Options,Option,OptionGroup,MissingOptionException,ParseException,Util,MissingArgumentException,UnrecognizedOptionException
+---
+序号：1
+方法名：Parser()
+返回类型：void
+功能描述：初始化Parser实例
+序号：2
+方法名：checkRequiredOptions()
+返回类型：void
+功能描述：验证所有必需选项是否已设置，否则抛出MissingOptionException
+序号：3
+方法名：flatten(Options opts, String[] arguments, boolean stopAtNonOption)
+返回类型：String[]
+功能描述：抽象方法，将参数数组扁平化处理，根据选项和停止条件
+序号：4
+方法名：getOptions()
+返回类型：Options
+功能描述：返回当前设置的Options对象
+序号：5
+方法名：getRequiredOptions()
+返回类型：List
+功能描述：返回必需选项的列表
+序号：6
+方法名：parse(Options options, String[] arguments)
+返回类型：CommandLine
+功能描述：解析命令行参数为CommandLine对象
+序号：7
+方法名：parse(Options options, String[] arguments, boolean stopAtNonOption)
+返回类型：CommandLine
+功能描述：解析命令行参数，可指定在非选项处停止
+序号：8
+方法名：parse(Options options, String[] arguments, Properties properties)
+返回类型：CommandLine
+功能描述：解析命令行参数，使用属性默认值
+序号：9
+方法名：parse(Options options, String[] arguments, Properties properties, boolean stopAtNonOption)
+返回类型：CommandLine
+功能描述：解析命令行参数，使用属性默认值并可指定在非选项处停止
+序号：10
+方法名：processArgs(Option opt, ListIterator<String> iter)
+返回类型：void
+功能描述：处理选项的参数值，从迭代器中读取
+序号：11
+方法名：processOption(String arg, ListIterator<String> iter)
+返回类型：void
+功能描述：处理单个选项，包括其参数
+序号：12
+方法名：processProperties(Properties properties)
+返回类型：void
+功能描述：处理属性中的默认选项
+序号：13
+方法名：setOptions(Options options)
+返回类型：void
+功能描述：设置解析器使用的选项
+序号：14
+方法名：updateRequiredOptions(Option opt)
+返回类型：void
+功能描述：更新必需选项列表，基于给定选项

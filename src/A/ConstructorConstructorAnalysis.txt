@@ -1,0 +1,55 @@
+```
+包路径：gson.internal
+类名：ConstructorConstructor
+父类：无
+依赖类：InstanceCreator,JsonIOException,ReflectionAccessFilter,ReflectionAccessFilter.FilterResult,ReflectionHelper,TypeToken,ObjectConstructor,LinkedTreeMap,UnsafeAllocator,GsonTypes
+---
+序号：1
+方法名：ConstructorConstructor(Map<Type, InstanceCreator<?>>, boolean, List<ReflectionAccessFilter>)
+返回类型：void
+功能描述：初始化实例，设置实例创建器、Unsafe使用标志和反射过滤器列表
+序号：2
+方法名：checkInstantiable(Class<?>)
+返回类型：String
+功能描述：检查类是否可实例化（非接口/非抽象类），返回错误信息或null
+序号：3
+方法名：get(TypeToken<T>)
+返回类型：ObjectConstructor<T>
+功能描述：获取类型对应的对象构造器（默认允许不安全操作）
+序号：4
+方法名：get(TypeToken<T>, boolean)
+返回类型：ObjectConstructor<T>
+功能描述：根据类型令牌和是否允许不安全操作获取对象构造器
+序号：5
+方法名：newSpecialCollectionConstructor(Type, Class<? super T>)
+返回类型：ObjectConstructor<T>
+功能描述：为特殊集合类型（EnumSet/EnumMap）创建对象构造器
+序号：6
+方法名：newDefaultConstructor(Class<? super T>, FilterResult)
+返回类型：ObjectConstructor<T>
+功能描述：创建基于无参构造函数的对象构造器，考虑反射过滤器限制
+序号：7
+方法名：newDefaultImplementationConstructor(Type, Class<? super T>)
+返回类型：ObjectConstructor<T>
+功能描述：为集合/映射的默认实现类创建对象构造器
+序号：8
+方法名：newCollectionConstructor(Class<?>)
+返回类型：ObjectConstructor<? extends Collection<?>>
+功能描述：为集合类型创建具体实现（ArrayList/LinkedHashSet等）的构造器
+序号：9
+方法名：hasStringKeyType(Type)
+返回类型：boolean
+功能描述：检查映射的键类型是否为String
+序号：10
+方法名：newMapConstructor(Type, Class<?>)
+返回类型：ObjectConstructor<? extends Map<?, Object>>
+功能描述：为映射类型创建具体实现（LinkedTreeMap/LinkedHashMap等）的构造器
+序号：11
+方法名：newUnsafeAllocator(Class<? super T>)
+返回类型：ObjectConstructor<T>
+功能描述：使用Unsafe分配器创建对象构造器（根据JDK Unsafe启用状态）
+序号：12
+方法名：toString()
+返回类型：String
+功能描述：返回实例创建器映射的字符串表示
+```

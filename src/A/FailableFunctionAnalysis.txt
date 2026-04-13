@@ -1,0 +1,31 @@
+```
+包路径：lang3.function
+类名：FailableFunction
+父类：无
+依赖类：无
+---
+序号：1
+方法名：function(FailableFunction function)
+返回类型：FailableFunction<T, R, E>
+功能描述：返回传入的FailableFunction对象
+---
+序号：2
+方法名：identity()
+返回类型：FailableFunction<T, T, E>
+功能描述：返回恒等函数（原样返回输入）
+---
+序号：3
+方法名：nop()
+返回类型：FailableFunction<T, R, E>
+功能描述：返回无操作函数（始终返回null）
+---
+序号：4
+方法名：andThen(FailableFunction after)
+返回类型：FailableFunction<T, V, E>
+功能描述：组合函数（先执行当前函数再执行after函数）
+---
+序号：5
+方法名：apply(T input)
+返回类型：R
+功能描述：应用函数到输入并返回结果（可能抛出异常）
+```

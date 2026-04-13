@@ -1,0 +1,39 @@
+```
+包路径：lang3
+类名：CharSet
+父类：无
+依赖类：CharRange, StringUtils
+---
+序号：1
+方法名：getInstance(String... setStrs)
+返回类型：CharSet
+功能描述：根据字符串参数获取CharSet实例（可能返回公共实例或新建）
+序号：2
+方法名：CharSet(String... set)
+返回类型：void
+功能描述：初始化CharSet并添加所有给定字符集字符串
+序号：3
+方法名：add(String str)
+返回类型：void
+功能描述：解析字符串并添加字符范围到集合
+序号：4
+方法名：contains(char ch)
+返回类型：boolean
+功能描述：检查字符是否存在于集合中
+序号：5
+方法名：equals(Object obj)
+返回类型：boolean
+功能描述：比较两个CharSet对象是否相等
+序号：6
+方法名：getCharRanges()
+返回类型：CharRange[]
+功能描述：返回包含所有字符范围的数组
+序号：7
+方法名：hashCode()
+返回类型：int
+功能描述：计算哈希码
+序号：8
+方法名：toString()
+返回类型：String
+功能描述：返回集合的字符串表示
+```

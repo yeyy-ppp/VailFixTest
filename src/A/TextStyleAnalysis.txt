@@ -1,0 +1,103 @@
+```
+包路径：cli.help
+类名：TextStyle
+父类：无
+依赖类：Util
+---
+序号：1
+方法名：Builder()
+返回类型：void
+功能描述：私有构造方法，初始化Builder实例
+序号：2
+方法名：get()
+返回类型：TextStyle
+功能描述：构建并返回TextStyle实例
+序号：3
+方法名：getIndent()
+返回类型：int
+功能描述：获取缩进值
+序号：4
+方法名：getLeftPad()
+返回类型：int
+功能描述：获取左侧填充值
+序号：5
+方法名：getMaxWidth()
+返回类型：int
+功能描述：获取最大宽度
+序号：6
+方法名：getMinWidth()
+返回类型：int
+功能描述：获取最小宽度
+序号：7
+方法名：isScalable()
+返回类型：boolean
+功能描述：判断是否可缩放
+序号：8
+方法名：setAlignment(Alignment alignment)
+返回类型：Builder
+功能描述：设置文本对齐方式
+序号：9
+方法名：setIndent(int indent)
+返回类型：Builder
+功能描述：设置缩进值
+序号：10
+方法名：setLeftPad(int leftPad)
+返回类型：Builder
+功能描述：设置左侧填充值
+序号：11
+方法名：setMaxWidth(int maxWidth)
+返回类型：Builder
+功能描述：设置最大宽度
+序号：12
+方法名：setMinWidth(int minWidth)
+返回类型：Builder
+功能描述：设置最小宽度
+序号：13
+方法名：setScalable(boolean scalable)
+返回类型：Builder
+功能描述：设置可缩放属性
+序号：14
+方法名：setTextStyle(TextStyle style)
+返回类型：Builder
+功能描述：从指定TextStyle复制属性
+序号：15
+方法名：builder()
+返回类型：Builder
+功能描述：创建Builder实例
+序号：16
+方法名：TextStyle(Builder builder)
+返回类型：void
+功能描述：构造方法，从Builder初始化属性
+序号：17
+方法名：getAlignment()
+返回类型：Alignment
+功能描述：获取文本对齐方式
+序号：18
+方法名：getIndent()
+返回类型：int
+功能描述：获取缩进值
+序号：19
+方法名：getLeftPad()
+返回类型：int
+功能描述：获取左侧填充值
+序号：20
+方法名：getMaxWidth()
+返回类型：int
+功能描述：获取最大宽度
+序号：21
+方法名：getMinWidth()
+返回类型：int
+功能描述：获取最小宽度
+序号：22
+方法名：isScalable()
+返回类型：boolean
+功能描述：判断是否可缩放
+序号：23
+方法名：pad(boolean addIndent, CharSequence text)
+返回类型：CharSequence
+功能描述：根据对齐方式填充并格式化文本
+序号：24
+方法名：toString()
+返回类型：String
+功能描述：返回对象属性字符串表示
+```

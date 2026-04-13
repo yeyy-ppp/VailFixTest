@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>MemberNode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes.oo</a> &gt; <span class="el_source">MemberNode.java</span></div><h1>MemberNode.java</h1><pre class="source lang-java linenums">package slicing.nodes.oo;
+
+import com.github.javaparser.ast.Node;
+import slicing.nodes.GraphNode;
+import slicing.nodes.SyntheticNode;
+
+import java.util.LinkedList;
+
+/** A synthetic node that represents an object or field that is within a
+ *  VariableAction. They are placed in the graph when the PDG is built,
+ *  and allow for a more granular representation and slicing of objects. */
+public class MemberNode extends SyntheticNode&lt;Node&gt; {
+    protected GraphNode&lt;?&gt; parent;
+
+    public MemberNode(String instruction, GraphNode&lt;?&gt; parent) {
+<span class="nc" id="L16">        this(instruction, null, parent);</span>
+<span class="nc" id="L17">    }</span>
+
+    public MemberNode(String instruction, Node astNode, GraphNode&lt;?&gt; parent) {
+<span class="nc" id="L20">        super(instruction, astNode, new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L21">        this.parent = parent;</span>
+<span class="nc" id="L22">    }</span>
+
+    public GraphNode&lt;?&gt; getParent() {
+<span class="nc" id="L25">        return parent;</span>
+    }
+
+    public void setParent(GraphNode&lt;?&gt; parent) {
+<span class="nc" id="L29">        this.parent = parent;</span>
+<span class="nc" id="L30">    }</span>
+
+    @Override
+    public String toString() {
+<span class="nc" id="L34">        return String.format(&quot;%s{id: %s, label: '%s'}&quot;,</span>
+<span class="nc" id="L35">                getClass().getSimpleName(),</span>
+<span class="nc" id="L36">                getId(),</span>
+<span class="nc" id="L37">                getLabel()</span>
+        );
+    }
+
+    /** Create a copy of this node with the given argument as its parent node. */
+    public MemberNode copyToParent(GraphNode&lt;?&gt; parent) {
+<span class="nc" id="L43">        return new MemberNode(label, parent);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

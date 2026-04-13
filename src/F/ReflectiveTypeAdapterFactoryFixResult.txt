@@ -1,0 +1,299 @@
+[2026-01-23 21:45:25] 修复结果
+修复类型: 致命错误修复
+修复前错误: 编译错误 - [使用了未定义的ReflectionHelper类和未导入的JsonIOException类]
+修复后状态: 仍有问题 - 包路径 - 错误导入 gson.reflect.TypeToken（应使用 gson.TypeToken）
+修复后方法覆盖: 未覆盖: includeField, getFieldNames, checkAccessible, createBoundField, getBoundFields, createDuplicateFieldException, FieldsData, BoundField, readIntoArray, readIntoField, Adapter, createAccumulator, readField, finalize, FieldReflectionAdapter, createAccumulator, readField, finalize, RecordAdapter, primitiveDefaults, createAccumulator, readField, finalize
+修复后代码:
+```java
+package gson.internal.bind;
+
+import gson.Gson;
+import gson.FieldNamingStrategy;
+import gson.ReflectionAccessFilter;
+import gson.TypeToken;
+import gson.internal.ConstructorConstructor;
+import gson.internal.Excluder;
+import gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ReflectiveTypeAdapterFactoryTest {
+
+    @Test
+    void testIncludeField_Excluded() throws Exception {
+        Excluder excluder = Excluder.DEFAULT.excludeField(getFieldByName(TestClass.class, "excludedField"), true);
+        ReflectiveTypeAdapterFactory factory = createFactory(excluder);
+        
+        Field field = getFieldByName(TestClass.class, "excludedField");
+        Method includeFieldMethod = ReflectiveTypeAdapterFactory.class.getDeclaredMethod("includeField", Field.class, boolean.class);
+        includeFieldMethod.setAccessible(true);
+        boolean result = (boolean) includeFieldMethod.invoke(factory, field, true);
+        
+        assertFalse(result);
+    }
+
+    @Test
+    void testIncludeField_Included() throws Exception {
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        
+        Field field = getFieldByName(TestClass.class, "includedField");
+        Method includeFieldMethod = ReflectiveTypeAdapterFactory.class.getDeclaredMethod("includeField", Field.class, boolean.class);
+        includeFieldMethod.setAccessible(true);
+        boolean result = (boolean) includeFieldMethod.invoke(factory, field, true);
+        
+        assertTrue(result);
+    }
+
+    @Test
+    void testGetFieldNames_WithoutAnnotation() throws Exception {
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        
+        Field field = getFieldByName(TestClass.class, "includedField");
+        Method getFieldNamesMethod = ReflectiveTypeAdapterFactory.class.getDeclaredMethod("getFieldNames", Field.class);
+        getFieldNamesMethod.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<String> names = (List<String>) getFieldNamesMethod.invoke(factory, field);
+        
+        assertEquals(Collections.singletonList("includedField"), names);
+    }
+
+    @Test
+    void testCreate_AnonymousClass() {
+        Object anonymous = new Object() {};
+        TypeToken<Object> type = (TypeToken<Object>) TypeToken.get(anonymous.getClass());
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        
+        TypeAdapter<Object> adapter = factory.create(new Gson(), type);
+        
+        StringWriter writer = new StringWriter();
+        try {
+            adapter.write(new JsonWriter(writer), anonymous);
+        } catch (IOException e) {
+            fail(e);
+        }
+        assertEquals("null", writer.toString());
+    }
+
+    @Test
+    void testCreate_BlockAllReflection() {
+        List<ReflectionAccessFilter> filters = Collections.singletonList(ReflectionAccessFilter.BLOCK_ALL);
+        ReflectiveTypeAdapterFactory factory = new ReflectiveTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap()),
+            FieldNamingStrategy.IDENTITY,
+            Excluder.DEFAULT,
+            new JsonAdapterAnnotationTypeAdapterFactory(new ConstructorConstructor(Collections.emptyMap())),
+            filters
+        );
+        
+        TypeToken<TestClass> type = TypeToken.get(TestClass.class);
+        assertThrows(IOException.class, () -> factory.create(new Gson(), type));
+    }
+
+    @Test
+    void testAdapterWriteAndRead() throws Exception {
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        TypeAdapter<TestClass> adapter = factory.create(new Gson(), TypeToken.get(TestClass.class));
+        
+        TestClass obj = new TestClass();
+        obj.includedField = "testValue";
+        StringWriter writer = new StringWriter();
+        adapter.write(new JsonWriter(writer), obj);
+        String json = writer.toString();
+        
+        JsonReader reader = new JsonReader(new StringReader(json));
+        TestClass result = adapter.read(reader);
+        
+        assertEquals("testValue", result.includedField);
+    }
+
+    private ReflectiveTypeAdapterFactory createFactory(Excluder excluder) {
+        return new ReflectiveTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap()),
+            FieldNamingStrategy.IDENTITY,
+            excluder,
+            new JsonAdapterAnnotationTypeAdapterFactory(new ConstructorConstructor(Collections.emptyMap())),
+            Collections.emptyList()
+        );
+    }
+
+    private Field getFieldByName(Class<?> clazz, String name) throws NoSuchFieldException {
+        Field field = clazz.getDeclaredField(name);
+        field.setAccessible(true);
+        return field;
+    }
+
+    static class TestClass {
+        @SuppressWarnings("unused")
+        private transient String excludedField;
+        private String includedField;
+    }
+}
+
+```
+
+[2026-01-23 21:50:19] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package gson.internal.bind;
+
+import gson.Gson;
+import gson.JsonIOException;
+import gson.FieldNamingStrategy;
+import gson.ReflectionAccessFilter;
+import gson.reflect.TypeToken;
+import gson.internal.ConstructorConstructor;
+import gson.internal.Excluder;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+import java.util.Collections;
+import java.util.List;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ReflectiveTypeAdapterFactoryTest {
+    private static class TestClass {
+        public transient String excludedField;
+        public String includedField;
+    }
+
+    private static Field getFieldByName(Class<?> clazz, String fieldName) throws NoSuchFieldException {
+        return clazz.getDeclaredField(fieldName);
+    }
+
+    private ReflectiveTypeAdapterFactory createFactory(Excluder excluder) {
+        ConstructorConstructor constructorConstructor = new ConstructorConstructor(Collections.emptyMap(), false, Collections.emptyList());
+        FieldNamingStrategy fieldNamingStrategy = new FieldNamingStrategy() {
+            @Override
+            public String translateName(Field field) {
+                return field.getName();
+            }
+            @Override
+            public List<String> alternateNames(Field field) {
+                return Collections.emptyList();
+            }
+        };
+        JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory = new JsonAdapterAnnotationTypeAdapterFactory(constructorConstructor);
+        return new ReflectiveTypeAdapterFactory(
+            constructorConstructor,
+            fieldNamingStrategy,
+            excluder,
+            jsonAdapterFactory,
+            Collections.emptyList()
+        );
+    }
+
+    @Test
+    void testIncludeField_Excluded() throws Exception {
+        Excluder excluder = Excluder.DEFAULT;
+        ReflectiveTypeAdapterFactory factory = createFactory(excluder);
+        
+        Field field = getFieldByName(TestClass.class, "excludedField");
+        Method includeFieldMethod = ReflectiveTypeAdapterFactory.class.getDeclaredMethod("includeField", Field.class, boolean.class);
+        includeFieldMethod.setAccessible(true);
+        boolean result = (boolean) includeFieldMethod.invoke(factory, field, true);
+        
+        assertFalse(result);
+    }
+
+    @Test
+    void testIncludeField_Included() throws Exception {
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        
+        Field field = getFieldByName(TestClass.class, "includedField");
+        Method includeFieldMethod = ReflectiveTypeAdapterFactory.class.getDeclaredMethod("includeField", Field.class, boolean.class);
+        includeFieldMethod.setAccessible(true);
+        boolean result = (boolean) includeFieldMethod.invoke(factory, field, true);
+        
+        assertTrue(result);
+    }
+
+    @Test
+    void testGetFieldNames_WithoutAnnotation() throws Exception {
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        
+        Field field = getFieldByName(TestClass.class, "includedField");
+        Method getFieldNamesMethod = ReflectiveTypeAdapterFactory.class.getDeclaredMethod("getFieldNames", Field.class);
+        getFieldNamesMethod.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<String> names = (List<String>) getFieldNamesMethod.invoke(factory, field);
+        
+        assertEquals(Collections.singletonList("includedField"), names);
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    void testCreate_AnonymousClass() throws IOException {
+        Object anonymous = new Object() {};
+        TypeToken<Object> type = (TypeToken<Object>) TypeToken.get(anonymous.getClass());
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        
+        TypeAdapter<Object> adapter = factory.create(new Gson(), type);
+        
+        StringWriter writer = new StringWriter();
+        adapter.write(new JsonWriter(writer), anonymous);
+        assertEquals("null", writer.toString());
+    }
+
+    @Test
+    void testCreate_BlockAllReflection() {
+        List<ReflectionAccessFilter> filters = Collections.singletonList(ReflectionAccessFilter.BLOCK_ALL);
+        FieldNamingStrategy fieldNamingStrategy = new FieldNamingStrategy() {
+            @Override
+            public String translateName(Field field) {
+                return field.getName();
+            }
+            @Override
+            public List<String> alternateNames(Field field) {
+                return Collections.emptyList();
+            }
+        };
+        ReflectiveTypeAdapterFactory factory = new ReflectiveTypeAdapterFactory(
+            new ConstructorConstructor(Collections.emptyMap(), false, Collections.emptyList()),
+            fieldNamingStrategy,
+            Excluder.DEFAULT,
+            new JsonAdapterAnnotationTypeAdapterFactory(new ConstructorConstructor(Collections.emptyMap(), false, Collections.emptyList())),
+            filters
+        );
+        
+        TypeToken<TestClass> type = TypeToken.get(TestClass.class);
+        assertThrows(JsonIOException.class, () -> factory.create(new Gson(), type));
+    }
+
+    @Test
+    void testAdapterWriteAndRead() throws Exception {
+        ReflectiveTypeAdapterFactory factory = createFactory(Excluder.DEFAULT);
+        TypeAdapter<TestClass> adapter = factory.create(new Gson(), TypeToken.get(TestClass.class));
+        
+        TestClass obj = new TestClass();
+        obj.includedField = "testValue";
+        StringWriter writer = new StringWriter();
+        adapter.write(new JsonWriter(writer), obj);
+        String json = writer.toString();
+        
+        JsonReader reader = new JsonReader(new StringReader(json));
+        TestClass result = adapter.read(reader);
+        
+        assertEquals("testValue", result.includedField);
+    }
+
+}
+```
+

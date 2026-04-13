@@ -1,0 +1,15 @@
+```
+包路径：gson
+类名：LongSerializationPolicy
+父类：Enum
+依赖类：JsonElement,JsonNull,JsonPrimitive,TypeAdapter,TypeAdapters
+---
+序号：1
+方法名：serialize(Long value)
+返回类型：JsonElement
+功能描述：将Long值序列化为JsonElement对象
+序号：2
+方法名：typeAdapter()
+返回类型：TypeAdapter<Number>
+功能描述：返回该策略对应的TypeAdapter适配器
+```

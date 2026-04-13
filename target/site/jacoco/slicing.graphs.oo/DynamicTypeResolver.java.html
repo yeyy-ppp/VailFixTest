@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamicTypeResolver.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.oo</a> &gt; <span class="el_source">DynamicTypeResolver.java</span></div><h1>DynamicTypeResolver.java</h1><pre class="source lang-java linenums">package slicing.graphs.oo;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
+import com.github.javaparser.ast.expr.CastExpr;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.stmt.ReturnStmt;
+import com.github.javaparser.resolution.declarations.ResolvedClassDeclaration;
+import com.github.javaparser.resolution.types.ResolvedType;
+import slicing.graphs.CallGraph;
+import slicing.graphs.ClassGraph;
+import slicing.graphs.cfg.CFG;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.FormalIONode;
+import slicing.utils.ASTUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/** A dynamic type solver that complements JavaParser's {@code resolve()} method. */
+<span class="nc" id="L26">public class DynamicTypeResolver {</span>
+    protected final Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap;
+    protected final ClassGraph classGraph;
+    protected final CallGraph callGraph;
+
+<span class="nc" id="L31">    public DynamicTypeResolver(Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap, ClassGraph classGraph, CallGraph callGraph) {</span>
+<span class="nc" id="L32">        this.cfgMap = cfgMap;</span>
+<span class="nc" id="L33">        this.classGraph = classGraph;</span>
+<span class="nc" id="L34">        this.callGraph = callGraph;</span>
+<span class="nc" id="L35">    }</span>
+
+    /** Obtains the possible dynamic types of the given expression, which is contained within a GraphNode.
+     *  Only expressions of a reference type are allowed (e.g. objects, arrays, but not primitives). */
+    public Set&lt;ResolvedType&gt; resolve(Expression expression, GraphNode&lt;?&gt; container) {
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        assert expression.calculateResolvedType().isReference(): &quot;The expression must be of reference type (no primitives).&quot;;</span>
+<span class="nc" id="L41">        return resolveStreamed(expression, container).collect(Collectors.toSet());</span>
+    }
+
+    /** Directs each kind of expression to the appropriate resolve method. */
+    protected Stream&lt;ResolvedType&gt; resolveStreamed(Expression expression, GraphNode&lt;?&gt; container) {
+<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (expression.isMethodCallExpr())</span>
+<span class="nc" id="L47">            return resolveMethodCallExpr(expression.asMethodCallExpr());</span>
+<span class="nc bnc" id="L48" title="All 4 branches missed.">        if (expression.isNameExpr() || expression.isFieldAccessExpr()) // May be field, local variable or parameter</span>
+<span class="nc" id="L49">            return resolveVariable(expression, container);</span>
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (expression.isArrayAccessExpr() ||</span>
+<span class="nc bnc" id="L51" title="All 2 branches missed.">                expression.isThisExpr())</span>
+<span class="nc" id="L52">            return anyTypeOf(expression);</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        if (expression.isCastExpr())</span>
+<span class="nc" id="L54">            return resolveCast(expression.asCastExpr(), container);</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (expression.isEnclosedExpr())</span>
+<span class="nc" id="L56">            return resolveStreamed(expression.asEnclosedExpr().getInner(), container);</span>
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (expression.isObjectCreationExpr() ||</span>
+<span class="nc bnc" id="L58" title="All 2 branches missed.">                expression.isArrayCreationExpr())</span>
+<span class="nc" id="L59">            return Stream.of(expression.calculateResolvedType());</span>
+<span class="nc" id="L60">        throw new IllegalArgumentException(&quot;The given expression is not an object-compatible one.&quot;);</span>
+    }
+
+    /** Checks the possible values of all ReturnStmt of this call's target methods. */
+    protected Stream&lt;ResolvedType&gt; resolveMethodCallExpr(MethodCallExpr methodCallExpr) {
+<span class="nc bnc" id="L65" title="All 2 branches missed.">        assert !methodCallExpr.calculateResolvedType().isVoid();</span>
+<span class="nc" id="L66">        return callGraph.getCallTargets(methodCallExpr)</span>
+<span class="nc" id="L67">                .filter(ASTUtils::hasBody) // abstract or interface methods must be skipped</span>
+<span class="nc" id="L68">                .map(cfgMap::get)</span>
+<span class="nc" id="L69">                .flatMap(cfg -&gt; cfg.vertexSet().stream())</span>
+<span class="nc" id="L70">                .filter(node -&gt; node.getAstNode() instanceof ReturnStmt)</span>
+<span class="nc" id="L71">                .flatMap(node -&gt; resolveStreamed(((ReturnStmt) node.getAstNode()).getExpression().orElseThrow(()-&gt; new NoSuchElementException(&quot;Expression not present in ReturnStmt&quot;)), node));</span>
+    }
+
+    /** Searches for the corresponding VariableAction object, then calls {@link #resolveVariableAction(VariableAction)}. */
+    protected Stream&lt;ResolvedType&gt; resolveVariable(Expression expression, GraphNode&lt;?&gt; graphNode) {
+        // TODO: implement a search like ExpressionObjectTreeFinder.
+<span class="nc" id="L77">        return anyTypeOf(expression);</span>
+    }
+
+    /**
+     * Looks up the last definitions according to the CFG, then resolves the last assignment to it.
+     * If the last definition was not in this method (in the case of parameters or fields), it
+     * uses auxiliary methods to locate the last interprocedural definition.
+     * Otherwise, the last expression(s) assigned to it is found and recursively resolved.
+     */
+    protected Stream&lt;ResolvedType&gt; resolveVariableAction(VariableAction va) {
+<span class="nc" id="L87">        CFG cfg = cfgMap.get(findCallableDeclarationFromGraphNode(va.getGraphNode()));</span>
+<span class="nc" id="L88">        return cfg.findLastDefinitionsFrom(va).stream()</span>
+<span class="nc" id="L89">                .flatMap(def -&gt; {</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                    if (def.asDefinition().getExpression() == null) {</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">                        if (def instanceof VariableAction.Movable &amp;&amp; ((VariableAction.Movable) def).getRealNode() instanceof FormalIONode)</span>
+<span class="nc" id="L92">                            return resolveFormalIn((FormalIONode) ((VariableAction.Movable) def).getRealNode());</span>
+<span class="nc" id="L93">                        throw new IllegalArgumentException(&quot;Definition was not movable and hadn't an expression.&quot;);</span>
+                    }
+<span class="nc" id="L95">                    return resolveStreamed(def.asDefinition().getExpression(), def.getGraphNode());</span>
+                });
+    }
+
+    /** Locate the declaration (method or constructor) where the given node is located. */
+    protected CallableDeclaration&lt;?&gt; findCallableDeclarationFromGraphNode(GraphNode&lt;?&gt; node) {
+<span class="nc" id="L101">        return cfgMap.values().stream()</span>
+<span class="nc" id="L102">                .filter(cfg -&gt; cfg.containsVertex(node))</span>
+<span class="nc" id="L103">                .map(CFG::getDeclaration)</span>
+<span class="nc" id="L104">                .findFirst().orElseThrow(()-&gt;new NoSuchElementException(&quot;find CallableDeclaration from GraphNode failed.&quot;));</span>
+    }
+
+    /** Looks up the expression assigned to all corresponding actual-in nodes and resolves it. */
+    protected Stream&lt;ResolvedType&gt; resolveFormalIn(FormalIONode formalIn) {
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        assert formalIn.isInput();</span>
+<span class="nc" id="L110">        return callGraph.callsTo(findCallableDeclarationFromGraphNode(formalIn))</span>
+<span class="nc" id="L111">                .map(this::findNodeInMapByAST)</span>
+<span class="nc" id="L112">                .map(GraphNode::getVariableActions)</span>
+<span class="nc" id="L113">                .flatMap(List::stream)</span>
+<span class="nc" id="L114">                .filter(VariableAction.Movable.class::isInstance)</span>
+<span class="nc" id="L115">                .map(VariableAction.Movable.class::cast)</span>
+<span class="nc" id="L116">                .flatMap(movable -&gt; {</span>
+<span class="nc" id="L117">                    GraphNode&lt;?&gt; realNode = movable.getRealNode();</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                    if (!(realNode instanceof ActualIONode))</span>
+<span class="nc" id="L119">                        return Stream.empty();</span>
+<span class="nc" id="L120">                    ActualIONode actualIn = (ActualIONode) realNode;</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">                    if (!actualIn.matchesFormalIO(formalIn))</span>
+<span class="nc" id="L122">                        return Stream.empty();</span>
+<span class="nc" id="L123">                    return resolveStreamed(actualIn.getArgument(), movable.getGraphNode());</span>
+                });
+    }
+
+    /** Locate the CFG graph node in which the argument is contained.
+     *  Its time requirement is linear with the number of total nodes in */
+    protected GraphNode&lt;?&gt; findNodeInMapByAST(Node astNode) {
+<span class="nc" id="L130">        return cfgMap.values().stream()</span>
+<span class="nc" id="L131">                .map(cfg -&gt; cfg.findNodeByASTNode(astNode))</span>
+<span class="nc" id="L132">                .filter(Optional::isPresent)</span>
+<span class="nc" id="L133">                .map(Optional::get)</span>
+<span class="nc" id="L134">                .findFirst().orElseThrow(()-&gt;new NoSuchElementException(&quot;findNodeByASTNode failed.&quot;));</span>
+    }
+
+    /** Checks if the cast marks a more specific type and returns that one.
+     *  Otherwise, it unwraps the cast expression and recursively resolves the type
+     *  of the inner expression. */
+    protected Stream&lt;ResolvedType&gt; resolveCast(CastExpr cast, GraphNode&lt;?&gt; container) {
+<span class="nc bnc" id="L141" title="All 2 branches missed.">        if (ASTUtils.isDownCast(cast))</span>
+<span class="nc" id="L142">            return Stream.of(cast.getType().resolve());</span>
+<span class="nc" id="L143">        return resolveStreamed(cast.getExpression(), container);</span>
+    }
+
+    /** Returns all possible types that the given expression can be, by obtaining its static type
+     *  and locating all subtypes in the class graph. */
+    protected Stream&lt;ResolvedType&gt; anyTypeOf(Expression expression) {
+<span class="nc" id="L149">        ResolvedClassDeclaration type = expression.calculateResolvedType().asReferenceType()</span>
+<span class="nc" id="L150">                .getTypeDeclaration().orElseThrow(()-&gt;new NoSuchElementException(&quot;No Expression&quot;)).asClass();</span>
+<span class="nc" id="L151">        return classGraph.subclassesOf(type).stream()</span>
+<span class="nc" id="L152">                .map(TypeDeclaration::resolve)</span>
+<span class="nc" id="L153">                .map(ASTUtils::resolvedTypeDeclarationToResolvedType);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

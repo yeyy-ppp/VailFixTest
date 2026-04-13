@@ -1,0 +1,47 @@
+```
+包路径：cli
+类名：OptionGroup
+父类：无
+依赖类：Option,AlreadySelectedException,Char
+---
+序号：1
+方法名：OptionGroup()
+返回类型：void
+功能描述：初始化OptionGroup对象
+序号：2
+方法名：addOption(Option option)
+返回类型：OptionGroup
+功能描述：将选项添加到组中并返回当前实例
+序号：3
+方法名：getNames()
+返回类型：Collection<String>
+功能描述：获取所有选项名称集合
+序号：4
+方法名：getOptions()
+返回类型：Collection<Option>
+功能描述：获取所有选项对象集合
+序号：5
+方法名：getSelected()
+返回类型：String
+功能描述：获取当前选中选项的键
+序号：6
+方法名：isRequired()
+返回类型：boolean
+功能描述：检查组是否必须选择
+序号：7
+方法名：isSelected()
+返回类型：boolean
+功能描述：检查是否有选项被选中
+序号：8
+方法名：setRequired(boolean required)
+返回类型：void
+功能描述：设置组是否必须选择
+序号：9
+方法名：setSelected(Option option)
+返回类型：void
+功能描述：设置选中选项，冲突时抛出异常
+序号：10
+方法名：toString()
+返回类型：String
+功能描述：生成选项组的格式化字符串表示
+```

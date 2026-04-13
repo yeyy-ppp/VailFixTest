@@ -1,0 +1,31 @@
+```
+包路径：gson
+类名：JsonStreamParser
+父类：无
+依赖类：Streams,JsonReader,Strictness,JsonToken,MalformedJsonException,JsonParseException,JsonSyntaxException,JsonIOException,JsonElement
+---
+序号：1
+方法名：JsonStreamParser(String json)
+返回类型：void
+功能描述：创建基于字符串的JSON解析器
+---
+序号：2
+方法名：JsonStreamParser(Reader reader)
+返回类型：void
+功能描述：创建基于Reader的JSON解析器并设置宽松模式
+---
+序号：3
+方法名：next()
+返回类型：JsonElement
+功能描述：解析并返回下一个JSON元素，若无法解析则抛出异常
+---
+序号：4
+方法名：hasNext()
+返回类型：boolean
+功能描述：检查是否还有更多JSON元素可解析
+---
+序号：5
+方法名：remove()
+返回类型：void
+功能描述：抛出UnsupportedOperationException异常，不支持移除操作
+```

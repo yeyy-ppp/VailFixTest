@@ -1,0 +1,55 @@
+```包路径：gson
+类名：TypeAdapter
+父类：无
+依赖类：JsonWriter,JsonReader,JsonTreeReader,JsonTreeWriter,Streams,JsonElement,JsonIOException
+---
+序号：1
+方法名：TypeAdapter()
+返回类型：void
+功能描述：默认构造函数
+---
+序号：2
+方法名：write(JsonWriter out, T value)
+返回类型：void
+功能描述：将对象序列化到JsonWriter
+---
+序号：3
+方法名：toJson(Writer out, T value)
+返回类型：void
+功能描述：将对象转换为JSON并写入Writer
+---
+序号：4
+方法名：toJson(T value)
+返回类型：String
+功能描述：将对象转换为JSON字符串
+---
+序号：5
+方法名：toJsonTree(T value)
+返回类型：JsonElement
+功能描述：将对象转换为JsonElement树形结构
+---
+序号：6
+方法名：read(JsonReader in)
+返回类型：T
+功能描述：从JsonReader反序列化对象
+---
+序号：7
+方法名：fromJson(Reader in)
+返回类型：T
+功能描述：从Reader读取并解析为对象
+---
+序号：8
+方法名：fromJson(String json)
+返回类型：T
+功能描述：解析JSON字符串为对象
+---
+序号：9
+方法名：fromJsonTree(JsonElement jsonTree)
+返回类型：T
+功能描述：从JsonElement解析对象
+---
+序号：10
+方法名：nullSafe()
+返回类型：TypeAdapter<T>
+功能描述：返回空安全的TypeAdapter包装实例
+```

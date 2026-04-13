@@ -1,0 +1,15 @@
+```
+包路径：lang3.function
+类名：FailableIntFunction
+父类：无
+依赖类：无
+---
+序号：1
+方法名：nop()
+返回类型：FailableIntFunction<R, E>
+功能描述：返回一个不执行任何操作的空操作函数对象
+序号：2
+方法名：apply(int input)
+返回类型：R
+功能描述：对输入的int值应用函数逻辑并返回结果
+```

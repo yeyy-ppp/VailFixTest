@@ -1,0 +1,17 @@
+包路径：lang3.function
+类名：FailableBiFunction<T, U, R, E extends Throwable>
+父类：无
+依赖类：FailableFunction
+---
+序号：1
+方法名：nop()
+返回类型：FailableBiFunction<T, U, R, E>
+功能描述：返回一个无操作的FailableBiFunction实例，总是返回null。
+序号：2
+方法名：andThen(FailableFunction after)
+返回类型：FailableBiFunction<T, U, V, E>
+功能描述：返回一个新的FailableBiFunction，组合当前函数和给定的after函数。
+序号：3
+方法名：apply(T input1, U input2)
+返回类型：R
+功能描述：应用此函数到输入参数，并返回结果，可能抛出异常。

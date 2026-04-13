@@ -1,0 +1,26 @@
+```
+包路径：cli.help
+类名：FilterHelpAppendable
+父类：无
+依赖类：HelpAppendable
+---
+序号：1
+方法名：FilterHelpAppendable(Appendable output)
+返回类型：无
+功能描述：构造函数初始化output字段
+---
+序号：2
+方法名：append(char ch)
+返回类型：FilterHelpAppendable
+功能描述：向输出追加单个字符
+---
+序号：3
+方法名：append(CharSequence text)
+返回类型：FilterHelpAppendable
+功能描述：向输出追加完整字符序列
+---
+序号：4
+方法名：append(CharSequence csq, int start, int end)
+返回类型：FilterHelpAppendable
+功能描述：向输出追加字符序列的指定子段
+```

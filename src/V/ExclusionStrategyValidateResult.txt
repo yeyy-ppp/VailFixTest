@@ -1,0 +1,12 @@
+[2026-01-23 18:22:39] 验证结果
+错误类型: 编译错误, 错误行: 16, 错误原因: 构造器GsonExclusionStrategy不存在, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: shouldSkipField, shouldSkipClass
+  未覆盖: 全部覆盖
+
+[2026-01-23 18:26:58] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: shouldSkipField, shouldSkipClass
+  未覆盖: 全部覆盖
+

@@ -1,0 +1,346 @@
+[2026-01-13 18:03:30] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知错误 - 未导入Iterator类；错误位置：172,182,192,205行，错误原因：未导入ParseException类
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
+import java.util.List;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+import java.util.Iterator;
+import org.apache.commons.cli.ParseException;
+import static org.junit.jupiter.api.Assertions.*;
+
+class CommandLineTest {
+    private CommandLine commandLine;
+    private Option option;
+    private OptionGroup optionGroup;
+
+    @BeforeEach
+    void setUp() {
+        option = Option.builder("t").build();
+        optionGroup = new OptionGroup();
+        optionGroup.addOption(option);
+        optionGroup.setSelected(option);
+
+        List<String> args = List.of("arg1", "arg2");
+        List<Option> options = List.of(option);
+        commandLine = new CommandLine(args, options, o -> {});
+    }
+
+    @Test
+    void testBuilderConstructor() {
+        CommandLine.Builder builder = new CommandLine.Builder();
+        assertNotNull(builder);
+    }
+
+    @Test
+    void testDefaultConstructor() {
+        CommandLine cmd = new CommandLine();
+        assertNotNull(cmd);
+    }
+
+    @Test
+    void testBuilderAddArg() {
+        CommandLine.Builder builder = CommandLine.builder();
+        builder.addArg("test");
+        assertTrue(builder.args.contains("test"));
+    }
+
+    @Test
+    void testBuilderAddOption() {
+        CommandLine.Builder builder = CommandLine.builder();
+        builder.addOption(option);
+        assertTrue(builder.options.contains(option));
+    }
+
+    @Test
+    void testBuilderSetDeprecatedHandler() {
+        CommandLine.Builder builder = CommandLine.builder();
+        Consumer<Option> handler = o -> {};
+        builder.setDeprecatedHandler(handler);
+        assertEquals(handler, builder.deprecatedHandler);
+    }
+
+    @Test
+    void testBuilderGet() {
+        CommandLine.Builder builder = CommandLine.builder();
+        builder.addArg("arg").addOption(option);
+        CommandLine cmd = builder.get();
+        assertFalse(cmd.args.isEmpty());
+        assertFalse(cmd.options.isEmpty());
+    }
+
+    @Test
+    void testGetArgList() {
+        List<String> argList = commandLine.getArgList();
+        assertEquals(2, argList.size());
+    }
+
+    @Test
+    void testGetArgs() {
+        String[] args = commandLine.getArgs();
+        assertEquals(2, args.length);
+    }
+
+    @Test
+    void testGetOptionObjectByChar() {
+        Object obj = commandLine.getOptionObject('t');
+        assertNull(obj);
+    }
+
+    @Test
+    void testGetOptionObjectByName() {
+        Object obj = commandLine.getOptionObject("t");
+        assertNull(obj);
+    }
+
+    @Test
+    void testGetOptions() {
+        Option[] options = commandLine.getOptions();
+        assertEquals(1, options.length);
+    }
+
+    @Test
+    void testGetOptionValueByOption() {
+        option.addValue("value");
+        String value = commandLine.getOptionValue(option);
+        assertEquals("value", value);
+    }
+
+    @Test
+    void testGetOptionValueByOptionWithDefault() {
+        String value = commandLine.getOptionValue(option, "default");
+        assertEquals("default", value);
+    }
+
+    @Test
+    void testGetOptionValueByOptionGroup() {
+        option.addValue("value");
+        String value = commandLine.getOptionValue(optionGroup);
+        assertEquals("value", value);
+    }
+
+    @Test
+    void testGetOptionValueByOptionGroupWithDefault() {
+        String value = commandLine.getOptionValue(optionGroup, "default");
+        assertEquals("default", value);
+    }
+
+    @Test
+    void testGetOptionValueByName() {
+        option.addValue("value");
+        String value = commandLine.getOptionValue("t");
+        assertEquals("value", value);
+    }
+
+    @Test
+    void testGetOptionValuesByOption() {
+        option.addValue("v1");
+        option.addValue("v2");
+        String[] values = commandLine.getOptionValues(option);
+        assertEquals(2, values.length);
+    }
+
+    @Test
+    void testGetOptionValuesByOptionGroup() {
+        option.addValue("v1");
+        option.addValue("v2");
+        String[] values = commandLine.getOptionValues(optionGroup);
+        assertEquals(2, values.length);
+    }
+
+    @Test
+    void testGetOptionValuesByName() {
+        option.addValue("v1");
+        option.addValue("v2");
+        String[] values = commandLine.getOptionValues("t");
+        assertEquals(2, values.length);
+    }
+
+    @Test
+    void testHasOptionByChar() {
+        assertTrue(commandLine.hasOption('t'));
+    }
+
+    @Test
+    void testHasOptionByOption() {
+        assertTrue(commandLine.hasOption(option));
+    }
+
+    @Test
+    void testHasOptionByOptionGroup() {
+        assertTrue(commandLine.hasOption(optionGroup));
+    }
+
+    @Test
+    void testHasOptionByName() {
+        assertTrue(commandLine.hasOption("t"));
+    }
+
+    @Test
+    void testIterator() {
+        Iterator<Option> it = commandLine.iterator();
+        assertTrue(it.hasNext());
+        assertEquals(option, it.next());
+    }
+
+    @Test
+    void testGetOptionPropertiesByOption() {
+        option.addValue("key");
+        option.addValue("value");
+        Properties props = commandLine.getOptionProperties(option);
+        assertEquals("value", props.getProperty("key"));
+    }
+
+    @Test
+    void testGetOptionPropertiesByName() {
+        option.addValue("key");
+        option.addValue("value");
+        Properties props = commandLine.getOptionProperties("t");
+        assertEquals("value", props.getProperty("key"));
+    }
+
+    @Test
+    void testGetParsedOptionValue() throws ParseException {
+        option.setConverter(Integer::parseInt);
+        option.addValue("123");
+        Integer value = commandLine.getParsedOptionValue(option);
+        assertEquals(123, value);
+    }
+
+    @Test
+    void testGetParsedOptionValueWithDefault() throws ParseException {
+        Integer value = commandLine.getParsedOptionValue(option, 456);
+        assertEquals(456, value);
+    }
+
+    @Test
+    void testGetParsedOptionValueWithSupplierDefault() throws ParseException {
+        Integer value = commandLine.getParsedOptionValue(option, () -> 789);
+        assertEquals(789, value);
+    }
+
+    @Test
+    void testGetParsedOptionValuesByOption() throws ParseException {
+        option.setConverter(Integer::parseInt);
+        option.addValue("1");
+        option.addValue("2");
+        Integer[] values = commandLine.getParsedOptionValues(option);
+        assertArrayEquals(new Integer[]{1, 2}, values);
+    }
+
+    @Test
+    void testGetParsedOptionValuesByOptionGroup() throws ParseException {
+        option.setConverter(Integer::parseInt);
+        option.addValue("1");
+        option.addValue("2");
+        Integer[] values = commandLine.getParsedOptionValues(optionGroup);
+        assertArrayEquals(new Integer[]{1, 2}, values);
+    }
+
+    @Test
+    void testGetParsedOptionValuesByName() throws ParseException {
+        option.setConverter(Integer::parseInt);
+        option.addValue("1");
+        option.addValue("2");
+        Integer[] values = commandLine.getParsedOptionValues("t");
+        assertArrayEquals(new Integer[]{1, 2}, values);
+    }
+
+    @Test
+    void testHandleDeprecated() {
+        option.setDeprecated("Deprecated");
+        commandLine.handleDeprecated(option);
+    }
+
+    @Test
+    void testGetDeprecated() {
+        option.setDeprecated("Deprecated");
+        assertThrows(ParseException.class, () -> {
+            commandLine.getParsedOptionValue(option);
+        });
+    }
+
+    @Test
+    void testNullOptionHandling() {
+        assertNull(commandLine.resolveOption(null));
+        assertFalse(commandLine.hasOption((Option) null));
+    }
+
+    @Test
+    void testEmptyOptionValues() {
+        String[] values = commandLine.getOptionValues(option);
+        assertNull(values);
+    }
+
+    @Test
+    void testUnselectedOptionGroup() {
+        OptionGroup unselectedGroup = new OptionGroup();
+        assertFalse(commandLine.hasOption(unselectedGroup));
+        assertNull(commandLine.getOptionValues(unselectedGroup));
+    }
+
+    @Test
+    void testEmptyArgsConstructor() {
+        CommandLine cmd = new CommandLine(List.of(), List.of(), null);
+        assertEquals(0, cmd.getArgList().size());
+    }
+
+    @Test
+    void testNullArgs() {
+        CommandLine cmd = new CommandLine(null, null, null);
+        assertNull(cmd.getArgs());
+    }
+
+    @Test
+    void testConverterException() {
+        option.setConverter(s -> { throw new NumberFormatException(); });
+        option.addValue("invalid");
+        assertThrows(ParseException.class, () -> commandLine.getParsedOptionValue(option));
+    }
+
+    @Test
+    void testProcessPropertiesFromValues() {
+        Properties props = new Properties();
+        List<String> values = List.of("key1=val1", "key2=val2");
+        commandLine.processPropertiesFromValues(props, values);
+        assertEquals("val1", props.getProperty("key1"));
+        assertEquals("val2", props.getProperty("key2"));
+    }
+
+    @Test
+    void testAddArgToCommandLine() {
+        CommandLine cmd = new CommandLine();
+        cmd.addArg("test");
+        assertEquals(1, cmd.getArgList().size());
+    }
+
+    @Test
+    void testAddOptionToCommandLine() {
+        CommandLine cmd = new CommandLine();
+        cmd.addOption(option);
+        assertTrue(cmd.hasOption("t"));
+    }
+
+    @Test
+    void testGetWithSupplier() {
+        Supplier<String> supplier = () -> "supplied";
+        String value = commandLine.get(supplier);
+        assertEquals("supplied", value);
+    }
+
+    @Test
+    void testGetWithNullSupplier() {
+        String value = commandLine.get(null);
+        assertNull(value);
+    }
+}
+```
+

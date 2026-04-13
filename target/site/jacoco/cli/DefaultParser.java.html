@@ -1,0 +1,384 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultParser.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">cli</a> &gt; <span class="el_source">DefaultParser.java</span></div><h1>DefaultParser.java</h1><pre class="source lang-java linenums">package cli;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Properties;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
+public class DefaultParser implements CommandLineParser {
+    public static final class Builder implements Supplier&lt;DefaultParser&gt; {
+<span class="fc" id="L10">        private boolean allowPartialMatching = true;</span>
+<span class="fc" id="L11">        private Consumer&lt;Option&gt; deprecatedHandler = CommandLine.Builder.DEPRECATED_HANDLER;</span>
+        private Boolean stripLeadingAndTrailingQuotes;
+<span class="fc" id="L13">        private Builder() {}</span>
+        @Deprecated
+        public DefaultParser build() {
+<span class="fc" id="L16">            return get();</span>
+        }
+        @Override
+        public DefaultParser get() {
+<span class="fc" id="L20">            return new DefaultParser(</span>
+                    allowPartialMatching, stripLeadingAndTrailingQuotes, deprecatedHandler);
+        }
+        public Builder setAllowPartialMatching(final boolean allowPartialMatching) {
+<span class="fc" id="L24">            this.allowPartialMatching = allowPartialMatching;</span>
+<span class="fc" id="L25">            return this;</span>
+        }
+        public Builder setDeprecatedHandler(final Consumer&lt;Option&gt; deprecatedHandler) {
+<span class="fc" id="L28">            this.deprecatedHandler = deprecatedHandler;</span>
+<span class="fc" id="L29">            return this;</span>
+        }
+        public Builder setStripLeadingAndTrailingQuotes(final Boolean stripLeadingAndTrailingQuotes) {
+<span class="fc" id="L32">            this.stripLeadingAndTrailingQuotes = stripLeadingAndTrailingQuotes;</span>
+<span class="fc" id="L33">            return this;</span>
+        }
+    }
+    public static Builder builder() {
+<span class="fc" id="L37">        return new Builder();</span>
+    }
+    static int indexOfEqual(final String token) {
+<span class="fc" id="L40">        return token.indexOf(Char.EQUAL);</span>
+    }
+    protected CommandLine cmd;
+    protected cli.Options options;
+    protected boolean stopAtNonOption;
+    protected String currentToken;
+    protected Option currentOption;
+    protected boolean skipParsing;
+    protected List expectedOpts;
+    private final boolean allowPartialMatching;
+    private final Boolean stripLeadingAndTrailingQuotes;
+    private final Consumer&lt;Option&gt; deprecatedHandler;
+<span class="fc" id="L52">    public DefaultParser() {</span>
+<span class="fc" id="L53">        this.allowPartialMatching = true;</span>
+<span class="fc" id="L54">        this.stripLeadingAndTrailingQuotes = null;</span>
+<span class="fc" id="L55">        this.deprecatedHandler = CommandLine.Builder.DEPRECATED_HANDLER;</span>
+<span class="fc" id="L56">    }</span>
+<span class="fc" id="L57">    public DefaultParser(final boolean allowPartialMatching) {</span>
+<span class="fc" id="L58">        this.allowPartialMatching = allowPartialMatching;</span>
+<span class="fc" id="L59">        this.stripLeadingAndTrailingQuotes = null;</span>
+<span class="fc" id="L60">        this.deprecatedHandler = CommandLine.Builder.DEPRECATED_HANDLER;</span>
+<span class="fc" id="L61">    }</span>
+    private DefaultParser(
+            final boolean allowPartialMatching,
+            final Boolean stripLeadingAndTrailingQuotes,
+<span class="fc" id="L65">            final Consumer&lt;Option&gt; deprecatedHandler) {</span>
+<span class="fc" id="L66">        this.allowPartialMatching = allowPartialMatching;</span>
+<span class="fc" id="L67">        this.stripLeadingAndTrailingQuotes = stripLeadingAndTrailingQuotes;</span>
+<span class="fc" id="L68">        this.deprecatedHandler = deprecatedHandler;</span>
+<span class="fc" id="L69">    }</span>
+    void checkRequiredArgs() throws ParseException {
+<span class="pc bpc" id="L71" title="1 of 4 branches missed.">        if (currentOption != null &amp;&amp; currentOption.requiresArg()) {</span>
+<span class="nc bnc" id="L72" title="All 4 branches missed.">            if (isJavaProperty(currentOption.getKey()) &amp;&amp; currentOption.getValuesList().size() == 1) {</span>
+<span class="nc" id="L73">                return;</span>
+            }
+<span class="nc" id="L75">            throw new MissingArgumentException(currentOption);</span>
+        }
+<span class="fc" id="L77">    }</span>
+    protected void checkRequiredOptions() throws MissingOptionException {
+<span class="fc bfc" id="L79" title="All 2 branches covered.">        if (!expectedOpts.isEmpty()) {</span>
+<span class="fc" id="L80">            throw new MissingOptionException(expectedOpts);</span>
+        }
+<span class="fc" id="L82">    }</span>
+    private String getLongPrefix(final String token) {
+<span class="nc" id="L84">        final String t = Util.stripLeadingHyphens(token);</span>
+        int i;
+<span class="nc" id="L86">        String opt = null;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (i = t.length() - 2; i &gt; 1; i--) {</span>
+<span class="nc" id="L88">            final String prefix = t.substring(0, i);</span>
+<span class="nc bnc" id="L89" title="All 2 branches missed.">            if (options.hasLongOption(prefix)) {</span>
+<span class="nc" id="L90">                opt = prefix;</span>
+<span class="nc" id="L91">                break;</span>
+            }
+        }
+<span class="nc" id="L94">        return opt;</span>
+    }
+    List&lt;String&gt; getMatchingLongOptions(final String token) {
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        if (allowPartialMatching) {</span>
+<span class="fc" id="L98">            return options.getMatchingOptions(token);</span>
+        }
+<span class="fc" id="L100">        final List&lt;String&gt; matches = new ArrayList&lt;&gt;(1);</span>
+<span class="pc bpc" id="L101" title="1 of 2 branches missed.">        if (options.hasLongOption(token)) {</span>
+<span class="fc" id="L102">            matches.add(options.getOption(token).getLongOpt());</span>
+        }
+<span class="fc" id="L104">        return matches;</span>
+    }
+    protected void handleConcatenatedOptions(final String token) throws ParseException {
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        for (int i = 1; i &lt; token.length(); i++) {</span>
+<span class="nc" id="L108">            final String ch = String.valueOf(token.charAt(i));</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            if (!options.hasOption(ch)) {</span>
+<span class="nc bnc" id="L110" title="All 4 branches missed.">                handleUnknownToken(stopAtNonOption &amp;&amp; i &gt; 1 ? token.substring(i) : token);</span>
+<span class="nc" id="L111">                break;</span>
+            }
+<span class="nc" id="L113">            handleOption(options.getOption(ch));</span>
+<span class="nc bnc" id="L114" title="All 4 branches missed.">            if (currentOption != null &amp;&amp; token.length() != i + 1) {</span>
+<span class="nc" id="L115">                currentOption.processValue(stripLeadingAndTrailingQuotesDefaultOff(token.substring(i + 1)));</span>
+<span class="nc" id="L116">                break;</span>
+            }
+        }
+<span class="nc" id="L119">    }</span>
+    private void handleLongOption(final String token) throws ParseException {
+<span class="pc bpc" id="L121" title="1 of 2 branches missed.">        if (indexOfEqual(token) == -1) {</span>
+<span class="fc" id="L122">            handleLongOptionWithoutEqual(token);</span>
+        } else {
+<span class="nc" id="L124">            handleLongOptionWithEqual(token);</span>
+        }
+<span class="fc" id="L126">    }</span>
+    void handleLongOptionWithEqual(final String token) throws ParseException {
+<span class="nc" id="L128">        final int pos = indexOfEqual(token);</span>
+<span class="nc" id="L129">        final String value = token.substring(pos + 1);</span>
+<span class="nc" id="L130">        final String opt = token.substring(0, pos);</span>
+<span class="nc" id="L131">        final List&lt;String&gt; matchingOpts = getMatchingLongOptions(opt);</span>
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (matchingOpts.isEmpty()) {</span>
+<span class="nc" id="L133">            handleUnknownToken(currentToken);</span>
+<span class="nc bnc" id="L134" title="All 4 branches missed.">        } else if (matchingOpts.size() &gt; 1 &amp;&amp; !options.hasLongOption(opt)) {</span>
+<span class="nc" id="L135">            throw new AmbiguousOptionException(opt, matchingOpts);</span>
+        } else {
+<span class="nc bnc" id="L137" title="All 2 branches missed.">            final String key = options.hasLongOption(opt) ? opt : matchingOpts.get(0);</span>
+<span class="nc" id="L138">            final Option option = options.getOption(key);</span>
+<span class="nc bnc" id="L139" title="All 2 branches missed.">            if (option.acceptsArg()) {</span>
+<span class="nc" id="L140">                handleOption(option);</span>
+<span class="nc" id="L141">                currentOption.processValue(stripLeadingAndTrailingQuotesDefaultOff(value));</span>
+<span class="nc" id="L142">                currentOption = null;</span>
+            } else {
+<span class="nc" id="L144">                handleUnknownToken(currentToken);</span>
+            }
+        }
+<span class="nc" id="L147">    }</span>
+    private void handleLongOptionWithoutEqual(final String token) throws ParseException {
+<span class="fc" id="L149">        final List&lt;String&gt; matchingOpts = getMatchingLongOptions(token);</span>
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">        if (matchingOpts.isEmpty()) {</span>
+<span class="nc" id="L151">            handleUnknownToken(currentToken);</span>
+<span class="pc bpc" id="L152" title="3 of 4 branches missed.">        } else if (matchingOpts.size() &gt; 1 &amp;&amp; !options.hasLongOption(token)) {</span>
+<span class="nc" id="L153">            throw new AmbiguousOptionException(token, matchingOpts);</span>
+        } else {
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">            final String key = options.hasLongOption(token) ? token : matchingOpts.get(0);</span>
+<span class="fc" id="L156">            handleOption(options.getOption(key));</span>
+        }
+<span class="fc" id="L158">    }</span>
+    void handleOption(final Option option) throws ParseException {
+<span class="fc" id="L160">        checkRequiredArgs();</span>
+<span class="fc" id="L161">        final Option copy = (Option) option.clone();</span>
+<span class="fc" id="L162">        updateRequiredOptions(copy);</span>
+<span class="fc" id="L163">        cmd.addOption(copy);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">        currentOption = copy.hasArg() ? copy : null;</span>
+<span class="fc" id="L165">    }</span>
+    public void handleProperties(final Properties properties) throws ParseException {
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">        if (properties == null) {</span>
+<span class="fc" id="L168">            return;</span>
+        }
+<span class="nc bnc" id="L170" title="All 2 branches missed.">        for (final Enumeration&lt;?&gt; e = properties.propertyNames(); e.hasMoreElements(); ) {</span>
+<span class="nc" id="L171">            final String option = e.nextElement().toString();</span>
+<span class="nc" id="L172">            final Option opt = options.getOption(option);</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            if (opt == null) {</span>
+<span class="nc" id="L174">                throw new UnrecognizedOptionException(&quot;Default option wasn't defined&quot;, option);</span>
+            }
+<span class="nc" id="L176">            final OptionGroup group = options.getOptionGroup(opt);</span>
+<span class="nc bnc" id="L177" title="All 4 branches missed.">            final boolean selected = group != null &amp;&amp; group.isSelected();</span>
+<span class="nc bnc" id="L178" title="All 4 branches missed.">            if (!cmd.hasOption(option) &amp;&amp; !selected) {</span>
+<span class="nc" id="L179">                final String value = properties.getProperty(option);</span>
+<span class="nc bnc" id="L180" title="All 2 branches missed.">                if (opt.hasArg()) {</span>
+<span class="nc bnc" id="L181" title="All 2 branches missed.">                    if (Util.isEmpty(opt.getValues())) {</span>
+<span class="nc" id="L182">                        opt.processValue(stripLeadingAndTrailingQuotesDefaultOff(value));</span>
+                    }
+<span class="nc bnc" id="L184" title="All 2 branches missed.">                } else if (!(&quot;yes&quot;.equalsIgnoreCase(value)</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                        || &quot;true&quot;.equalsIgnoreCase(value)</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">                        || &quot;1&quot;.equalsIgnoreCase(value))) {</span>
+<span class="nc" id="L187">                    continue;</span>
+                }
+<span class="nc" id="L189">                handleOption(opt);</span>
+<span class="nc" id="L190">                currentOption = null;</span>
+            }
+<span class="nc" id="L192">        }</span>
+<span class="nc" id="L193">    }</span>
+    void handleShortAndLongOption(final String hyphenToken) throws ParseException {
+<span class="fc" id="L195">        final String token = Util.stripLeadingHyphens(hyphenToken);</span>
+<span class="fc" id="L196">        final int pos = indexOfEqual(token);</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">        if (token.length() == 1) {</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">            if (options.hasShortOption(token)) {</span>
+<span class="fc" id="L199">                handleOption(options.getOption(token));</span>
+            } else {
+<span class="nc" id="L201">                handleUnknownToken(hyphenToken);</span>
+            }
+<span class="nc bnc" id="L203" title="All 2 branches missed.">        } else if (pos == -1) {</span>
+<span class="nc bnc" id="L204" title="All 2 branches missed.">            if (options.hasShortOption(token)) {</span>
+<span class="nc" id="L205">                handleOption(options.getOption(token));</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">            } else if (!getMatchingLongOptions(token).isEmpty()) {</span>
+<span class="nc" id="L207">                handleLongOptionWithoutEqual(hyphenToken);</span>
+            } else {
+<span class="nc" id="L209">                final String opt = getLongPrefix(token);</span>
+<span class="nc bnc" id="L210" title="All 4 branches missed.">                if (opt != null &amp;&amp; options.getOption(opt).acceptsArg()) {</span>
+<span class="nc" id="L211">                    handleOption(options.getOption(opt));</span>
+<span class="nc" id="L212">                    currentOption.processValue(</span>
+<span class="nc" id="L213">                            stripLeadingAndTrailingQuotesDefaultOff(token.substring(opt.length())));</span>
+<span class="nc" id="L214">                    currentOption = null;</span>
+<span class="nc bnc" id="L215" title="All 2 branches missed.">                } else if (isJavaProperty(token)) {</span>
+<span class="nc" id="L216">                    handleOption(options.getOption(token.substring(0, 1)));</span>
+<span class="nc" id="L217">                    currentOption.processValue(stripLeadingAndTrailingQuotesDefaultOff(token.substring(1)));</span>
+<span class="nc" id="L218">                    currentOption = null;</span>
+                } else {
+<span class="nc" id="L220">                    handleConcatenatedOptions(hyphenToken);</span>
+                }
+<span class="nc" id="L222">            }</span>
+        } else {
+<span class="nc" id="L224">            final String opt = token.substring(0, pos);</span>
+<span class="nc" id="L225">            final String value = token.substring(pos + 1);</span>
+<span class="nc bnc" id="L226" title="All 2 branches missed.">            if (opt.length() == 1) {</span>
+<span class="nc" id="L227">                final Option option = options.getOption(opt);</span>
+<span class="nc bnc" id="L228" title="All 4 branches missed.">                if (option != null &amp;&amp; option.acceptsArg()) {</span>
+<span class="nc" id="L229">                    handleOption(option);</span>
+<span class="nc" id="L230">                    currentOption.processValue(value);</span>
+<span class="nc" id="L231">                    currentOption = null;</span>
+                } else {
+<span class="nc" id="L233">                    handleUnknownToken(hyphenToken);</span>
+                }
+<span class="nc bnc" id="L235" title="All 2 branches missed.">            } else if (isJavaProperty(opt)) {</span>
+<span class="nc" id="L236">                handleOption(options.getOption(opt.substring(0, 1)));</span>
+<span class="nc" id="L237">                currentOption.processValue(opt.substring(1));</span>
+<span class="nc" id="L238">                currentOption.processValue(value);</span>
+<span class="nc" id="L239">                currentOption = null;</span>
+            } else {
+<span class="nc" id="L241">                handleLongOptionWithEqual(hyphenToken);</span>
+            }
+        }
+<span class="fc" id="L244">    }</span>
+    public void handleToken(final String token) throws ParseException {
+<span class="pc bpc" id="L246" title="1 of 2 branches missed.">        if (token != null) {</span>
+<span class="fc" id="L247">            currentToken = token;</span>
+<span class="fc bfc" id="L248" title="All 2 branches covered.">            if (skipParsing) {</span>
+<span class="fc" id="L249">                cmd.addArg(token);</span>
+<span class="pc bpc" id="L250" title="1 of 2 branches missed.">            } else if (&quot;--&quot;.equals(token)) {</span>
+<span class="nc" id="L251">                skipParsing = true;</span>
+<span class="pc bpc" id="L252" title="2 of 6 branches missed.">            } else if (currentOption != null &amp;&amp; currentOption.acceptsArg() &amp;&amp; isArgument(token)) {</span>
+<span class="fc" id="L253">                currentOption.processValue(stripLeadingAndTrailingQuotesDefaultOn(token));</span>
+<span class="fc bfc" id="L254" title="All 2 branches covered.">            } else if (token.startsWith(&quot;--&quot;)) {</span>
+<span class="fc" id="L255">                handleLongOption(token);</span>
+<span class="pc bpc" id="L256" title="1 of 4 branches missed.">            } else if (token.startsWith(&quot;-&quot;) &amp;&amp; !&quot;-&quot;.equals(token)) {</span>
+<span class="fc" id="L257">                handleShortAndLongOption(token);</span>
+            } else {
+<span class="fc" id="L259">                handleUnknownToken(token);</span>
+            }
+<span class="fc bfc" id="L261" title="All 4 branches covered.">            if (currentOption != null &amp;&amp; !currentOption.acceptsArg()) {</span>
+<span class="fc" id="L262">                currentOption = null;</span>
+            }
+        }
+<span class="fc" id="L265">    }</span>
+    void handleUnknownToken(final String token) throws ParseException {
+<span class="pc bpc" id="L267" title="2 of 6 branches missed.">        if (token.startsWith(&quot;-&quot;) &amp;&amp; token.length() &gt; 1 &amp;&amp; !stopAtNonOption) {</span>
+<span class="fc" id="L268">            throw new UnrecognizedOptionException(&quot;Unrecognized option: &quot; + token, token);</span>
+        }
+<span class="fc" id="L270">        cmd.addArg(token);</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">        if (stopAtNonOption) {</span>
+<span class="fc" id="L272">            skipParsing = true;</span>
+        }
+<span class="fc" id="L274">    }</span>
+    private boolean isArgument(final String token) {
+<span class="pc bpc" id="L276" title="3 of 4 branches missed.">        return !isOption(token) || isNegativeNumber(token);</span>
+    }
+    public boolean isJavaProperty(final String token) {
+<span class="nc bnc" id="L279" title="All 2 branches missed.">        final String opt = token.isEmpty() ? null : token.substring(0, 1);</span>
+<span class="nc" id="L280">        final Option option = options.getOption(opt);</span>
+<span class="nc bnc" id="L281" title="All 6 branches missed.">        return option != null &amp;&amp; (option.getArgs() &gt;= 2 || option.getArgs() == Option.UNLIMITED_VALUES);</span>
+    }
+    public boolean isLongOption(final String token) {
+<span class="pc bpc" id="L284" title="2 of 6 branches missed.">        if (token == null || !token.startsWith(&quot;-&quot;) || token.length() == 1) {</span>
+<span class="fc" id="L285">            return false;</span>
+        }
+<span class="fc" id="L287">        final int pos = indexOfEqual(token);</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">        final String t = pos == -1 ? token : token.substring(0, pos);</span>
+<span class="pc bpc" id="L289" title="1 of 2 branches missed.">        if (!getMatchingLongOptions(t).isEmpty()) {</span>
+<span class="fc" id="L290">            return true;</span>
+        }
+<span class="nc bnc" id="L292" title="All 4 branches missed.">        if (getLongPrefix(token) != null &amp;&amp; !token.startsWith(&quot;--&quot;)) {</span>
+<span class="nc" id="L293">            return true;</span>
+        }
+<span class="nc" id="L295">        return false;</span>
+    }
+    boolean isNegativeNumber(final String token) {
+        try {
+<span class="fc" id="L299">            Double.parseDouble(token);</span>
+<span class="fc" id="L300">            return true;</span>
+<span class="nc" id="L301">        } catch (final NumberFormatException e) {</span>
+<span class="nc" id="L302">            return false;</span>
+        }
+    }
+    private boolean isOption(final String token) {
+<span class="pc bpc" id="L306" title="2 of 4 branches missed.">        return isLongOption(token) || isShortOption(token);</span>
+    }
+    public boolean isShortOption(final String token) {
+<span class="pc bpc" id="L309" title="2 of 6 branches missed.">        if (token == null || !token.startsWith(&quot;-&quot;) || token.length() == 1) {</span>
+<span class="fc" id="L310">            return false;</span>
+        }
+<span class="fc" id="L312">        final int pos = indexOfEqual(token);</span>
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">        final String optName = pos == -1 ? token.substring(1) : token.substring(1, pos);</span>
+<span class="pc bpc" id="L314" title="1 of 2 branches missed.">        if (options.hasShortOption(optName)) {</span>
+<span class="fc" id="L315">            return true;</span>
+        }
+<span class="nc bnc" id="L317" title="All 4 branches missed.">        return !optName.isEmpty() &amp;&amp; options.hasShortOption(String.valueOf(optName.charAt(0)));</span>
+    }
+    @Override
+    public CommandLine parse(final Options options, final String[] arguments) throws ParseException {
+<span class="fc" id="L321">        return parse(options, arguments, null);</span>
+    }
+    @Override
+    public CommandLine parse(
+            final Options options, final String[] arguments, final boolean stopAtNonOption)
+            throws ParseException {
+<span class="fc" id="L327">        return parse(options, arguments, null, stopAtNonOption);</span>
+    }
+    public CommandLine parse(
+            final Options options, final String[] arguments, final Properties properties)
+            throws ParseException {
+<span class="fc" id="L332">        return parse(options, arguments, properties, false);</span>
+    }
+    public CommandLine parse(
+            final Options options,
+            final String[] arguments,
+            final Properties properties,
+            final boolean stopAtNonOption)
+            throws ParseException {
+<span class="fc" id="L340">        this.options = options;</span>
+<span class="fc" id="L341">        this.stopAtNonOption = stopAtNonOption;</span>
+<span class="fc" id="L342">        skipParsing = false;</span>
+<span class="fc" id="L343">        currentOption = null;</span>
+<span class="fc" id="L344">        expectedOpts = new ArrayList&lt;&gt;(options.getRequiredOptions());</span>
+<span class="pc bpc" id="L345" title="1 of 2 branches missed.">        for (final OptionGroup group : options.getOptionGroups()) {</span>
+<span class="nc" id="L346">            group.setSelected(null);</span>
+<span class="nc" id="L347">        }</span>
+<span class="fc" id="L348">        cmd = CommandLine.builder().setDeprecatedHandler(deprecatedHandler).get();</span>
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">        if (arguments != null) {</span>
+<span class="fc bfc" id="L350" title="All 2 branches covered.">            for (final String argument : arguments) {</span>
+<span class="fc" id="L351">                handleToken(argument);</span>
+            }
+        }
+<span class="fc" id="L354">        checkRequiredArgs();</span>
+<span class="fc" id="L355">        handleProperties(properties);</span>
+<span class="fc" id="L356">        checkRequiredOptions();</span>
+<span class="fc" id="L357">        return cmd;</span>
+    }
+    private String stripLeadingAndTrailingQuotesDefaultOff(final String token) {
+<span class="nc bnc" id="L360" title="All 4 branches missed.">        if (stripLeadingAndTrailingQuotes != null &amp;&amp; stripLeadingAndTrailingQuotes) {</span>
+<span class="nc" id="L361">            return Util.stripLeadingAndTrailingQuotes(token);</span>
+        }
+<span class="nc" id="L363">        return token;</span>
+    }
+    String stripLeadingAndTrailingQuotesDefaultOn(final String token) {
+<span class="pc bpc" id="L366" title="3 of 4 branches missed.">        if (stripLeadingAndTrailingQuotes == null || stripLeadingAndTrailingQuotes) {</span>
+<span class="fc" id="L367">            return Util.stripLeadingAndTrailingQuotes(token);</span>
+        }
+<span class="nc" id="L369">        return token;</span>
+    }
+    void updateRequiredOptions(final Option option) throws AlreadySelectedException {
+<span class="fc bfc" id="L372" title="All 2 branches covered.">        if (option.isRequired()) {</span>
+<span class="fc" id="L373">            expectedOpts.remove(option.getKey());</span>
+        }
+<span class="pc bpc" id="L375" title="1 of 2 branches missed.">        if (options.getOptionGroup(option) != null) {</span>
+<span class="nc" id="L376">            final OptionGroup group = options.getOptionGroup(option);</span>
+<span class="nc bnc" id="L377" title="All 2 branches missed.">            if (group.isRequired()) {</span>
+<span class="nc" id="L378">                expectedOpts.remove(group);</span>
+            }
+<span class="nc" id="L380">            group.setSelected(option);</span>
+        }
+<span class="fc" id="L382">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

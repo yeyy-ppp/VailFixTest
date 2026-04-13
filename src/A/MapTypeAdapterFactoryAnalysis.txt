@@ -1,0 +1,33 @@
+包路径：gson.internal.bind  
+类名：MapTypeAdapterFactory  
+父类：无  
+依赖类：ConstructorConstructor,Gson,GsonTypes,JsonReaderInternalAccess,ObjectConstructor,Streams,TypeAdapter,TypeAdapterFactory,TypeAdapterRuntimeTypeWrapper,TypeToken,JsonReader,JsonToken,JsonWriter,JsonElement,JsonPrimitive,JsonSyntaxException  
+---
+序号：1  
+方法名：MapTypeAdapterFactory(ConstructorConstructor constructorConstructor, boolean complexMapKeySerialization)  
+返回类型：void  
+功能描述：初始化MapTypeAdapterFactory实例，设置构造器构造函数和复杂键序列化标志  
+序号：2  
+方法名：create(Gson gson, TypeToken<T> typeToken)  
+返回类型：TypeAdapter<T>  
+功能描述：为指定类型Token创建TypeAdapter，用于Map类型反序列化和序列化  
+序号：3  
+方法名：getKeyAdapter(Gson context, Type keyType)  
+返回类型：TypeAdapter<?>  
+功能描述：获取键类型的TypeAdapter，对于布尔类型使用字符串适配器  
+序号：4  
+方法名：Adapter(TypeAdapter<K> keyTypeAdapter, TypeAdapter<V> valueTypeAdapter, ObjectConstructor<? extends Map<K, V>> constructor)  
+返回类型：void  
+功能描述：初始化Adapter实例，设置键值适配器和map构造器  
+序号：5  
+方法名：read(JsonReader in)  
+返回类型：Map<K, V>  
+功能描述：从JsonReader读取并解析为Map对象，处理数组或对象格式  
+序号：6  
+方法名：write(JsonWriter out, Map<K, V> map)  
+返回类型：void  
+功能描述：将Map对象写入JsonWriter，根据键复杂与否选择数组或对象格式序列化  
+序号：7  
+方法名：keyToString(JsonElement keyElement)  
+返回类型：String  
+功能描述：将JsonElement键转换为字符串表示，处理基本类型和null

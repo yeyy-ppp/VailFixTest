@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PromptFile.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.prompt</a> &gt; <span class="el_source">PromptFile.java</span></div><h1>PromptFile.java</h1><pre class="source lang-java linenums">package zju.cst.aces.prompt;
+
+import zju.cst.aces.api.config.Config;
+
+import static zju.cst.aces.parser.ProjectParser.config;
+
+<span class="nc" id="L7">public enum PromptFile {</span>
+    // 定义枚举常量及其对应的模板文件名
+<span class="nc" id="L9">    chatunitest_init(&quot;PROMPT_TEMPLATE_INIT&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L10">    chatunitest_repair(&quot;PROMPT_TEMPLATE_REPAIR&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L11">    testpilot_init(&quot;PROMPT_TEMPLATE_TESTPILOT_INIT&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L12">    testpilot_repair(&quot;PROMPT_TEMPLATE_REPAIR&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L13">    hits_slice_init(&quot;PROMPT_TEMPLATE_HITS_GEN_SLICE&quot;, &quot;PROMPT_TEMPLATE_HITS_SYS_GEN&quot;),</span>
+<span class="nc" id="L14">    hits_test_init(&quot;PROMPT_TEMPLATE_HITS_GEN&quot;, &quot;PROMPT_TEMPLATE_HITS_SYS_GEN&quot;),</span>
+<span class="nc" id="L15">    hits_test_repair(&quot;PROMPT_TEMPLATE_HITS_REPAIR&quot;, &quot;PROMPT_TEMPLATE_HITS_SYS_REPAIR&quot;),</span>
+<span class="nc" id="L16">    chattester_init(&quot;PROMPT_TEMPLATE_CHATTESTER_INIT&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L17">    chattester_repair(&quot;PROMPT_TEMPLATE_CHATTESTER_REPAIR&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L18">    chattester_extra(&quot;PROMPT_TEMPLATE_CHATTESTER_EXTRA&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L19">    testspark_init(&quot;PROMPT_TEMPLATE_TESTSPARK_INIT&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L20">    testspark_repair(&quot;PROMPT_TEMPLATE_TESTSPARK_REPAIR&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L21">    coverup_repair(&quot;PROMPT_TEMPLATE_COVERUP_REPAIR&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L22">    symprompt_init(&quot;PROMPT_TEMPLATE_SYMPROMPT_INIT&quot;, &quot;PROMPT_TEMPLATE_SYMPROMPT_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L23">    telpa_init(&quot;PROMPT_TEMPLATE_TELPA_INIT&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;),</span>
+<span class="nc" id="L24">    mutap_init(&quot;PROMPT_TEMPLATE_MUTAPINIT&quot;, &quot;PROMPT_TEMPLATE_INIT_SYSTEM&quot;);</span>
+    // 成员变量
+    private final String generate;
+    private final String generateSystem;
+    // 构造函数
+<span class="nc" id="L29">    PromptFile(String generate, String generateSystem) {</span>
+<span class="nc" id="L30">        this.generate = generate;</span>
+<span class="nc" id="L31">        this.generateSystem = generateSystem;</span>
+<span class="nc" id="L32">    }</span>
+
+    public String getGenerate() {
+<span class="nc" id="L35">        return config.getProperties().getProperty(this.generate);</span>
+    }
+
+    public String getGenerateSystem() {
+<span class="nc" id="L39">        return config.getProperties().getProperty(this.generateSystem);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

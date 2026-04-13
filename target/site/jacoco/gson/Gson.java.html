@@ -1,0 +1,578 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Gson.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">Gson.java</span></div><h1>Gson.java</h1><pre class="source lang-java linenums">package gson;
+import static gson.internal.bind.TypeAdapters.atomicLongAdapter;
+import static gson.internal.bind.TypeAdapters.atomicLongArrayAdapter;
+
+import com.google.gson.internal.GsonBuildConfig;
+import gson.internal.ConstructorConstructor;
+import gson.internal.Excluder;
+import gson.internal.Primitives;
+import gson.internal.Streams;
+import gson.internal.bind.ArrayTypeAdapter;
+import gson.internal.bind.CollectionTypeAdapterFactory;
+import gson.internal.bind.DefaultDateTypeAdapter;
+import gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactory;
+import gson.internal.bind.JsonTreeReader;
+import gson.internal.bind.JsonTreeWriter;
+import gson.internal.bind.MapTypeAdapterFactory;
+import gson.internal.bind.NumberTypeAdapter;
+import gson.internal.bind.ObjectTypeAdapter;
+import gson.internal.bind.ReflectiveTypeAdapterFactory;
+import gson.internal.bind.SerializationDelegatingTypeAdapter;
+import gson.internal.bind.TypeAdapters;
+import gson.internal.sql.SqlTypesSupport;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import gson.stream.MalformedJsonException;
+import java.io.EOFException;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.Writer;
+import java.lang.reflect.Type;
+import java.text.DateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicLongArray;
+public final class Gson {
+  static final boolean DEFAULT_JSON_NON_EXECUTABLE = false;
+<span class="fc" id="L47">  static final Strictness DEFAULT_STRICTNESS = null;</span>
+<span class="fc" id="L48">  static final FormattingStyle DEFAULT_FORMATTING_STYLE = FormattingStyle.COMPACT;</span>
+  static final boolean DEFAULT_ESCAPE_HTML = true;
+  static final boolean DEFAULT_SERIALIZE_NULLS = false;
+  static final boolean DEFAULT_COMPLEX_MAP_KEYS = false;
+  static final boolean DEFAULT_SPECIALIZE_FLOAT_VALUES = false;
+  static final boolean DEFAULT_USE_JDK_UNSAFE = true;
+<span class="fc" id="L54">  static final String DEFAULT_DATE_PATTERN = null;</span>
+<span class="fc" id="L55">  static final FieldNamingStrategy DEFAULT_FIELD_NAMING_STRATEGY = FieldNamingPolicy.IDENTITY;</span>
+<span class="fc" id="L56">  static final ToNumberStrategy DEFAULT_OBJECT_TO_NUMBER_STRATEGY = ToNumberPolicy.DOUBLE;</span>
+<span class="fc" id="L57">  static final ToNumberStrategy DEFAULT_NUMBER_TO_NUMBER_STRATEGY =</span>
+      ToNumberPolicy.LAZILY_PARSED_NUMBER;
+  private static final String JSON_NON_EXECUTABLE_PREFIX = &quot;)]}'\n&quot;;
+<span class="fc" id="L60">  @SuppressWarnings(&quot;ThreadLocalUsage&quot;)</span>
+  private final ThreadLocal&lt;Map&lt;TypeToken&lt;?&gt;, TypeAdapter&lt;?&gt;&gt;&gt; threadLocalAdapterResults =
+      new ThreadLocal&lt;&gt;();
+<span class="fc" id="L63">  private final ConcurrentMap&lt;TypeToken&lt;?&gt;, TypeAdapter&lt;?&gt;&gt; typeTokenCache =</span>
+      new ConcurrentHashMap&lt;&gt;();
+  private final ConstructorConstructor constructorConstructor;
+  private final JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory;
+  final List&lt;TypeAdapterFactory&gt; factories;
+  final Excluder excluder;
+  final FieldNamingStrategy fieldNamingStrategy;
+  final Map&lt;Type, InstanceCreator&lt;?&gt;&gt; instanceCreators;
+  final boolean serializeNulls;
+  final boolean complexMapKeySerialization;
+  final boolean generateNonExecutableJson;
+  final boolean htmlSafe;
+  final FormattingStyle formattingStyle;
+  final Strictness strictness;
+  final boolean serializeSpecialFloatingPointValues;
+  final boolean useJdkUnsafe;
+  final String datePattern;
+  final int dateStyle;
+  final int timeStyle;
+  final LongSerializationPolicy longSerializationPolicy;
+  final List&lt;TypeAdapterFactory&gt; builderFactories;
+  final List&lt;TypeAdapterFactory&gt; builderHierarchyFactories;
+  final ToNumberStrategy objectToNumberStrategy;
+  final ToNumberStrategy numberToNumberStrategy;
+  final List&lt;ReflectionAccessFilter&gt; reflectionFilters;
+  public Gson() {
+<span class="fc" id="L89">    this(</span>
+        Excluder.DEFAULT,
+        DEFAULT_FIELD_NAMING_STRATEGY,
+<span class="fc" id="L92">        Collections.emptyMap(),</span>
+        DEFAULT_SERIALIZE_NULLS,
+        DEFAULT_COMPLEX_MAP_KEYS,
+        DEFAULT_JSON_NON_EXECUTABLE,
+        DEFAULT_ESCAPE_HTML,
+        DEFAULT_FORMATTING_STYLE,
+        DEFAULT_STRICTNESS,
+        DEFAULT_SPECIALIZE_FLOAT_VALUES,
+        DEFAULT_USE_JDK_UNSAFE,
+        LongSerializationPolicy.DEFAULT,
+        DEFAULT_DATE_PATTERN,
+        DateFormat.DEFAULT,
+        DateFormat.DEFAULT,
+<span class="fc" id="L105">        Collections.emptyList(),</span>
+<span class="fc" id="L106">        Collections.emptyList(),</span>
+<span class="fc" id="L107">        Collections.emptyList(),</span>
+        DEFAULT_OBJECT_TO_NUMBER_STRATEGY,
+        DEFAULT_NUMBER_TO_NUMBER_STRATEGY,
+<span class="fc" id="L110">        Collections.emptyList());</span>
+<span class="fc" id="L111">  }</span>
+  Gson(
+      Excluder excluder,
+      FieldNamingStrategy fieldNamingStrategy,
+      Map&lt;Type, InstanceCreator&lt;?&gt;&gt; instanceCreators,
+      boolean serializeNulls,
+      boolean complexMapKeySerialization,
+      boolean generateNonExecutableGson,
+      boolean htmlSafe,
+      FormattingStyle formattingStyle,
+      Strictness strictness,
+      boolean serializeSpecialFloatingPointValues,
+      boolean useJdkUnsafe,
+      LongSerializationPolicy longSerializationPolicy,
+      String datePattern,
+      int dateStyle,
+      int timeStyle,
+      List&lt;TypeAdapterFactory&gt; builderFactories,
+      List&lt;TypeAdapterFactory&gt; builderHierarchyFactories,
+      List&lt;TypeAdapterFactory&gt; factoriesToBeAdded,
+      ToNumberStrategy objectToNumberStrategy,
+      ToNumberStrategy numberToNumberStrategy,
+<span class="fc" id="L133">      List&lt;ReflectionAccessFilter&gt; reflectionFilters) {</span>
+<span class="fc" id="L134">    this.excluder = excluder;</span>
+<span class="fc" id="L135">    this.fieldNamingStrategy = fieldNamingStrategy;</span>
+<span class="fc" id="L136">    this.instanceCreators = instanceCreators;</span>
+<span class="fc" id="L137">    this.constructorConstructor =</span>
+        new ConstructorConstructor(instanceCreators, useJdkUnsafe, reflectionFilters);
+<span class="fc" id="L139">    this.serializeNulls = serializeNulls;</span>
+<span class="fc" id="L140">    this.complexMapKeySerialization = complexMapKeySerialization;</span>
+<span class="fc" id="L141">    this.generateNonExecutableJson = generateNonExecutableGson;</span>
+<span class="fc" id="L142">    this.htmlSafe = htmlSafe;</span>
+<span class="fc" id="L143">    this.formattingStyle = formattingStyle;</span>
+<span class="fc" id="L144">    this.strictness = strictness;</span>
+<span class="fc" id="L145">    this.serializeSpecialFloatingPointValues = serializeSpecialFloatingPointValues;</span>
+<span class="fc" id="L146">    this.useJdkUnsafe = useJdkUnsafe;</span>
+<span class="fc" id="L147">    this.longSerializationPolicy = longSerializationPolicy;</span>
+<span class="fc" id="L148">    this.datePattern = datePattern;</span>
+<span class="fc" id="L149">    this.dateStyle = dateStyle;</span>
+<span class="fc" id="L150">    this.timeStyle = timeStyle;</span>
+<span class="fc" id="L151">    this.builderFactories = builderFactories;</span>
+<span class="fc" id="L152">    this.builderHierarchyFactories = builderHierarchyFactories;</span>
+<span class="fc" id="L153">    this.objectToNumberStrategy = objectToNumberStrategy;</span>
+<span class="fc" id="L154">    this.numberToNumberStrategy = numberToNumberStrategy;</span>
+<span class="fc" id="L155">    this.reflectionFilters = reflectionFilters;</span>
+<span class="fc" id="L156">    List&lt;TypeAdapterFactory&gt; factories = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L157">    factories.add(TypeAdapters.JSON_ELEMENT_FACTORY);</span>
+<span class="fc" id="L158">    factories.add(ObjectTypeAdapter.getFactory(objectToNumberStrategy));</span>
+<span class="fc" id="L159">    factories.add(excluder);</span>
+<span class="fc" id="L160">    factories.addAll(factoriesToBeAdded);</span>
+<span class="fc" id="L161">    factories.add(TypeAdapters.STRING_FACTORY);</span>
+<span class="fc" id="L162">    factories.add(TypeAdapters.INTEGER_FACTORY);</span>
+<span class="fc" id="L163">    factories.add(TypeAdapters.BOOLEAN_FACTORY);</span>
+<span class="fc" id="L164">    factories.add(TypeAdapters.BYTE_FACTORY);</span>
+<span class="fc" id="L165">    factories.add(TypeAdapters.SHORT_FACTORY);</span>
+<span class="fc" id="L166">    TypeAdapter&lt;Number&gt; longAdapter = longSerializationPolicy.typeAdapter();</span>
+<span class="fc" id="L167">    factories.add(TypeAdapters.newFactory(long.class, Long.class, longAdapter));</span>
+<span class="fc" id="L168">    factories.add(TypeAdapters.newFactory(double.class, Double.class, doubleAdapter()));</span>
+<span class="fc" id="L169">    factories.add(TypeAdapters.newFactory(float.class, Float.class, floatAdapter()));</span>
+<span class="fc" id="L170">    factories.add(NumberTypeAdapter.getFactory(numberToNumberStrategy));</span>
+<span class="fc" id="L171">    factories.add(TypeAdapters.ATOMIC_INTEGER_FACTORY);</span>
+<span class="fc" id="L172">    factories.add(TypeAdapters.ATOMIC_BOOLEAN_FACTORY);</span>
+<span class="fc" id="L173">    factories.add(TypeAdapters.newFactory(AtomicLong.class, atomicLongAdapter(longAdapter)));</span>
+<span class="fc" id="L174">    factories.add(</span>
+<span class="fc" id="L175">        TypeAdapters.newFactory(AtomicLongArray.class, atomicLongArrayAdapter(longAdapter)));</span>
+<span class="fc" id="L176">    factories.add(TypeAdapters.ATOMIC_INTEGER_ARRAY_FACTORY);</span>
+<span class="fc" id="L177">    factories.add(TypeAdapters.CHARACTER_FACTORY);</span>
+<span class="fc" id="L178">    factories.add(TypeAdapters.STRING_BUILDER_FACTORY);</span>
+<span class="fc" id="L179">    factories.add(TypeAdapters.STRING_BUFFER_FACTORY);</span>
+<span class="fc" id="L180">    factories.add(TypeAdapters.BIG_DECIMAL_FACTORY);</span>
+<span class="fc" id="L181">    factories.add(TypeAdapters.BIG_INTEGER_FACTORY);</span>
+<span class="fc" id="L182">    factories.add(TypeAdapters.LAZILY_PARSED_NUMBER_FACTORY);</span>
+<span class="fc" id="L183">    factories.add(TypeAdapters.URL_FACTORY);</span>
+<span class="fc" id="L184">    factories.add(TypeAdapters.URI_FACTORY);</span>
+<span class="fc" id="L185">    factories.add(TypeAdapters.UUID_FACTORY);</span>
+<span class="fc" id="L186">    factories.add(TypeAdapters.CURRENCY_FACTORY);</span>
+<span class="fc" id="L187">    factories.add(TypeAdapters.LOCALE_FACTORY);</span>
+<span class="fc" id="L188">    factories.add(TypeAdapters.INET_ADDRESS_FACTORY);</span>
+<span class="fc" id="L189">    factories.add(TypeAdapters.BIT_SET_FACTORY);</span>
+<span class="fc" id="L190">    factories.add(DefaultDateTypeAdapter.DEFAULT_STYLE_FACTORY);</span>
+<span class="fc" id="L191">    factories.add(TypeAdapters.CALENDAR_FACTORY);</span>
+<span class="fc" id="L192">    factories.addAll(SqlTypesSupport.SQL_TYPE_FACTORIES);</span>
+<span class="fc" id="L193">    TypeAdapterFactory javaTimeFactory = TypeAdapters.javaTimeTypeAdapterFactory();</span>
+<span class="pc bpc" id="L194" title="1 of 2 branches missed.">    if (javaTimeFactory != null) {</span>
+<span class="fc" id="L195">      factories.add(javaTimeFactory);</span>
+    }
+<span class="fc" id="L197">    factories.add(ArrayTypeAdapter.FACTORY);</span>
+<span class="fc" id="L198">    factories.add(TypeAdapters.CLASS_FACTORY);</span>
+<span class="fc" id="L199">    factories.add(new CollectionTypeAdapterFactory(constructorConstructor));</span>
+<span class="fc" id="L200">    factories.add(new MapTypeAdapterFactory(constructorConstructor, complexMapKeySerialization));</span>
+<span class="fc" id="L201">    this.jsonAdapterFactory = new JsonAdapterAnnotationTypeAdapterFactory(constructorConstructor);</span>
+<span class="fc" id="L202">    factories.add(jsonAdapterFactory);</span>
+<span class="fc" id="L203">    factories.add(TypeAdapters.ENUM_FACTORY);</span>
+<span class="fc" id="L204">    factories.add(</span>
+        new ReflectiveTypeAdapterFactory(
+            constructorConstructor,
+            fieldNamingStrategy,
+            excluder,
+            jsonAdapterFactory,
+            reflectionFilters));
+<span class="fc" id="L211">    this.factories = Collections.unmodifiableList(factories);</span>
+<span class="fc" id="L212">  }</span>
+  public GsonBuilder newBuilder() {
+<span class="fc" id="L214">    return new GsonBuilder(this);</span>
+  }
+  @Deprecated
+  public Excluder excluder() {
+<span class="fc" id="L218">    return excluder;</span>
+  }
+  public FieldNamingStrategy fieldNamingStrategy() {
+<span class="fc" id="L221">    return fieldNamingStrategy;</span>
+  }
+  public boolean serializeNulls() {
+<span class="fc" id="L224">    return serializeNulls;</span>
+  }
+  public boolean htmlSafe() {
+<span class="fc" id="L227">    return htmlSafe;</span>
+  }
+  private TypeAdapter&lt;Number&gt; floatAdapter() {
+<span class="fc bfc" id="L230" title="All 2 branches covered.">    return serializeSpecialFloatingPointValues ? TypeAdapters.FLOAT : TypeAdapters.FLOAT_STRICT;</span>
+  }
+  private TypeAdapter&lt;Number&gt; doubleAdapter() {
+<span class="fc bfc" id="L233" title="All 2 branches covered.">    return serializeSpecialFloatingPointValues ? TypeAdapters.DOUBLE : TypeAdapters.DOUBLE_STRICT;</span>
+  }
+  public &lt;T&gt; TypeAdapter&lt;T&gt; getAdapter(TypeToken&lt;T&gt; type) {
+<span class="fc" id="L236">    Objects.requireNonNull(type, &quot;type must not be null&quot;);</span>
+<span class="fc" id="L237">    TypeAdapter&lt;?&gt; cached = typeTokenCache.get(type);</span>
+<span class="fc bfc" id="L238" title="All 2 branches covered.">    if (cached != null) {</span>
+      @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L240">      TypeAdapter&lt;T&gt; adapter = (TypeAdapter&lt;T&gt;) cached;</span>
+<span class="fc" id="L241">      return adapter;</span>
+    }
+<span class="fc" id="L243">    Map&lt;TypeToken&lt;?&gt;, TypeAdapter&lt;?&gt;&gt; threadCalls = threadLocalAdapterResults.get();</span>
+<span class="fc" id="L244">    boolean isInitialAdapterRequest = false;</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">    if (threadCalls == null) {</span>
+<span class="fc" id="L246">      threadCalls = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L247">      threadLocalAdapterResults.set(threadCalls);</span>
+<span class="fc" id="L248">      isInitialAdapterRequest = true;</span>
+    } else {
+      @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L251">      TypeAdapter&lt;T&gt; ongoingCall = (TypeAdapter&lt;T&gt;) threadCalls.get(type);</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">      if (ongoingCall != null) {</span>
+<span class="fc" id="L253">        return ongoingCall;</span>
+      }
+    }
+<span class="fc" id="L256">    TypeAdapter&lt;T&gt; candidate = null;</span>
+    try {
+<span class="fc" id="L258">      FutureTypeAdapter&lt;T&gt; call = new FutureTypeAdapter&lt;&gt;();</span>
+<span class="fc" id="L259">      threadCalls.put(type, call);</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">      for (TypeAdapterFactory factory : factories) {</span>
+<span class="fc" id="L261">        candidate = factory.create(this, type);</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">        if (candidate != null) {</span>
+<span class="fc" id="L263">          call.setDelegate(candidate);</span>
+<span class="fc" id="L264">          threadCalls.put(type, candidate);</span>
+<span class="fc" id="L265">          break;</span>
+        }
+<span class="fc" id="L267">      }</span>
+    } finally {
+<span class="fc bfc" id="L269" title="All 2 branches covered.">      if (isInitialAdapterRequest) {</span>
+<span class="fc" id="L270">        threadLocalAdapterResults.remove();</span>
+      }
+    }
+<span class="pc bpc" id="L273" title="1 of 2 branches missed.">    if (candidate == null) {</span>
+<span class="nc" id="L274">      throw new IllegalArgumentException(</span>
+          &quot;GSON (&quot; + GsonBuildConfig.VERSION + &quot;) cannot handle &quot; + type);
+    }
+<span class="fc bfc" id="L277" title="All 2 branches covered.">    if (isInitialAdapterRequest) {</span>
+<span class="fc" id="L278">      typeTokenCache.putAll(threadCalls);</span>
+    }
+<span class="fc" id="L280">    return candidate;</span>
+  }
+  public &lt;T&gt; TypeAdapter&lt;T&gt; getAdapter(Class&lt;T&gt; type) {
+<span class="fc" id="L283">    return getAdapter(TypeToken.get(type));</span>
+  }
+  public &lt;T&gt; TypeAdapter&lt;T&gt; getDelegateAdapter(TypeAdapterFactory skipPast, TypeToken&lt;T&gt; type) {
+<span class="fc" id="L286">    Objects.requireNonNull(skipPast, &quot;skipPast must not be null&quot;);</span>
+<span class="fc" id="L287">    Objects.requireNonNull(type, &quot;type must not be null&quot;);</span>
+<span class="pc bpc" id="L288" title="1 of 2 branches missed.">    if (jsonAdapterFactory.isClassJsonAdapterFactory(type, skipPast)) {</span>
+<span class="nc" id="L289">      skipPast = jsonAdapterFactory;</span>
+    }
+<span class="fc" id="L291">    boolean skipPastFound = false;</span>
+<span class="fc bfc" id="L292" title="All 2 branches covered.">    for (TypeAdapterFactory factory : factories) {</span>
+<span class="fc bfc" id="L293" title="All 2 branches covered.">      if (!skipPastFound) {</span>
+<span class="fc bfc" id="L294" title="All 2 branches covered.">        if (factory == skipPast) {</span>
+<span class="fc" id="L295">          skipPastFound = true;</span>
+        }
+        continue;
+      }
+<span class="fc" id="L299">      TypeAdapter&lt;T&gt; candidate = factory.create(this, type);</span>
+<span class="fc bfc" id="L300" title="All 2 branches covered.">      if (candidate != null) {</span>
+<span class="fc" id="L301">        return candidate;</span>
+      }
+<span class="fc" id="L303">    }</span>
+<span class="pc bpc" id="L304" title="1 of 2 branches missed.">    if (skipPastFound) {</span>
+<span class="nc" id="L305">      throw new IllegalArgumentException(&quot;GSON cannot serialize or deserialize &quot; + type);</span>
+    } else {
+<span class="fc" id="L307">      return getAdapter(type);</span>
+    }
+  }
+  public JsonElement toJsonTree(Object src) {
+<span class="fc bfc" id="L311" title="All 2 branches covered.">    if (src == null) {</span>
+<span class="fc" id="L312">      return JsonNull.INSTANCE;</span>
+    }
+<span class="fc" id="L314">    return toJsonTree(src, src.getClass());</span>
+  }
+  public JsonElement toJsonTree(Object src, Type typeOfSrc) {
+<span class="fc" id="L317">    JsonTreeWriter writer = new JsonTreeWriter();</span>
+<span class="fc" id="L318">    toJson(src, typeOfSrc, writer);</span>
+<span class="fc" id="L319">    return writer.get();</span>
+  }
+  public String toJson(Object src) {
+<span class="pc bpc" id="L322" title="1 of 2 branches missed.">    if (src == null) {</span>
+<span class="nc" id="L323">      return toJson(JsonNull.INSTANCE);</span>
+    }
+<span class="fc" id="L325">    return toJson(src, src.getClass());</span>
+  }
+  public String toJson(Object src, Type typeOfSrc) {
+<span class="fc" id="L328">    StringBuilder writer = new StringBuilder();</span>
+<span class="fc" id="L329">    toJson(src, typeOfSrc, writer);</span>
+<span class="fc" id="L330">    return writer.toString();</span>
+  }
+  public void toJson(Object src, Appendable writer) throws JsonIOException {
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">    if (src != null) {</span>
+<span class="fc" id="L334">      toJson(src, src.getClass(), writer);</span>
+    } else {
+<span class="nc" id="L336">      toJson(JsonNull.INSTANCE, writer);</span>
+    }
+<span class="fc" id="L338">  }</span>
+  public void toJson(Object src, Type typeOfSrc, Appendable writer) throws JsonIOException {
+    try {
+<span class="fc" id="L341">      JsonWriter jsonWriter = newJsonWriter(Streams.writerForAppendable(writer));</span>
+<span class="fc" id="L342">      toJson(src, typeOfSrc, jsonWriter);</span>
+<span class="nc" id="L343">    } catch (IOException e) {</span>
+<span class="nc" id="L344">      throw new JsonIOException(e);</span>
+<span class="fc" id="L345">    }</span>
+<span class="fc" id="L346">  }</span>
+  public void toJson(Object src, Type typeOfSrc, JsonWriter writer) throws JsonIOException {
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L349">    TypeAdapter&lt;Object&gt; adapter = (TypeAdapter&lt;Object&gt;) getAdapter(TypeToken.get(typeOfSrc));</span>
+<span class="fc" id="L350">    Strictness oldStrictness = writer.getStrictness();</span>
+<span class="pc bpc" id="L351" title="1 of 2 branches missed.">    if (this.strictness != null) {</span>
+<span class="nc" id="L352">      writer.setStrictness(this.strictness);</span>
+<span class="pc bpc" id="L353" title="1 of 2 branches missed.">    } else if (writer.getStrictness() == Strictness.LEGACY_STRICT) {</span>
+<span class="fc" id="L354">      writer.setStrictness(Strictness.LENIENT);</span>
+    }
+<span class="fc" id="L356">    boolean oldHtmlSafe = writer.isHtmlSafe();</span>
+<span class="fc" id="L357">    boolean oldSerializeNulls = writer.getSerializeNulls();</span>
+<span class="fc" id="L358">    writer.setHtmlSafe(htmlSafe);</span>
+<span class="fc" id="L359">    writer.setSerializeNulls(serializeNulls);</span>
+    try {
+<span class="fc" id="L361">      adapter.write(writer, src);</span>
+<span class="nc" id="L362">    } catch (IOException e) {</span>
+<span class="nc" id="L363">      throw new JsonIOException(e);</span>
+<span class="nc" id="L364">    } catch (AssertionError e) {</span>
+<span class="nc" id="L365">      throw new AssertionError(</span>
+<span class="nc" id="L366">          &quot;AssertionError (GSON &quot; + GsonBuildConfig.VERSION + &quot;): &quot; + e.getMessage(), e);</span>
+    } finally {
+<span class="fc" id="L368">      writer.setStrictness(oldStrictness);</span>
+<span class="fc" id="L369">      writer.setHtmlSafe(oldHtmlSafe);</span>
+<span class="fc" id="L370">      writer.setSerializeNulls(oldSerializeNulls);</span>
+    }
+<span class="fc" id="L372">  }</span>
+  public String toJson(JsonElement jsonElement) {
+<span class="fc" id="L374">    StringBuilder writer = new StringBuilder();</span>
+<span class="fc" id="L375">    toJson(jsonElement, writer);</span>
+<span class="fc" id="L376">    return writer.toString();</span>
+  }
+  public void toJson(JsonElement jsonElement, Appendable writer) throws JsonIOException {
+    try {
+<span class="fc" id="L380">      JsonWriter jsonWriter = newJsonWriter(Streams.writerForAppendable(writer));</span>
+<span class="fc" id="L381">      toJson(jsonElement, jsonWriter);</span>
+<span class="nc" id="L382">    } catch (IOException e) {</span>
+<span class="nc" id="L383">      throw new JsonIOException(e);</span>
+<span class="fc" id="L384">    }</span>
+<span class="fc" id="L385">  }</span>
+  public void toJson(JsonElement jsonElement, JsonWriter writer) throws JsonIOException {
+<span class="fc" id="L387">    Strictness oldStrictness = writer.getStrictness();</span>
+<span class="fc" id="L388">    boolean oldHtmlSafe = writer.isHtmlSafe();</span>
+<span class="fc" id="L389">    boolean oldSerializeNulls = writer.getSerializeNulls();</span>
+<span class="fc" id="L390">    writer.setHtmlSafe(htmlSafe);</span>
+<span class="fc" id="L391">    writer.setSerializeNulls(serializeNulls);</span>
+<span class="pc bpc" id="L392" title="1 of 2 branches missed.">    if (this.strictness != null) {</span>
+<span class="nc" id="L393">      writer.setStrictness(this.strictness);</span>
+<span class="pc bpc" id="L394" title="1 of 2 branches missed.">    } else if (writer.getStrictness() == Strictness.LEGACY_STRICT) {</span>
+<span class="fc" id="L395">      writer.setStrictness(Strictness.LENIENT);</span>
+    }
+    try {
+<span class="fc" id="L398">      Streams.write(jsonElement, writer);</span>
+<span class="nc" id="L399">    } catch (IOException e) {</span>
+<span class="nc" id="L400">      throw new JsonIOException(e);</span>
+<span class="nc" id="L401">    } catch (AssertionError e) {</span>
+<span class="nc" id="L402">      throw new AssertionError(</span>
+<span class="nc" id="L403">          &quot;AssertionError (GSON &quot; + GsonBuildConfig.VERSION + &quot;): &quot; + e.getMessage(), e);</span>
+    } finally {
+<span class="fc" id="L405">      writer.setStrictness(oldStrictness);</span>
+<span class="fc" id="L406">      writer.setHtmlSafe(oldHtmlSafe);</span>
+<span class="fc" id="L407">      writer.setSerializeNulls(oldSerializeNulls);</span>
+    }
+<span class="fc" id="L409">  }</span>
+  public JsonWriter newJsonWriter(Writer writer) throws IOException {
+<span class="fc bfc" id="L411" title="All 2 branches covered.">    if (generateNonExecutableJson) {</span>
+<span class="fc" id="L412">      writer.write(JSON_NON_EXECUTABLE_PREFIX);</span>
+    }
+<span class="fc" id="L414">    JsonWriter jsonWriter = new JsonWriter(writer);</span>
+<span class="fc" id="L415">    jsonWriter.setFormattingStyle(formattingStyle);</span>
+<span class="fc" id="L416">    jsonWriter.setHtmlSafe(htmlSafe);</span>
+<span class="pc bpc" id="L417" title="1 of 2 branches missed.">    jsonWriter.setStrictness(strictness == null ? Strictness.LEGACY_STRICT : strictness);</span>
+<span class="fc" id="L418">    jsonWriter.setSerializeNulls(serializeNulls);</span>
+<span class="fc" id="L419">    return jsonWriter;</span>
+  }
+  public JsonReader newJsonReader(Reader reader) {
+<span class="fc" id="L422">    JsonReader jsonReader = new JsonReader(reader);</span>
+<span class="fc bfc" id="L423" title="All 2 branches covered.">    jsonReader.setStrictness(strictness == null ? Strictness.LEGACY_STRICT : strictness);</span>
+<span class="fc" id="L424">    return jsonReader;</span>
+  }
+  public &lt;T&gt; T fromJson(String json, Class&lt;T&gt; classOfT) throws JsonSyntaxException {
+<span class="fc" id="L427">    return fromJson(json, TypeToken.get(classOfT));</span>
+  }
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;TypeParameterUnusedInFormals&quot;})
+  public &lt;T&gt; T fromJson(String json, Type typeOfT) throws JsonSyntaxException {
+<span class="fc" id="L431">    return (T) fromJson(json, TypeToken.get(typeOfT));</span>
+  }
+  public &lt;T&gt; T fromJson(String json, TypeToken&lt;T&gt; typeOfT) throws JsonSyntaxException {
+<span class="fc bfc" id="L434" title="All 2 branches covered.">    if (json == null) {</span>
+<span class="fc" id="L435">      return null;</span>
+    }
+<span class="fc" id="L437">    StringReader reader = new StringReader(json);</span>
+<span class="fc" id="L438">    return fromJson(reader, typeOfT);</span>
+  }
+  public &lt;T&gt; T fromJson(Reader json, Class&lt;T&gt; classOfT)
+      throws JsonSyntaxException, JsonIOException {
+<span class="fc" id="L442">    return fromJson(json, TypeToken.get(classOfT));</span>
+  }
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;TypeParameterUnusedInFormals&quot;})
+  public &lt;T&gt; T fromJson(Reader json, Type typeOfT) throws JsonIOException, JsonSyntaxException {
+<span class="nc" id="L446">    return (T) fromJson(json, TypeToken.get(typeOfT));</span>
+  }
+  public &lt;T&gt; T fromJson(Reader json, TypeToken&lt;T&gt; typeOfT)
+      throws JsonIOException, JsonSyntaxException {
+<span class="fc" id="L450">    JsonReader jsonReader = newJsonReader(json);</span>
+<span class="fc" id="L451">    T object = fromJson(jsonReader, typeOfT);</span>
+<span class="fc" id="L452">    assertFullConsumption(object, jsonReader);</span>
+<span class="fc" id="L453">    return object;</span>
+  }
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;TypeParameterUnusedInFormals&quot;})
+  public &lt;T&gt; T fromJson(JsonReader reader, Type typeOfT)
+      throws JsonIOException, JsonSyntaxException {
+<span class="fc" id="L458">    return (T) fromJson(reader, TypeToken.get(typeOfT));</span>
+  }
+  public &lt;T&gt; T fromJson(JsonReader reader, TypeToken&lt;T&gt; typeOfT)
+      throws JsonIOException, JsonSyntaxException {
+<span class="fc" id="L462">    boolean isEmpty = true;</span>
+<span class="fc" id="L463">    Strictness oldStrictness = reader.getStrictness();</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">    if (this.strictness != null) {</span>
+<span class="fc" id="L465">      reader.setStrictness(this.strictness);</span>
+<span class="pc bpc" id="L466" title="1 of 2 branches missed.">    } else if (reader.getStrictness() == Strictness.LEGACY_STRICT) {</span>
+<span class="fc" id="L467">      reader.setStrictness(Strictness.LENIENT);</span>
+    }
+    try {
+<span class="fc" id="L470">      JsonToken unused = reader.peek();</span>
+<span class="fc" id="L471">      isEmpty = false;</span>
+<span class="fc" id="L472">      TypeAdapter&lt;T&gt; typeAdapter = getAdapter(typeOfT);</span>
+<span class="fc" id="L473">      T object = typeAdapter.read(reader);</span>
+<span class="fc" id="L474">      Class&lt;?&gt; expectedTypeWrapped = Primitives.wrap(typeOfT.getRawType());</span>
+<span class="pc bpc" id="L475" title="2 of 4 branches missed.">      if (object != null &amp;&amp; !expectedTypeWrapped.isInstance(object)) {</span>
+<span class="nc" id="L476">        throw new ClassCastException(</span>
+            &quot;Type adapter '&quot;
+                + typeAdapter
+                + &quot;' returned wrong type; requested &quot;
+<span class="nc" id="L480">                + typeOfT.getRawType()</span>
+                + &quot; but got instance of &quot;
+<span class="nc" id="L482">                + object.getClass()</span>
+                + &quot;\nVerify that the adapter was registered for the correct type.&quot;);
+      }
+<span class="fc" id="L485">      return object;</span>
+<span class="fc" id="L486">    } catch (EOFException e) {</span>
+<span class="fc bfc" id="L487" title="All 2 branches covered.">      if (isEmpty) {</span>
+<span class="fc" id="L488">        return null;</span>
+      }
+<span class="fc" id="L490">      throw new JsonSyntaxException(e);</span>
+<span class="nc" id="L491">    } catch (IllegalStateException e) {</span>
+<span class="nc" id="L492">      throw new JsonSyntaxException(e);</span>
+<span class="fc" id="L493">    } catch (IOException e) {</span>
+<span class="fc" id="L494">      throw new JsonSyntaxException(e);</span>
+<span class="nc" id="L495">    } catch (AssertionError e) {</span>
+<span class="nc" id="L496">      throw new AssertionError(</span>
+<span class="nc" id="L497">          &quot;AssertionError (GSON &quot; + GsonBuildConfig.VERSION + &quot;): &quot; + e.getMessage(), e);</span>
+    } finally {
+<span class="fc" id="L499">      reader.setStrictness(oldStrictness);</span>
+    }
+  }
+  public &lt;T&gt; T fromJson(JsonElement json, Class&lt;T&gt; classOfT) throws JsonSyntaxException {
+<span class="fc" id="L503">    return fromJson(json, TypeToken.get(classOfT));</span>
+  }
+  @SuppressWarnings({&quot;unchecked&quot;, &quot;TypeParameterUnusedInFormals&quot;})
+  public &lt;T&gt; T fromJson(JsonElement json, Type typeOfT) throws JsonSyntaxException {
+<span class="nc" id="L507">    return (T) fromJson(json, TypeToken.get(typeOfT));</span>
+  }
+  public &lt;T&gt; T fromJson(JsonElement json, TypeToken&lt;T&gt; typeOfT) throws JsonSyntaxException {
+<span class="pc bpc" id="L510" title="1 of 2 branches missed.">    if (json == null) {</span>
+<span class="nc" id="L511">      return null;</span>
+    }
+<span class="fc" id="L513">    return fromJson(new JsonTreeReader(json), typeOfT);</span>
+  }
+  private static void assertFullConsumption(Object obj, JsonReader reader) {
+    try {
+<span class="pc bpc" id="L517" title="1 of 4 branches missed.">      if (obj != null &amp;&amp; reader.peek() != JsonToken.END_DOCUMENT) {</span>
+<span class="nc" id="L518">        throw new JsonSyntaxException(&quot;JSON document was not fully consumed.&quot;);</span>
+      }
+<span class="nc" id="L520">    } catch (MalformedJsonException e) {</span>
+<span class="nc" id="L521">      throw new JsonSyntaxException(e);</span>
+<span class="nc" id="L522">    } catch (IOException e) {</span>
+<span class="nc" id="L523">      throw new JsonIOException(e);</span>
+<span class="fc" id="L524">    }</span>
+<span class="fc" id="L525">  }</span>
+<span class="fc" id="L526">  static class FutureTypeAdapter&lt;T&gt; extends SerializationDelegatingTypeAdapter&lt;T&gt; {</span>
+<span class="fc" id="L527">    private TypeAdapter&lt;T&gt; delegate = null;</span>
+    public void setDelegate(TypeAdapter&lt;T&gt; typeAdapter) {
+<span class="pc bpc" id="L529" title="1 of 2 branches missed.">      if (delegate != null) {</span>
+<span class="nc" id="L530">        throw new AssertionError(&quot;Delegate is already set&quot;);</span>
+      }
+<span class="fc" id="L532">      delegate = typeAdapter;</span>
+<span class="fc" id="L533">    }</span>
+    private TypeAdapter&lt;T&gt; delegate() {
+<span class="nc" id="L535">      TypeAdapter&lt;T&gt; delegate = this.delegate;</span>
+<span class="nc bnc" id="L536" title="All 2 branches missed.">      if (delegate == null) {</span>
+<span class="nc" id="L537">        throw new IllegalStateException(</span>
+            &quot;Adapter for type with cyclic dependency has been used&quot;
+                + &quot; before dependency has been resolved&quot;);
+      }
+<span class="nc" id="L541">      return delegate;</span>
+    }
+    @Override
+    public TypeAdapter&lt;T&gt; getSerializationDelegate() {
+<span class="nc" id="L545">      return delegate();</span>
+    }
+    @Override
+    public T read(JsonReader in) throws IOException {
+<span class="nc" id="L549">      return delegate().read(in);</span>
+    }
+
+    @Override
+    public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L555">    }</span>
+
+    @Override
+    public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L559">      return null;</span>
+    }
+
+    @Override
+    public void write(JsonWriter out, T value) throws IOException {
+<span class="nc" id="L564">      delegate().write(out, value);</span>
+<span class="nc" id="L565">    }</span>
+  }
+  @Override
+  public String toString() {
+<span class="fc" id="L569">    return &quot;{serializeNulls:&quot;</span>
+        + serializeNulls
+        + &quot;,factories:&quot;
+        + factories
+        + &quot;,instanceCreators:&quot;
+        + constructorConstructor
+        + &quot;}&quot;;
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

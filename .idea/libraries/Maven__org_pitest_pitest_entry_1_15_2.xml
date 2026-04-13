@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: org.pitest:pitest-entry:1.15.2">
+    <CLASSES>
+      <root url="jar://D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1/repository/org/pitest/pitest-entry/1.15.2/pitest-entry-1.15.2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1/repository/org/pitest/pitest-entry/1.15.2/pitest-entry-1.15.2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://D:/TopNew-SpringBoot/maven/apache-maven-3.9.1-bin/apache-maven-3.9.1/repository/org/pitest/pitest-entry/1.15.2/pitest-entry-1.15.2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

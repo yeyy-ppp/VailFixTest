@@ -1,0 +1,622 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AbstractRunner.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner.solution_runner</a> &gt; <span class="el_source">AbstractRunner.java</span></div><h1>AbstractRunner.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner.solution_runner;
+
+import com.github.javaparser.ParseProblemException;
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import zju.cst.aces.api.Task;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.parser.ClassParser;
+import zju.cst.aces.prompt.PromptGenerator;
+import zju.cst.aces.util.CodeExtractor;
+import zju.cst.aces.util.TestProcessor;
+import zju.cst.aces.util.TokenCounter;
+
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.util.*;
+import java.util.stream.Collectors;
+
+public abstract class AbstractRunner {
+
+<span class="nc" id="L29">    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+    public static final String separator = &quot;_&quot;;
+<span class="nc" id="L31">    public static int testTimeOut = 8000;</span>
+    public String className;
+    public String fullClassName;
+    public Config config;
+    public PromptGenerator promptGenerator;
+    // get configuration from Config, and move init() to Config
+<span class="nc" id="L37">    public AbstractRunner(Config config, String fullClassname) throws IOException {</span>
+<span class="nc" id="L38">        fullClassName = fullClassname;</span>
+<span class="nc" id="L39">        className = fullClassname.substring(fullClassname.lastIndexOf(&quot;.&quot;) + 1);</span>
+<span class="nc" id="L40">        this.config = config;</span>
+<span class="nc" id="L41">        promptGenerator = new PromptGenerator(config);</span>
+<span class="nc" id="L42">    }</span>
+
+    abstract void start() throws IOException;
+
+    public static String joinLines(List&lt;String&gt; lines) {
+<span class="nc" id="L47">        return lines.stream().collect(Collectors.joining(&quot;\n&quot;));</span>
+    }
+
+    public static String filterAndJoinLines(List&lt;String&gt; lines, String filter) {
+<span class="nc" id="L51">        return lines.stream()</span>
+<span class="nc bnc" id="L52" title="All 2 branches missed.">                .filter(line -&gt; !line.equals(filter))</span>
+<span class="nc" id="L53">                .collect(Collectors.joining(&quot;\n&quot;));</span>
+    }
+
+    public static String parseResponse(ChatResponse response) {
+<span class="nc bnc" id="L57" title="All 2 branches missed.">        if (response == null) {</span>
+<span class="nc" id="L58">            return &quot;&quot;;</span>
+        }
+<span class="nc" id="L60">        return response.getContent();</span>
+    }
+
+    public static void exportTest(String code, Path savePath) {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        if (!savePath.toAbsolutePath().getParent().toFile().exists()) {</span>
+<span class="nc" id="L65">            savePath.toAbsolutePath().getParent().toFile().mkdirs();</span>
+        }
+        //set charset utf-8
+<span class="nc" id="L68">        try (OutputStreamWriter writer = new OutputStreamWriter(</span>
+<span class="nc" id="L69">                new FileOutputStream(savePath.toFile()), StandardCharsets.UTF_8)) {</span>
+<span class="nc" id="L70">            writer.write(code);</span>
+<span class="nc" id="L71">        } catch (IOException e) {</span>
+<span class="nc" id="L72">            throw new RuntimeException(&quot;In AbstractRunner.exportTest: &quot; + e);</span>
+<span class="nc" id="L73">        }</span>
+<span class="nc" id="L74">    }</span>
+
+    public String extractCode(String content) {
+        try {
+<span class="nc" id="L78">            return new CodeExtractor(content).getExtractedCode();</span>
+<span class="nc" id="L79">        } catch (Exception e) {</span>
+<span class="nc" id="L80">            config.getLogger().error(&quot;In AbstractRunner.extractCode: &quot; + e);</span>
+        }
+<span class="nc" id="L82">        return &quot;&quot;;</span>
+    }
+
+    public static String repairImports(String code, List&lt;String&gt; imports) {
+        try {
+<span class="nc" id="L87">            CompilationUnit cu = StaticJavaParser.parse(code);</span>
+<span class="nc" id="L88">            cu.addImport(&quot;org.mockito&quot;, false, true);</span>
+<span class="nc" id="L89">            cu.addImport(&quot;org.junit.jupiter.api&quot;, false, true);</span>
+<span class="nc" id="L90">            cu.addImport(&quot;org.mockito.Mockito&quot;, true, true);</span>
+<span class="nc" id="L91">            cu.addImport(&quot;org.junit.jupiter.api.Assertions&quot;, true, true);</span>
+<span class="nc" id="L92">            cu.addImport(&quot;org.junit.jupiter.api.extension.ExtendWith&quot;, false, false);</span>
+<span class="nc" id="L93">            cu.addImport(&quot;org.mockito.junit.jupiter.MockitoExtension&quot;, false, false);</span>
+<span class="nc" id="L94">            imports.forEach(i -&gt; cu.addImport(i.replace(&quot;import &quot;, &quot;&quot;).replace(&quot;;&quot;, &quot;&quot;)));</span>
+<span class="nc" id="L95">            return cu.toString();</span>
+<span class="nc" id="L96">        } catch (ParseProblemException e) {</span>
+<span class="nc" id="L97">            return code;</span>
+        }
+    }
+
+    public static String repairPackage(String code, String packageName) {
+<span class="nc" id="L102">        CompilationUnit cu = StaticJavaParser.parse(code).setPackageDeclaration(packageName);</span>
+<span class="nc" id="L103">        return cu.toString();</span>
+    }
+
+    public String addTimeout(String testCase, int timeout) {
+        // Check JUnit version
+<span class="nc" id="L108">        String junit4 = &quot;import org.junit.Test&quot;;</span>
+<span class="nc" id="L109">        String junit5 = &quot;import org.junit.jupiter.api.Test&quot;;</span>
+<span class="nc bnc" id="L110" title="All 2 branches missed.">        if (testCase.contains(junit4)) {  // JUnit 4</span>
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (testCase.contains(&quot;@Test(timeout =&quot;)) {</span>
+<span class="nc" id="L112">                return testCase;</span>
+            }
+<span class="nc" id="L114">            testCase = testCase.replace(&quot;@Test(&quot;, String.format(&quot;@Test(timeout = %d, &quot;, timeout));</span>
+<span class="nc" id="L115">            return testCase.replace(&quot;@Test\n&quot;, String.format(&quot;@Test(timeout = %d)%n&quot;, timeout));</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">        } else if (testCase.contains(junit5)) {  // JUnit 5</span>
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            if (testCase.contains(&quot;import org.junit.jupiter.api.Timeout;&quot;)) {</span>
+<span class="nc" id="L118">                return testCase;</span>
+            }
+<span class="nc" id="L120">            List&lt;String&gt; timeoutImport = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L121">            timeoutImport.add(&quot;import org.junit.jupiter.api.Timeout;&quot;);</span>
+<span class="nc" id="L122">            testCase = repairImports(testCase, timeoutImport);</span>
+<span class="nc" id="L123">            return testCase.replace(&quot;@Test\n&quot;, String.format(&quot;@Test%n    @Timeout(%d)%n&quot;, timeout));</span>
+        } else {
+<span class="nc" id="L125">            config.getLogger().warn(&quot;Generated with unknown JUnit version, try without adding timeout.&quot;);</span>
+        }
+<span class="nc" id="L127">        return testCase;</span>
+    }
+
+    public static String changeTestName(String code, String newName) {
+<span class="nc" id="L131">        CompilationUnit cu = StaticJavaParser.parse(code);</span>
+<span class="nc" id="L132">        cu.findFirst(ClassOrInterfaceDeclaration.class).ifPresent(c -&gt; c.setName(newName));</span>
+<span class="nc" id="L133">        return cu.toString();</span>
+    }
+
+    public static PromptInfo generatePromptInfoWithoutDep(Config config, ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L137">        PromptInfo promptInfo = new PromptInfo(</span>
+                false,
+                classInfo.fullClassName,
+                methodInfo.methodName,
+                methodInfo.methodSignature);
+<span class="nc" id="L142">        promptInfo.setClassInfo(classInfo);</span>
+<span class="nc" id="L143">        promptInfo.setMethodInfo(methodInfo);</span>
+<span class="nc" id="L144">        String fields = joinLines(classInfo.fields);</span>
+<span class="nc" id="L145">        String methods = filterAndJoinLines(classInfo.methodsBrief, methodInfo.brief);</span>
+<span class="nc" id="L146">        String imports = joinLines(classInfo.imports);</span>
+
+<span class="nc" id="L148">        String information = classInfo.packageName</span>
+                + &quot;\n&quot; + imports
+                + &quot;\n&quot; + classInfo.classSignature
+                + &quot; {\n&quot;;
+//        if (methodInfo.useField) {
+//            information += fields + &quot;\n&quot;;
+//        }
+<span class="nc" id="L155">        information += fields + &quot;\n&quot;;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">        if (classInfo.hasConstructor) {</span>
+<span class="nc" id="L157">            information += joinLines(classInfo.constructorBrief) + &quot;\n&quot;;</span>
+        }
+<span class="nc" id="L159">        information += methodInfo.sourceCode + &quot;\n}&quot;;</span>
+
+<span class="nc" id="L161">        promptInfo.setContext(information);</span>
+<span class="nc" id="L162">        promptInfo.setOtherMethodBrief(methods);</span>
+
+<span class="nc" id="L164">        String otherMethodBodies = &quot;&quot;;</span>
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        for (String sig : classInfo.methodSigs.keySet()) {</span>
+<span class="nc bnc" id="L166" title="All 2 branches missed.">            if (sig.equals(methodInfo.methodSignature)) {</span>
+<span class="nc" id="L167">                continue;</span>
+            }
+<span class="nc" id="L169">            otherMethodBodies += getBody(config, classInfo, sig);</span>
+<span class="nc" id="L170">        }</span>
+<span class="nc" id="L171">        promptInfo.setOtherMethodBodies(otherMethodBodies);</span>
+
+<span class="nc" id="L173">        return promptInfo;</span>
+    }
+
+    public static PromptInfo generatePromptInfoWithDep(Config config, ClassInfo classInfo, MethodInfo methodInfo) throws IOException {
+<span class="nc" id="L177">        PromptInfo promptInfo = new PromptInfo(</span>
+                true,
+                classInfo.fullClassName,
+                methodInfo.methodName,
+                methodInfo.methodSignature);
+<span class="nc" id="L182">        promptInfo.setClassInfo(classInfo);</span>
+<span class="nc" id="L183">        promptInfo.setMethodInfo(methodInfo);</span>
+<span class="nc" id="L184">        List&lt;String&gt; otherBriefMethods = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L185">        List&lt;String&gt; otherMethodBodies = new ArrayList&lt;&gt;();</span>
+
+<span class="nc bnc" id="L187" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L188">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L189">            Set&lt;String&gt; depMethods = entry.getValue();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (methodInfo.dependentMethods.containsKey(depClassName)) {</span>
+<span class="nc" id="L191">                continue;</span>
+            }
+<span class="nc" id="L193">            promptInfo.addConstructorDeps(depClassName, getDepInfo(config, depClassName, depMethods));</span>
+<span class="nc" id="L194">        }</span>
+
+<span class="nc bnc" id="L196" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : methodInfo.dependentMethods.entrySet()) {</span>
+<span class="nc" id="L197">            String depClassName = entry.getKey();</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">            if (depClassName.equals(classInfo.getClassName())) {</span>
+<span class="nc" id="L199">                Set&lt;String&gt; otherSig = methodInfo.dependentMethods.get(depClassName);</span>
+<span class="nc bnc" id="L200" title="All 2 branches missed.">                for (String otherMethod : otherSig) {</span>
+<span class="nc" id="L201">                    MethodInfo otherMethodInfo = getMethodInfo(config, classInfo, otherMethod);</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">                    if (otherMethodInfo == null) {</span>
+<span class="nc" id="L203">                        continue;</span>
+                    }
+                    // only add the methods in focal class that are invoked
+<span class="nc" id="L206">                    otherBriefMethods.add(otherMethodInfo.brief);</span>
+<span class="nc" id="L207">                    otherMethodBodies.add(otherMethodInfo.sourceCode);</span>
+<span class="nc" id="L208">                }</span>
+<span class="nc" id="L209">                continue;</span>
+            }
+
+<span class="nc" id="L212">            Set&lt;String&gt; depMethods = entry.getValue();</span>
+<span class="nc" id="L213">            promptInfo.addMethodDeps(depClassName, getDepInfo(config, depClassName, depMethods));</span>
+<span class="nc" id="L214">            addMethodDepsByDepth(config, depClassName, depMethods, promptInfo, config.getDependencyDepth());</span>
+<span class="nc" id="L215">        }</span>
+
+<span class="nc" id="L217">        String fields = joinLines(classInfo.fields);</span>
+<span class="nc" id="L218">        String imports = joinLines(classInfo.imports);</span>
+
+<span class="nc" id="L220">        String information = classInfo.packageName</span>
+                + &quot;\n&quot; + imports
+                + &quot;\n&quot; + classInfo.classSignature
+                + &quot; {\n&quot;;
+        //TODO: handle used fields instead of all fields
+<span class="nc" id="L225">        String otherMethods = &quot;&quot;;</span>
+<span class="nc" id="L226">        String otherFullMethods = &quot;&quot;;</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">        if (classInfo.hasConstructor) {</span>
+<span class="nc" id="L228">            otherMethods += joinLines(classInfo.constructorBrief) + &quot;\n&quot;;</span>
+<span class="nc" id="L229">            otherFullMethods += getBodies(config, classInfo, classInfo.constructorSigs) + &quot;\n&quot;;</span>
+        }
+//        if (methodInfo.useField) {
+//            information += fields + &quot;\n&quot;;
+//            otherMethods +=  joinLines(classInfo.getterSetterBrief) + &quot;\n&quot;;
+//            otherFullMethods += getBodies(config, classInfo, classInfo.getterSetterSigs) + &quot;\n&quot;;
+//        }
+<span class="nc" id="L236">        information += fields + &quot;\n&quot;;</span>
+<span class="nc" id="L237">        otherMethods +=  joinLines(classInfo.getterSetterBrief) + &quot;\n&quot;;</span>
+<span class="nc" id="L238">        otherFullMethods += getBodies(config, classInfo, classInfo.getterSetterSigs) + &quot;\n&quot;;</span>
+
+<span class="nc" id="L240">        otherMethods += joinLines(otherBriefMethods) + &quot;\n&quot;;</span>
+<span class="nc" id="L241">        otherFullMethods += joinLines(otherMethodBodies) + &quot;\n&quot;;</span>
+<span class="nc" id="L242">        information += methodInfo.sourceCode + &quot;\n}&quot;;</span>
+
+<span class="nc" id="L244">        promptInfo.setContext(information);</span>
+<span class="nc" id="L245">        promptInfo.setOtherMethodBrief(otherMethods);</span>
+<span class="nc" id="L246">        promptInfo.setOtherMethodBodies(otherFullMethods);</span>
+<span class="nc" id="L247">        return promptInfo;</span>
+    }
+
+    public static void addMethodDepsByDepth(Config config, String className, Set&lt;String&gt; methodSigs, PromptInfo promptInfo, int depth) throws IOException {
+<span class="nc bnc" id="L251" title="All 2 branches missed.">        if (depth &lt;= 1) {</span>
+<span class="nc" id="L252">            return;</span>
+        }
+<span class="nc bnc" id="L254" title="All 2 branches missed.">        for (String dm : methodSigs) {</span>
+<span class="nc" id="L255">            ClassInfo depClassInfo = getClassInfo(config, className);</span>
+<span class="nc bnc" id="L256" title="All 2 branches missed.">            if (depClassInfo == null) {</span>
+<span class="nc" id="L257">                continue;</span>
+            }
+<span class="nc" id="L259">            addConstructorDepsByDepth(config, depClassInfo, promptInfo);</span>
+
+<span class="nc" id="L261">            MethodInfo depMethodInfo = getMethodInfo(config, depClassInfo, dm);</span>
+<span class="nc bnc" id="L262" title="All 2 branches missed.">            if (depMethodInfo == null) {</span>
+<span class="nc" id="L263">                continue;</span>
+            }
+<span class="nc bnc" id="L265" title="All 2 branches missed.">            for (String depClassName : depMethodInfo.dependentMethods.keySet()) {</span>
+<span class="nc" id="L266">                Set&lt;String&gt; depMethods = depMethodInfo.dependentMethods.get(depClassName);</span>
+<span class="nc" id="L267">                promptInfo.addMethodDeps(depClassName, getDepInfo(config, depClassName, depMethods));</span>
+<span class="nc" id="L268">                addMethodDepsByDepth(config, depClassName, depMethods, promptInfo, depth - 1);</span>
+<span class="nc" id="L269">            }</span>
+<span class="nc" id="L270">        }</span>
+<span class="nc" id="L271">    }</span>
+
+    public static void addConstructorDepsByDepth(Config config, ClassInfo classInfo, PromptInfo promptInfo) throws IOException {
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        for (Map.Entry&lt;String, Set&lt;String&gt;&gt; entry : classInfo.constructorDeps.entrySet()) {</span>
+<span class="nc" id="L275">            String depClassName = entry.getKey();</span>
+<span class="nc" id="L276">            Set&lt;String&gt; depMethods = entry.getValue();</span>
+<span class="nc" id="L277">            promptInfo.addConstructorDeps(depClassName, getDepInfo(config, depClassName, depMethods));</span>
+<span class="nc" id="L278">        }</span>
+<span class="nc" id="L279">    }</span>
+
+    public static ClassInfo getClassInfo(Config config, String className) throws IOException {
+        try {
+<span class="nc" id="L283">            String fullClassName = Task.getFullClassName(config, className);</span>
+<span class="nc" id="L284">            Path classInfoPath = config.getParseOutput().resolve(fullClassName.replace(&quot;.&quot;, File.separator)).resolve(&quot;class.json&quot;);</span>
+<span class="nc bnc" id="L285" title="All 2 branches missed.">            if (!classInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L286">                return null;</span>
+            }
+<span class="nc" id="L288">            return GSON.fromJson(new String(Files.readAllBytes(classInfoPath), StandardCharsets.UTF_8), ClassInfo.class);</span>
+<span class="nc" id="L289">        } catch (InvalidPathException e) {</span>
+<span class="nc" id="L290">            return null;</span>
+        }
+    }
+
+    public static MethodInfo getMethodInfo(Config config, ClassInfo info, String mSig) throws IOException {
+<span class="nc" id="L295">        String packagePath = info.getPackageName()</span>
+<span class="nc" id="L296">                .replace(&quot;package &quot;, &quot;&quot;)</span>
+<span class="nc" id="L297">                .replace(&quot;.&quot;, File.separator)</span>
+<span class="nc" id="L298">                .replace(&quot;;&quot;, &quot;&quot;);</span>
+<span class="nc" id="L299">        Path depMethodInfoPath = config.getParseOutput()</span>
+<span class="nc" id="L300">                .resolve(packagePath)</span>
+<span class="nc" id="L301">                .resolve(info.className)</span>
+<span class="nc" id="L302">                .resolve(ClassParser.getFilePathBySig(mSig, info));</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        if (!depMethodInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L304">            return null;</span>
+        }
+<span class="nc" id="L306">        return GSON.fromJson(new String(Files.readAllBytes(depMethodInfoPath), StandardCharsets.UTF_8), MethodInfo.class);</span>
+    }
+
+    public static String getDepInfo(Config config, String depClassName, Set&lt;String&gt; depMethods) throws IOException {
+<span class="nc" id="L310">        ClassInfo depClassInfo = getClassInfo(config, depClassName);</span>
+<span class="nc bnc" id="L311" title="All 2 branches missed.">        if (depClassInfo == null) {</span>
+<span class="nc" id="L312">            return null;</span>
+        }
+
+<span class="nc" id="L315">        String classSig = depClassInfo.classSignature;</span>
+<span class="nc" id="L316">        String fields = joinLines(depClassInfo.fields);</span>
+
+<span class="nc" id="L318">        String basicInfo = depClassInfo.packageName + &quot;\n&quot; + joinLines(depClassInfo.imports) + &quot;\n&quot;</span>
+                + classSig + &quot; {\n&quot; + fields + &quot;\n&quot;;
+<span class="nc bnc" id="L320" title="All 2 branches missed.">        if (depClassInfo.hasConstructor) {</span>
+<span class="nc" id="L321">            String constructors = &quot;&quot;;</span>
+<span class="nc bnc" id="L322" title="All 2 branches missed.">            for (String sig : depClassInfo.constructorSigs) {</span>
+<span class="nc" id="L323">                MethodInfo depConstructorInfo = getMethodInfo(config, depClassInfo, sig);</span>
+<span class="nc bnc" id="L324" title="All 2 branches missed.">                if (depConstructorInfo == null) {</span>
+<span class="nc" id="L325">                    continue;</span>
+                }
+<span class="nc" id="L327">                constructors += depConstructorInfo.getSourceCode() + &quot;\n&quot;;</span>
+<span class="nc" id="L328">            }</span>
+
+<span class="nc" id="L330">            basicInfo += constructors + &quot;\n&quot;;</span>
+        }
+
+<span class="nc" id="L333">        String sourceDepMethods = &quot;&quot;;</span>
+<span class="nc bnc" id="L334" title="All 2 branches missed.">        for (String sig : depMethods) {</span>
+            //TODO: identify used fields in dependent class
+<span class="nc" id="L336">            MethodInfo depMethodInfo = getMethodInfo(config, depClassInfo, sig);</span>
+<span class="nc bnc" id="L337" title="All 2 branches missed.">            if (depMethodInfo == null) {</span>
+<span class="nc" id="L338">                continue;</span>
+            }
+<span class="nc" id="L340">            sourceDepMethods += depMethodInfo.getSourceCode() + &quot;\n&quot;;</span>
+<span class="nc" id="L341">        }</span>
+<span class="nc" id="L342">        String getterSetter = joinLines(depClassInfo.getterSetterBrief) + &quot;\n&quot;;</span>
+<span class="nc" id="L343">        return basicInfo + getterSetter + sourceDepMethods + &quot;}&quot;;</span>
+    }
+
+    public static String getBodies(Config config, ClassInfo info, List&lt;String&gt; sigs) throws IOException {
+<span class="nc" id="L347">        String bodies = &quot;&quot;;</span>
+<span class="nc bnc" id="L348" title="All 2 branches missed.">        for (String sig : sigs) {</span>
+<span class="nc" id="L349">            bodies += getBody(config, info, sig) + &quot;\n&quot;;</span>
+<span class="nc" id="L350">        }</span>
+<span class="nc" id="L351">        return bodies;</span>
+    }
+
+    public static String getBody(Config config, ClassInfo info, String Sig) throws IOException {
+<span class="nc" id="L355">        MethodInfo mi = getMethodInfo(config, info, Sig);</span>
+<span class="nc" id="L356">        return mi.sourceCode;</span>
+    }
+
+    public void exportRecord(PromptInfo promptInfo, ClassInfo classInfo, int attempt) {
+<span class="nc" id="L360">        String methodIndex = classInfo.methodSigs.get(promptInfo.methodSignature);</span>
+<span class="nc" id="L361">        Path recordPath = config.getHistoryPath();</span>
+
+<span class="nc" id="L363">        recordPath = recordPath.resolve(&quot;class&quot; + classInfo.index);</span>
+<span class="nc" id="L364">        exportMethodMapping(classInfo, recordPath);</span>
+
+<span class="nc" id="L366">        recordPath = recordPath.resolve(&quot;method&quot; + methodIndex);</span>
+<span class="nc" id="L367">        exportAttemptMapping(promptInfo, recordPath);</span>
+
+<span class="nc" id="L369">        recordPath = recordPath.resolve(&quot;attempt&quot; + attempt);</span>
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        if (!recordPath.toFile().exists()) {</span>
+<span class="nc" id="L371">            recordPath.toFile().mkdirs();</span>
+        }
+<span class="nc" id="L373">        File recordFile = recordPath.resolve(&quot;records.json&quot;).toFile();</span>
+<span class="nc" id="L374">        try (OutputStreamWriter writer = new OutputStreamWriter(</span>
+                new FileOutputStream(recordFile), StandardCharsets.UTF_8)) {
+<span class="nc" id="L376">            writer.write(GSON.toJson(promptInfo.getRecords()));</span>
+<span class="nc" id="L377">        } catch (IOException e) {</span>
+<span class="nc" id="L378">            throw new RuntimeException(&quot;In AbstractRunner.exportRecord: &quot; + e);</span>
+<span class="nc" id="L379">        }</span>
+<span class="nc" id="L380">    }</span>
+
+    public void exportSliceRecord(PromptInfo promptInfo, ClassInfo classInfo, int attempt, int sliceNum) {
+<span class="nc" id="L383">        String methodIndex = classInfo.methodSigs.get(promptInfo.methodSignature);</span>
+<span class="nc" id="L384">        Path recordPath = config.getHistoryPath();</span>
+
+<span class="nc" id="L386">        recordPath = recordPath.resolve(&quot;class&quot; + classInfo.index);</span>
+<span class="nc" id="L387">        exportMethodMapping(classInfo, recordPath);</span>
+
+<span class="nc" id="L389">        recordPath = recordPath.resolve(&quot;method&quot; + methodIndex);</span>
+<span class="nc" id="L390">        exportAttemptMapping(promptInfo, recordPath);</span>
+
+<span class="nc" id="L392">        recordPath = recordPath.resolve(&quot;attempt&quot; + attempt);</span>
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        if (!recordPath.toFile().exists()) {</span>
+<span class="nc" id="L394">            recordPath.toFile().mkdirs();</span>
+        }
+<span class="nc" id="L396">        recordPath = recordPath.resolve(&quot;sliceNum&quot; + sliceNum);</span>
+<span class="nc bnc" id="L397" title="All 2 branches missed.">        if (!recordPath.toFile().exists()) {</span>
+<span class="nc" id="L398">            recordPath.toFile().mkdirs();</span>
+        }
+<span class="nc" id="L400">        File recordFile = recordPath.resolve(&quot;records.json&quot;).toFile();</span>
+<span class="nc" id="L401">        try (OutputStreamWriter writer = new OutputStreamWriter(</span>
+                new FileOutputStream(recordFile), StandardCharsets.UTF_8)) {
+<span class="nc" id="L403">            writer.write(GSON.toJson(promptInfo.getRecords()));</span>
+<span class="nc" id="L404">        } catch (IOException e) {</span>
+<span class="nc" id="L405">            throw new RuntimeException(&quot;In AbstractRunner.exportRecord: &quot; + e);</span>
+<span class="nc" id="L406">        }</span>
+<span class="nc" id="L407">    }</span>
+
+
+    public static synchronized void exportClassMapping(Config config, Path savePath) {
+<span class="nc bnc" id="L411" title="All 2 branches missed.">        if (!savePath.toFile().exists()) {</span>
+<span class="nc" id="L412">            savePath.toFile().mkdirs();</span>
+        }
+<span class="nc" id="L414">        File classMappingFile = savePath.resolve(&quot;classMapping.json&quot;).toFile();</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">        if (classMappingFile.exists()) {</span>
+<span class="nc" id="L416">            return;</span>
+        }
+<span class="nc" id="L418">        Path sourcePath = config.tmpOutput.resolve(&quot;classMapping.json&quot;);</span>
+        try {
+<span class="nc" id="L420">            Files.copy(sourcePath, classMappingFile.toPath());</span>
+<span class="nc" id="L421">        } catch (IOException e) {</span>
+<span class="nc" id="L422">            throw new RuntimeException(&quot;In AbstractRunner.exportClassMapping: &quot; + e);</span>
+<span class="nc" id="L423">        }</span>
+<span class="nc" id="L424">    }</span>
+
+    public void exportMethodMapping(ClassInfo classInfo, Path savePath) {
+<span class="nc bnc" id="L427" title="All 2 branches missed.">        if (!savePath.toFile().exists()) {</span>
+<span class="nc" id="L428">            savePath.toFile().mkdirs();</span>
+        }
+<span class="nc" id="L430">        File methodMappingFile = savePath.resolve(&quot;methodMapping.json&quot;).toFile();</span>
+<span class="nc bnc" id="L431" title="All 2 branches missed.">        if (methodMappingFile.exists()) {</span>
+<span class="nc" id="L432">            return;</span>
+        }
+<span class="nc" id="L434">        Map&lt;String, Map&lt;String, String&gt;&gt; methodMapping = new TreeMap&lt;&gt;();</span>
+<span class="nc" id="L435">        classInfo.methodSigs.forEach((sig, index) -&gt; {</span>
+<span class="nc" id="L436">            Map&lt;String, String&gt; map = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L437">            map.put(&quot;methodName&quot;, sig.split(&quot;\\(&quot;)[0]);</span>
+<span class="nc" id="L438">            map.put(&quot;signature&quot;, sig);</span>
+<span class="nc" id="L439">            map.put(&quot;className&quot;, classInfo.className);</span>
+<span class="nc" id="L440">            map.put(&quot;packageName&quot;, classInfo.packageName);</span>
+<span class="nc" id="L441">            methodMapping.put(&quot;method&quot; + index, map);</span>
+<span class="nc" id="L442">        });</span>
+<span class="nc" id="L443">        try (OutputStreamWriter writer = new OutputStreamWriter(</span>
+                new FileOutputStream(methodMappingFile), StandardCharsets.UTF_8)) {
+<span class="nc" id="L445">            writer.write(GSON.toJson(methodMapping));</span>
+<span class="nc" id="L446">        } catch (IOException e) {</span>
+<span class="nc" id="L447">            throw new RuntimeException(&quot;In AbstractRunner.exportMethodMapping: &quot; + e);</span>
+<span class="nc" id="L448">        }</span>
+<span class="nc" id="L449">    }</span>
+
+    public void exportAttemptMapping(PromptInfo promptInfo, Path savePath) {
+<span class="nc bnc" id="L452" title="All 2 branches missed.">        if (!savePath.toFile().exists()) {</span>
+<span class="nc" id="L453">            savePath.toFile().mkdirs();</span>
+        }
+<span class="nc" id="L455">        File attemptMappingFile = savePath.resolve(&quot;attemptMapping.json&quot;).toFile();</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">        if (attemptMappingFile.exists()) {</span>
+<span class="nc" id="L457">            return;</span>
+        }
+<span class="nc" id="L459">        Map&lt;String, Map&lt;String, String&gt;&gt; attemptMapping = new TreeMap&lt;&gt;();</span>
+<span class="nc" id="L460">        String fullNamePrefix = promptInfo.getFullTestName().substring(0, promptInfo.getFullTestName().indexOf(&quot;_Test&quot;) - 1);</span>
+<span class="nc bnc" id="L461" title="All 2 branches missed.">        for (int i = 0; i &lt; config.getTestNumber(); i++) {</span>
+<span class="nc" id="L462">            Map&lt;String, String&gt; map = new LinkedHashMap&lt;&gt;();</span>
+<span class="nc" id="L463">            String fullTestName = fullNamePrefix + i + &quot;_Test&quot;;</span>
+<span class="nc" id="L464">            map.put(&quot;testClassName&quot;, fullTestName.substring(fullTestName.lastIndexOf(&quot;.&quot;) + 1));</span>
+<span class="nc" id="L465">            map.put(&quot;fullName&quot;, fullTestName);</span>
+<span class="nc" id="L466">            map.put(&quot;path&quot;, promptInfo.getTestPath().toString());</span>
+<span class="nc" id="L467">            map.put(&quot;className&quot;, promptInfo.className);</span>
+<span class="nc" id="L468">            map.put(&quot;packageName&quot;, promptInfo.classInfo.packageName);</span>
+<span class="nc" id="L469">            map.put(&quot;methodName&quot;, promptInfo.methodName);</span>
+<span class="nc" id="L470">            map.put(&quot;methodSig&quot;, promptInfo.methodSignature);</span>
+<span class="nc" id="L471">            attemptMapping.put(&quot;attempt&quot; + i, map);</span>
+        }
+<span class="nc" id="L473">        try (OutputStreamWriter writer = new OutputStreamWriter(</span>
+                new FileOutputStream(attemptMappingFile), StandardCharsets.UTF_8)) {
+<span class="nc" id="L475">            writer.write(GSON.toJson(attemptMapping));</span>
+<span class="nc" id="L476">        } catch (IOException e) {</span>
+<span class="nc" id="L477">            throw new RuntimeException(&quot;In AbstractRunner.exportAttemptMapping: &quot; + e);</span>
+<span class="nc" id="L478">        }</span>
+<span class="nc" id="L479">    }</span>
+
+    public static boolean isExceedMaxTokens(int maxPromptTokens, List&lt;ChatMessage&gt; prompt) {
+<span class="nc" id="L482">        int count = 0;</span>
+<span class="nc bnc" id="L483" title="All 2 branches missed.">        for (ChatMessage p : prompt) {</span>
+<span class="nc" id="L484">            count += TokenCounter.countToken(p.getContent());</span>
+<span class="nc" id="L485">        }</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">        if (count &gt; maxPromptTokens) {</span>
+<span class="nc" id="L487">            return true;</span>
+        }
+<span class="nc" id="L489">        return false;</span>
+    }
+
+    public static boolean isExceedMaxTokens(int maxPromptTokens, String prompt) {
+<span class="nc" id="L493">        int count = TokenCounter.countToken(prompt);</span>
+<span class="nc bnc" id="L494" title="All 2 branches missed.">        if (count &gt; maxPromptTokens) {</span>
+<span class="nc" id="L495">            return true;</span>
+        }
+<span class="nc" id="L497">        return false;</span>
+    }
+
+    /**
+     * Compile and execute the test, if no errors, the test will be exported.
+     * @param config
+     * @param fullTestName
+     * @param promptInfo
+     * @param rounds
+     * @return
+     */
+    public static boolean runTest(Config config, String fullTestName, PromptInfo promptInfo, int rounds) {
+<span class="nc" id="L509">        String testName = fullTestName.substring(fullTestName.lastIndexOf(&quot;.&quot;) + 1);</span>
+        Path savePath;
+<span class="nc bnc" id="L511" title="All 2 branches missed.">        if(config.phaseType.equals(&quot;HITS&quot;)) {</span>
+<span class="nc" id="L512">            savePath = config.getTestOutput().resolve(fullTestName.replace(&quot;.&quot;, File.separator) + &quot;_slice&quot; + promptInfo.getSliceNum() + &quot;.java&quot;); // todo 这里要加上切片序号</span>
+        } else {
+<span class="nc" id="L514">            savePath = config.getTestOutput().resolve(fullTestName.replace(&quot;.&quot;, File.separator) + &quot;.java&quot;); // todo 这里要加上切片序号</span>
+
+        }
+<span class="nc bnc" id="L517" title="All 2 branches missed.">        if (promptInfo.getTestPath() == null) {</span>
+<span class="nc" id="L518">            promptInfo.setTestPath(savePath);</span>
+        }
+
+<span class="nc" id="L521">        TestProcessor testProcessor = new TestProcessor(fullTestName);</span>
+<span class="nc" id="L522">        String code = promptInfo.getUnitTest();</span>
+<span class="nc bnc" id="L523" title="All 2 branches missed.">        if (rounds &gt;= 1) {</span>
+<span class="nc" id="L524">            code = testProcessor.addCorrectTest(promptInfo);</span>
+        }
+
+        // Compilation
+<span class="nc" id="L528">        Path compilationErrorPath = config.getErrorOutput().resolve(testName + &quot;_CompilationError_&quot; + rounds + &quot;.txt&quot;);</span>
+<span class="nc" id="L529">        Path executionErrorPath = config.getErrorOutput().resolve(testName + &quot;_ExecutionError_&quot; + rounds + &quot;.txt&quot;);</span>
+<span class="nc" id="L530">        boolean compileResult = config.getValidator().semanticValidate(code, testName, compilationErrorPath, promptInfo);</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">        if (!compileResult) {</span>
+<span class="nc" id="L532">            config.getLogger().info(&quot;Test for method &lt; &quot; + promptInfo.getMethodInfo().getMethodName() + &quot; &gt; compilation failed round &quot; + rounds);</span>
+<span class="nc" id="L533">            return false;</span>
+        }
+<span class="nc bnc" id="L535" title="All 2 branches missed.">        if (config.isNoExecution()) {</span>
+<span class="nc" id="L536">            exportTest(code, savePath);</span>
+<span class="nc" id="L537">            config.getLogger().info(&quot;Test for method &lt; &quot; + promptInfo.getMethodInfo().getMethodName() + &quot; &gt; generated successfully round &quot; + rounds);</span>
+<span class="nc" id="L538">            return true;</span>
+        }
+
+        // Execution
+<span class="nc" id="L542">        TestExecutionSummary summary = config.getValidator().execute(fullTestName);</span>
+<span class="nc bnc" id="L543" title="All 2 branches missed.">        if(summary==null){</span>
+<span class="nc" id="L544">            config.getLogger().warn(&quot;Test for method &lt; &quot; + promptInfo.getMethodInfo().getMethodName() + &quot; &gt; execution timeout round &quot;);</span>
+<span class="nc" id="L545">            return true;//如果超时了直接当做成功跳过这个方法</span>
+        }
+<span class="nc" id="L547">        List&lt;String&gt; errors = extractErrorBySummary(summary, fullTestName);</span>
+<span class="nc" id="L548">        boolean compileSuccess = false;</span>
+        //execution error
+<span class="nc bnc" id="L550" title="All 4 branches missed.">        if (summary.getTestsFailedCount() &gt; 0 || summary.getTestsSucceededCount() == 0) {</span>
+<span class="nc bnc" id="L551" title="All 2 branches missed.">            if (!isOnlyAssertionError(errors)) {</span>
+<span class="nc" id="L552">                String testProcessed = testProcessor.removeErrorTest(promptInfo, summary);</span>
+                // 尝试修复测试代码
+<span class="nc bnc" id="L554" title="All 2 branches missed.">                if (testProcessed != null) {</span>
+<span class="nc" id="L555">                    config.getLogger().debug(&quot;[Original Test]:\n&quot; + code);</span>
+<span class="nc bnc" id="L556" title="All 2 branches missed.">                    if (config.getValidator().semanticValidate(testProcessed, testName, compilationErrorPath, null)) {</span>
+<span class="nc" id="L557">                        compileSuccess=true;</span>
+<span class="nc bnc" id="L558" title="All 2 branches missed.">                        if (config.getValidator().runtimeValidate(fullTestName)) {</span>
+<span class="nc" id="L559">                            exportTest(testProcessed, savePath);</span>
+<span class="nc" id="L560">                            config.getLogger().debug(&quot;[Processed Test]:\n&quot; + testProcessed);</span>
+<span class="nc" id="L561">                            config.getLogger().info(&quot;Processed test for method &lt; &quot; + promptInfo.getMethodInfo().getMethodName() + &quot; &gt; generated successfully round &quot; + rounds);</span>
+<span class="nc" id="L562">                            return true;</span>
+                        }
+                    }
+<span class="nc" id="L565">                    testProcessor.removeCorrectTest(promptInfo, summary);</span>
+                }
+                // 记录错误信息
+<span class="nc" id="L568">                TestMessage testMessage = new TestMessage();</span>
+<span class="nc" id="L569">                testMessage.setErrorType(TestMessage.ErrorType.RUNTIME_ERROR);</span>
+<span class="nc" id="L570">                testMessage.setErrorMessage(errors);</span>
+<span class="nc" id="L571">                promptInfo.setErrorMsg(testMessage);</span>
+<span class="nc" id="L572">                exportError(code, errors, executionErrorPath);</span>
+<span class="nc" id="L573">                testProcessor.removeCorrectTest(promptInfo, summary);</span>
+<span class="nc" id="L574">                config.getLogger().info(&quot;Test for method &lt; &quot; + promptInfo.getMethodInfo().getMethodName() + &quot; &gt; execution failed round &quot; + rounds);</span>
+<span class="nc" id="L575">                return false;</span>
+            }
+        }
+<span class="nc" id="L578">        summary.printTo(new PrintWriter(System.out));</span>
+<span class="nc bnc" id="L579" title="All 2 branches missed.">        if(!config.phaseType.equals(&quot;COVERUP&quot;)){</span>
+<span class="nc" id="L580">            exportTest(code, savePath);</span>
+        }
+<span class="nc" id="L582">        config.getLogger().info(&quot;Test for method &lt; &quot; + promptInfo.getMethodInfo().getMethodName() + &quot; &gt; compile and execute successfully round &quot; + rounds);</span>
+<span class="nc" id="L583">        return true;</span>
+    }
+
+    public static boolean isOnlyAssertionError(List&lt;String&gt; errors) {
+<span class="nc bnc" id="L587" title="All 2 branches missed.">        for (String error : errors) {</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">            if (!error.toLowerCase().contains(&quot;AssertionError&quot;.toLowerCase())</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">                    &amp;&amp; !error.toLowerCase().contains(&quot;AssertionFailed&quot;.toLowerCase())) {</span>
+<span class="nc" id="L590">                return false;</span>
+            }
+<span class="nc" id="L592">        }</span>
+<span class="nc" id="L593">        return true;</span>
+    }
+
+    public static List&lt;String&gt; extractErrorBySummary(TestExecutionSummary summary, String matchName) {
+<span class="nc" id="L597">        List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L598">        summary.getFailures().forEach(failure -&gt; {</span>
+<span class="nc bnc" id="L599" title="All 2 branches missed.">            for (StackTraceElement st : failure.getException().getStackTrace()) {</span>
+<span class="nc bnc" id="L600" title="All 2 branches missed.">                if (st.getClassName().contains(matchName)) {</span>
+<span class="nc" id="L601">                    errors.add(&quot;Error in &quot; + failure.getTestIdentifier().getLegacyReportingName()</span>
+<span class="nc" id="L602">                            + &quot;: line &quot; + st.getLineNumber() + &quot; : &quot;</span>
+<span class="nc" id="L603">                            + failure.getException().toString());</span>
+                }
+            }
+<span class="nc" id="L606">        });</span>
+<span class="nc" id="L607">        return errors;</span>
+    }
+
+    public static void exportError(String code, List&lt;String&gt; errors, Path outputPath) {
+        try {
+<span class="nc" id="L612">            BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath.toFile()));</span>
+<span class="nc" id="L613">            writer.write(code);</span>
+<span class="nc" id="L614">            writer.write(&quot;\n--------------------------------------------\n&quot;);</span>
+<span class="nc" id="L615">            writer.write(String.join(&quot;\n&quot;, errors));</span>
+<span class="nc" id="L616">            writer.close();</span>
+<span class="nc" id="L617">        } catch (Exception e) {</span>
+<span class="nc" id="L618">            throw new RuntimeException(&quot;In TestCompiler.exportError: &quot; + e);</span>
+<span class="nc" id="L619">        }</span>
+<span class="nc" id="L620">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

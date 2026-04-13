@@ -1,0 +1,21 @@
+```
+包路径：gson
+类名：JsonParseException
+父类：RuntimeException
+依赖类：无
+---
+序号：1
+方法名：JsonParseException(String msg)
+返回类型：无
+功能描述：使用指定错误信息创建异常
+---
+序号：2
+方法名：JsonParseException(String msg, Throwable cause)
+返回类型：无
+功能描述：使用指定错误信息和原因创建异常
+---
+序号：3
+方法名：JsonParseException(Throwable cause)
+返回类型：无
+功能描述：使用指定原因创建异常
+```

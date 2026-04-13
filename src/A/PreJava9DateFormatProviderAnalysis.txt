@@ -1,0 +1,23 @@
+```
+包路径：gson.internal
+类名：PreJava9DateFormatProvider
+父类：无
+依赖类：无
+---
+序号：1
+方法名：PreJava9DateFormatProvider()
+返回类型：无
+功能描述：私有构造方法，防止类实例化
+序号：2
+方法名：getUsDateTimeFormat(int dateStyle, int timeStyle)
+返回类型：DateFormat
+功能描述：根据日期和时间样式生成美国地区的日期时间格式化器
+序号：3
+方法名：getDatePartOfDateTimePattern(int dateStyle)
+返回类型：String
+功能描述：根据日期样式生成日期部分模式字符串
+序号：4
+方法名：getTimePartOfDateTimePattern(int timeStyle)
+返回类型：String
+功能描述：根据时间样式生成时间部分模式字符串
+```

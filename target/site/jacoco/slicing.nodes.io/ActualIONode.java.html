@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ActualIONode.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.nodes.io</a> &gt; <span class="el_source">ActualIONode.java</span></div><h1>ActualIONode.java</h1><pre class="source lang-java linenums">package slicing.nodes.io;
+
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+
+import java.util.Objects;
+
+/** A node that represents actual-in and actual-out nodes in a call. */
+public class ActualIONode extends IONode&lt;Node&gt; {
+    protected final Expression argument;
+
+    protected ActualIONode(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; astNode, String variable, Expression argument, boolean isInput) {
+<span class="nc" id="L15">        super(createLabel(isInput, variable, argument), (Node) astNode, variable, isInput);</span>
+<span class="nc" id="L16">        this.argument = argument;</span>
+<span class="nc" id="L17">    }</span>
+
+    public Expression getArgument() {
+<span class="nc" id="L20">        return argument;</span>
+    }
+
+    public boolean matchesFormalIO(FormalIONode o) {
+        // 1. We must be an ActualIONode, o must be a FormalIONode
+<span class="nc bnc" id="L25" title="All 4 branches missed.">        return getClass().equals(ActualIONode.class) &amp;&amp; o.getClass().equals(FormalIONode.class)</span>
+                // 2. Our variables must match (type + name)
+<span class="nc bnc" id="L27" title="All 2 branches missed.">                &amp;&amp; Objects.equals(variableName, o.variableName)</span>
+                // 3. in matches in, out matches out
+<span class="nc bnc" id="L29" title="All 2 branches missed.">                &amp;&amp; isInput() == o.isInput();</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L34" title="All 4 branches missed.">        return super.equals(o) &amp;&amp; o instanceof ActualIONode</span>
+<span class="nc bnc" id="L35" title="All 2 branches missed.">                &amp;&amp; Objects.equals(((ActualIONode) o).argument, argument);</span>
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L40">        return Objects.hash(super.hashCode(), argument);</span>
+    }
+
+    protected static String createLabel(boolean isInput, String paramName, Expression arg) {
+<span class="nc bnc" id="L44" title="All 2 branches missed.">        if (isInput)</span>
+<span class="nc" id="L45">            return String.format(&quot;%s_in = %s&quot;, paramName, arg);</span>
+        else
+<span class="nc" id="L47">            return String.format(&quot;%s = %s_out&quot;, arg, paramName);</span>
+    }
+
+    public static ActualIONode createActualIn(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; methodCallExpr, String name, Expression argument) {
+<span class="nc" id="L51">        return new ActualIONode(methodCallExpr, name, argument, true);</span>
+    }
+
+    public static ActualIONode createActualOut(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; methodCallExpr, String name, Expression argument) {
+<span class="nc" id="L55">        return new ActualIONode(methodCallExpr, name, argument, false);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

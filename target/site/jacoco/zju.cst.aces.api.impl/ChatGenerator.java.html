@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.impl</a> &gt; <span class="el_source">ChatGenerator.java</span></div><h1>ChatGenerator.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.impl;
+
+import zju.cst.aces.api.Generator;
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.dto.ChatMessage;
+import zju.cst.aces.dto.ChatResponse;
+import zju.cst.aces.runner.solution_runner.AbstractRunner;
+import zju.cst.aces.util.AskGPT;
+import zju.cst.aces.util.CodeExtractor;
+
+import java.util.List;
+
+public class ChatGenerator implements Generator {
+
+    Config config;
+
+<span class="nc" id="L17">    public ChatGenerator(Config config) {</span>
+<span class="nc" id="L18">        this.config = config;</span>
+<span class="nc" id="L19">    }</span>
+
+    @Override
+    public String generate(List&lt;ChatMessage&gt; chatMessages) {
+<span class="nc" id="L23">        return extractCodeByResponse(chat(config, chatMessages));</span>
+    }
+
+    public static ChatResponse chat(Config config, List&lt;ChatMessage&gt; chatMessages) {
+<span class="nc" id="L27">        ChatResponse response = new AskGPT(config).askChatGPT(chatMessages);</span>
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        if (response == null) {</span>
+<span class="nc" id="L29">            throw new RuntimeException(&quot;Response is null, failed to get response.&quot;);</span>
+        }
+<span class="nc" id="L31">        return response;</span>
+    }
+
+    public static String extractCodeByResponse(ChatResponse response) {
+<span class="nc" id="L35">        return new CodeExtractor(getContentByResponse(response)).getExtractedCode();</span>
+    }
+
+    public static String getContentByResponse(ChatResponse response) {
+<span class="nc" id="L39">        return AbstractRunner.parseResponse(response);</span>
+    }
+
+    public static String extractCodeByContent(String content) {
+<span class="nc" id="L43">        return new CodeExtractor(content).getExtractedCode();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

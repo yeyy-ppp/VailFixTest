@@ -1,0 +1,326 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ChatUnitestCore.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">ChatUnitestCore.java</span></div><h1>ChatUnitestCore.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import okhttp3.*;
+import zju.cst.aces.util.CodeExtractor;
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+// 主类，用于生成测试代码
+public class ChatUnitestCore {
+    //private static final String API_URL = &quot;https://api.gptsapi.net/v1/chat/completions&quot;;
+   // private static final String MODEL = &quot;gpt-4o-mini&quot;;
+    private static final String API_URL = &quot;https://openrouter.ai/api/v1/chat/completions&quot;;
+    private static final String MODEL = &quot;deepseek/deepseek-r1:free&quot;;
+    private final String apiKey; //=&quot;sk-o7C539636d3cb6ec90bc084880c104d25926fd8af0bilWd8&quot;;
+    private final OkHttpClient client;
+    private final Gson gson;
+
+
+
+<span class="nc" id="L30">    public ChatUnitestCore(String apiKey) {</span>
+<span class="nc" id="L31">        this.apiKey = apiKey;</span>
+<span class="nc" id="L32">        this.client = new OkHttpClient();</span>
+<span class="nc" id="L33">        this.gson = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+<span class="nc" id="L34">    }</span>
+
+
+    //读取源代码
+    private static String readSourceCode(String filePath) throws IOException {
+<span class="nc" id="L39">        StringBuilder content = new StringBuilder();</span>
+<span class="nc" id="L40">        try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {</span>
+            String line;
+<span class="nc bnc" id="L42" title="All 2 branches missed.">            while ((line = br.readLine()) != null) {</span>
+<span class="nc" id="L43">                content.append(line).append(&quot;\n&quot;);</span>
+            }
+        }
+<span class="nc" id="L46">        return content.toString();</span>
+    }
+
+    // 分析源代码的主要方法
+    public String analyzeSourceCode(String sourceCode) throws IOException {
+<span class="nc" id="L51">        String analyzePrompt = &quot;你是一个Java程序分析专家,请根据以下要求从专业角度分析该Java代码，要求如下：\n&quot; +</span>
+                &quot;1. **类名**：类的名称。\n&quot; +
+                &quot;2. **方法名**：每个方法的名称。\n&quot; +
+                &quot;3. **返回类型**：每个方法的返回类型。\n&quot; +
+                &quot;4. **实现功能**：每个方法实现的具体功能。\n&quot; +
+                &quot;请按照以下格式返回结果：\n&quot; +
+                &quot;```\n&quot; +
+                &quot;类名：[类名]\n&quot; +
+                &quot;方法：[方法名]\n&quot; +
+                &quot;返回类型：[返回类型]\n&quot; +
+                &quot;功能：[功能描述]\n&quot; +
+                &quot;```\n&quot;;
+<span class="nc" id="L63">        RequestBody requestBodyA = buildRequestBody(sourceCode, analyzePrompt);</span>
+<span class="nc" id="L64">        Request requestA = buildRequest(requestBodyA);</span>
+<span class="nc" id="L65">        try (Response responseA = client.newCall(requestA).execute()) {</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">            if (responseA.isSuccessful() &amp;&amp; responseA.body() != null) {</span>
+<span class="nc" id="L67">                String responseBody = responseA.body().string();</span>
+<span class="nc" id="L68">                return extractTestCode(responseBody);    //直接返回分析结果</span>
+            } else {
+<span class="nc" id="L70">                throw new IOException(&quot;分析请求响应失败！&quot; + responseA);</span>
+            }
+        }
+    }
+
+
+    // 生成测试代码的主要方法+生成提示+分析提示+源代码
+    public String generateTestCode(String sourceCode,String analyzePrompt) throws IOException {
+        //创建生成提示
+<span class="nc" id="L79">        String generatePrompt=&quot;You are a senior tester in Java projects, &quot; +</span>
+                &quot;your task is writting tests for a specific focal method in a focal class with JUnit5 framework (A focal method means a method under test).\n&quot;+
+                &quot;这里提供了待测试类的一些基本信息：&quot; +analyzePrompt+
+                &quot;\&quot;You need to create a complete unit test using JUnit 5, ensuring to cover all branches. &quot; +
+                &quot;Compile without errors, and use reflection to invoke private methods or fields if needed.\\n\&quot; +\n&quot; +
+                &quot;\&quot;Please implement the test corresponding to the path according to the execution path information provided in annotations. No additional explanations required.&quot;
+                + &quot;不需要返回思考过程等额外信息，附带的待测试源代码如下：\n&quot;;
+        // 构建请求体
+<span class="nc" id="L87">        RequestBody requestBodyG = buildRequestBody(sourceCode,generatePrompt);</span>
+        // 构建请求
+<span class="nc" id="L89">        Request requestG = buildRequest(requestBodyG);</span>
+        // 发送请求并获取响应
+<span class="nc" id="L91">        try (Response responseG = client.newCall(requestG).execute()) {</span>
+<span class="nc bnc" id="L92" title="All 4 branches missed.">            if (responseG.isSuccessful() &amp;&amp; responseG.body() != null) {</span>
+<span class="nc" id="L93">                String responseBody = responseG.body().string();</span>
+<span class="nc" id="L94">                return extractTestCode(responseBody);                  //提取生成的测试代码</span>
+            } else {
+<span class="nc" id="L96">                throw new IOException(&quot;生成请求响应失败！&quot; + responseG);</span>
+            }
+        }
+
+    }
+
+    // 验证测试代码的主要方法+测试代码+验证提示
+    public String validateTestCode(String testCode) throws IOException {
+<span class="nc" id="L104">        String validatePrompt=&quot;你是一个测试代码审查器，请你检查以下测试代码是否符合以下要求：\n&quot;</span>
+                + &quot;1. **导入语句**：是否正确导入了所有必要的类，例如 `org.junit.jupiter.api.*`, `org.mockito.*` 等。\n&quot;
+                + &quot;2. **测试方法逻辑**：是否覆盖了所有关键路径，包括正常情况、边界条件和异常情况。\n&quot;
+                + &quot;3. **语法错误**：是否存在任何语法错误或拼写错误。\n&quot;
+                + &quot;4. **编译错误**：是否存在任何可能导致编译失败的问题。\n&quot;
+                + &quot;5. **运行时错误**：是否存在任何可能导致运行时异常的问题。\n&quot;
+                + &quot;请逐项给出你的判断，并指出是否“通过验证”或“不通过验证”。&quot;
+                + &quot;若全部验证通过,请返回全部验证通过。&quot;
+                + &quot;若不通过，请详细说明理由，并按照以下格式标记出具体的错误位置和原因：\n&quot;
+                + &quot;```\n&quot;
+                + &quot;该测试代码在验证[验证项]时失败，错误位置：[行号]，错误原因：[错误原因]\n&quot;
+                + &quot;```\n&quot;
+                + &quot;不需要返回思考过程等额外信息，附带的测试代码如下：\n&quot;;
+        // 构建请求体
+<span class="nc" id="L118">        RequestBody requestBodyR = buildRequestBody(testCode,validatePrompt);</span>
+        // 构建请求
+<span class="nc" id="L120">        Request requestR = buildRequest(requestBodyR);</span>
+        // 发送请求并获取响应
+<span class="nc" id="L122">        try (Response responseR = client.newCall(requestR).execute()) {</span>
+<span class="nc bnc" id="L123" title="All 4 branches missed.">            if (responseR.isSuccessful() &amp;&amp; responseR.body() != null) {</span>
+<span class="nc" id="L124">                String responseBody = responseR.body().string();</span>
+<span class="nc" id="L125">                String result = extractTestCode(responseBody);</span>
+                // 检查验证结果
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (result.contains(&quot;全部验证通过&quot;)) {</span>
+<span class="nc" id="L128">                    System.out.println(&quot;2.1验证通过结果:\n&quot; +result +&quot;\n&quot;);</span>
+                    //验证通过将测试代码生成测试类
+<span class="nc" id="L130">                    createTestClass(testCode);</span>
+                } else
+                    {
+<span class="nc" id="L133">                        System.out.println(&quot;2.2验证失败结果:\n&quot; +result +&quot;\n&quot;);</span>
+                       // String errorPrompt=extractValidationErrors(responseBody);
+<span class="nc" id="L135">                        System.out.println(&quot;2.2.1当前测试代码错误内容:\n&quot;+ result + &quot;等待修复！\n&quot;);</span>
+                        //修复代码
+<span class="nc" id="L137">                        String fixCode=fixTestCode(result,testCode);</span>
+<span class="nc" id="L138">                        System.out.println(&quot;2.2.2修复后的测试代码:\n&quot;+ fixCode + &quot;修复结束！\n&quot;);</span>
+                       //再次验证
+                    }
+<span class="nc" id="L141">                return &quot;2.3验证阶段结束！&quot;;</span>
+               // return extractTestCode(responseBody);
+            } else {
+<span class="nc" id="L144">                throw new IOException(&quot;验证请求响应失败！&quot; + responseR +&quot;响应失败！\n&quot;);</span>
+            }
+        }
+
+    }
+
+
+    // 评估测试代码的主要方法
+    public String evaluateTestCode(String testCode) throws IOException {
+        // 创建评估提示
+<span class="nc" id="L154">        String evaluatePrompt = &quot;你是一位专业的测试代码评估专家，专门负责精准评估测试代码的质量。请根据以下详细要求，对提供的测试代码进行全面的代码覆盖率分析：\n&quot; +</span>
+                &quot;- **整体代码覆盖率**：计算测试代码覆盖被测试代码中语句的比例，以百分比形式精确呈现，格式为【整体代码覆盖率】：【XX%】。\n&quot; +
+                &quot;- **分支覆盖率**：分析测试代码对被测试代码中所有分支（如 `if-else`、`switch` 等条件语句）的覆盖情况，给出分支被执行的比例，格式为【分支覆盖率】：【XX%】。\n&quot; +
+                &quot;- **行覆盖率**：确定测试代码执行到被测试代码中每一行的比例，以百分比形式展示，格式为【行覆盖率】：【XX%】。\n&quot; +
+                &quot;\n&quot; +
+                &quot;请严格按照上述格式输出结果，不包含任何额外的解释、注释或思考过程。测试代码如下：&quot;;
+        // 构建请求体
+<span class="nc" id="L161">        RequestBody requestBodyE = buildRequestBody(testCode, evaluatePrompt);</span>
+        // 构建请求
+<span class="nc" id="L163">        Request requestE = buildRequest(requestBodyE);</span>
+
+        // 发送请求并获取响应
+<span class="nc" id="L166">        try (Response responseE = client.newCall(requestE).execute()) {</span>
+<span class="nc bnc" id="L167" title="All 4 branches missed.">            if (responseE.isSuccessful() &amp;&amp; responseE.body() != null) {</span>
+<span class="nc" id="L168">                String responseBodyE = responseE.body().string();</span>
+<span class="nc" id="L169">                return extractTestCode(responseBodyE);</span>
+            } else {
+<span class="nc" id="L171">                throw new IOException(&quot;评估请求响应失败！&quot; + responseE);</span>
+            }
+        }
+    }
+
+
+
+    // 修复测试代码的主要方法
+    public String fixTestCode(String errorPrompt, String testCode) throws IOException {
+        // 创建修复提示
+<span class="nc" id="L181">        String fixPrompt = &quot;你是一个高级测试代码修复师，根据以下信息对测试代码进行修复：\n&quot; +</span>
+                &quot;错误信息：\n&quot; + errorPrompt + &quot;\n&quot; +
+                &quot;请根据错误信息提示修复测试代码，确保修复后的代码满足所有验证要求。&quot; +
+                &quot;如果修复失败就直接返回【修复失败】以及修复失败的原因，仅返回错误；否则返回【修复成功】以及修复成功的测试代码，仅返回代码&quot;+
+                &quot;不需要额外的解释、注释和思考过程。&quot;+
+                &quot;测试代码如下：&quot;;
+        // 构建请求体
+<span class="nc" id="L188">        RequestBody requestBodyF = buildRequestBody(testCode, fixPrompt);</span>
+        // 构建请求
+<span class="nc" id="L190">        Request requestF = buildRequest(requestBodyF);</span>
+
+        // 发送请求并获取响应
+<span class="nc" id="L193">        try (Response responseF = client.newCall(requestF).execute()) {</span>
+<span class="nc bnc" id="L194" title="All 4 branches missed.">            if (responseF.isSuccessful() &amp;&amp; responseF.body() != null) {</span>
+<span class="nc" id="L195">                String responseBodyF = responseF.body().string();</span>
+<span class="nc" id="L196">                String fixresultF=extractTestCode(responseBodyF);</span>
+                //如果修复成功返回
+<span class="nc bnc" id="L198" title="All 2 branches missed.">                if (responseBodyF.contains(&quot;修复成功&quot;)) {</span>
+                    // 如果修复成功
+<span class="nc" id="L200">                    System.out.println(&quot;修复成功！&quot;);</span>
+<span class="nc" id="L201">                    createTestClass(fixresultF);</span>
+                }else
+                    {
+                        // 如果修复失败
+<span class="nc" id="L205">                        System.out.println(&quot;修复失败，原因如下：&quot;);</span>
+<span class="nc" id="L206">                        System.out.println(extractTestCode(responseBodyF));</span>
+                    }
+<span class="nc" id="L208">                return extractTestCode(responseBodyF);</span>
+                //如果修复失败记录失败原因
+            } else {
+<span class="nc" id="L211">                throw new IOException(&quot;修复请求响应失败！&quot; + responseF);</span>
+            }
+        }
+    }
+
+
+    // 构建请求体
+    private RequestBody buildRequestBody(String sourceCode,String sourcePrompt) {
+<span class="nc" id="L219">        List&lt;Map&lt;String, String&gt;&gt; messages = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L220">        Map&lt;String, String&gt; message = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L221">        message.put(&quot;role&quot;, &quot;user&quot;);</span>
+<span class="nc" id="L222">        message.put(&quot;content&quot;, sourcePrompt+ sourceCode);</span>
+<span class="nc" id="L223">        messages.add(message);</span>
+
+<span class="nc" id="L225">        Map&lt;String, Object&gt; requestBodyMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L226">        requestBodyMap.put(&quot;model&quot;, MODEL);</span>
+<span class="nc" id="L227">        requestBodyMap.put(&quot;messages&quot;, messages);</span>
+
+<span class="nc" id="L229">        return RequestBody.create(gson.toJson(requestBodyMap), MediaType.get(&quot;application/json; charset=utf-8&quot;));</span>
+    }
+
+    // 构建请求
+    private Request buildRequest(RequestBody requestBody) {
+<span class="nc" id="L234">        return new Request.Builder()</span>
+<span class="nc" id="L235">                .url(API_URL)</span>
+<span class="nc" id="L236">                .post(requestBody)</span>
+<span class="nc" id="L237">                .addHeader(&quot;Authorization&quot;, &quot;Bearer &quot; + apiKey)</span>
+<span class="nc" id="L238">                .build();</span>
+    }
+
+    // 从响应中提取内容
+    private String extractTestCode(String responseBody) {
+
+<span class="nc" id="L244">        Map&lt;String, Object&gt; responseMap = gson.fromJson(responseBody, HashMap.class);</span>
+<span class="nc" id="L245">        List&lt;Map&lt;String, Object&gt;&gt; choices = (List&lt;Map&lt;String, Object&gt;&gt;) responseMap.get(&quot;choices&quot;);</span>
+<span class="nc bnc" id="L246" title="All 4 branches missed.">        if (choices != null &amp;&amp; !choices.isEmpty()) {</span>
+<span class="nc" id="L247">            Map&lt;String, Object&gt; firstChoice = choices.get(0);</span>
+<span class="nc" id="L248">            Map&lt;String, String&gt; message = (Map&lt;String, String&gt;) firstChoice.get(&quot;message&quot;);</span>
+<span class="nc bnc" id="L249" title="All 2 branches missed.">            return message != null ? message.get(&quot;content&quot;) : &quot;&quot;;</span>
+        }
+<span class="nc" id="L251">        return &quot;&quot;;</span>
+    }
+
+
+    //创建测试类
+    public static void createTestClass(String passTest) {
+        try {
+            // 定义测试类文件的路径和名称
+<span class="nc" id="L259">            String fileName = &quot;src/main/java/zju/cst/aces/runner/javaExampleTest.java&quot;;</span>
+            // 将测试代码写入文件
+<span class="nc" id="L261">            try (FileWriter writer = new FileWriter(fileName)) {</span>
+<span class="nc" id="L262">                String pureCode = extractPureCode(passTest);</span>
+<span class="nc" id="L263">                writer.write(pureCode);</span>
+            }
+<span class="nc" id="L265">            System.out.println(&quot;测试类创建成功：&quot; + fileName);</span>
+<span class="nc" id="L266">        } catch (IOException e) {</span>
+<span class="nc" id="L267">            System.err.println(&quot;创建测试类时出错：&quot; + e.getMessage());</span>
+<span class="nc" id="L268">        }</span>
+<span class="nc" id="L269">    }</span>
+    // 提取纯净的测试代码，去除 ```java 和 ``` 标记
+    private static String extractPureCode(String response) {
+<span class="nc" id="L272">        String startTag = &quot;```java&quot;;</span>
+<span class="nc" id="L273">        String endTag = &quot;```&quot;;</span>
+
+<span class="nc" id="L275">        int start = response.indexOf(startTag);</span>
+<span class="nc" id="L276">        int end = response.lastIndexOf(endTag);</span>
+
+<span class="nc bnc" id="L278" title="All 6 branches missed.">        if (start != -1 &amp;&amp; end != -1 &amp;&amp; end &gt; start) {</span>
+            // 跳过起始标记并提取代码
+<span class="nc" id="L280">            return response.substring(start + startTag.length(), end).trim();</span>
+        }
+        // 如果未找到标记，返回原始内容
+<span class="nc" id="L283">        return response;</span>
+    }
+
+    // 关闭客户端
+    public void closeClient() {
+<span class="nc bnc" id="L288" title="All 2 branches missed.">        if (client != null) {</span>
+<span class="nc" id="L289">            client.dispatcher().executorService().shutdown();</span>
+<span class="nc" id="L290">            client.connectionPool().evictAll();</span>
+        }
+<span class="nc" id="L292">    }</span>
+
+    public static void main(String[] args) throws IOException {
+        //api String apiKey = &quot;sk-o7C539636d3cb6ec90bc084880c104d25926fd8af0bilWd8&quot;;
+<span class="nc" id="L296">        String apiKey = &quot;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&quot;;</span>
+<span class="nc" id="L297">        ChatUnitestCore chatUnitestCore = new ChatUnitestCore(apiKey);</span>
+    //    String sourceCode = &quot;public class Example {\n    public int add(int a, int b) {\n        return a + b;\n    }\n}&quot;;
+        //待测试代码路径
+<span class="nc" id="L300">        String sourceCodePath = &quot;src/main/java/zju/cst/aces/runner/Example.java&quot;;</span>
+<span class="nc" id="L301">        String sourceCode = chatUnitestCore.readSourceCode(sourceCodePath);</span>
+        //分析待测试代码
+<span class="nc" id="L303">        String analyzeCode=chatUnitestCore.analyzeSourceCode(sourceCode);</span>
+       // System.out.println(&quot;1Analysis Test Code :\n&quot; +analyzeCode);
+        //生成测试代码
+<span class="nc" id="L306">        String testCode = chatUnitestCore.generateTestCode(sourceCode,analyzeCode);</span>
+      //  System.out.println(&quot;2Generated Test Code:\n&quot; + testCode);
+        try {
+
+<span class="nc bnc" id="L310" title="All 4 branches missed.">            if(testCode != null &amp;&amp; !testCode.trim().isEmpty()) {</span>
+                //验证测试代码
+<span class="nc" id="L312">                String validateCode=chatUnitestCore.validateTestCode(testCode);</span>
+            }
+            else { }
+
+            // 评估测试代码
+<span class="nc" id="L317">            String evaluateCode = chatUnitestCore.evaluateTestCode(testCode);</span>
+
+<span class="nc" id="L319">        } catch (IOException e) {</span>
+<span class="nc" id="L320">            e.printStackTrace();</span>
+        }finally {
+<span class="nc" id="L322">            chatUnitestCore.closeClient();</span>
+        }
+<span class="nc" id="L324">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

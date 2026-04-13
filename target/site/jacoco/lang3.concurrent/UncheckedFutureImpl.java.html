@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>UncheckedFutureImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.concurrent</a> &gt; <span class="el_source">UncheckedFutureImpl.java</span></div><h1>UncheckedFutureImpl.java</h1><pre class="source lang-java linenums">package lang3.concurrent;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+import lang3.exception.UncheckedInterruptedException;
+final class UncheckedFutureImpl&lt;V&gt; extends AbstractFutureProxy&lt;V&gt; implements UncheckedFuture&lt;V&gt; {
+    UncheckedFutureImpl(final Future&lt;V&gt; future) {
+<span class="fc" id="L9">        super(future);</span>
+<span class="fc" id="L10">    }</span>
+    @Override
+    public V get() {
+        try {
+<span class="fc" id="L14">            return super.get();</span>
+<span class="nc" id="L15">        } catch (final InterruptedException e) {</span>
+<span class="nc" id="L16">            throw new UncheckedInterruptedException(e);</span>
+<span class="fc" id="L17">        } catch (final ExecutionException e) {</span>
+<span class="fc" id="L18">            throw new UncheckedExecutionException(e);</span>
+        }
+    }
+    @Override
+    public V get(final long timeout, final TimeUnit unit) {
+        try {
+<span class="fc" id="L24">            return super.get(timeout, unit);</span>
+<span class="nc" id="L25">        } catch (final InterruptedException e) {</span>
+<span class="nc" id="L26">            throw new UncheckedInterruptedException(e);</span>
+<span class="nc" id="L27">        } catch (final ExecutionException e) {</span>
+<span class="nc" id="L28">            throw new UncheckedExecutionException(e);</span>
+<span class="fc" id="L29">        } catch (final TimeoutException e) {</span>
+<span class="fc" id="L30">            throw new UncheckedTimeoutException(e);</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

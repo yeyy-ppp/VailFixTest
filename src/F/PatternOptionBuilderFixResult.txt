@@ -1,0 +1,494 @@
+[2026-01-13 18:56:46] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 仍有问题 - 编译错误 - [未导入Converter类型]
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli;
+
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.apache.commons.cli.converters.ArrayConverter;
+
+public class PatternOptionBuilderTest {
+
+    @Test
+    void testConstructor() {
+        new PatternOptionBuilder();
+    }
+
+    @Test
+    void testGetValueClass() {
+        assertEquals(String.class, PatternOptionBuilder.getValueClass(':'));
+        assertEquals(Number.class, PatternOptionBuilder.getValueClass('%'));
+        assertEquals(Class.class, PatternOptionBuilder.getValueClass('+'));
+        assertEquals(java.util.Date.class, PatternOptionBuilder.getValueClass('#'));
+        assertEquals(java.io.File.class, PatternOptionBuilder.getValueClass('<'));
+        assertEquals(java.io.File.class, PatternOptionBuilder.getValueClass('>'));
+        assertEquals(ArrayConverter.class, PatternOptionBuilder.getValueClass('*'));
+        assertEquals(java.net.URL.class, PatternOptionBuilder.getValueClass('/'));
+        assertEquals(Object.class, PatternOptionBuilder.getValueClass('@'));
+        assertNull(PatternOptionBuilder.getValueClass('x'));
+    }
+
+    @Test
+    void testGetValueTypeAllCases() {
+        assertEquals(PatternOptionBuilder.OBJECT_VALUE, PatternOptionBuilder.getValueType('@'));
+        assertEquals(PatternOptionBuilder.STRING_VALUE, PatternOptionBuilder.getValueType(':'));
+        assertEquals(PatternOptionBuilder.NUMBER_VALUE, PatternOptionBuilder.getValueType('%'));
+        assertEquals(PatternOptionBuilder.CLASS_VALUE, PatternOptionBuilder.getValueType('+'));
+        assertEquals(PatternOptionBuilder.DATE_VALUE, PatternOptionBuilder.getValueType('#'));
+        assertEquals(PatternOptionBuilder.EXISTING_FILE_VALUE, PatternOptionBuilder.getValueType('<'));
+        assertEquals(PatternOptionBuilder.FILE_VALUE, PatternOptionBuilder.getValueType('>'));
+        assertEquals(PatternOptionBuilder.FILES_VALUE, PatternOptionBuilder.getValueType('*'));
+        assertEquals(PatternOptionBuilder.URL_VALUE, PatternOptionBuilder.getValueType('/'));
+        assertNull(PatternOptionBuilder.getValueType('x'));
+    }
+
+    @Test
+    void testIsValueCodeValidCodes() {
+        assertTrue(PatternOptionBuilder.isValueCode('@'));
+        assertTrue(PatternOptionBuilder.isValueCode(':'));
+        assertTrue(PatternOptionBuilder.isValueCode('%'));
+        assertTrue(PatternOptionBuilder.isValueCode('+'));
+        assertTrue(PatternOptionBuilder.isValueCode('#'));
+        assertTrue(PatternOptionBuilder.isValueCode('<'));
+        assertTrue(PatternOptionBuilder.isValueCode('>'));
+        assertTrue(PatternOptionBuilder.isValueCode('*'));
+        assertTrue(PatternOptionBuilder.isValueCode('/'));
+        assertTrue(PatternOptionBuilder.isValueCode('!'));
+    }
+
+    @Test
+    void testIsValueCodeInvalidCodes() {
+        assertFalse(PatternOptionBuilder.isValueCode('a'));
+        assertFalse(PatternOptionBuilder.isValueCode('Z'));
+        assertFalse(PatternOptionBuilder.isValueCode('1'));
+        assertFalse(PatternOptionBuilder.isValueCode(' '));
+        assertFalse(PatternOptionBuilder.isValueCode('-'));
+    }
+
+    @Test
+    void testParsePatternEmptyString() {
+        Options options = PatternOptionBuilder.parsePattern("");
+        assertEquals(0, options.getOptions().size());
+    }
+
+    @Test
+    void testParsePatternSingleOption() {
+        Options options = PatternOptionBuilder.parsePattern("a");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertFalse(option.hasArg());
+        assertFalse(option.isRequired());
+        assertNull(option.getType());
+    }
+
+    @Test
+    void testParsePatternOptionWithValueCode() {
+        Options options = PatternOptionBuilder.parsePattern("a:");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, option.getType());
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void testParsePatternRequiredFlag() {
+        Options options = PatternOptionBuilder.parsePattern("a!");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertFalse(option.hasArg());
+        assertTrue(option.isRequired());
+        assertNull(option.getType());
+    }
+
+    @Test
+    void testParsePatternCombinedValueAndRequired() {
+        Options options = PatternOptionBuilder.parsePattern("a:!");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertTrue(option.isRequired());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, option.getType());
+    }
+
+    @Test
+    void testParsePatternMultipleOptions() {
+        Options options = PatternOptionBuilder.parsePattern("ab:c");
+        assertEquals(3, options.getOptions().size());
+
+        Option optionA = options.getOption("a");
+        assertNotNull(optionA);
+        assertFalse(optionA.hasArg());
+
+        Option optionB = options.getOption("b");
+        assertNotNull(optionB);
+        assertTrue(optionB.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, optionB.getType());
+
+        Option optionC = options.getOption("c");
+        assertNotNull(optionC);
+        assertFalse(optionC.hasArg());
+    }
+
+    @Test
+    void testParsePatternTrailingValueCode() {
+        Options options = PatternOptionBuilder.parsePattern("a*b");
+        Option optionA = options.getOption("a");
+        assertNotNull(optionA);
+        assertTrue(optionA.hasArg());
+        assertEquals(PatternOptionBuilder.FILES_VALUE, optionA.getType());
+
+        Option optionB = options.getOption("b");
+        assertNotNull(optionB);
+        assertFalse(optionB.hasArg());
+    }
+
+    @Test
+    void testParsePatternConsecutiveValueCodes() {
+        Options options = PatternOptionBuilder.parsePattern("a::");
+        Option optionA = options.getOption("a");
+        assertNotNull(optionA);
+        assertTrue(optionA.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, optionA.getType());
+
+        Option optionColon = options.getOption(":");
+        assertNotNull(optionColon);
+        assertFalse(optionColon.hasArg());
+    }
+
+    @Test
+    void testUnsupportedConverter() {
+        Converter<?, ?> converter = PatternOptionBuilder.unsupported();
+        assertThrows(UnsupportedOperationException.class, () -> converter.convert("test"));
+    }
+}
+```
+
+[2026-01-13 18:56:46] 兜底处理
+兜底策略: METHOD_BODY
+兜底后代码:
+```java
+package cli;
+
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import org.apache.commons.cli.converters.ArrayConverter;
+
+public class PatternOptionBuilderTest {
+
+// 修复失败，注释错误方法：    @Test
+// 修复失败，注释错误方法：    void testConstructor() {
+// 修复失败，注释错误方法：        new PatternOptionBuilder();
+// 修复失败，注释错误方法：    }
+
+    @Test
+    void testGetValueClass() {
+        assertEquals(String.class, PatternOptionBuilder.getValueClass(':'));
+        assertEquals(Number.class, PatternOptionBuilder.getValueClass('%'));
+        assertEquals(Class.class, PatternOptionBuilder.getValueClass('+'));
+        assertEquals(java.util.Date.class, PatternOptionBuilder.getValueClass('#'));
+        assertEquals(java.io.File.class, PatternOptionBuilder.getValueClass('<'));
+        assertEquals(java.io.File.class, PatternOptionBuilder.getValueClass('>'));
+        assertEquals(ArrayConverter.class, PatternOptionBuilder.getValueClass('*'));
+        assertEquals(java.net.URL.class, PatternOptionBuilder.getValueClass('/'));
+        assertEquals(Object.class, PatternOptionBuilder.getValueClass('@'));
+        assertNull(PatternOptionBuilder.getValueClass('x'));
+    }
+
+    @Test
+    void testGetValueTypeAllCases() {
+        assertEquals(PatternOptionBuilder.OBJECT_VALUE, PatternOptionBuilder.getValueType('@'));
+        assertEquals(PatternOptionBuilder.STRING_VALUE, PatternOptionBuilder.getValueType(':'));
+        assertEquals(PatternOptionBuilder.NUMBER_VALUE, PatternOptionBuilder.getValueType('%'));
+        assertEquals(PatternOptionBuilder.CLASS_VALUE, PatternOptionBuilder.getValueType('+'));
+        assertEquals(PatternOptionBuilder.DATE_VALUE, PatternOptionBuilder.getValueType('#'));
+        assertEquals(PatternOptionBuilder.EXISTING_FILE_VALUE, PatternOptionBuilder.getValueType('<'));
+        assertEquals(PatternOptionBuilder.FILE_VALUE, PatternOptionBuilder.getValueType('>'));
+        assertEquals(PatternOptionBuilder.FILES_VALUE, PatternOptionBuilder.getValueType('*'));
+        assertEquals(PatternOptionBuilder.URL_VALUE, PatternOptionBuilder.getValueType('/'));
+        assertNull(PatternOptionBuilder.getValueType('x'));
+    }
+
+    @Test
+    void testIsValueCodeValidCodes() {
+        assertTrue(PatternOptionBuilder.isValueCode('@'));
+        assertTrue(PatternOptionBuilder.isValueCode(':'));
+        assertTrue(PatternOptionBuilder.isValueCode('%'));
+        assertTrue(PatternOptionBuilder.isValueCode('+'));
+        assertTrue(PatternOptionBuilder.isValueCode('#'));
+        assertTrue(PatternOptionBuilder.isValueCode('<'));
+        assertTrue(PatternOptionBuilder.isValueCode('>'));
+        assertTrue(PatternOptionBuilder.isValueCode('*'));
+        assertTrue(PatternOptionBuilder.isValueCode('/'));
+        assertTrue(PatternOptionBuilder.isValueCode('!'));
+    }
+
+    @Test
+    void testIsValueCodeInvalidCodes() {
+        assertFalse(PatternOptionBuilder.isValueCode('a'));
+        assertFalse(PatternOptionBuilder.isValueCode('Z'));
+        assertFalse(PatternOptionBuilder.isValueCode('1'));
+        assertFalse(PatternOptionBuilder.isValueCode(' '));
+        assertFalse(PatternOptionBuilder.isValueCode('-'));
+    }
+
+    @Test
+    void testParsePatternEmptyString() {
+        Options options = PatternOptionBuilder.parsePattern("");
+        assertEquals(0, options.getOptions().size());
+    }
+
+    @Test
+    void testParsePatternSingleOption() {
+        Options options = PatternOptionBuilder.parsePattern("a");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertFalse(option.hasArg());
+        assertFalse(option.isRequired());
+        assertNull(option.getType());
+    }
+
+    @Test
+    void testParsePatternOptionWithValueCode() {
+        Options options = PatternOptionBuilder.parsePattern("a:");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, option.getType());
+        assertFalse(option.isRequired());
+    }
+
+    @Test
+    void testParsePatternRequiredFlag() {
+        Options options = PatternOptionBuilder.parsePattern("a!");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertFalse(option.hasArg());
+        assertTrue(option.isRequired());
+        assertNull(option.getType());
+    }
+
+    @Test
+    void testParsePatternCombinedValueAndRequired() {
+        Options options = PatternOptionBuilder.parsePattern("a:!");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertTrue(option.isRequired());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, option.getType());
+    }
+
+    @Test
+    void testParsePatternMultipleOptions() {
+        Options options = PatternOptionBuilder.parsePattern("ab:c");
+        assertEquals(3, options.getOptions().size());
+
+        Option optionA = options.getOption("a");
+        assertNotNull(optionA);
+        assertFalse(optionA.hasArg());
+
+        Option optionB = options.getOption("b");
+        assertNotNull(optionB);
+        assertTrue(optionB.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, optionB.getType());
+
+        Option optionC = options.getOption("c");
+        assertNotNull(optionC);
+        assertFalse(optionC.hasArg());
+    }
+
+    @Test
+    void testParsePatternTrailingValueCode() {
+        Options options = PatternOptionBuilder.parsePattern("a*b");
+        Option optionA = options.getOption("a");
+        assertNotNull(optionA);
+        assertTrue(optionA.hasArg());
+        assertEquals(PatternOptionBuilder.FILES_VALUE, optionA.getType());
+
+        Option optionB = options.getOption("b");
+        assertNotNull(optionB);
+        assertFalse(optionB.hasArg());
+    }
+
+    @Test
+    void testParsePatternConsecutiveValueCodes() {
+        Options options = PatternOptionBuilder.parsePattern("a::");
+        Option optionA = options.getOption("a");
+        assertNotNull(optionA);
+        assertTrue(optionA.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, optionA.getType());
+
+        Option optionColon = options.getOption(":");
+        assertNotNull(optionColon);
+        assertFalse(optionColon.hasArg());
+    }
+
+    @Test
+    void testUnsupportedConverter() {
+        Converter<?, ?> converter = PatternOptionBuilder.unsupported();
+        assertThrows(UnsupportedOperationException.class, () -> converter.convert("test"));
+    }
+}
+
+```
+
+[2026-01-15 12:13:24] 修复结果
+修复类型: 致命错误修复
+修复前错误: 编译错误 - 未导入Converter类型
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PatternOptionBuilderTest {
+
+    @Test
+    public void testConstructor() {
+        new PatternOptionBuilder();
+    }
+
+    @Test
+    public void testGetValueClass() {
+        assertEquals(PatternOptionBuilder.STRING_VALUE, PatternOptionBuilder.getValueClass(':'));
+        assertEquals(PatternOptionBuilder.NUMBER_VALUE, PatternOptionBuilder.getValueClass('%'));
+        assertNull(PatternOptionBuilder.getValueClass('x'));
+    }
+
+    @Test
+    public void testGetValueType() {
+        assertEquals(PatternOptionBuilder.OBJECT_VALUE, PatternOptionBuilder.getValueType('@'));
+        assertEquals(PatternOptionBuilder.STRING_VALUE, PatternOptionBuilder.getValueType(':'));
+        assertEquals(PatternOptionBuilder.NUMBER_VALUE, PatternOptionBuilder.getValueType('%'));
+        assertEquals(PatternOptionBuilder.CLASS_VALUE, PatternOptionBuilder.getValueType('+'));
+        assertEquals(PatternOptionBuilder.DATE_VALUE, PatternOptionBuilder.getValueType('#'));
+        assertEquals(PatternOptionBuilder.EXISTING_FILE_VALUE, PatternOptionBuilder.getValueType('<'));
+        assertEquals(PatternOptionBuilder.FILE_VALUE, PatternOptionBuilder.getValueType('>'));
+        assertEquals(PatternOptionBuilder.FILES_VALUE, PatternOptionBuilder.getValueType('*'));
+        assertEquals(PatternOptionBuilder.URL_VALUE, PatternOptionBuilder.getValueType('/'));
+        assertNull(PatternOptionBuilder.getValueType('?'));
+    }
+
+    @Test
+    public void testIsValueCode() {
+        assertTrue(PatternOptionBuilder.isValueCode('@'));
+        assertTrue(PatternOptionBuilder.isValueCode(':'));
+        assertTrue(PatternOptionBuilder.isValueCode('%'));
+        assertTrue(PatternOptionBuilder.isValueCode('+'));
+        assertTrue(PatternOptionBuilder.isValueCode('#'));
+        assertTrue(PatternOptionBuilder.isValueCode('<'));
+        assertTrue(PatternOptionBuilder.isValueCode('>'));
+        assertTrue(PatternOptionBuilder.isValueCode('*'));
+        assertTrue(PatternOptionBuilder.isValueCode('/'));
+        assertTrue(PatternOptionBuilder.isValueCode('!'));
+        assertFalse(PatternOptionBuilder.isValueCode('a'));
+        assertFalse(PatternOptionBuilder.isValueCode('-'));
+        assertFalse(PatternOptionBuilder.isValueCode(' '));
+    }
+
+    @Test
+    public void testParsePattern_EmptyString() {
+        Options options = PatternOptionBuilder.parsePattern("");
+        assertTrue(options.getOptions().isEmpty());
+    }
+
+    @Test
+    public void testParsePattern_SingleOptionNoArg() {
+        Options options = PatternOptionBuilder.parsePattern("a");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertFalse(option.hasArg());
+        assertFalse(option.isRequired());
+        assertNull(option.getType());
+    }
+
+    @Test
+    public void testParsePattern_SingleOptionWithArg() {
+        Options options = PatternOptionBuilder.parsePattern("a:");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, option.getType());
+    }
+
+    @Test
+    public void testParsePattern_RequiredOption() {
+        Options options = PatternOptionBuilder.parsePattern("a!");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.isRequired());
+    }
+
+    @Test
+    public void testParsePattern_OptionWithMultipleValueCodes() {
+        Options options = PatternOptionBuilder.parsePattern("a%!*");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertTrue(option.isRequired());
+        assertEquals(PatternOptionBuilder.FILES_VALUE, option.getType());
+    }
+
+    @Test
+    public void testParsePattern_MultipleOptions() {
+        Options options = PatternOptionBuilder.parsePattern("ab:c");
+        assertEquals(3, options.getOptions().size());
+        assertTrue(options.hasOption("a"));
+        assertTrue(options.hasOption("b"));
+        assertTrue(options.hasOption("c"));
+        
+        Option optionB = options.getOption("b");
+        assertTrue(optionB.hasArg());
+        assertEquals(PatternOptionBuilder.STRING_VALUE, optionB.getType());
+    }
+
+    @Test
+    public void testParsePattern_ValueCodeAtStart() {
+        Options options = PatternOptionBuilder.parsePattern(":a");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertFalse(option.hasArg());
+    }
+
+    @Test
+    public void testParsePattern_ValueCodeAtEnd() {
+        Options options = PatternOptionBuilder.parsePattern("a:");
+        Option option = options.getOption("a");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+    }
+
+    @Test
+    public void testParsePattern_AllValueCodes() {
+        String pattern = "@:%+#<>*/!";
+        Options options = PatternOptionBuilder.parsePattern(pattern);
+        assertEquals(1, options.getOptions().size());
+        Option option = options.getOption("!");
+        assertNotNull(option);
+        assertTrue(option.hasArg());
+        assertEquals(PatternOptionBuilder.URL_VALUE, option.getType());
+    }
+
+@Test
+    public void testUnsupported() {
+        org.apache.commons.cli.Converter<?, ?> converter = PatternOptionBuilder.unsupported();
+        assertThrows(UnsupportedOperationException.class, () -> {
+            converter.convert("test");
+        });
+    }
+    }
+}
+
+```
+

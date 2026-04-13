@@ -1,0 +1,73 @@
+[2026-01-14 09:46:45] 修复结果
+修复类型: 致命错误修复
+修复前错误: 编译错误 - [调用了不存在的方法getOption()]
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.LinkedHashSet;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class AmbiguousOptionExceptionTest {
+
+    @Test
+    void testCreateMessage_EmptyCollection() {
+        String option = "opt";
+        Collection<String> matchingOptions = Collections.emptySet();
+        String expected = "Ambiguous option: 'opt'  (could be: )";
+        String actual = AmbiguousOptionException.createMessage(option, matchingOptions);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testCreateMessage_SingleOption() {
+        String option = "o";
+        Collection<String> matchingOptions = Collections.singleton("option");
+        String expected = "Ambiguous option: 'o'  (could be: 'option')";
+        String actual = AmbiguousOptionException.createMessage(option, matchingOptions);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testCreateMessage_TwoOptions() {
+        String option = "a";
+        Collection<String> matchingOptions = Arrays.asList("alpha", "apple");
+        String expected = "Ambiguous option: 'a'  (could be: 'alpha', 'apple')";
+        String actual = AmbiguousOptionException.createMessage(option, matchingOptions);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testCreateMessage_MultipleOptions() {
+        String option = "t";
+        Collection<String> matchingOptions = new LinkedHashSet<>(Arrays.asList("test", "type", "time"));
+        String expected = "Ambiguous option: 't'  (could be: 'test', 'type', 'time')";
+        String actual = AmbiguousOptionException.createMessage(option, matchingOptions);
+        assertEquals(expected, actual);
+    }
+
+    @Test
+    void testConstructorAndGetMatchingOptions() {
+        String option = "debug";
+        Collection<String> matchingOptions = Arrays.asList("debugMode", "debugLevel");
+        AmbiguousOptionException exception = new AmbiguousOptionException(option, matchingOptions);
+        assertEquals(matchingOptions, exception.getMatchingOptions());
+    }
+
+    @Test
+    void testConstructorMessageGeneration() {
+        String option = "v";
+        Collection<String> matchingOptions = Arrays.asList("verbose", "version");
+        AmbiguousOptionException exception = new AmbiguousOptionException(option, matchingOptions);
+        String expectedMessage = AmbiguousOptionException.createMessage(option, matchingOptions);
+        assertEquals(expectedMessage, exception.getMessage());
+    }
+}
+
+```
+

@@ -1,0 +1,147 @@
+```
+包路径：gson
+类名：GsonBuilder
+父类：无
+依赖类：CanIgnoreReturnValue,InlineMe,Since,Until,Excluder,DefaultDateTypeAdapter,TreeTypeAdapter,TypeAdapters,SqlTypesSupport,TypeToken,JsonReader,JsonWriter,LongSerializationPolicy,FieldNamingStrategy,FieldNamingPolicy,InstanceCreator,TypeAdapterFactory,FormattingStyle,Strictness,ToNumberStrategy,ReflectionAccessFilter,ExclusionStrategy,JsonSerializer,JsonDeserializer,TypeAdapter,Gson
+---
+序号：1
+方法名：GsonBuilder()
+返回类型：void
+功能描述：默认构造函数，初始化默认配置
+序号：2
+方法名：GsonBuilder(Gson gson)
+返回类型：void
+功能描述：从现有Gson实例复制配置的构造函数
+序号：3
+方法名：setVersion(double version)
+返回类型：GsonBuilder
+功能描述：设置版本号用于字段排除
+序号：4
+方法名：excludeFieldsWithModifiers(int... modifiers)
+返回类型：GsonBuilder
+功能描述：排除指定修饰符的字段
+序号：5
+方法名：generateNonExecutableJson()
+返回类型：GsonBuilder
+功能描述：启用生成非可执行JSON
+序号：6
+方法名：excludeFieldsWithoutExposeAnnotation()
+返回类型：GsonBuilder
+功能描述：排除未带@Expose注解的字段
+序号：7
+方法名：serializeNulls()
+返回类型：GsonBuilder
+功能描述：启用空值序列化
+序号：8
+方法名：enableComplexMapKeySerialization()
+返回类型：GsonBuilder
+功能描述：启用复杂Map键序列化
+序号：9
+方法名：disableInnerClassSerialization()
+返回类型：GsonBuilder
+功能描述：禁用内部类序列化
+序号：10
+方法名：setLongSerializationPolicy(LongSerializationPolicy serializationPolicy)
+返回类型：GsonBuilder
+功能描述：设置长整型序列化策略
+序号：11
+方法名：setFieldNamingPolicy(FieldNamingPolicy namingConvention)
+返回类型：GsonBuilder
+功能描述：设置字段命名策略（枚举版）
+序号：12
+方法名：setFieldNamingStrategy(FieldNamingStrategy fieldNamingStrategy)
+返回类型：GsonBuilder
+功能描述：设置字段命名策略
+序号：13
+方法名：setObjectToNumberStrategy(ToNumberStrategy objectToNumberStrategy)
+返回类型：GsonBuilder
+功能描述：设置对象转数字策略
+序号：14
+方法名：setNumberToNumberStrategy(ToNumberStrategy numberToNumberStrategy)
+返回类型：GsonBuilder
+功能描述：设置数字转数字策略
+序号：15
+方法名：setExclusionStrategies(ExclusionStrategy... strategies)
+返回类型：GsonBuilder
+功能描述：设置序列化和反序列化排除策略
+序号：16
+方法名：addSerializationExclusionStrategy(ExclusionStrategy strategy)
+返回类型：GsonBuilder
+功能描述：添加序列化排除策略
+序号：17
+方法名：addDeserializationExclusionStrategy(ExclusionStrategy strategy)
+返回类型：GsonBuilder
+功能描述：添加反序列化排除策略
+序号：18
+方法名：setPrettyPrinting()
+返回类型：GsonBuilder
+功能描述：启用格式化输出（旧版别名）
+序号：19
+方法名：setFormattingStyle(FormattingStyle formattingStyle)
+返回类型：GsonBuilder
+功能描述：设置输出格式化样式
+序号：20
+方法名：setLenient()
+返回类型：GsonBuilder
+功能描述：启用宽松解析（已废弃）
+序号：21
+方法名：setStrictness(Strictness strictness)
+返回类型：GsonBuilder
+功能描述：设置解析严格级别
+序号：22
+方法名：disableHtmlEscaping()
+返回类型：GsonBuilder
+功能描述：禁用HTML转义
+序号：23
+方法名：setDateFormat(String pattern)
+返回类型：GsonBuilder
+功能描述：设置日期格式模式
+序号：24
+方法名：setDateFormat(int dateStyle)
+返回类型：GsonBuilder
+功能描述：设置日期样式（已废弃）
+序号：25
+方法名：setDateFormat(int dateStyle, int timeStyle)
+返回类型：GsonBuilder
+功能描述：设置日期和时间样式
+序号：26
+方法名：checkDateFormatStyle(int style)
+返回类型：int
+功能描述：验证日期样式有效性
+序号：27
+方法名：registerTypeAdapter(Type type, Object typeAdapter)
+返回类型：GsonBuilder
+功能描述：注册类型适配器
+序号：28
+方法名：hasNonOverridableAdapter(Type type)
+返回类型：boolean
+功能描述：检查类型是否不可覆盖的适配器
+序号：29
+方法名：registerTypeAdapterFactory(TypeAdapterFactory factory)
+返回类型：GsonBuilder
+功能描述：注册类型适配器工厂
+序号：30
+方法名：registerTypeHierarchyAdapter(Class<?> baseType, Object typeAdapter)
+返回类型：GsonBuilder
+功能描述：注册类型层次结构适配器
+序号：31
+方法名：serializeSpecialFloatingPointValues()
+返回类型：GsonBuilder
+功能描述：启用特殊浮点值序列化
+序号：32
+方法名：disableJdkUnsafe()
+返回类型：GsonBuilder
+功能描述：禁用JDK不安全访问
+序号：33
+方法名：addReflectionAccessFilter(ReflectionAccessFilter filter)
+返回类型：GsonBuilder
+功能描述：添加反射访问过滤器
+序号：34
+方法名：create()
+返回类型：Gson
+功能描述：创建配置完成的Gson实例
+序号：35
+方法名：addTypeAdaptersForDate(String datePattern, int dateStyle, int timeStyle, List<TypeAdapterFactory> factories)
+返回类型：void
+功能描述：添加日期相关类型适配器
+```

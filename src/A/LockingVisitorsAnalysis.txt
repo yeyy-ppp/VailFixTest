@@ -1,0 +1,143 @@
+```
+包路径：lang3.concurrent.locks
+类名：LockingVisitors
+父类：无
+依赖类：ReadWriteLockVisitor, ReentrantLockVisitor
+---
+序号：1
+方法名：create(O object, ReadWriteLock readWriteLock)
+返回类型：ReadWriteLockVisitor<O>
+功能描述：创建并返回ReadWriteLockVisitor实例
+序号：2
+方法名：create(O object, ReentrantLock reentrantLock)
+返回类型：ReentrantLockVisitor<O>
+功能描述：创建并返回ReentrantLockVisitor实例
+序号：3
+方法名：LockingVisitors()
+返回类型：无
+功能描述：已过时的无参构造方法
+---
+包路径：lang3.concurrent.locks
+类名：LockingVisitors.LockVisitor
+父类：无
+依赖类：AbstractSupplier
+---
+序号：1
+方法名：LockVisitor(LVBuilder<O, L, ?> builder)
+返回类型：无
+功能描述：使用构建器初始化LockVisitor实例
+序号：2
+方法名：LockVisitor(O object, L lock, Supplier<Lock> readLockSupplier, Supplier<Lock> writeLockSupplier)
+返回类型：无
+功能描述：使用对象、锁和锁供应商初始化LockVisitor实例
+序号：3
+方法名：getLock()
+返回类型：L
+功能描述：返回锁对象
+序号：4
+方法名：getObject()
+返回类型：O
+功能描述：返回被锁保护的对象
+---
+包路径：lang3.concurrent.locks
+类名：LockingVisitors.LockVisitor.LVBuilder
+父类：AbstractSupplier<LockVisitor<O, L>, B, RuntimeException>
+依赖类：LockVisitor, AbstractSupplier
+---
+序号：1
+方法名：LVBuilder()
+返回类型：无
+功能描述：构造空构建器
+序号：2
+方法名：get()
+返回类型：LockVisitor<O, L>
+功能描述：构建并返回LockVisitor实例
+序号：3
+方法名：setLock(L lock)
+返回类型：B
+功能描述：设置锁对象
+序号：4
+方法名：setObject(O object)
+返回类型：B
+功能描述：设置被锁保护的对象
+序号：5
+方法名：setReadLockSupplier(Supplier<Lock> readLockSupplier)
+返回类型：B
+功能描述：设置读锁供应商
+序号：6
+方法名：setWriteLockSupplier(Supplier<Lock> writeLockSupplier)
+返回类型：B
+功能描述：设置写锁供应商
+---
+包路径：lang3.concurrent.locks
+类名：LockingVisitors.ReadWriteLockVisitor
+父类：LockVisitor<O, ReadWriteLock>
+依赖类：LockVisitor
+---
+序号：1
+方法名：ReadWriteLockVisitor(Builder<O> builder)
+返回类型：无
+功能描述：使用构建器初始化ReadWriteLockVisitor实例
+序号：2
+方法名：ReadWriteLockVisitor(O object, ReadWriteLock readWriteLock)
+返回类型：无
+功能描述：使用对象和读写锁初始化ReadWriteLockVisitor实例
+序号：3
+方法名：builder()
+返回类型：Builder<O>
+功能描述：创建并返回构建器
+---
+包路径：lang3.concurrent.locks
+类名：LockingVisitors.ReadWriteLockVisitor.Builder
+父类：LockingVisitors.LockVisitor.LVBuilder<O, ReadWriteLock, Builder<O>>
+依赖类：LockingVisitors.LockVisitor.LVBuilder, LockingVisitors.ReadWriteLockVisitor
+---
+序号：1
+方法名：Builder()
+返回类型：无
+功能描述：构造空构建器
+序号：2
+方法名：get()
+返回类型：ReadWriteLockVisitor<O>
+功能描述：构建并返回ReadWriteLockVisitor实例
+序号：3
+方法名：setLock(ReadWriteLock readWriteLock)
+返回类型：Builder<O>
+功能描述：设置读写锁并配置锁供应商
+---
+包路径：lang3.concurrent.locks
+类名：LockingVisitors.ReentrantLockVisitor
+父类：LockVisitor<O, ReentrantLock>
+依赖类：LockVisitor
+---
+序号：1
+方法名：ReentrantLockVisitor(Builder<O> builder)
+返回类型：无
+功能描述：使用构建器初始化ReentrantLockVisitor实例
+序号：2
+方法名：ReentrantLockVisitor(O object, ReentrantLock reentrantLock)
+返回类型：无
+功能描述：使用对象和可重入锁初始化ReentrantLockVisitor实例
+序号：3
+方法名：builder()
+返回类型：Builder<O>
+功能描述：创建并返回构建器
+---
+包路径：lang3.concurrent.locks
+类名：LockingVisitors.ReentrantLockVisitor.Builder
+父类：LockingVisitors.LockVisitor.LVBuilder<O, ReentrantLock, Builder<O>>
+依赖类：LockingVisitors.LockVisitor.LVBuilder, LockingVisitors.ReentrantLockVisitor
+---
+序号：1
+方法名：Builder()
+返回类型：无
+功能描述：构造空构建器
+序号：2
+方法名：get()
+返回类型：ReentrantLockVisitor<O>
+功能描述：构建并返回ReentrantLockVisitor实例
+序号：3
+方法名：setLock(ReentrantLock reentrantLock)
+返回类型：Builder<O>
+功能描述：设置可重入锁并配置锁供应商
+```

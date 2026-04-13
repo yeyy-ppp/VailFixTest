@@ -1,0 +1,6 @@
+[2026-01-23 23:08:42] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: clone, withVersion, withModifiers, disableInnerClassSerialization, excludeFieldsWithoutExposeAnnotation, withExclusionStrategy, create, excludeField, excludeClass, isInnerClass, isValidVersion, isValidSince, isValidUntil
+  未覆盖: 全部覆盖
+

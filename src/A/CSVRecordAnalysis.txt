@@ -1,0 +1,97 @@
+包路径：csv
+类名：CSVRecord
+父类：无
+依赖类：CSVParser,Constants
+---
+序号：1
+方法名：CSVRecord(CSVParser parser, String[] values, String comment, long recordNumber, long characterPosition, long bytePosition)
+返回类型：CSVRecord
+功能描述：构造CSVRecord对象并初始化字段
+序号：2
+方法名：get(Enum<?> e)
+返回类型：String
+功能描述：通过枚举名称获取对应的列值
+序号：3
+方法名：get(int i)
+返回类型：String
+功能描述：通过列索引获取对应的列值
+序号：4
+方法名：get(String name)
+返回类型：String
+功能描述：通过列名获取对应的列值
+序号：5
+方法名：getBytePosition()
+返回类型：long
+功能描述：获取记录在文件中的字节位置
+序号：6
+方法名：getCharacterPosition()
+返回类型：long
+功能描述：获取记录在文件中的字符位置
+序号：7
+方法名：getComment()
+返回类型：String
+功能描述：获取记录的注释内容
+序号：8
+方法名：getHeaderMapRaw()
+返回类型：Map<String, Integer>
+功能描述：从解析器获取原始头部映射（列名到索引）
+序号：9
+方法名：getParser()
+返回类型：CSVParser
+功能描述：获取关联的CSV解析器对象
+序号：10
+方法名：getRecordNumber()
+返回类型：long
+功能描述：获取记录的序号（行号）
+序号：11
+方法名：hasComment()
+返回类型：boolean
+功能描述：检查记录是否包含注释
+序号：12
+方法名：isConsistent()
+返回类型：boolean
+功能描述：检查记录列数与头部映射是否一致
+序号：13
+方法名：isMapped(String name)
+返回类型：boolean
+功能描述：检查列名是否存在于头部映射
+序号：14
+方法名：isSet(int index)
+返回类型：boolean
+功能描述：检查指定索引是否有有效值
+序号：15
+方法名：isSet(String name)
+返回类型：boolean
+功能描述：检查指定列名是否有有效值
+序号：16
+方法名：iterator()
+返回类型：Iterator<String>
+功能描述：提供遍历记录值的迭代器
+序号：17
+方法名：putIn(M map)
+返回类型：M
+功能描述：将列名-值对放入指定映射对象
+序号：18
+方法名：size()
+返回类型：int
+功能描述：获取记录的列数（值数量）
+序号：19
+方法名：stream()
+返回类型：Stream<String>
+功能描述：创建记录值的流对象
+序号：20
+方法名：toList()
+返回类型：List<String>
+功能描述：将记录值转换为列表
+序号：21
+方法名：toMap()
+返回类型：Map<String, String>
+功能描述：将记录转换为列名-值的映射
+序号：22
+方法名：toString()
+返回类型：String
+功能描述：生成记录的字符串表示
+序号：23
+方法名：values()
+返回类型：String[]
+功能描述：获取记录值的原始数组

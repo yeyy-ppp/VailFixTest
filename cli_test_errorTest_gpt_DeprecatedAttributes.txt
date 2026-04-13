@@ -1,0 +1,518 @@
+类名：DeprecatedAttributes
+分析阶段：
+  耗时：3320 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：8182 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：2704 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  失败原因：```
+该测试代码在验证[导入语句]时失败，错误位置：[1]，错误原因：未导入用于测试的Jupiter引擎或断言类相关的任何其他必需的包。
+该测试代码在验证[测试逻辑完整性]时失败，错误位置：[未指定]，错误原因：未测试异常处理逻辑。
+该测试代码在验证[语法正确性]时失败，错误位置：[未指定]，错误原因：无拼写或语法错误，但根据上下文需要检查catch块的正确性。
+该测试代码在验证[编译正确性]时失败，错误位置：[未指定]，错误原因：可能需要导入相关注解处理器。
+该测试代码在验证[运行时健壮性]时失败，错误位置：[未指定]，错误原因：未测试可能的空指针异常或不当输入。
+```
+修复阶段：
+  耗时：9063 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  修复尝试次数：1
+  修复失败原因：
+  修复成功次数：1
+评估阶段：
+  耗时：1608 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【指令覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【复杂度】：【3】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】
+总耗时：42272 毫秒
+总消耗 token 数量：0
+测试代码生成结果：true
+失败原因：
+--------------------------------------------------------
+起始时间：1749040192319
+
+套件 开始时间: 1749040192320
+分析起始时间：1749040192320
+
+分析 开始时间: 1749040192320
+解析提示内容：
+```
+包路径：cli
+类名：DeprecatedAttributes
+方法名：get
+返回类型：DeprecatedAttributes
+功能描述：生成并返回一个新的DeprecatedAttributes实例。
+方法名：setDescription
+返回类型：Builder
+功能描述：设置描述信息并返回Builder实例。
+方法名：setForRemoval
+返回类型：Builder
+功能描述：设置是否标记为移除并返回Builder实例。
+方法名：setSince
+返回类型：Builder
+功能描述：设置自何时开始的版本信息并返回Builder实例。
+方法名：builder
+返回类型：Builder
+功能描述：返回一个新的Builder实例。
+方法名：getDescription
+返回类型：String
+功能描述：获取描述信息。
+方法名：getSince
+返回类型：String
+功能描述：获取版本信息。
+方法名：isForRemoval
+返回类型：boolean
+功能描述：检查该属性是否标记为移除。
+方法名：toEmpty
+返回类型：String
+功能描述：将输入字符串转换为一个空字符串（如果输入为null）。
+方法名：toString
+返回类型：String
+功能描述：返回DeprecatedAttributes的字符串表示形式，描述其主要信息。
+```over
+
+分析结束时间：1749040195640
+
+分析总耗时：3320
+分析 结束时间: 1749040195640
+分析 耗时: 3.32 秒
+生成 开始时间: 1749040195641
+生成测试代码：
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DeprecatedAttributesTest {
+
+    @Test
+    public void testBuilderDefault() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder().get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithDescription() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .get();
+        assertEquals("Test description", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithSince() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setSince("1.0")
+                .get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("1.0", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithForRemoval() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setForRemoval(true)
+                .get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertTrue(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testFullBuilder() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Test description", attributes.getDescription());
+        assertEquals("2.0", attributes.getSince());
+        assertTrue(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testToString() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal since 2.0: Test description", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithNoDescription() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal since 2.0", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithNoSince() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal: Test description", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithDefaults() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder().get();
+        assertEquals("Deprecated", attributes.toString());
+    }
+}
+```over
+
+生成 结束时间: 1749040203822
+生成 耗时: 8.181 秒
+验证 开始时间: 1749040203824
+测试代码验证结果：
+```
+该测试代码在验证[导入语句]时失败，错误位置：[1]，错误原因：未导入用于测试的Jupiter引擎或断言类相关的任何其他必需的包。
+该测试代码在验证[测试逻辑完整性]时失败，错误位置：[未指定]，错误原因：未测试异常处理逻辑。
+该测试代码在验证[语法正确性]时失败，错误位置：[未指定]，错误原因：无拼写或语法错误，但根据上下文需要检查catch块的正确性。
+该测试代码在验证[编译正确性]时失败，错误位置：[未指定]，错误原因：可能需要导入相关注解处理器。
+该测试代码在验证[运行时健壮性]时失败，错误位置：[未指定]，错误原因：未测试可能的空指针异常或不当输入。
+```over
+
+验证 结束时间: 1749040206526
+验证 耗时: 2.702 秒
+修复 开始时间: 1749040206528
+第 1 次修复结果：
+【修复成功】
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DeprecatedAttributesTest {
+
+    @Test
+    public void testBuilderDefault() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder().get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithDescription() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .get();
+        assertEquals("Test description", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithSince() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setSince("1.0")
+                .get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("1.0", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithForRemoval() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setForRemoval(true)
+                .get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertTrue(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testFullBuilder() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Test description", attributes.getDescription());
+        assertEquals("2.0", attributes.getSince());
+        assertTrue(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testToString() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal since 2.0: Test description", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithNoDescription() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal since 2.0", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithNoSince() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal: Test description", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithDefaults() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder().get();
+        assertEquals("Deprecated", attributes.toString());
+    }
+}
+```over
+
+测试代码验证结果：
+```
+全部验证通过
+```over
+
+修复后的代码验证成功！
+修复和验证成功！
+测试代码评估结果：
+【指令覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【复杂度】：【3】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】over
+
+测试类创建成功：src/test/java/cli/DeprecatedAttributesTest.java
+测试类编译成功！
+测试类编译成功！
+运行开始：
+尝试读取文件: D:\fx\jafx\chatunitest-core\src\test\java\cli\DeprecatedAttributesTest.java
+运行时编译开始
+生成的测试类文件内容：
+package cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class DeprecatedAttributesTest {
+
+    @Test
+    public void testBuilderDefault() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder().get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithDescription() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .get();
+        assertEquals("Test description", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithSince() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setSince("1.0")
+                .get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("1.0", attributes.getSince());
+        assertFalse(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testBuilderWithForRemoval() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setForRemoval(true)
+                .get();
+        assertEquals("", attributes.getDescription());
+        assertEquals("", attributes.getSince());
+        assertTrue(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testFullBuilder() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Test description", attributes.getDescription());
+        assertEquals("2.0", attributes.getSince());
+        assertTrue(attributes.isForRemoval());
+    }
+
+    @Test
+    public void testToString() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal since 2.0: Test description", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithNoDescription() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setSince("2.0")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal since 2.0", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithNoSince() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder()
+                .setDescription("Test description")
+                .setForRemoval(true)
+                .get();
+        assertEquals("Deprecated for removal: Test description", attributes.toString());
+    }
+
+    @Test
+    public void testToStringWithDefaults() {
+        DeprecatedAttributes attributes = DeprecatedAttributes.builder().get();
+        assertEquals("Deprecated", attributes.toString());
+    }
+}
+ 内容结束！
+运行结束,输出结果：
+测试执行结果：
+  总测试数: 9
+  通过:    9
+  失败:    0
+  跳过:    0
+  执行时间: 165 ms
+
+详细结果：
+  • testFullBuilder() [PASSED]
+  • testBuilderWithSince() [PASSED]
+  • testToStringWithNoSince() [PASSED]
+  • testToString() [PASSED]
+  • testBuilderWithForRemoval() [PASSED]
+  • testBuilderDefault() [PASSED]
+  • testToStringWithDefaults() [PASSED]
+  • testToStringWithNoDescription() [PASSED]
+  • testBuilderWithDescription() [PASSED]
+
+所有测试通过！
+执行Maven命令: D:\TopNew-SpringBoot\maven\apache-maven-3.9.1-bin\apache-maven-3.9.1\bin\mvn.cmd test
+Maven命令返回码: 0
+mvn test 结果：
+[INFO] Scanning for projects...
+[INFO]
+[INFO] --------------< io.github.zju-aces-ise:chatunitest-core >---------------
+[INFO] Building chatunitest-core 1.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO]
+[INFO] --- jacoco:0.8.8:prepare-agent (default) @ chatunitest-core ---
+[INFO] argLine set to -javaagent:D:\\TopNew-SpringBoot\\maven\\apache-maven-3.9.1-bin\\apache-maven-3.9.1\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.8\\org.jacoco.agent-0.8.8-runtime.jar=destfile=D:\\fx\\jafx\\chatunitest-core\\target\\jacoco.exec
+[INFO]
+[INFO] --- resources:3.3.0:resources (default-resources) @ chatunitest-core ---
+[INFO] Copying 25 resources
+[INFO]
+[INFO] --- compiler:3.10.1:compile (default-compile) @ chatunitest-core ---
+[INFO] Nothing to compile - all classes are up to date
+[INFO]
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ chatunitest-core ---
+[INFO] skip non existing resourceDirectory D:\fx\jafx\chatunitest-core\src\test\resources
+[INFO]
+[INFO] --- compiler:3.10.1:testCompile (default-testCompile) @ chatunitest-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 12 source files to D:\fx\jafx\chatunitest-core\target\test-classes
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/cli/BasicParserTest.java: ĳЩ�����ļ�ʹ�û򸲸����ѹ�ʱ�� API��
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/cli/BasicParserTest.java: �й���ϸ��Ϣ, ��ʹ�� -Xlint:deprecation ���±��롣
+[INFO]
+[INFO] --- surefire:3.1.0:test (default-test) @ chatunitest-core ---
+[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider
+[INFO]
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+[INFO] Running cli.AlreadySelectedExceptionTest2
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.093 s - in cli.AlreadySelectedExceptionTest2
+[INFO] Running cli.AmbiguousOptionExceptionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.023 s - in cli.AmbiguousOptionExceptionTest
+[INFO] Running cli.BasicParserTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in cli.BasicParserTest
+[INFO] Running cli.CharTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s - in cli.CharTest
+[INFO] Running cli.CommandLineTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s - in cli.CommandLineTest
+[INFO] Running cli.
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.073 s - in cli.
+[INFO] Running cli.
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s - in cli.
+[INFO] Running cli.
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s - in cli.
+[INFO] Running cli.
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.021 s - in cli.
+[INFO] Running cli.ParseExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in cli.ParseExceptionTest
+[INFO] Running codeing.AddExampleTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.017 s - in codeing.AddExampleTest
+[INFO] Running codeing.ExampleTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.019 s - in codeing.ExampleTest
+[INFO]
+[INFO] Results:
+[INFO]
+[INFO] Tests run: 67, Failures: 0, Errors: 0, Skipped: 0
+[INFO]
+[INFO]
+[INFO] --- jacoco:0.8.8:report (report) @ chatunitest-core ---
+[INFO] Loading execution data file D:\fx\jafx\chatunitest-core\target\jacoco.exec
+[INFO] Analyzed bundle 'chatunitest-core' with 319 classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  7.487 s
+[INFO] Finished at: 2025-06-04T20:30:33+08:00
+[INFO] ------------------------------------------------------------------------
+
+Coverage criteria not met for element: cli
+  Instruction Coverage: 9.0%
+  Branch Coverage: 4.0%
+  Line Coverage: 11.4%
+  Method Coverage: 14.6%
+  Class Coverage: 51.7%
+Coverage sufficient: false
+覆盖率满足要求！
+修复 结束时间: 1749040233711
+修复 耗时: 27.183 秒
+套件 结束时间: 1749040233715
+套件 耗时: 41.395 秒
+
+Process finished with exit code 0

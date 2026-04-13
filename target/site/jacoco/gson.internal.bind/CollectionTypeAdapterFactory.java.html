@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CollectionTypeAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">CollectionTypeAdapterFactory.java</span></div><h1>CollectionTypeAdapterFactory.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.Gson;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.internal.ConstructorConstructor;
+import gson.internal.GsonTypes;
+import gson.internal.ObjectConstructor;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.lang.reflect.Type;
+import java.util.Collection;
+public final class CollectionTypeAdapterFactory implements TypeAdapterFactory {
+  private final ConstructorConstructor constructorConstructor;
+<span class="fc" id="L17">  public CollectionTypeAdapterFactory(ConstructorConstructor constructorConstructor) {</span>
+<span class="fc" id="L18">    this.constructorConstructor = constructorConstructor;</span>
+<span class="fc" id="L19">  }</span>
+  @Override
+  public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; typeToken) {
+<span class="fc" id="L22">    Type type = typeToken.getType();</span>
+<span class="fc" id="L23">    Class&lt;? super T&gt; rawType = typeToken.getRawType();</span>
+<span class="fc bfc" id="L24" title="All 2 branches covered.">    if (!Collection.class.isAssignableFrom(rawType)) {</span>
+<span class="fc" id="L25">      return null;</span>
+    }
+<span class="fc" id="L27">    Type elementType = GsonTypes.getCollectionElementType(type, rawType);</span>
+<span class="fc" id="L28">    TypeAdapter&lt;?&gt; elementTypeAdapter = gson.getAdapter(TypeToken.get(elementType));</span>
+<span class="fc" id="L29">    TypeAdapter&lt;?&gt; wrappedTypeAdapter =</span>
+        new TypeAdapterRuntimeTypeWrapper&lt;&gt;(gson, elementTypeAdapter, elementType);
+<span class="fc" id="L31">    boolean allowUnsafe = false;</span>
+<span class="fc" id="L32">    ObjectConstructor&lt;T&gt; constructor = constructorConstructor.get(typeToken, allowUnsafe);</span>
+    @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+<span class="fc" id="L34">    TypeAdapter&lt;T&gt; result = new Adapter(wrappedTypeAdapter, constructor);</span>
+<span class="fc" id="L35">    return result;</span>
+  }
+  static final class Adapter&lt;E&gt; extends TypeAdapter&lt;Collection&lt;E&gt;&gt; {
+    private final TypeAdapter&lt;E&gt; elementTypeAdapter;
+    private final ObjectConstructor&lt;? extends Collection&lt;E&gt;&gt; constructor;
+    Adapter(
+<span class="fc" id="L41">        TypeAdapter&lt;E&gt; elementTypeAdapter, ObjectConstructor&lt;? extends Collection&lt;E&gt;&gt; constructor) {</span>
+<span class="fc" id="L42">      this.elementTypeAdapter = elementTypeAdapter;</span>
+<span class="fc" id="L43">      this.constructor = constructor;</span>
+<span class="fc" id="L44">    }</span>
+    @Override
+    public Collection&lt;E&gt; read(JsonReader in) throws IOException {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">      if (in.peek() == JsonToken.NULL) {</span>
+<span class="fc" id="L48">        in.nextNull();</span>
+<span class="fc" id="L49">        return null;</span>
+      }
+<span class="fc" id="L51">      Collection&lt;E&gt; collection = constructor.construct();</span>
+<span class="fc" id="L52">      in.beginArray();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">      while (in.hasNext()) {</span>
+<span class="fc" id="L54">        E instance = elementTypeAdapter.read(in);</span>
+<span class="fc" id="L55">        collection.add(instance);</span>
+<span class="fc" id="L56">      }</span>
+<span class="fc" id="L57">      in.endArray();</span>
+<span class="fc" id="L58">      return collection;</span>
+    }
+
+    @Override
+    public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L64">    }</span>
+
+    @Override
+    public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L68">      return null;</span>
+    }
+
+    @Override
+    public void write(JsonWriter out, Collection&lt;E&gt; collection) throws IOException {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">      if (collection == null) {</span>
+<span class="fc" id="L74">        out.nullValue();</span>
+<span class="fc" id="L75">        return;</span>
+      }
+<span class="fc" id="L77">      out.beginArray();</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">      for (E element : collection) {</span>
+<span class="fc" id="L79">        elementTypeAdapter.write(out, element);</span>
+<span class="fc" id="L80">      }</span>
+<span class="fc" id="L81">      out.endArray();</span>
+<span class="fc" id="L82">    }</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,17 @@
+包路径：cli
+类名：AmbiguousOptionException
+父类：UnrecognizedOptionException
+依赖类：UnrecognizedOptionException,Char
+---
+序号：1
+方法名：createMessage(String, Collection<String>)
+返回类型：String
+功能描述：创建描述模糊选项的错误消息字符串
+序号：2
+方法名：AmbiguousOptionException(String, Collection<String>)
+返回类型：无
+功能描述：初始化模糊选项异常实例
+序号：3
+方法名：getMatchingOptions()
+返回类型：Collection<String>
+功能描述：返回匹配的选项集合

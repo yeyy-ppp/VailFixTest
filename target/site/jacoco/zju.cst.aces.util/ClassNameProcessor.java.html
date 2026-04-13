@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassNameProcessor.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util</a> &gt; <span class="el_source">ClassNameProcessor.java</span></div><h1>ClassNameProcessor.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+
+
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
+
+<span class="nc" id="L18">public class ClassNameProcessor {</span>
+
+<span class="nc" id="L20">    private Map&lt;String, AtomicInteger&gt; classNameCountMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L21">    private Map&lt;String, AtomicInteger&gt; enumNameCountMap = new HashMap&lt;&gt;();</span>
+
+    public void processJavaFiles(Path testPath){
+        // Check if the testPath exists and is a directory
+<span class="nc bnc" id="L25" title="All 2 branches missed.">        if (Files.notExists(testPath)) {</span>
+<span class="nc" id="L26">            return;</span>
+        }
+
+<span class="nc bnc" id="L29" title="All 2 branches missed.">        if (!Files.isDirectory(testPath)) {</span>
+<span class="nc" id="L30">            return;</span>
+        }
+
+        // Process Java files in the testPath directory
+<span class="nc" id="L34">        try (Stream&lt;Path&gt; paths = Files.walk(testPath)) {</span>
+            // Filter Java files and process each one
+<span class="nc" id="L36">            paths.filter(Files::isRegularFile)</span>
+<span class="nc" id="L37">                    .filter(path -&gt; path.toString().endsWith(&quot;.java&quot;))</span>
+<span class="nc" id="L38">                    .forEach(this::processJavaFile);</span>
+<span class="nc" id="L39">        }catch (IOException e){</span>
+<span class="nc" id="L40">            e.printStackTrace();</span>
+<span class="nc" id="L41">        }</span>
+<span class="nc" id="L42">    }</span>
+
+    private void processJavaFile(Path javaFilePath) {
+        try {
+            // 检查文件是否存在且可读
+<span class="nc bnc" id="L47" title="All 4 branches missed.">            if (Files.notExists(javaFilePath) || !Files.isReadable(javaFilePath)) {</span>
+<span class="nc" id="L48">                System.err.println(&quot;File not found or not readable: &quot; + javaFilePath);</span>
+<span class="nc" id="L49">                return;</span>
+            }
+
+            // 读取文件内容
+<span class="nc" id="L53">            final String content = new String(Files.readAllBytes(javaFilePath));</span>
+<span class="nc" id="L54">            CompilationUnit compilationUnit = StaticJavaParser.parse(content);</span>
+
+            // 处理类
+<span class="nc" id="L57">            compilationUnit.findAll(ClassOrInterfaceDeclaration.class).stream()</span>
+<span class="nc bnc" id="L58" title="All 4 branches missed.">                    .filter(c -&gt; !c.getNameAsString().endsWith(&quot;Test&quot;) &amp;&amp; !c.getNameAsString().endsWith(&quot;Suite&quot;))</span>
+<span class="nc" id="L59">                    .forEach(c -&gt; {</span>
+                        try {
+<span class="nc" id="L61">                            renameAndTrack(c.getNameAsString(), classNameCountMap, content);</span>
+<span class="nc" id="L62">                        } catch (IllegalArgumentException e) {</span>
+<span class="nc" id="L63">                            System.err.println(&quot;Error renaming class: &quot; + c.getNameAsString() + &quot; in file &quot; + javaFilePath + &quot;. &quot; + e.getMessage());</span>
+<span class="nc" id="L64">                        }</span>
+<span class="nc" id="L65">                    });</span>
+
+            // 处理枚举
+<span class="nc" id="L68">            compilationUnit.findAll(EnumDeclaration.class).stream()</span>
+<span class="nc bnc" id="L69" title="All 4 branches missed.">                    .filter(e -&gt; !e.getNameAsString().endsWith(&quot;Test&quot;) &amp;&amp; !e.getNameAsString().endsWith(&quot;Suite&quot;))</span>
+<span class="nc" id="L70">                    .forEach(e -&gt; {</span>
+                        try {
+<span class="nc" id="L72">                            renameAndTrack(e.getNameAsString(), enumNameCountMap, content);</span>
+<span class="nc" id="L73">                        } catch (IllegalArgumentException e1) {</span>
+<span class="nc" id="L74">                            System.err.println(&quot;Error renaming enum: &quot; + e.getNameAsString() + &quot; in file &quot; + javaFilePath + &quot;. &quot; + e1.getMessage());</span>
+<span class="nc" id="L75">                        }</span>
+<span class="nc" id="L76">                    });</span>
+
+            // 写入更新后的内容
+<span class="nc" id="L79">            Files.write(javaFilePath, content.getBytes());</span>
+
+<span class="nc" id="L81">        } catch (IOException e) {</span>
+<span class="nc" id="L82">            System.err.println(&quot;I/O error processing file: &quot; + javaFilePath + &quot;. &quot; + e.getMessage());</span>
+<span class="nc" id="L83">        }</span>
+<span class="nc" id="L84">    }</span>
+
+    private String renameAndTrack(String originalName, Map&lt;String, AtomicInteger&gt; nameCountMap, String content) {
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        if (originalName == null) {</span>
+<span class="nc" id="L88">            throw new IllegalArgumentException(&quot;Original name cannot be null.&quot;);</span>
+        }
+
+<span class="nc" id="L91">        nameCountMap.putIfAbsent(originalName, new AtomicInteger(0));</span>
+<span class="nc" id="L92">        int count = nameCountMap.get(originalName).incrementAndGet();</span>
+<span class="nc" id="L93">        String newName = originalName + &quot;_&quot; + count;</span>
+
+        // 替换类或枚举名称
+<span class="nc" id="L96">        StringBuilder newContent = new StringBuilder();</span>
+<span class="nc" id="L97">        String[] lines = content.split(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">        for (String line : lines) {</span>
+<span class="nc bnc" id="L99" title="All 2 branches missed.">            if (line.startsWith(&quot;import &quot;)) {</span>
+<span class="nc" id="L100">                newContent.append(line).append(&quot;\n&quot;);</span>
+            } else {
+<span class="nc" id="L102">                newContent.append(line.replaceAll(&quot;\\b&quot; + originalName + &quot;\\b&quot;, newName)).append(&quot;\n&quot;);</span>
+            }
+        }
+<span class="nc" id="L105">        return newContent.toString();</span>
+    }
+
+//    public static void main(String[] args) {
+//        try {
+//            Path testPath = Paths.get(&quot;D:\\APP\\IdeaProjects\\commons-lang\\src\\test\\java\\org\\apache\\commons\\lang3&quot;);
+//            ClassNameProcessor processor = new ClassNameProcessor();
+//            processor.processJavaFiles(testPath);
+//        } catch (IOException e) {
+//            System.err.println(&quot;I/O error: &quot; + e.getMessage());
+//        }
+//    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

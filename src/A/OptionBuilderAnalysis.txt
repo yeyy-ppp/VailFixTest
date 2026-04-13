@@ -1,0 +1,91 @@
+```
+包路径：cli
+类名：OptionBuilder
+父类：无
+依赖类：Option,TypeHandler,Char
+---
+序号：1
+方法名：create()
+返回类型：Option
+功能描述：创建Option对象，需已设置longopt否则抛出异常
+序号：2
+方法名：create(char opt)
+返回类型：Option
+功能描述：根据短选项字符创建Option对象
+序号：3
+方法名：create(String opt)
+返回类型：Option
+功能描述：根据短选项字符串创建Option对象并应用配置
+序号：4
+方法名：hasArg()
+返回类型：OptionBuilder
+功能描述：设置选项需要1个参数
+序号：5
+方法名：hasArg(boolean hasArg)
+返回类型：OptionBuilder
+功能描述：根据布尔值设置选项是否需要参数
+序号：6
+方法名：hasArgs()
+返回类型：OptionBuilder
+功能描述：设置选项接受无限数量参数
+序号：7
+方法名：hasArgs(int num)
+返回类型：OptionBuilder
+功能描述：设置选项接受指定数量参数
+序号：8
+方法名：hasOptionalArg()
+返回类型：OptionBuilder
+功能描述：设置选项有1个可选参数
+序号：9
+方法名：hasOptionalArgs()
+返回类型：OptionBuilder
+功能描述：设置选项有无限数量可选参数
+序号：10
+方法名：hasOptionalArgs(int numArgs)
+返回类型：OptionBuilder
+功能描述：设置选项有指定数量可选参数
+序号：11
+方法名：isRequired()
+返回类型：OptionBuilder
+功能描述：设置选项为必填项
+序号：12
+方法名：isRequired(boolean newRequired)
+返回类型：OptionBuilder
+功能描述：根据布尔值设置选项是否必填
+序号：13
+方法名：reset()
+返回类型：void
+功能描述：重置所有配置选项到默认值
+序号：14
+方法名：withArgName(String name)
+返回类型：OptionBuilder
+功能描述：设置参数名称
+序号：15
+方法名：withDescription(String newDescription)
+返回类型：OptionBuilder
+功能描述：设置选项描述文本
+序号：16
+方法名：withLongOpt(String newLongopt)
+返回类型：OptionBuilder
+功能描述：设置长选项名称
+序号：17
+方法名：withType(Class<?> newType)
+返回类型：OptionBuilder
+功能描述：设置参数类型
+序号：18
+方法名：withType(Object newType)
+返回类型：OptionBuilder
+功能描述：设置参数类型（已过时）
+序号：19
+方法名：withValueSeparator()
+返回类型：OptionBuilder
+功能描述：设置值分隔符为默认等号
+序号：20
+方法名：withValueSeparator(char sep)
+返回类型：OptionBuilder
+功能描述：设置自定义值分隔符
+序号：21
+方法名：OptionBuilder()
+返回类型：无
+功能描述：私有构造函数禁止实例化
+```

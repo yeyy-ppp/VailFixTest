@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>FieldNamingPolicy.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">FieldNamingPolicy.java</span></div><h1>FieldNamingPolicy.java</h1><pre class="source lang-java linenums">package gson;
+import java.lang.reflect.Field;
+import java.util.Locale;
+<span class="fc" id="L4">public enum FieldNamingPolicy implements FieldNamingStrategy {</span>
+<span class="fc" id="L5">  IDENTITY() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="fc" id="L8">      return f.getName();</span>
+    }
+  },
+<span class="fc" id="L11">  UPPER_CAMEL_CASE() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="nc" id="L14">      return upperCaseFirstLetter(f.getName());</span>
+    }
+  },
+<span class="fc" id="L17">  UPPER_CAMEL_CASE_WITH_SPACES() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="nc" id="L20">      return upperCaseFirstLetter(separateCamelCase(f.getName(), ' '));</span>
+    }
+  },
+<span class="fc" id="L23">  UPPER_CASE_WITH_UNDERSCORES() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="nc" id="L26">      return separateCamelCase(f.getName(), '_').toUpperCase(Locale.ENGLISH);</span>
+    }
+  },
+<span class="fc" id="L29">  LOWER_CASE_WITH_UNDERSCORES() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="nc" id="L32">      return separateCamelCase(f.getName(), '_').toLowerCase(Locale.ENGLISH);</span>
+    }
+  },
+<span class="fc" id="L35">  LOWER_CASE_WITH_DASHES() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="nc" id="L38">      return separateCamelCase(f.getName(), '-').toLowerCase(Locale.ENGLISH);</span>
+    }
+  },
+<span class="fc" id="L41">  LOWER_CASE_WITH_DOTS() {</span>
+    @Override
+    public String translateName(Field f) {
+<span class="nc" id="L44">      return separateCamelCase(f.getName(), '.').toLowerCase(Locale.ENGLISH);</span>
+    }
+  };
+  static String separateCamelCase(String name, char separator) {
+<span class="fc" id="L48">    StringBuilder translation = new StringBuilder();</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">    for (int i = 0, length = name.length(); i &lt; length; i++) {</span>
+<span class="fc" id="L50">      char character = name.charAt(i);</span>
+<span class="fc bfc" id="L51" title="All 4 branches covered.">      if (Character.isUpperCase(character) &amp;&amp; translation.length() != 0) {</span>
+<span class="fc" id="L52">        translation.append(separator);</span>
+      }
+<span class="fc" id="L54">      translation.append(character);</span>
+    }
+<span class="fc" id="L56">    return translation.toString();</span>
+  }
+  static String upperCaseFirstLetter(String s) {
+<span class="fc" id="L59">    int length = s.length();</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    for (int i = 0; i &lt; length; i++) {</span>
+<span class="fc" id="L61">      char c = s.charAt(i);</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">      if (Character.isLetter(c)) {</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">        if (Character.isUpperCase(c)) {</span>
+<span class="fc" id="L64">          return s;</span>
+        }
+<span class="fc" id="L66">        char uppercased = Character.toUpperCase(c);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">        if (i == 0) {</span>
+<span class="fc" id="L68">          return uppercased + s.substring(1);</span>
+        } else {
+<span class="fc" id="L70">          return s.substring(0, i) + uppercased + s.substring(i + 1);</span>
+        }
+      }
+    }
+<span class="fc" id="L74">    return s;</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

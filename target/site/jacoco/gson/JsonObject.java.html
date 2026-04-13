@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JsonObject.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson</a> &gt; <span class="el_source">JsonObject.java</span></div><h1>JsonObject.java</h1><pre class="source lang-java linenums">package gson;
+import com.google.errorprone.annotations.CanIgnoreReturnValue;
+import gson.internal.LinkedTreeMap;
+import java.util.Map;
+import java.util.Set;
+public final class JsonObject extends JsonElement {
+<span class="fc" id="L7">  private final LinkedTreeMap&lt;String, JsonElement&gt; members = new LinkedTreeMap&lt;&gt;(false);</span>
+  @SuppressWarnings(&quot;deprecation&quot;)
+<span class="fc" id="L9">  public JsonObject() {}</span>
+  @Override
+  public JsonObject deepCopy() {
+<span class="fc" id="L12">    JsonObject result = new JsonObject();</span>
+<span class="fc bfc" id="L13" title="All 2 branches covered.">    for (Map.Entry&lt;String, JsonElement&gt; entry : members.entrySet()) {</span>
+<span class="fc" id="L14">      result.add(entry.getKey(), entry.getValue().deepCopy());</span>
+<span class="fc" id="L15">    }</span>
+<span class="fc" id="L16">    return result;</span>
+  }
+  public void add(String property, JsonElement value) {
+<span class="fc bfc" id="L19" title="All 2 branches covered.">    members.put(property, value == null ? JsonNull.INSTANCE : value);</span>
+<span class="fc" id="L20">  }</span>
+  @CanIgnoreReturnValue
+  public JsonElement remove(String property) {
+<span class="fc" id="L23">    return members.remove(property);</span>
+  }
+  public void addProperty(String property, String value) {
+<span class="fc bfc" id="L26" title="All 2 branches covered.">    add(property, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));</span>
+<span class="fc" id="L27">  }</span>
+  public void addProperty(String property, Number value) {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">    add(property, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));</span>
+<span class="fc" id="L30">  }</span>
+  public void addProperty(String property, Boolean value) {
+<span class="fc bfc" id="L32" title="All 2 branches covered.">    add(property, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));</span>
+<span class="fc" id="L33">  }</span>
+  public void addProperty(String property, Character value) {
+<span class="fc bfc" id="L35" title="All 2 branches covered.">    add(property, value == null ? JsonNull.INSTANCE : new JsonPrimitive(value));</span>
+<span class="fc" id="L36">  }</span>
+  public Set&lt;Map.Entry&lt;String, JsonElement&gt;&gt; entrySet() {
+<span class="fc" id="L38">    return members.entrySet();</span>
+  }
+  public Set&lt;String&gt; keySet() {
+<span class="fc" id="L41">    return members.keySet();</span>
+  }
+  public int size() {
+<span class="fc" id="L44">    return members.size();</span>
+  }
+  public boolean isEmpty() {
+<span class="fc" id="L47">    return members.isEmpty();</span>
+  }
+  public boolean has(String memberName) {
+<span class="fc" id="L50">    return members.containsKey(memberName);</span>
+  }
+  public JsonElement get(String memberName) {
+<span class="fc" id="L53">    return members.get(memberName);</span>
+  }
+  public JsonPrimitive getAsJsonPrimitive(String memberName) {
+<span class="fc" id="L56">    return (JsonPrimitive) members.get(memberName);</span>
+  }
+  public JsonArray getAsJsonArray(String memberName) {
+<span class="fc" id="L59">    return (JsonArray) members.get(memberName);</span>
+  }
+  public JsonObject getAsJsonObject(String memberName) {
+<span class="fc" id="L62">    return (JsonObject) members.get(memberName);</span>
+  }
+  public Map&lt;String, JsonElement&gt; asMap() {
+<span class="fc" id="L65">    return members;</span>
+  }
+  @Override
+  public boolean equals(Object o) {
+<span class="fc bfc" id="L69" title="All 6 branches covered.">    return (o == this) || (o instanceof JsonObject &amp;&amp; ((JsonObject) o).members.equals(members));</span>
+  }
+  @Override
+  public int hashCode() {
+<span class="fc" id="L73">    return members.hashCode();</span>
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

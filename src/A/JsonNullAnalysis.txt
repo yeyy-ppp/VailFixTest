@@ -1,0 +1,23 @@
+```
+包路径：gson
+类名：JsonNull
+父类：JsonElement
+依赖类：JsonElement
+---
+序号：1
+方法名：JsonNull()
+返回类型：无
+功能描述：创建JsonNull实例（已弃用）
+序号：2
+方法名：deepCopy()
+返回类型：JsonNull
+功能描述：返回单例实例INSTANCE
+序号：3
+方法名：hashCode()
+返回类型：int
+功能描述：返回JsonNull类的哈希码
+序号：4
+方法名：equals(Object other)
+返回类型：boolean
+功能描述：判断对象是否为JsonNull实例
+```

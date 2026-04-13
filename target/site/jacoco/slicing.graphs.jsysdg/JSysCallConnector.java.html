@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JSysCallConnector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.jsysdg</a> &gt; <span class="el_source">JSysCallConnector.java</span></div><h1>JSysCallConnector.java</h1><pre class="source lang-java linenums">package slicing.graphs.jsysdg;
+
+import slicing.graphs.CallGraph;
+import slicing.graphs.cfg.CFGBuilder;
+import slicing.graphs.exceptionsensitive.ExceptionSensitiveCallConnector;
+import slicing.nodes.GraphNode;
+import slicing.nodes.VariableAction;
+import slicing.nodes.io.ActualIONode;
+import slicing.nodes.io.CallNode;
+import slicing.nodes.io.FormalIONode;
+import slicing.nodes.io.OutputNode;
+import slicing.utils.ASTUtils;
+
+import java.util.List;
+import java.util.NoSuchElementException;
+
+/**
+ * Generates interprocedural arcs between call sites and declarations.
+ * In the JSysDG, these include:
+ * &lt;ul&gt;
+ *     &lt;li&gt;Actual-in to formal-in.&lt;/li&gt;
+ *     &lt;li&gt;Formal-out to actual-out.&lt;/li&gt;
+ *     &lt;li&gt;Output to call return (equivalent to the previous element but for the method's output).&lt;/li&gt;
+ *     &lt;li&gt;Exception exit to exception return.&lt;/li&gt;
+ *     &lt;li&gt;Normal exit to normal return.&lt;/li&gt;
+ * &lt;/ul&gt;
+ * For each node that features an object tree, that tree is connected in the same manner.
+ */
+<span class="nc" id="L29">public class JSysCallConnector extends ExceptionSensitiveCallConnector {</span>
+    public JSysCallConnector(JSysDG sdg) {
+<span class="nc" id="L31">        super(sdg);</span>
+<span class="nc" id="L32">    }</span>
+
+    @Override
+    public void connectAllCalls(CallGraph callGraph) {
+<span class="nc" id="L36">        super.connectAllCalls(callGraph);</span>
+<span class="nc" id="L37">    }</span>
+
+    @Override
+    protected void createActualInConnection(ActualIONode actualIn, FormalIONode formalIn) {
+<span class="nc" id="L41">        super.createActualInConnection(actualIn, formalIn);</span>
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        if (formalIsObject(formalIn))</span>
+<span class="nc" id="L43">            connectObjectInterprocedurally(actualIn, formalIn);</span>
+<span class="nc" id="L44">    }</span>
+
+    @Override
+    protected void createActualOutConnection(FormalIONode formalOut, ActualIONode actualOut) {
+<span class="nc" id="L48">        super.createActualOutConnection(formalOut, actualOut);</span>
+<span class="nc bnc" id="L49" title="All 2 branches missed.">        if (formalIsObject(formalOut))</span>
+<span class="nc" id="L50">            connectObjectInterprocedurally(formalOut, actualOut);</span>
+<span class="nc" id="L51">    }</span>
+
+    /** Whether the given formal node represents an object with an object tree. */
+    protected boolean formalIsObject(FormalIONode formalNode) {
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (formalNode.getVariableName().equals(&quot;-output-&quot;)) {</span>
+<span class="nc" id="L56">            return ASTUtils.declarationReturnIsObject(formalNode.getAstNode());</span>
+        } else {
+<span class="nc" id="L58">            boolean isPrimitive = formalNode.getAstNode().getParameterByName(formalNode.getVariableName())</span>
+<span class="nc" id="L59">                    .map(parameter -&gt; parameter.getType().isPrimitiveType())</span>
+<span class="nc" id="L60">                    .orElseThrow(() -&gt; new NoSuchElementException(&quot;Parameter not found by name: &quot; + formalNode.getVariableName()));</span>
+
+<span class="nc bnc" id="L62" title="All 4 branches missed.">            return formalNode.getVariableName().equals(&quot;this&quot;) || !isPrimitive;</span>
+
+        }
+    }
+
+    /** Connects the object tree from the last variable action in the source node to
+     *  each object tree in the target node. */
+    protected void connectObjectInterprocedurally(GraphNode&lt;?&gt; source, GraphNode&lt;?&gt; target) {
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        assert !target.getVariableActions().isEmpty();</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">        assert !source.getVariableActions().isEmpty();</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">        for (VariableAction targetVar : target.getVariableActions())</span>
+<span class="nc" id="L73">            source.getLastVariableAction().applySDGTreeConnection((JSysDG) sdg, targetVar);</span>
+<span class="nc" id="L74">    }</span>
+
+    @Override
+    protected void createOutputReturnConnection(OutputNode&lt;?&gt; outputNode, CallNode.Return callReturnNode) {
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (ASTUtils.declarationReturnIsObject(outputNode.getAstNode()))</span>
+<span class="nc" id="L79">            connectObjectOutput(outputNode, callReturnNode);</span>
+        else
+<span class="nc" id="L81">            super.createOutputReturnConnection(outputNode, callReturnNode);</span>
+<span class="nc" id="L82">    }</span>
+
+    /** Generates the tree connection between the output and return nodes (definition to call). */
+    protected void connectObjectOutput(GraphNode&lt;?&gt; methodOutputNode, GraphNode&lt;?&gt; callReturnNode) {
+<span class="nc" id="L86">        List&lt;VariableAction&gt; outputList = methodOutputNode.getVariableActions();</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        assert outputList.size() == 1;</span>
+<span class="nc bnc" id="L88" title="All 4 branches missed.">        assert outputList.get(0).isUsage() &amp;&amp; outputList.get(0).getName().equals(CFGBuilder.VARIABLE_NAME_OUTPUT);</span>
+<span class="nc" id="L89">        List&lt;VariableAction&gt; returnList = callReturnNode.getVariableActions();</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        assert returnList.size() == 1;</span>
+<span class="nc bnc" id="L91" title="All 4 branches missed.">        assert returnList.get(0).isDefinition() &amp;&amp; returnList.get(0).getName().equals(CFGBuilder.VARIABLE_NAME_OUTPUT);</span>
+<span class="nc" id="L92">        VariableAction source = outputList.get(0);</span>
+<span class="nc" id="L93">        VariableAction target = returnList.get(0);</span>
+<span class="nc" id="L94">        source.applySDGTreeConnection((JSysDG) sdg, target);</span>
+<span class="nc" id="L95">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,194 @@
+{
+  "className": "DefaultParser",
+  "packagePath": "",
+  "totalSlices": 19,
+  "slices": [
+    {
+      "sliceIndex": 1,
+      "sliceName": "Slice1",
+      "testClassName": "DefaultParserTest_Slice1",
+      "focusDescription": "测试方法 checkRequiredArgs (complexity\u003d10)，覆盖2个分支路径",
+      "targetMethods": [
+        "checkRequiredArgs"
+      ]
+    },
+    {
+      "sliceIndex": 2,
+      "sliceName": "Slice2",
+      "testClassName": "DefaultParserTest_Slice2",
+      "focusDescription": "测试方法 checkRequiredOptions (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "checkRequiredOptions"
+      ]
+    },
+    {
+      "sliceIndex": 3,
+      "sliceName": "Slice3",
+      "testClassName": "DefaultParserTest_Slice3",
+      "focusDescription": "测试方法 getLongPrefix (complexity\u003d10)，覆盖1个分支路径、测试1个循环边界",
+      "targetMethods": [
+        "getLongPrefix"
+      ]
+    },
+    {
+      "sliceIndex": 4,
+      "sliceName": "Slice4",
+      "testClassName": "DefaultParserTest_Slice4",
+      "focusDescription": "测试方法 getMatchingLongOptions (complexity\u003d7)，覆盖2个分支路径",
+      "targetMethods": [
+        "getMatchingLongOptions"
+      ]
+    },
+    {
+      "sliceIndex": 5,
+      "sliceName": "Slice5",
+      "testClassName": "DefaultParserTest_Slice5",
+      "focusDescription": "测试方法 handleConcatenatedOptions (complexity\u003d12)，覆盖2个分支路径、测试1个循环边界",
+      "targetMethods": [
+        "handleConcatenatedOptions"
+      ]
+    },
+    {
+      "sliceIndex": 6,
+      "sliceName": "Slice6",
+      "testClassName": "DefaultParserTest_Slice6",
+      "focusDescription": "测试方法 handleLongOption (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "handleLongOption"
+      ]
+    },
+    {
+      "sliceIndex": 7,
+      "sliceName": "Slice7",
+      "testClassName": "DefaultParserTest_Slice7",
+      "focusDescription": "测试方法 handleLongOptionWithEqual (complexity\u003d12)，覆盖3个分支路径",
+      "targetMethods": [
+        "handleLongOptionWithEqual"
+      ]
+    },
+    {
+      "sliceIndex": 8,
+      "sliceName": "Slice8",
+      "testClassName": "DefaultParserTest_Slice8",
+      "focusDescription": "测试方法 handleLongOptionWithoutEqual (complexity\u003d7)，覆盖2个分支路径",
+      "targetMethods": [
+        "handleLongOptionWithoutEqual"
+      ]
+    },
+    {
+      "sliceIndex": 9,
+      "sliceName": "Slice9",
+      "testClassName": "DefaultParserTest_Slice9",
+      "focusDescription": "测试方法 handleProperties (complexity\u003d26)，覆盖6个分支路径、测试1个循环边界",
+      "targetMethods": [
+        "handleProperties"
+      ]
+    },
+    {
+      "sliceIndex": 10,
+      "sliceName": "Slice10",
+      "testClassName": "DefaultParserTest_Slice10",
+      "focusDescription": "测试方法 handleShortAndLongOption (complexity\u003d34)，覆盖10个分支路径",
+      "targetMethods": [
+        "handleShortAndLongOption"
+      ]
+    },
+    {
+      "sliceIndex": 11,
+      "sliceName": "Slice11",
+      "testClassName": "DefaultParserTest_Slice11",
+      "focusDescription": "测试方法 handleToken (complexity\u003d20)，覆盖7个分支路径",
+      "targetMethods": [
+        "handleToken"
+      ]
+    },
+    {
+      "sliceIndex": 12,
+      "sliceName": "Slice12",
+      "testClassName": "DefaultParserTest_Slice12",
+      "focusDescription": "测试方法 handleUnknownToken (complexity\u003d9)，覆盖3个分支路径",
+      "targetMethods": [
+        "handleUnknownToken"
+      ]
+    },
+    {
+      "sliceIndex": 13,
+      "sliceName": "Slice13",
+      "testClassName": "DefaultParserTest_Slice13",
+      "focusDescription": "测试方法 isLongOption (complexity\u003d9)，覆盖3个分支路径",
+      "targetMethods": [
+        "isLongOption"
+      ]
+    },
+    {
+      "sliceIndex": 14,
+      "sliceName": "Slice14",
+      "testClassName": "DefaultParserTest_Slice14",
+      "focusDescription": "测试方法 isNegativeNumber (complexity\u003d7)，覆盖2个异常处理",
+      "targetMethods": [
+        "isNegativeNumber"
+      ]
+    },
+    {
+      "sliceIndex": 15,
+      "sliceName": "Slice15",
+      "testClassName": "DefaultParserTest_Slice15",
+      "focusDescription": "测试方法 isShortOption (complexity\u003d7)，覆盖2个分支路径",
+      "targetMethods": [
+        "isShortOption"
+      ]
+    },
+    {
+      "sliceIndex": 16,
+      "sliceName": "Slice16",
+      "testClassName": "DefaultParserTest_Slice16",
+      "focusDescription": "测试方法 stripLeadingAndTrailingQuotesDefaultOff (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "stripLeadingAndTrailingQuotesDefaultOff"
+      ]
+    },
+    {
+      "sliceIndex": 17,
+      "sliceName": "Slice17",
+      "testClassName": "DefaultParserTest_Slice17",
+      "focusDescription": "测试方法 stripLeadingAndTrailingQuotesDefaultOn (complexity\u003d5)，覆盖1个分支路径",
+      "targetMethods": [
+        "stripLeadingAndTrailingQuotesDefaultOn"
+      ]
+    },
+    {
+      "sliceIndex": 18,
+      "sliceName": "Slice18",
+      "testClassName": "DefaultParserTest_Slice18",
+      "focusDescription": "测试方法 updateRequiredOptions (complexity\u003d12)，覆盖3个分支路径",
+      "targetMethods": [
+        "updateRequiredOptions"
+      ]
+    },
+    {
+      "sliceIndex": 19,
+      "sliceName": "SliceSimple",
+      "testClassName": "DefaultParserTest_SliceSimple",
+      "focusDescription": "测试所有简单复杂度方法（complexity \u003c 5）",
+      "targetMethods": [
+        "Builder",
+        "build",
+        "get",
+        "setAllowPartialMatching",
+        "setDeprecatedHandler",
+        "setStripLeadingAndTrailingQuotes",
+        "builder",
+        "indexOfEqual",
+        "DefaultParser",
+        "addArg",
+        "if",
+        "handleOption",
+        "isArgument",
+        "isJavaProperty",
+        "isOption",
+        "parse",
+        "for"
+      ]
+    }
+  ]
+}

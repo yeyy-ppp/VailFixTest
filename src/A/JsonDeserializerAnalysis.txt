@@ -1,0 +1,11 @@
+```
+包路径：gson
+类名：JsonDeserializer
+父类：无
+依赖类：JsonElement, JsonDeserializationContext, JsonParseException
+---
+序号：1
+方法名：deserialize(JsonElement, Type, JsonDeserializationContext)
+返回类型：T
+功能描述：将JSON元素反序列化为指定类型的对象
+```

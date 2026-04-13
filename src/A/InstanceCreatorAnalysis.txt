@@ -1,0 +1,11 @@
+```
+包路径：gson
+类名：InstanceCreator
+父类：无
+依赖类：无
+---
+序号：1
+方法名：createInstance(Type type)
+返回类型：T
+功能描述：创建指定类型的实例
+```

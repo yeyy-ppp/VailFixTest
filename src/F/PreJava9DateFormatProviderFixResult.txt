@@ -1,0 +1,171 @@
+[2026-01-24 00:47:03] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 无 - 验证通过
+修复后状态: 仍有问题 - 无 - 验证通过
+修复后方法覆盖: 未覆盖: PreJava9DateFormatProvider
+修复后代码:
+```java
+package gson.internal;
+
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class PreJava9DateFormatProviderTest {
+
+    @Test
+    void testConstructorAccessibility() throws Exception {
+        var constructor = PreJava9DateFormatProvider.class.getDeclaredConstructor();
+        assertFalse(constructor.isAccessible());
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+
+    @Test
+    void testGetUsDateTimeFormatValidCombinations() {
+        int[] styles = {DateFormat.SHORT, DateFormat.MEDIUM, DateFormat.LONG, DateFormat.FULL};
+        for (int dateStyle : styles) {
+            for (int timeStyle : styles) {
+                DateFormat format = PreJava9DateFormatProvider.getUsDateTimeFormat(dateStyle, timeStyle);
+                assertNotNull(format);
+            }
+        }
+    }
+
+    @Test
+    void testGetUsDateTimeFormatInvalidDateStyle() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            PreJava9DateFormatProvider.getUsDateTimeFormat(100, DateFormat.SHORT)
+        );
+    }
+
+    @Test
+    void testGetUsDateTimeFormatInvalidTimeStyle() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            PreJava9DateFormatProvider.getUsDateTimeFormat(DateFormat.SHORT, 200)
+        );
+    }
+
+    @Test
+    void testGetDatePartOfDateTimePattern() throws Exception {
+        Method method = PreJava9DateFormatProvider.class.getDeclaredMethod(
+            "getDatePartOfDateTimePattern", int.class
+        );
+        method.setAccessible(true);
+        
+        assertEquals("M/d/yy", method.invoke(null, DateFormat.SHORT));
+        assertEquals("MMM d, yyyy", method.invoke(null, DateFormat.MEDIUM));
+        assertEquals("MMMM d, yyyy", method.invoke(null, DateFormat.LONG));
+        assertEquals("EEEE, MMMM d, yyyy", method.invoke(null, DateFormat.FULL));
+        
+        assertThrows(IllegalArgumentException.class, () -> 
+            method.invoke(null, 100)
+        );
+    }
+
+    @Test
+    void testGetTimePartOfDateTimePattern() throws Exception {
+        Method method = PreJava9DateFormatProvider.class.getDeclaredMethod(
+            "getTimePartOfDateTimePattern", int.class
+        );
+        method.setAccessible(true);
+        
+        assertEquals("h:mm a", method.invoke(null, DateFormat.SHORT));
+        assertEquals("h:mm:ss a", method.invoke(null, DateFormat.MEDIUM));
+        assertEquals("h:mm:ss a z", method.invoke(null, DateFormat.LONG));
+        assertEquals("h:mm:ss a z", method.invoke(null, DateFormat.FULL));
+        
+        assertThrows(IllegalArgumentException.class, () -> 
+            method.invoke(null, 200)
+        );
+    }
+}
+```
+
+[2026-01-24 00:49:40] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package gson.internal;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.text.DateFormat;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class PreJava9DateFormatProviderTest {
+
+    @Test
+    void testConstructorAccessibility() throws Exception {
+        var constructor = PreJava9DateFormatProvider.class.getDeclaredConstructor();
+        assertFalse(constructor.isAccessible());
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+
+    @Test
+    void testGetUsDateTimeFormatValidCombinations() {
+        int[] styles = {DateFormat.SHORT, DateFormat.MEDIUM, DateFormat.LONG, DateFormat.FULL};
+        for (int dateStyle : styles) {
+            for (int timeStyle : styles) {
+                DateFormat format = PreJava9DateFormatProvider.getUsDateTimeFormat(dateStyle, timeStyle);
+                assertNotNull(format);
+            }
+        }
+    }
+
+    @Test
+    void testGetUsDateTimeFormatInvalidDateStyle() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            PreJava9DateFormatProvider.getUsDateTimeFormat(100, DateFormat.SHORT)
+        );
+    }
+
+    @Test
+    void testGetUsDateTimeFormatInvalidTimeStyle() {
+        assertThrows(IllegalArgumentException.class, () -> 
+            PreJava9DateFormatProvider.getUsDateTimeFormat(DateFormat.SHORT, 200)
+        );
+    }
+
+    @Test
+    void testGetDatePartOfDateTimePattern() throws Exception {
+        Method method = PreJava9DateFormatProvider.class.getDeclaredMethod(
+            "getDatePartOfDateTimePattern", int.class
+        );
+        method.setAccessible(true);
+        
+        assertEquals("M/d/yy", method.invoke(null, DateFormat.SHORT));
+        assertEquals("MMM d, yyyy", method.invoke(null, DateFormat.MEDIUM));
+        assertEquals("MMMM d, yyyy", method.invoke(null, DateFormat.LONG));
+        assertEquals("EEEE, MMMM d, yyyy", method.invoke(null, DateFormat.FULL));
+        
+        InvocationTargetException e = assertThrows(InvocationTargetException.class, () -> 
+            method.invoke(null, 100)
+        );
+        assertTrue(e.getCause() instanceof IllegalArgumentException);
+    }
+
+    @Test
+    void testGetTimePartOfDateTimePattern() throws Exception {
+        Method method = PreJava9DateFormatProvider.class.getDeclaredMethod(
+            "getTimePartOfDateTimePattern", int.class
+        );
+        method.setAccessible(true);
+        
+        assertEquals("h:mm a", method.invoke(null, DateFormat.SHORT));
+        assertEquals("h:mm:ss a", method.invoke(null, DateFormat.MEDIUM));
+        assertEquals("h:mm:ss a z", method.invoke(null, DateFormat.LONG));
+        assertEquals("h:mm:ss a z", method.invoke(null, DateFormat.FULL));
+        
+        InvocationTargetException e = assertThrows(InvocationTargetException.class, () -> 
+            method.invoke(null, 200)
+        );
+        assertTrue(e.getCause() instanceof IllegalArgumentException);
+    }
+
+}
+```
+

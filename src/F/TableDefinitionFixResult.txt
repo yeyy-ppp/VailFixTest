@@ -1,0 +1,187 @@
+[2026-01-20 11:59:18] 修复结果
+修复类型: 致命错误修复
+修复前错误: 编译错误 - [TextStyle类型未导入]
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli.help;
+
+import org.junit.jupiter.api.Test;
+import java.util.List;
+import java.util.Arrays;
+import java.util.Collections;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
+import cli.help.TextStyle;
+
+class TableDefinitionTest {
+
+    @Test
+    void testFromWithNormalParameters() {
+        String caption = "Test Caption";
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Arrays.asList("Header1", "Header2");
+        Iterable<List<String>> rows = Collections.singletonList(Arrays.asList("Row1Col1", "Row1Col2"));
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithNullCaption() {
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Arrays.asList("Header");
+        Iterable<List<String>> rows = Collections.singletonList(Arrays.asList("Value"));
+
+        TableDefinition table = TableDefinition.from(null, styles, headers, rows);
+
+        assertNull(table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithEmptyCaption() {
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Arrays.asList("H");
+        Iterable<List<String>> rows = Collections.singletonList(Collections.singletonList("V"));
+
+        TableDefinition table = TableDefinition.from("", styles, headers, rows);
+
+        assertEquals("", table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithNullTextStyles() {
+        String caption = "Table";
+        List<String> headers = Collections.singletonList("Hdr");
+        Iterable<List<String>> rows = Collections.singletonList(Collections.singletonList("D"));
+
+        TableDefinition table = TableDefinition.from(caption, null, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertNull(table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithEmptyTextStyles() {
+        String caption = "EmptyStyles";
+        List<TextStyle> styles = Collections.emptyList();
+        List<String> headers = Collections.singletonList("Head");
+        Iterable<List<String>> rows = Collections.singletonList(Collections.singletonList("Val"));
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithMultipleTextStyles() {
+        String caption = "MultiStyles";
+        List<TextStyle> styles = Arrays.asList(TextStyle.BOLD, TextStyle.ITALIC);
+        List<String> headers = Arrays.asList("H1", "H2");
+        Iterable<List<String>> rows = Collections.singletonList(Arrays.asList("A", "B"));
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithNullHeaders() {
+        String caption = "NoHeaders";
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        Iterable<List<String>> rows = Collections.singletonList(Collections.singletonList("Data"));
+
+        TableDefinition table = TableDefinition.from(caption, styles, null, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertNull(table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithEmptyHeaders() {
+        String caption = "EmptyHeaders";
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Collections.emptyList();
+        Iterable<List<String>> rows = Collections.singletonList(Collections.singletonList("R"));
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithNullRows() {
+        String caption = "NullRows";
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Collections.singletonList("Header");
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, null);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertNull(table.rows());
+    }
+
+    @Test
+    void testFromWithEmptyRows() {
+        String caption = "EmptyRows";
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Collections.singletonList("H");
+        Iterable<List<String>> rows = Collections.emptyList();
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+
+    @Test
+    void testFromWithMultipleRows() {
+        String caption = "MultiRows";
+        List<TextStyle> styles = Collections.singletonList(TextStyle.NORMAL);
+        List<String> headers = Arrays.asList("H1", "H2");
+        Iterable<List<String>> rows = Arrays.asList(
+            Arrays.asList("R1C1", "R1C2"),
+            Arrays.asList("R2C1", "R2C2")
+        );
+
+        TableDefinition table = TableDefinition.from(caption, styles, headers, rows);
+
+        assertEquals(caption, table.caption());
+        assertEquals(styles, table.columnTextStyles());
+        assertEquals(headers, table.headers());
+        assertEquals(rows, table.rows());
+    }
+}
+
+```
+

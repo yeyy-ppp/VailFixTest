@@ -1,0 +1,24 @@
+[2026-01-19 17:54:15] 验证结果
+错误类型: 编译错误, 错误行: 140, 错误原因: 直接访问私有属性optSeparator；该测试代码在验证[编译错误]时失败，错误位置：[141]，错误原因：OptionFormatter类无toArgName方法, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: getArgName, getBothOpt, getDescription, getLongOpt, getOpt, getSince, isRequired, toOptional
+  未覆盖: 全部覆盖
+
+[2026-01-19 18:00:35] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getArgName, getOpt, toSyntaxOption, toSyntaxOption, builder, Builder, Builder, build, get, setArgumentNameDelimiters, setDefaultArgName, setLongOptPrefix, setOptArgSeparator, setOptionalDelimiters, setOptPrefix, setOptSeparator, setSyntaxFormatFunction
+  未覆盖: OptionFormatter, getBothOpt, getDescription, getLongOpt, getSince, isRequired, toOptional, from, setDeprecatedFormatFunction, toArgName
+
+[2026-01-20 10:55:00] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getArgName, getBothOpt, getDescription, getLongOpt, getOpt, getSince, isRequired, toOptional, setArgumentNameDelimiters, setDefaultArgName, setDeprecatedFormatFunction, setLongOptPrefix, setOptArgSeparator, setOptionalDelimiters, setOptPrefix, setOptSeparator, setSyntaxFormatFunction, toArgName
+  未覆盖: 全部覆盖
+
+[2026-01-20 11:41:16] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过（未检测到错误）, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: OptionFormatter, getArgName, getBothOpt, getDescription, getLongOpt, getOpt, getSince, isRequired, toOptional, toSyntaxOption, toSyntaxOption, builder, from, Builder, Builder, build, get, setArgumentNameDelimiters, setDefaultArgName, setDeprecatedFormatFunction, setLongOptPrefix, setOptArgSeparator, setOptionalDelimiters, setOptPrefix, setOptSeparator, setSyntaxFormatFunction, toArgName
+  未覆盖: 全部覆盖
+

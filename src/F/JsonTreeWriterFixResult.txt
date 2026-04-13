@@ -1,0 +1,273 @@
+[2026-01-23 20:52:39] 修复结果
+修复类型: 致命错误修复 + 方法覆盖补充
+修复前错误: 编译错误 - [调用了不存在的方法getStackSizeForTest]
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package gson.internal.bind;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import gson.JsonArray;
+import gson.JsonNull;
+import gson.JsonObject;
+import gson.JsonPrimitive;
+import java.io.IOException;
+
+class JsonTreeWriterTest {
+
+    @Test
+    void testConstructor() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        assertSame(JsonNull.INSTANCE, writer.get());
+    }
+
+    @Test
+    void testGetWithNonEmptyStackThrows() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        try {
+            writer.beginArray();
+            assertThrows(IllegalStateException.class, writer::get);
+        } catch (IOException e) {
+            fail("Unexpected exception");
+        }
+    }
+
+    @Test
+    void testBeginEndArray() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        writer.value(1);
+        writer.endArray();
+        JsonArray array = (JsonArray) writer.get();
+        assertEquals(1, array.get(0).getAsInt());
+    }
+
+    @Test
+    void testBeginEndObject() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginObject();
+        writer.name("key");
+        writer.value("value");
+        writer.endObject();
+        JsonObject obj = (JsonObject) writer.get();
+        assertEquals("value", obj.get("key").getAsString());
+    }
+
+    @Test
+    void testNameWithoutObjectThrows() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        assertThrows(IllegalStateException.class, () -> writer.name("test"));
+    }
+
+    @Test
+    void testValueString() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        writer.value("text");
+        writer.value(null);
+        writer.endArray();
+        JsonArray array = (JsonArray) writer.get();
+        assertEquals("text", array.get(0).getAsString());
+        assertTrue(array.get(1).isJsonNull());
+    }
+
+    @Test
+    void testValueBoolean() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        writer.value(true);
+        writer.value(false);
+        writer.value((Boolean) null);
+        writer.endArray();
+        JsonArray array = (JsonArray) writer.get();
+        assertTrue(array.get(0).getAsBoolean());
+        assertFalse(array.get(1).getAsBoolean());
+        assertTrue(array.get(2).isJsonNull());
+    }
+
+    @Test
+    void testValueFloatNonLenientThrows() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.setLenient(false);
+        writer.beginArray();
+        assertThrows(IllegalArgumentException.class, () -> writer.value(Float.NaN));
+        assertThrows(IllegalArgumentException.class, () -> writer.value(Float.POSITIVE_INFINITY));
+    }
+
+    @Test
+    void testValueDoubleNonLenientThrows() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.setLenient(false);
+        writer.beginArray();
+        assertThrows(IllegalArgumentException.class, () -> writer.value(Double.NaN));
+        assertThrows(IllegalArgumentException.class, () -> writer.value(Double.POSITIVE_INFINITY));
+    }
+
+    @Test
+    void testValueNumber() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        writer.value(100);
+        writer.value(200L);
+        writer.value(3.14);
+        writer.value((Number) null);
+        writer.endArray();
+        JsonArray array = (JsonArray) writer.get();
+        assertEquals(100, array.get(0).getAsInt());
+        assertEquals(200L, array.get(1).getAsLong());
+        assertEquals(3.14, array.get(2).getAsDouble());
+        assertTrue(array.get(3).isJsonNull());
+    }
+
+    @Test
+    void testNullValue() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginObject();
+        writer.name("key");
+        writer.nullValue();
+        writer.endObject();
+        JsonObject obj = (JsonObject) writer.get();
+        assertTrue(obj.has("key"));
+        assertTrue(obj.get("key").isJsonNull());
+    }
+
+    @Test
+    void testJsonValueThrows() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        assertThrows(UnsupportedOperationException.class, () -> writer.jsonValue("test"));
+    }
+
+    @Test
+    void testFlushDoesNothing() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.flush();
+    }
+
+    @Test
+    void testCloseWithEmptyStack() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.close();
+    }
+
+    @Test
+    void testCloseWithNonEmptyStackThrows() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        try {
+            writer.beginArray();
+            assertThrows(IOException.class, writer::close);
+        } catch (IOException e) {
+            fail("Unexpected exception");
+        }
+    }
+
+    @Test
+    void testPutInObjectWithNullValueAndSerializeNulls() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.setSerializeNulls(true);
+        writer.beginObject();
+        writer.name("key");
+        writer.nullValue();
+        writer.endObject();
+        JsonObject obj = (JsonObject) writer.get();
+        assertTrue(obj.has("key"));
+    }
+
+    @Test
+    void testPutInObjectWithNullValueWithoutSerializeNulls() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.setSerializeNulls(false);
+        writer.beginObject();
+        writer.name("key");
+        writer.nullValue();
+        writer.endObject();
+        JsonObject obj = (JsonObject) writer.get();
+        assertFalse(obj.has("key"));
+    }
+
+    @Test
+    void testEndArrayWithPendingNameThrows() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        try {
+            writer.beginObject();
+            writer.name("test");
+            assertThrows(IllegalStateException.class, writer::endArray);
+        } catch (IOException e) {
+            fail("Unexpected exception");
+        }
+    }
+
+    @Test
+    void testEndObjectWithPendingNameThrows() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        try {
+            writer.beginObject();
+            writer.name("test");
+            assertThrows(IllegalStateException.class, writer::endObject);
+        } catch (IOException e) {
+            fail("Unexpected exception");
+        }
+    }
+
+    @Test
+    void testValueLong() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        writer.value(123456789L);
+        writer.endArray();
+        JsonArray array = (JsonArray) writer.get();
+        assertEquals(123456789L, array.get(0).getAsLong());
+    }
+
+    @Test
+    void testPutAsRoot() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        JsonPrimitive value = new JsonPrimitive("test");
+        writer.put(value);
+        assertSame(value, writer.get());
+    }
+
+    @Test
+    void testPutInArray() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        JsonPrimitive value = new JsonPrimitive(123);
+        writer.put(value);
+        writer.endArray();
+        JsonArray array = (JsonArray) writer.get();
+        assertEquals(1, array.size());
+        assertSame(value, array.get(0));
+    }
+
+    @Test
+    void testPeekAtRoot() {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        JsonElement root = writer.peek();
+        assertSame(JsonNull.INSTANCE, root);
+    }
+
+    @Test
+    void testPeekInArray() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginArray();
+        JsonElement top = writer.peek();
+        assertTrue(top instanceof JsonArray);
+        JsonArray array = (JsonArray) top;
+        assertEquals(0, array.size());
+        writer.endArray();
+    }
+
+    @Test
+    void testPeekInObject() throws IOException {
+        JsonTreeWriter writer = new JsonTreeWriter();
+        writer.beginObject();
+        JsonElement top = writer.peek();
+        assertTrue(top instanceof JsonObject);
+        JsonObject obj = (JsonObject) top;
+        assertEquals(0, obj.size());
+        writer.endObject();
+    }
+}
+```
+

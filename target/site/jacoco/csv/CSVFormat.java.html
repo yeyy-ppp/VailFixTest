@@ -1,0 +1,1116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CSVFormat.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">csv</a> &gt; <span class="el_source">CSVFormat.java</span></div><h1>CSVFormat.java</h1><pre class="source lang-java linenums">package csv;
+import static csv.Constants.EOF;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.io.Serializable;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Supplier;
+public final class CSVFormat implements Serializable {
+    public static class Builder implements Supplier&lt;CSVFormat&gt; {
+        public static Builder create() {
+<span class="fc" id="L25">            return new Builder()</span>
+<span class="fc" id="L26">                    .setDelimiter(Constants.COMMA)</span>
+<span class="fc" id="L27">                    .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L28">                    .setRecordSeparator(Constants.CRLF)</span>
+<span class="fc" id="L29">                    .setIgnoreEmptyLines(true)</span>
+<span class="fc" id="L30">                    .setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL);</span>
+        }
+        public static Builder create(final CSVFormat csvFormat) {
+<span class="fc" id="L33">            return new Builder(csvFormat);</span>
+        }
+        private boolean allowMissingColumnNames;
+        private boolean autoFlush;
+        private Character commentMarker;
+        private String delimiter;
+        private DuplicateHeaderMode duplicateHeaderMode;
+        private Character escapeCharacter;
+        private String[] headerComments;
+        private String[] headers;
+        private boolean ignoreEmptyLines;
+        private boolean ignoreHeaderCase;
+        private boolean ignoreSurroundingSpaces;
+        private String nullString;
+        private Character quoteCharacter;
+        private String quotedNullString;
+        private QuoteMode quoteMode;
+        private String recordSeparator;
+        private boolean skipHeaderRecord;
+        private boolean lenientEof;
+        private boolean trailingData;
+        private boolean trailingDelimiter;
+        private boolean trim;
+        private long maxRows;
+        private Builder() {
+        }
+<span class="fc" id="L59">        private Builder(final CSVFormat csvFormat) {</span>
+<span class="fc" id="L60">            this.allowMissingColumnNames = csvFormat.allowMissingColumnNames;</span>
+<span class="fc" id="L61">            this.autoFlush = csvFormat.autoFlush;</span>
+<span class="fc" id="L62">            this.commentMarker = csvFormat.commentMarker;</span>
+<span class="fc" id="L63">            this.delimiter = csvFormat.delimiter;</span>
+<span class="fc" id="L64">            this.duplicateHeaderMode = csvFormat.duplicateHeaderMode;</span>
+<span class="fc" id="L65">            this.escapeCharacter = csvFormat.escapeCharacter;</span>
+<span class="fc" id="L66">            this.headerComments = csvFormat.headerComments;</span>
+<span class="fc" id="L67">            this.headers = csvFormat.headers;</span>
+<span class="fc" id="L68">            this.ignoreEmptyLines = csvFormat.ignoreEmptyLines;</span>
+<span class="fc" id="L69">            this.ignoreHeaderCase = csvFormat.ignoreHeaderCase;</span>
+<span class="fc" id="L70">            this.ignoreSurroundingSpaces = csvFormat.ignoreSurroundingSpaces;</span>
+<span class="fc" id="L71">            this.lenientEof = csvFormat.lenientEof;</span>
+<span class="fc" id="L72">            this.maxRows = csvFormat.maxRows;</span>
+<span class="fc" id="L73">            this.nullString = csvFormat.nullString;</span>
+<span class="fc" id="L74">            this.quoteCharacter = csvFormat.quoteCharacter;</span>
+<span class="fc" id="L75">            this.quoteMode = csvFormat.quoteMode;</span>
+<span class="fc" id="L76">            this.quotedNullString = csvFormat.quotedNullString;</span>
+<span class="fc" id="L77">            this.recordSeparator = csvFormat.recordSeparator;</span>
+<span class="fc" id="L78">            this.skipHeaderRecord = csvFormat.skipHeaderRecord;</span>
+<span class="fc" id="L79">            this.trailingData = csvFormat.trailingData;</span>
+<span class="fc" id="L80">            this.trailingDelimiter = csvFormat.trailingDelimiter;</span>
+<span class="fc" id="L81">            this.trim = csvFormat.trim;</span>
+<span class="fc" id="L82">        }</span>
+        @Deprecated
+        public CSVFormat build() {
+<span class="fc" id="L85">            return get();</span>
+        }
+        @Override
+        public CSVFormat get() {
+<span class="fc" id="L89">            return new CSVFormat(this);</span>
+        }
+        @Deprecated
+        public Builder setAllowDuplicateHeaderNames(final boolean allowDuplicateHeaderNames) {
+<span class="nc bnc" id="L93" title="All 2 branches missed.">            setDuplicateHeaderMode(allowDuplicateHeaderNames ? DuplicateHeaderMode.ALLOW_ALL : DuplicateHeaderMode.ALLOW_EMPTY);</span>
+<span class="nc" id="L94">            return this;</span>
+        }
+        public Builder setAllowMissingColumnNames(final boolean allowMissingColumnNames) {
+<span class="fc" id="L97">            this.allowMissingColumnNames = allowMissingColumnNames;</span>
+<span class="fc" id="L98">            return this;</span>
+        }
+        public Builder setAutoFlush(final boolean autoFlush) {
+<span class="nc" id="L101">            this.autoFlush = autoFlush;</span>
+<span class="nc" id="L102">            return this;</span>
+        }
+        public Builder setCommentMarker(final char commentMarker) {
+<span class="fc" id="L105">            setCommentMarker(Character.valueOf(commentMarker));</span>
+<span class="fc" id="L106">            return this;</span>
+        }
+        public Builder setCommentMarker(final Character commentMarker) {
+<span class="pc bpc" id="L109" title="1 of 2 branches missed.">            if (isLineBreak(commentMarker)) {</span>
+<span class="nc" id="L110">                throw new IllegalArgumentException(&quot;The comment start marker character cannot be a line break&quot;);</span>
+            }
+<span class="fc" id="L112">            this.commentMarker = commentMarker;</span>
+<span class="fc" id="L113">            return this;</span>
+        }
+        public Builder setDelimiter(final char delimiter) {
+<span class="fc" id="L116">            return setDelimiter(String.valueOf(delimiter));</span>
+        }
+        public Builder setDelimiter(final String delimiter) {
+<span class="pc bpc" id="L119" title="1 of 2 branches missed.">            if (containsLineBreak(delimiter)) {</span>
+<span class="nc" id="L120">                throw new IllegalArgumentException(&quot;The delimiter cannot be a line break&quot;);</span>
+            }
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">            if (delimiter.isEmpty()) {</span>
+<span class="nc" id="L123">                throw new IllegalArgumentException(&quot;The delimiter cannot be empty&quot;);</span>
+            }
+<span class="fc" id="L125">            this.delimiter = delimiter;</span>
+<span class="fc" id="L126">            return this;</span>
+        }
+        public Builder setDuplicateHeaderMode(final DuplicateHeaderMode duplicateHeaderMode) {
+<span class="fc" id="L129">            this.duplicateHeaderMode = Objects.requireNonNull(duplicateHeaderMode, &quot;duplicateHeaderMode&quot;);</span>
+<span class="fc" id="L130">            return this;</span>
+        }
+        public Builder setEscape(final char escapeCharacter) {
+<span class="fc" id="L133">            setEscape(Character.valueOf(escapeCharacter));</span>
+<span class="fc" id="L134">            return this;</span>
+        }
+        public Builder setEscape(final Character escapeCharacter) {
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">            if (isLineBreak(escapeCharacter)) {</span>
+<span class="nc" id="L138">                throw new IllegalArgumentException(&quot;The escape character cannot be a line break&quot;);</span>
+            }
+<span class="fc" id="L140">            this.escapeCharacter = escapeCharacter;</span>
+<span class="fc" id="L141">            return this;</span>
+        }
+        public Builder setHeader(final Class&lt;? extends Enum&lt;?&gt;&gt; headerEnum) {
+<span class="nc" id="L144">            String[] header = null;</span>
+<span class="nc bnc" id="L145" title="All 2 branches missed.">            if (headerEnum != null) {</span>
+<span class="nc" id="L146">                final Enum&lt;?&gt;[] enumValues = headerEnum.getEnumConstants();</span>
+<span class="nc" id="L147">                header = new String[enumValues.length];</span>
+<span class="nc" id="L148">                Arrays.setAll(header, i -&gt; enumValues[i].name());</span>
+            }
+<span class="nc" id="L150">            return setHeader(header);</span>
+        }
+        public Builder setHeader(final ResultSet resultSet) throws SQLException {
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">            return setHeader(resultSet != null ? resultSet.getMetaData() : null);</span>
+        }
+        public Builder setHeader(final ResultSetMetaData resultSetMetaData) throws SQLException {
+<span class="fc" id="L156">            String[] labels = null;</span>
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">            if (resultSetMetaData != null) {</span>
+<span class="fc" id="L158">                final int columnCount = resultSetMetaData.getColumnCount();</span>
+<span class="fc" id="L159">                labels = new String[columnCount];</span>
+<span class="fc bfc" id="L160" title="All 2 branches covered.">                for (int i = 0; i &lt; columnCount; i++) {</span>
+<span class="fc" id="L161">                    labels[i] = resultSetMetaData.getColumnLabel(i + 1);</span>
+                }
+            }
+<span class="fc" id="L164">            return setHeader(labels);</span>
+        }
+        public Builder setHeader(final String... header) {
+<span class="fc" id="L167">            this.headers = CSVFormat.clone(header);</span>
+<span class="fc" id="L168">            return this;</span>
+        }
+        public Builder setHeaderComments(final Object... headerComments) {
+<span class="nc" id="L171">            this.headerComments = CSVFormat.clone(toStringArray(headerComments));</span>
+<span class="nc" id="L172">            return this;</span>
+        }
+        public Builder setHeaderComments(final String... headerComments) {
+<span class="nc" id="L175">            this.headerComments = CSVFormat.clone(headerComments);</span>
+<span class="nc" id="L176">            return this;</span>
+        }
+        public Builder setIgnoreEmptyLines(final boolean ignoreEmptyLines) {
+<span class="fc" id="L179">            this.ignoreEmptyLines = ignoreEmptyLines;</span>
+<span class="fc" id="L180">            return this;</span>
+        }
+        public Builder setIgnoreHeaderCase(final boolean ignoreHeaderCase) {
+<span class="nc" id="L183">            this.ignoreHeaderCase = ignoreHeaderCase;</span>
+<span class="nc" id="L184">            return this;</span>
+        }
+        public Builder setIgnoreSurroundingSpaces(final boolean ignoreSurroundingSpaces) {
+<span class="fc" id="L187">            this.ignoreSurroundingSpaces = ignoreSurroundingSpaces;</span>
+<span class="fc" id="L188">            return this;</span>
+        }
+        public Builder setLenientEof(final boolean lenientEof) {
+<span class="fc" id="L191">            this.lenientEof = lenientEof;</span>
+<span class="fc" id="L192">            return this;</span>
+        }
+        public Builder setMaxRows(final long maxRows) {
+<span class="nc" id="L195">            this.maxRows = maxRows;</span>
+<span class="nc" id="L196">            return this;</span>
+        }
+        public Builder setNullString(final String nullString) {
+<span class="fc" id="L199">            this.nullString = nullString;</span>
+<span class="fc" id="L200">            this.quotedNullString = quoteCharacter + nullString + quoteCharacter;</span>
+<span class="fc" id="L201">            return this;</span>
+        }
+        public Builder setQuote(final char quoteCharacter) {
+<span class="fc" id="L204">            setQuote(Character.valueOf(quoteCharacter));</span>
+<span class="fc" id="L205">            return this;</span>
+        }
+        public Builder setQuote(final Character quoteCharacter) {
+<span class="pc bpc" id="L208" title="1 of 2 branches missed.">            if (isLineBreak(quoteCharacter)) {</span>
+<span class="nc" id="L209">                throw new IllegalArgumentException(&quot;The quoteCharacter cannot be a line break&quot;);</span>
+            }
+<span class="fc" id="L211">            this.quoteCharacter = quoteCharacter;</span>
+<span class="fc" id="L212">            return this;</span>
+        }
+        public Builder setQuoteMode(final QuoteMode quoteMode) {
+<span class="fc" id="L215">            this.quoteMode = quoteMode;</span>
+<span class="fc" id="L216">            return this;</span>
+        }
+        public Builder setRecordSeparator(final char recordSeparator) {
+<span class="fc" id="L219">            this.recordSeparator = String.valueOf(recordSeparator);</span>
+<span class="fc" id="L220">            return this;</span>
+        }
+        public Builder setRecordSeparator(final String recordSeparator) {
+<span class="fc" id="L223">            this.recordSeparator = recordSeparator;</span>
+<span class="fc" id="L224">            return this;</span>
+        }
+        public Builder setSkipHeaderRecord(final boolean skipHeaderRecord) {
+<span class="fc" id="L227">            this.skipHeaderRecord = skipHeaderRecord;</span>
+<span class="fc" id="L228">            return this;</span>
+        }
+        public Builder setTrailingData(final boolean trailingData) {
+<span class="fc" id="L231">            this.trailingData = trailingData;</span>
+<span class="fc" id="L232">            return this;</span>
+        }
+        public Builder setTrailingDelimiter(final boolean trailingDelimiter) {
+<span class="nc" id="L235">            this.trailingDelimiter = trailingDelimiter;</span>
+<span class="nc" id="L236">            return this;</span>
+        }
+        public Builder setTrim(final boolean trim) {
+<span class="fc" id="L239">            this.trim = trim;</span>
+<span class="fc" id="L240">            return this;</span>
+        }
+    }
+<span class="nc" id="L243">    public enum Predefined {</span>
+<span class="nc" id="L244">        Default(DEFAULT),</span>
+<span class="nc" id="L245">        Excel(EXCEL),</span>
+<span class="nc" id="L246">        InformixUnload(INFORMIX_UNLOAD),</span>
+<span class="nc" id="L247">        InformixUnloadCsv(INFORMIX_UNLOAD_CSV),</span>
+<span class="nc" id="L248">        MongoDBCsv(MONGODB_CSV),</span>
+<span class="nc" id="L249">        MongoDBTsv(MONGODB_TSV),</span>
+<span class="nc" id="L250">        MySQL(MYSQL),</span>
+<span class="nc" id="L251">        Oracle(ORACLE),</span>
+<span class="nc" id="L252">        PostgreSQLCsv(POSTGRESQL_CSV),</span>
+<span class="nc" id="L253">        PostgreSQLText(POSTGRESQL_TEXT),</span>
+<span class="nc" id="L254">        RFC4180(CSVFormat.RFC4180),</span>
+<span class="nc" id="L255">        TDF(CSVFormat.TDF);</span>
+        private final CSVFormat format;
+<span class="nc" id="L257">        Predefined(final CSVFormat format) {</span>
+<span class="nc" id="L258">            this.format = format;</span>
+<span class="nc" id="L259">        }</span>
+        public CSVFormat getFormat() {
+<span class="nc" id="L261">            return format;</span>
+        }
+    }
+<span class="fc" id="L264">    public static final CSVFormat DEFAULT = new CSVFormat(Builder.create());</span>
+<span class="fc" id="L265">    public static final CSVFormat EXCEL = DEFAULT.builder()</span>
+<span class="fc" id="L266">            .setIgnoreEmptyLines(false)</span>
+<span class="fc" id="L267">            .setAllowMissingColumnNames(true)</span>
+<span class="fc" id="L268">            .setTrailingData(true)</span>
+<span class="fc" id="L269">            .setLenientEof(true)</span>
+<span class="fc" id="L270">            .get();</span>
+<span class="fc" id="L271">    public static final CSVFormat INFORMIX_UNLOAD = DEFAULT.builder()</span>
+<span class="fc" id="L272">            .setDelimiter(Constants.PIPE)</span>
+<span class="fc" id="L273">            .setEscape(Constants.BACKSLASH)</span>
+<span class="fc" id="L274">            .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L275">            .setRecordSeparator(Constants.LF)</span>
+<span class="fc" id="L276">            .get();</span>
+<span class="fc" id="L277">    public static final CSVFormat INFORMIX_UNLOAD_CSV = DEFAULT.builder()</span>
+<span class="fc" id="L278">            .setDelimiter(Constants.COMMA)</span>
+<span class="fc" id="L279">            .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L280">            .setRecordSeparator(Constants.LF)</span>
+<span class="fc" id="L281">            .get();</span>
+<span class="fc" id="L282">    public static final CSVFormat MONGODB_CSV = DEFAULT.builder()</span>
+<span class="fc" id="L283">            .setDelimiter(Constants.COMMA)</span>
+<span class="fc" id="L284">            .setEscape(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L285">            .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L286">            .setQuoteMode(QuoteMode.MINIMAL)</span>
+<span class="fc" id="L287">            .get();</span>
+<span class="fc" id="L288">    public static final CSVFormat MONGODB_TSV = DEFAULT.builder()</span>
+<span class="fc" id="L289">            .setDelimiter(Constants.TAB)</span>
+<span class="fc" id="L290">            .setEscape(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L291">            .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L292">            .setQuoteMode(QuoteMode.MINIMAL)</span>
+<span class="fc" id="L293">            .setSkipHeaderRecord(false)</span>
+<span class="fc" id="L294">            .get();</span>
+<span class="fc" id="L295">    public static final CSVFormat MYSQL = DEFAULT.builder()</span>
+<span class="fc" id="L296">            .setDelimiter(Constants.TAB)</span>
+<span class="fc" id="L297">            .setEscape(Constants.BACKSLASH)</span>
+<span class="fc" id="L298">            .setIgnoreEmptyLines(false)</span>
+<span class="fc" id="L299">            .setQuote(null)</span>
+<span class="fc" id="L300">            .setRecordSeparator(Constants.LF)</span>
+<span class="fc" id="L301">            .setNullString(Constants.SQL_NULL_STRING)</span>
+<span class="fc" id="L302">            .setQuoteMode(QuoteMode.ALL_NON_NULL)</span>
+<span class="fc" id="L303">            .get();</span>
+<span class="fc" id="L304">    public static final CSVFormat ORACLE = DEFAULT.builder()</span>
+<span class="fc" id="L305">            .setDelimiter(Constants.COMMA)</span>
+<span class="fc" id="L306">            .setEscape(Constants.BACKSLASH)</span>
+<span class="fc" id="L307">            .setIgnoreEmptyLines(false)</span>
+<span class="fc" id="L308">            .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L309">            .setNullString(Constants.SQL_NULL_STRING)</span>
+<span class="fc" id="L310">            .setTrim(true)</span>
+<span class="fc" id="L311">            .setRecordSeparator(System.lineSeparator())</span>
+<span class="fc" id="L312">            .setQuoteMode(QuoteMode.MINIMAL)</span>
+<span class="fc" id="L313">            .get();</span>
+<span class="fc" id="L314">    public static final CSVFormat POSTGRESQL_CSV = DEFAULT.builder()</span>
+<span class="fc" id="L315">            .setDelimiter(Constants.COMMA)</span>
+<span class="fc" id="L316">            .setEscape(null)</span>
+<span class="fc" id="L317">            .setIgnoreEmptyLines(false)</span>
+<span class="fc" id="L318">            .setQuote(Constants.DOUBLE_QUOTE_CHAR)</span>
+<span class="fc" id="L319">            .setRecordSeparator(Constants.LF)</span>
+<span class="fc" id="L320">            .setNullString(Constants.EMPTY)</span>
+<span class="fc" id="L321">            .setQuoteMode(QuoteMode.ALL_NON_NULL)</span>
+<span class="fc" id="L322">            .get();</span>
+<span class="fc" id="L323">    public static final CSVFormat POSTGRESQL_TEXT = DEFAULT.builder()</span>
+<span class="fc" id="L324">            .setDelimiter(Constants.TAB)</span>
+<span class="fc" id="L325">            .setEscape(Constants.BACKSLASH)</span>
+<span class="fc" id="L326">            .setIgnoreEmptyLines(false)</span>
+<span class="fc" id="L327">            .setQuote(null)</span>
+<span class="fc" id="L328">            .setRecordSeparator(Constants.LF)</span>
+<span class="fc" id="L329">            .setNullString(Constants.SQL_NULL_STRING)</span>
+<span class="fc" id="L330">            .setQuoteMode(QuoteMode.ALL_NON_NULL)</span>
+<span class="fc" id="L331">            .get();</span>
+<span class="fc" id="L332">    public static final CSVFormat RFC4180 = DEFAULT.builder().setIgnoreEmptyLines(false).get();</span>
+    private static final long serialVersionUID = 2L;
+<span class="fc" id="L334">    public static final CSVFormat TDF = DEFAULT.builder()</span>
+<span class="fc" id="L335">            .setDelimiter(Constants.TAB)</span>
+<span class="fc" id="L336">            .setIgnoreSurroundingSpaces(true)</span>
+<span class="fc" id="L337">            .get();</span>
+    @SafeVarargs
+    static &lt;T&gt; T[] clone(final T... values) {
+<span class="pc bpc" id="L340" title="1 of 2 branches missed.">        return values == null ? null : values.clone();</span>
+    }
+    private static boolean contains(final String source, final char searchCh) {
+<span class="pc bpc" id="L343" title="1 of 2 branches missed.">        return Objects.requireNonNull(source, &quot;source&quot;).indexOf(searchCh) &gt;= 0;</span>
+    }
+    private static boolean containsLineBreak(final String source) {
+<span class="pc bpc" id="L346" title="2 of 4 branches missed.">        return contains(source, Constants.CR) || contains(source, Constants.LF);</span>
+    }
+    static CSVFormat copy(final CSVFormat format) {
+<span class="pc bpc" id="L349" title="1 of 2 branches missed.">        return format != null ? format.copy() : null;</span>
+    }
+    static boolean isBlank(final String value) {
+<span class="pc bpc" id="L352" title="2 of 4 branches missed.">        return value == null || value.trim().isEmpty();</span>
+    }
+    private static boolean isLineBreak(final char c) {
+<span class="pc bpc" id="L355" title="2 of 4 branches missed.">        return c == Constants.LF || c == Constants.CR;</span>
+    }
+    private static boolean isLineBreak(final Character c) {
+<span class="pc bpc" id="L358" title="1 of 4 branches missed.">        return c != null &amp;&amp; isLineBreak(c.charValue());</span>
+    }
+    private static boolean isTrimChar(final char ch) {
+<span class="pc bpc" id="L361" title="1 of 2 branches missed.">        return ch &lt;= Constants.SP;</span>
+    }
+    private static boolean isTrimChar(final CharSequence charSequence, final int pos) {
+<span class="nc" id="L364">        return isTrimChar(charSequence.charAt(pos));</span>
+    }
+    public static CSVFormat newFormat(final char delimiter) {
+<span class="nc" id="L367">        return new CSVFormat(new Builder().setDelimiter(delimiter));</span>
+    }
+    static String[] toStringArray(final Object[] values) {
+<span class="nc bnc" id="L370" title="All 2 branches missed.">        if (values == null) {</span>
+<span class="nc" id="L371">            return null;</span>
+        }
+<span class="nc" id="L373">        final String[] strings = new String[values.length];</span>
+<span class="nc" id="L374">        Arrays.setAll(strings, i -&gt; Objects.toString(values[i], null));</span>
+<span class="nc" id="L375">        return strings;</span>
+    }
+    static CharSequence trim(final CharSequence charSequence) {
+<span class="nc bnc" id="L378" title="All 2 branches missed.">        if (charSequence instanceof String) {</span>
+<span class="nc" id="L379">            return ((String) charSequence).trim();</span>
+        }
+<span class="nc" id="L381">        final int count = charSequence.length();</span>
+<span class="nc" id="L382">        int len = count;</span>
+<span class="nc" id="L383">        int pos = 0;</span>
+<span class="nc bnc" id="L384" title="All 4 branches missed.">        while (pos &lt; len &amp;&amp; isTrimChar(charSequence, pos)) {</span>
+<span class="nc" id="L385">            pos++;</span>
+        }
+<span class="nc bnc" id="L387" title="All 4 branches missed.">        while (pos &lt; len &amp;&amp; isTrimChar(charSequence, len - 1)) {</span>
+<span class="nc" id="L388">            len--;</span>
+        }
+<span class="nc bnc" id="L390" title="All 4 branches missed.">        return pos &gt; 0 || len &lt; count ? charSequence.subSequence(pos, len) : charSequence;</span>
+    }
+    public static CSVFormat valueOf(final String format) {
+<span class="nc" id="L393">        return Predefined.valueOf(format).getFormat();</span>
+    }
+    private final DuplicateHeaderMode duplicateHeaderMode;
+    private final boolean allowMissingColumnNames;
+    private final boolean autoFlush;
+    private final Character commentMarker;
+    private final String delimiter;
+    private final Character escapeCharacter;
+    private final String[] headers;
+    private final String[] headerComments;
+    private final boolean ignoreEmptyLines;
+    private final boolean ignoreHeaderCase;
+    private final boolean ignoreSurroundingSpaces;
+    private final String nullString;
+    private final Character quoteCharacter;
+    private final String quotedNullString;
+    private final QuoteMode quoteMode;
+    private final String recordSeparator;
+    private final boolean skipHeaderRecord;
+    private final boolean lenientEof;
+    private final boolean trailingData;
+    private final boolean trailingDelimiter;
+    private final boolean trim;
+    private final long maxRows;
+<span class="fc" id="L417">    private CSVFormat(final Builder builder) {</span>
+<span class="fc" id="L418">        this.allowMissingColumnNames = builder.allowMissingColumnNames;</span>
+<span class="fc" id="L419">        this.autoFlush = builder.autoFlush;</span>
+<span class="fc" id="L420">        this.commentMarker = builder.commentMarker;</span>
+<span class="fc" id="L421">        this.delimiter = builder.delimiter;</span>
+<span class="fc" id="L422">        this.duplicateHeaderMode = builder.duplicateHeaderMode;</span>
+<span class="fc" id="L423">        this.escapeCharacter = builder.escapeCharacter;</span>
+<span class="fc" id="L424">        this.headerComments = builder.headerComments;</span>
+<span class="fc" id="L425">        this.headers = builder.headers;</span>
+<span class="fc" id="L426">        this.ignoreEmptyLines = builder.ignoreEmptyLines;</span>
+<span class="fc" id="L427">        this.ignoreHeaderCase = builder.ignoreHeaderCase;</span>
+<span class="fc" id="L428">        this.ignoreSurroundingSpaces = builder.ignoreSurroundingSpaces;</span>
+<span class="fc" id="L429">        this.lenientEof = builder.lenientEof;</span>
+<span class="fc" id="L430">        this.maxRows = builder.maxRows;</span>
+<span class="fc" id="L431">        this.nullString = builder.nullString;</span>
+<span class="fc" id="L432">        this.quoteCharacter = builder.quoteCharacter;</span>
+<span class="fc" id="L433">        this.quoteMode = builder.quoteMode;</span>
+<span class="fc" id="L434">        this.quotedNullString = builder.quotedNullString;</span>
+<span class="fc" id="L435">        this.recordSeparator = builder.recordSeparator;</span>
+<span class="fc" id="L436">        this.skipHeaderRecord = builder.skipHeaderRecord;</span>
+<span class="fc" id="L437">        this.trailingData = builder.trailingData;</span>
+<span class="fc" id="L438">        this.trailingDelimiter = builder.trailingDelimiter;</span>
+<span class="fc" id="L439">        this.trim = builder.trim;</span>
+<span class="fc" id="L440">        validate();</span>
+<span class="fc" id="L441">    }</span>
+    private void append(final char c, final Appendable appendable) throws IOException {
+<span class="fc" id="L443">        appendable.append(c);</span>
+<span class="fc" id="L444">    }</span>
+    private void append(final CharSequence csq, final Appendable appendable) throws IOException {
+<span class="fc" id="L446">        appendable.append(csq);</span>
+<span class="fc" id="L447">    }</span>
+    public Builder builder() {
+<span class="fc" id="L449">        return Builder.create(this);</span>
+    }
+    CSVFormat copy() {
+<span class="fc" id="L452">        return builder().get();</span>
+    }
+    @Override
+    public boolean equals(final Object obj) {
+<span class="nc bnc" id="L456" title="All 2 branches missed.">        if (this == obj) {</span>
+<span class="nc" id="L457">            return true;</span>
+        }
+<span class="nc bnc" id="L459" title="All 2 branches missed.">        if (obj == null) {</span>
+<span class="nc" id="L460">            return false;</span>
+        }
+<span class="nc bnc" id="L462" title="All 2 branches missed.">        if (getClass() != obj.getClass()) {</span>
+<span class="nc" id="L463">            return false;</span>
+        }
+<span class="nc" id="L465">        final CSVFormat other = (CSVFormat) obj;</span>
+<span class="nc bnc" id="L466" title="All 4 branches missed.">        return allowMissingColumnNames == other.allowMissingColumnNames &amp;&amp; autoFlush == other.autoFlush &amp;&amp;</span>
+<span class="nc bnc" id="L467" title="All 6 branches missed.">                Objects.equals(commentMarker, other.commentMarker) &amp;&amp; Objects.equals(delimiter, other.delimiter) &amp;&amp;</span>
+<span class="nc bnc" id="L468" title="All 2 branches missed.">                duplicateHeaderMode == other.duplicateHeaderMode &amp;&amp; Objects.equals(escapeCharacter, other.escapeCharacter) &amp;&amp;</span>
+<span class="nc bnc" id="L469" title="All 12 branches missed.">                Arrays.equals(headerComments, other.headerComments) &amp;&amp; Arrays.equals(headers, other.headers) &amp;&amp;</span>
+                ignoreEmptyLines == other.ignoreEmptyLines &amp;&amp; ignoreHeaderCase == other.ignoreHeaderCase &amp;&amp;
+                ignoreSurroundingSpaces == other.ignoreSurroundingSpaces &amp;&amp; lenientEof == other.lenientEof &amp;&amp;
+<span class="nc bnc" id="L472" title="All 6 branches missed.">                Objects.equals(nullString, other.nullString) &amp;&amp; Objects.equals(quoteCharacter, other.quoteCharacter) &amp;&amp;</span>
+<span class="nc bnc" id="L473" title="All 2 branches missed.">                quoteMode == other.quoteMode &amp;&amp; Objects.equals(quotedNullString, other.quotedNullString) &amp;&amp;</span>
+<span class="nc bnc" id="L474" title="All 10 branches missed.">                Objects.equals(recordSeparator, other.recordSeparator) &amp;&amp; skipHeaderRecord == other.skipHeaderRecord &amp;&amp;</span>
+                trailingData == other.trailingData &amp;&amp; trailingDelimiter == other.trailingDelimiter &amp;&amp; trim == other.trim;
+    }
+    private void escape(final char c, final Appendable appendable) throws IOException {
+<span class="nc" id="L478">        append(escapeCharacter.charValue(), appendable);</span>
+<span class="nc" id="L479">        append(c, appendable);</span>
+<span class="nc" id="L480">    }</span>
+    public String format(final Object... values) {
+<span class="nc" id="L482">        return Uncheck.get(() -&gt; format_(values));</span>
+    }
+    private String format_(final Object... values) throws IOException {
+<span class="nc" id="L485">        final StringWriter out = new StringWriter();</span>
+<span class="nc" id="L486">        try (CSVPrinter csvPrinter = new CSVPrinter(out, this)) {</span>
+<span class="nc" id="L487">            csvPrinter.printRecord(values);</span>
+<span class="nc" id="L488">            final String res = out.toString();</span>
+<span class="nc bnc" id="L489" title="All 2 branches missed.">            final int len = recordSeparator != null ? res.length() - recordSeparator.length() : res.length();</span>
+<span class="nc" id="L490">            return res.substring(0, len);</span>
+        }
+    }
+    @Deprecated
+    public boolean getAllowDuplicateHeaderNames() {
+<span class="nc bnc" id="L495" title="All 2 branches missed.">        return duplicateHeaderMode == DuplicateHeaderMode.ALLOW_ALL;</span>
+    }
+    public boolean getAllowMissingColumnNames() {
+<span class="nc" id="L498">        return allowMissingColumnNames;</span>
+    }
+    public boolean getAutoFlush() {
+<span class="fc" id="L501">        return autoFlush;</span>
+    }
+    public Character getCommentMarker() {
+<span class="fc" id="L504">        return commentMarker;</span>
+    }
+    @Deprecated
+    public char getDelimiter() {
+<span class="nc" id="L508">        return delimiter.charAt(0);</span>
+    }
+    char[] getDelimiterCharArray() {
+<span class="fc" id="L511">        return delimiter.toCharArray();</span>
+    }
+    public String getDelimiterString() {
+<span class="fc" id="L514">        return delimiter;</span>
+    }
+    public DuplicateHeaderMode getDuplicateHeaderMode() {
+<span class="fc" id="L517">        return duplicateHeaderMode;</span>
+    }
+    char getEscapeChar() {
+<span class="nc bnc" id="L520" title="All 2 branches missed.">        return escapeCharacter != null ? escapeCharacter.charValue() : 0;</span>
+    }
+    public Character getEscapeCharacter() {
+<span class="fc" id="L523">        return escapeCharacter;</span>
+    }
+    public String[] getHeader() {
+<span class="fc bfc" id="L526" title="All 2 branches covered.">        return headers != null ? headers.clone() : null;</span>
+    }
+    public String[] getHeaderComments() {
+<span class="pc bpc" id="L529" title="1 of 2 branches missed.">        return headerComments != null ? headerComments.clone() : null;</span>
+    }
+    public boolean getIgnoreEmptyLines() {
+<span class="fc" id="L532">        return ignoreEmptyLines;</span>
+    }
+    public boolean getIgnoreHeaderCase() {
+<span class="fc" id="L535">        return ignoreHeaderCase;</span>
+    }
+    public boolean getIgnoreSurroundingSpaces() {
+<span class="fc" id="L538">        return ignoreSurroundingSpaces;</span>
+    }
+    public boolean getLenientEof() {
+<span class="fc" id="L541">        return lenientEof;</span>
+    }
+    public long getMaxRows() {
+<span class="fc" id="L544">        return maxRows;</span>
+    }
+    public String getNullString() {
+<span class="fc" id="L547">        return nullString;</span>
+    }
+    public Character getQuoteCharacter() {
+<span class="fc" id="L550">        return quoteCharacter;</span>
+    }
+    public QuoteMode getQuoteMode() {
+<span class="fc" id="L553">        return quoteMode;</span>
+    }
+    public String getRecordSeparator() {
+<span class="fc" id="L556">        return recordSeparator;</span>
+    }
+    public boolean getSkipHeaderRecord() {
+<span class="fc" id="L559">        return skipHeaderRecord;</span>
+    }
+    public boolean getTrailingData() {
+<span class="fc" id="L562">        return trailingData;</span>
+    }
+    public boolean getTrailingDelimiter() {
+<span class="fc" id="L565">        return trailingDelimiter;</span>
+    }
+    public boolean getTrim() {
+<span class="fc" id="L568">        return trim;</span>
+    }
+    @Override
+    public int hashCode() {
+<span class="nc" id="L572">        final int prime = 31;</span>
+<span class="nc" id="L573">        int result = 1;</span>
+<span class="nc" id="L574">        result = prime * result + Arrays.hashCode(headerComments);</span>
+<span class="nc" id="L575">        result = prime * result + Arrays.hashCode(headers);</span>
+<span class="nc" id="L576">        return prime * result + Objects.hash(allowMissingColumnNames, autoFlush, commentMarker, delimiter, duplicateHeaderMode, escapeCharacter,</span>
+<span class="nc" id="L577">                ignoreEmptyLines, ignoreHeaderCase, ignoreSurroundingSpaces, lenientEof, nullString, quoteCharacter, quoteMode, quotedNullString,</span>
+<span class="nc" id="L578">                recordSeparator, skipHeaderRecord, trailingData, trailingDelimiter, trim);</span>
+    }
+    public boolean isCommentMarkerSet() {
+<span class="pc bpc" id="L581" title="1 of 2 branches missed.">        return commentMarker != null;</span>
+    }
+    private boolean isDelimiter(final char ch0, final CharSequence charSeq, final int startIndex, final char[] delimiter, final int delimiterLength) {
+<span class="pc bpc" id="L584" title="1 of 2 branches missed.">        if (ch0 != delimiter[0]) {</span>
+<span class="fc" id="L585">            return false;</span>
+        }
+<span class="nc" id="L587">        final int len = charSeq.length();</span>
+<span class="nc bnc" id="L588" title="All 2 branches missed.">        if (startIndex + delimiterLength &gt; len) {</span>
+<span class="nc" id="L589">            return false;</span>
+        }
+<span class="nc bnc" id="L591" title="All 2 branches missed.">        for (int i = 1; i &lt; delimiterLength; i++) {</span>
+<span class="nc bnc" id="L592" title="All 2 branches missed.">            if (charSeq.charAt(startIndex + i) != delimiter[i]) {</span>
+<span class="nc" id="L593">                return false;</span>
+            }
+        }
+<span class="nc" id="L596">        return true;</span>
+    }
+    public boolean isEscapeCharacterSet() {
+<span class="pc bpc" id="L599" title="1 of 2 branches missed.">        return escapeCharacter != null;</span>
+    }
+    public boolean isNullStringSet() {
+<span class="nc bnc" id="L602" title="All 2 branches missed.">        return nullString != null;</span>
+    }
+    public boolean isQuoteCharacterSet() {
+<span class="pc bpc" id="L605" title="1 of 2 branches missed.">        return quoteCharacter != null;</span>
+    }
+    &lt;T&gt; IOStream&lt;T&gt; limit(final IOStream&lt;T&gt; stream) {
+<span class="pc bpc" id="L608" title="1 of 2 branches missed.">        return useMaxRows() ? stream.limit(getMaxRows()) : stream;</span>
+    }
+    public CSVParser parse(final Reader reader) throws IOException {
+<span class="nc" id="L611">        return CSVParser.builder().setReader(reader).setFormat(this).get();</span>
+    }
+    public CSVPrinter print(final Appendable out) throws IOException {
+<span class="nc" id="L614">        return new CSVPrinter(out, this);</span>
+    }
+    public CSVPrinter print(final File out, final Charset charset) throws IOException {
+<span class="nc" id="L617">        return print(out.toPath(), charset);</span>
+    }
+    private void print(final InputStream inputStream, final Appendable out, final boolean newRecord) throws IOException {
+<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (!newRecord) {</span>
+<span class="fc" id="L621">            append(getDelimiterString(), out);</span>
+        }
+<span class="fc" id="L623">        final boolean quoteCharacterSet = isQuoteCharacterSet();</span>
+<span class="pc bpc" id="L624" title="1 of 2 branches missed.">        if (quoteCharacterSet) {</span>
+<span class="fc" id="L625">            append(getQuoteCharacter().charValue(), out);</span>
+        }
+<span class="fc" id="L627">        try (OutputStream outputStream = new Base64OutputStream(new AppendableOutputStream&lt;&gt;(out))) {</span>
+<span class="fc" id="L628">            IOUtilsHelper.copy(inputStream, outputStream);</span>
+        }
+<span class="pc bpc" id="L630" title="1 of 2 branches missed.">        if (quoteCharacterSet) {</span>
+<span class="fc" id="L631">            append(getQuoteCharacter().charValue(), out);</span>
+        }
+<span class="fc" id="L633">    }</span>
+    public synchronized void print(final Object value, final Appendable out, final boolean newRecord) throws IOException {
+        CharSequence charSequence;
+<span class="pc bpc" id="L636" title="1 of 2 branches missed.">        if (value == null) {</span>
+<span class="nc bnc" id="L637" title="All 2 branches missed.">            if (null == nullString) {</span>
+<span class="nc" id="L638">                charSequence = Constants.EMPTY;</span>
+<span class="nc bnc" id="L639" title="All 2 branches missed.">            } else if (QuoteMode.ALL == quoteMode) {</span>
+<span class="nc" id="L640">                charSequence = quotedNullString;</span>
+            } else {
+<span class="nc" id="L642">                charSequence = nullString;</span>
+            }
+<span class="fc bfc" id="L644" title="All 2 branches covered.">        } else if (value instanceof CharSequence) {</span>
+<span class="fc" id="L645">            charSequence = (CharSequence) value;</span>
+<span class="fc bfc" id="L646" title="All 2 branches covered.">        } else if (value instanceof Reader) {</span>
+<span class="fc" id="L647">            print((Reader) value, out, newRecord);</span>
+<span class="fc" id="L648">            return;</span>
+<span class="pc bpc" id="L649" title="1 of 2 branches missed.">        } else if (value instanceof InputStream) {</span>
+<span class="fc" id="L650">            print((InputStream) value, out, newRecord);</span>
+<span class="fc" id="L651">            return;</span>
+        } else {
+<span class="nc" id="L653">            charSequence = value.toString();</span>
+        }
+<span class="pc bpc" id="L655" title="1 of 2 branches missed.">        charSequence = getTrim() ? trim(charSequence) : charSequence;</span>
+<span class="fc" id="L656">        print(value, charSequence, out, newRecord);</span>
+<span class="fc" id="L657">    }</span>
+    private synchronized void print(final Object object, final CharSequence value, final Appendable out, final boolean newRecord) throws IOException {
+<span class="fc" id="L659">        final int offset = 0;</span>
+<span class="fc" id="L660">        final int len = value.length();</span>
+<span class="fc bfc" id="L661" title="All 2 branches covered.">        if (!newRecord) {</span>
+<span class="fc" id="L662">            out.append(getDelimiterString());</span>
+        }
+<span class="pc bpc" id="L664" title="1 of 2 branches missed.">        if (object == null) {</span>
+<span class="nc" id="L665">            out.append(value);</span>
+<span class="pc bpc" id="L666" title="1 of 2 branches missed.">        } else if (isQuoteCharacterSet()) {</span>
+<span class="fc" id="L667">            printWithQuotes(object, value, out, newRecord);</span>
+<span class="nc bnc" id="L668" title="All 2 branches missed.">        } else if (isEscapeCharacterSet()) {</span>
+<span class="nc" id="L669">            printWithEscapes(value, out);</span>
+        } else {
+<span class="nc" id="L671">            out.append(value, offset, len);</span>
+        }
+<span class="fc" id="L673">    }</span>
+    @SuppressWarnings(&quot;resource&quot;)
+    public CSVPrinter print(final Path out, final Charset charset) throws IOException {
+<span class="nc" id="L676">        return print(Files.newBufferedWriter(out, charset));</span>
+    }
+    private void print(final Reader reader, final Appendable out, final boolean newRecord) throws IOException {
+<span class="pc bpc" id="L679" title="1 of 2 branches missed.">        if (!newRecord) {</span>
+<span class="fc" id="L680">            append(getDelimiterString(), out);</span>
+        }
+<span class="pc bpc" id="L682" title="1 of 2 branches missed.">        if (isQuoteCharacterSet()) {</span>
+<span class="fc" id="L683">            printWithQuotes(reader, out);</span>
+<span class="nc bnc" id="L684" title="All 2 branches missed.">        } else if (isEscapeCharacterSet()) {</span>
+<span class="nc" id="L685">            printWithEscapes(reader, out);</span>
+<span class="nc bnc" id="L686" title="All 2 branches missed.">        } else if (out instanceof Writer) {</span>
+<span class="nc" id="L687">            IOUtilsHelper.copyLarge(reader, (Writer) out);</span>
+        } else {
+<span class="nc" id="L689">            IOUtilsHelper.copy(reader, out);</span>
+        }
+<span class="fc" id="L691">    }</span>
+    public CSVPrinter printer() throws IOException {
+<span class="nc" id="L693">        return new CSVPrinter(System.out, this);</span>
+    }
+    public synchronized void println(final Appendable appendable) throws IOException {
+<span class="pc bpc" id="L696" title="1 of 2 branches missed.">        if (getTrailingDelimiter()) {</span>
+<span class="nc" id="L697">            append(getDelimiterString(), appendable);</span>
+        }
+<span class="pc bpc" id="L699" title="1 of 2 branches missed.">        if (recordSeparator != null) {</span>
+<span class="fc" id="L700">            append(recordSeparator, appendable);</span>
+        }
+<span class="fc" id="L702">    }</span>
+    public synchronized void printRecord(final Appendable appendable, final Object... values) throws IOException {
+<span class="nc bnc" id="L704" title="All 2 branches missed.">        for (int i = 0; i &lt; values.length; i++) {</span>
+<span class="nc bnc" id="L705" title="All 2 branches missed.">            print(values[i], appendable, i == 0);</span>
+        }
+<span class="nc" id="L707">        println(appendable);</span>
+<span class="nc" id="L708">    }</span>
+    private void printWithEscapes(final CharSequence charSeq, final Appendable appendable) throws IOException {
+<span class="nc" id="L710">        int start = 0;</span>
+<span class="nc" id="L711">        int pos = 0;</span>
+<span class="nc" id="L712">        final int end = charSeq.length();</span>
+<span class="nc" id="L713">        final char[] delimArray = getDelimiterCharArray();</span>
+<span class="nc" id="L714">        final int delimLength = delimArray.length;</span>
+<span class="nc" id="L715">        final char escape = getEscapeChar();</span>
+<span class="nc bnc" id="L716" title="All 2 branches missed.">        while (pos &lt; end) {</span>
+<span class="nc" id="L717">            char c = charSeq.charAt(pos);</span>
+<span class="nc" id="L718">            final boolean isDelimiterStart = isDelimiter(c, charSeq, pos, delimArray, delimLength);</span>
+<span class="nc bnc" id="L719" title="All 2 branches missed.">            final boolean isCr = c == Constants.CR;</span>
+<span class="nc bnc" id="L720" title="All 2 branches missed.">            final boolean isLf = c == Constants.LF;</span>
+<span class="nc bnc" id="L721" title="All 8 branches missed.">            if (isCr || isLf || c == escape || isDelimiterStart) {</span>
+<span class="nc bnc" id="L722" title="All 2 branches missed.">                if (pos &gt; start) {</span>
+<span class="nc" id="L723">                    appendable.append(charSeq, start, pos);</span>
+                }
+<span class="nc bnc" id="L725" title="All 2 branches missed.">                if (isLf) {</span>
+<span class="nc" id="L726">                    c = 'n';</span>
+<span class="nc bnc" id="L727" title="All 2 branches missed.">                } else if (isCr) {</span>
+<span class="nc" id="L728">                    c = 'r';</span>
+                }
+<span class="nc" id="L730">                escape(c, appendable);</span>
+<span class="nc bnc" id="L731" title="All 2 branches missed.">                if (isDelimiterStart) {</span>
+<span class="nc bnc" id="L732" title="All 2 branches missed.">                    for (int i = 1; i &lt; delimLength; i++) {</span>
+<span class="nc" id="L733">                        pos++;</span>
+<span class="nc" id="L734">                        escape(charSeq.charAt(pos), appendable);</span>
+                    }
+                }
+<span class="nc" id="L737">                start = pos + 1;</span>
+            }
+<span class="nc" id="L739">            pos++;</span>
+<span class="nc" id="L740">        }</span>
+<span class="nc bnc" id="L741" title="All 2 branches missed.">        if (pos &gt; start) {</span>
+<span class="nc" id="L742">            appendable.append(charSeq, start, pos);</span>
+        }
+<span class="nc" id="L744">    }</span>
+    private void printWithEscapes(final Reader reader, final Appendable appendable) throws IOException {
+<span class="nc" id="L746">        int start = 0;</span>
+<span class="nc" id="L747">        int pos = 0;</span>
+        @SuppressWarnings(&quot;resource&quot;)
+<span class="nc" id="L749">        final ExtendedBufferedReader bufferedReader = new ExtendedBufferedReader(reader);</span>
+<span class="nc" id="L750">        final char[] delimArray = getDelimiterCharArray();</span>
+<span class="nc" id="L751">        final int delimLength = delimArray.length;</span>
+<span class="nc" id="L752">        final char escape = getEscapeChar();</span>
+<span class="nc" id="L753">        final StringBuilder builder = new StringBuilder(IOUtilsHelper.DEFAULT_BUFFER_SIZE);</span>
+        int c;
+<span class="nc" id="L755">        final char[] lookAheadBuffer = new char[delimLength - 1];</span>
+<span class="nc bnc" id="L756" title="All 2 branches missed.">        while (EOF != (c = bufferedReader.read())) {</span>
+<span class="nc" id="L757">            builder.append((char) c);</span>
+<span class="nc" id="L758">            Arrays.fill(lookAheadBuffer, (char) 0);</span>
+<span class="nc" id="L759">            bufferedReader.peek(lookAheadBuffer);</span>
+<span class="nc" id="L760">            final String test = builder.toString() + new String(lookAheadBuffer);</span>
+<span class="nc" id="L761">            final boolean isDelimiterStart = isDelimiter((char) c, test, pos, delimArray, delimLength);</span>
+<span class="nc bnc" id="L762" title="All 2 branches missed.">            final boolean isCr = c == Constants.CR;</span>
+<span class="nc bnc" id="L763" title="All 2 branches missed.">            final boolean isLf = c == Constants.LF;</span>
+<span class="nc bnc" id="L764" title="All 8 branches missed.">            if (isCr || isLf || c == escape || isDelimiterStart) {</span>
+<span class="nc bnc" id="L765" title="All 2 branches missed.">                if (pos &gt; start) {</span>
+<span class="nc" id="L766">                    append(builder.substring(start, pos), appendable);</span>
+<span class="nc" id="L767">                    builder.setLength(0);</span>
+<span class="nc" id="L768">                    pos = -1;</span>
+                }
+<span class="nc bnc" id="L770" title="All 2 branches missed.">                if (isLf) {</span>
+<span class="nc" id="L771">                    c = 'n';</span>
+<span class="nc bnc" id="L772" title="All 2 branches missed.">                } else if (isCr) {</span>
+<span class="nc" id="L773">                    c = 'r';</span>
+                }
+<span class="nc" id="L775">                escape((char) c, appendable);</span>
+<span class="nc bnc" id="L776" title="All 2 branches missed.">                if (isDelimiterStart) {</span>
+<span class="nc bnc" id="L777" title="All 2 branches missed.">                    for (int i = 1; i &lt; delimLength; i++) {</span>
+<span class="nc" id="L778">                        escape((char) bufferedReader.read(), appendable);</span>
+                    }
+                }
+<span class="nc" id="L781">                start = pos + 1;</span>
+            }
+<span class="nc" id="L783">            pos++;</span>
+<span class="nc" id="L784">        }</span>
+<span class="nc bnc" id="L785" title="All 2 branches missed.">        if (pos &gt; start) {</span>
+<span class="nc" id="L786">            appendable.append(builder, start, pos);</span>
+        }
+<span class="nc" id="L788">    }</span>
+    private void printWithQuotes(final Object object, final CharSequence charSeq, final Appendable out, final boolean newRecord) throws IOException {
+<span class="fc" id="L790">        boolean quote = false;</span>
+<span class="fc" id="L791">        int start = 0;</span>
+<span class="fc" id="L792">        int pos = 0;</span>
+<span class="fc" id="L793">        final int len = charSeq.length();</span>
+<span class="fc" id="L794">        final char[] delim = getDelimiterCharArray();</span>
+<span class="fc" id="L795">        final int delimLength = delim.length;</span>
+<span class="fc" id="L796">        final char quoteChar = getQuoteCharacter().charValue();</span>
+<span class="pc bpc" id="L797" title="1 of 2 branches missed.">        final char escapeChar = isEscapeCharacterSet() ? getEscapeChar() : quoteChar;</span>
+<span class="fc" id="L798">        QuoteMode quoteModePolicy = getQuoteMode();</span>
+<span class="pc bpc" id="L799" title="1 of 2 branches missed.">        if (quoteModePolicy == null) {</span>
+<span class="fc" id="L800">            quoteModePolicy = QuoteMode.MINIMAL;</span>
+        }
+<span class="pc bpc" id="L802" title="4 of 5 branches missed.">        switch (quoteModePolicy) {</span>
+        case ALL:
+        case ALL_NON_NULL:
+<span class="nc" id="L805">            quote = true;</span>
+<span class="nc" id="L806">            break;</span>
+        case NON_NUMERIC:
+<span class="nc bnc" id="L808" title="All 2 branches missed.">            quote = !(object instanceof Number);</span>
+<span class="nc" id="L809">            break;</span>
+        case NONE:
+<span class="nc" id="L811">            printWithEscapes(charSeq, out);</span>
+<span class="nc" id="L812">            return;</span>
+        case MINIMAL:
+<span class="pc bpc" id="L814" title="1 of 2 branches missed.">            if (len &lt;= 0) {</span>
+<span class="nc bnc" id="L815" title="All 2 branches missed.">                if (newRecord) {</span>
+<span class="nc" id="L816">                    quote = true;</span>
+                }
+            } else {
+<span class="fc" id="L819">                char c = charSeq.charAt(pos);</span>
+<span class="pc bpc" id="L820" title="1 of 2 branches missed.">                if (c &lt;= Constants.COMMENT) {</span>
+<span class="nc" id="L821">                    quote = true;</span>
+                } else {
+<span class="fc bfc" id="L823" title="All 2 branches covered.">                    while (pos &lt; len) {</span>
+<span class="fc" id="L824">                        c = charSeq.charAt(pos);</span>
+<span class="pc bpc" id="L825" title="5 of 10 branches missed.">                        if (c == Constants.LF || c == Constants.CR || c == quoteChar || c == escapeChar || isDelimiter(c, charSeq, pos, delim, delimLength)) {</span>
+<span class="nc" id="L826">                            quote = true;</span>
+<span class="nc" id="L827">                            break;</span>
+                        }
+<span class="fc" id="L829">                        pos++;</span>
+                    }
+<span class="pc bpc" id="L831" title="1 of 2 branches missed.">                    if (!quote) {</span>
+<span class="fc" id="L832">                        pos = len - 1;</span>
+<span class="fc" id="L833">                        c = charSeq.charAt(pos);</span>
+<span class="pc bpc" id="L834" title="1 of 2 branches missed.">                        if (isTrimChar(c)) {</span>
+<span class="nc" id="L835">                            quote = true;</span>
+                        }
+                    }
+                }
+            }
+<span class="pc bpc" id="L840" title="1 of 2 branches missed.">            if (!quote) {</span>
+<span class="fc" id="L841">                out.append(charSeq, start, len);</span>
+<span class="fc" id="L842">                return;</span>
+            }
+            break;
+        default:
+<span class="nc" id="L846">            throw new IllegalStateException(&quot;Unexpected Quote value: &quot; + quoteModePolicy);</span>
+        }
+<span class="nc bnc" id="L848" title="All 2 branches missed.">        if (!quote) {</span>
+<span class="nc" id="L849">            out.append(charSeq, start, len);</span>
+<span class="nc" id="L850">            return;</span>
+        }
+<span class="nc" id="L852">        out.append(quoteChar);</span>
+<span class="nc bnc" id="L853" title="All 2 branches missed.">        while (pos &lt; len) {</span>
+<span class="nc" id="L854">            final char c = charSeq.charAt(pos);</span>
+<span class="nc bnc" id="L855" title="All 4 branches missed.">            if (c == quoteChar || c == escapeChar) {</span>
+<span class="nc" id="L856">                out.append(charSeq, start, pos);</span>
+<span class="nc" id="L857">                out.append(escapeChar);</span>
+<span class="nc" id="L858">                start = pos;</span>
+            }
+<span class="nc" id="L860">            pos++;</span>
+<span class="nc" id="L861">        }</span>
+<span class="nc" id="L862">        out.append(charSeq, start, pos);</span>
+<span class="nc" id="L863">        out.append(quoteChar);</span>
+<span class="nc" id="L864">    }</span>
+    private void printWithQuotes(final Reader reader, final Appendable appendable) throws IOException {
+<span class="pc bpc" id="L866" title="1 of 2 branches missed.">        if (getQuoteMode() == QuoteMode.NONE) {</span>
+<span class="nc" id="L867">            printWithEscapes(reader, appendable);</span>
+<span class="nc" id="L868">            return;</span>
+        }
+<span class="fc" id="L870">        final char quote = getQuoteCharacter().charValue();</span>
+<span class="fc" id="L871">        append(quote, appendable);</span>
+        int c;
+<span class="pc bpc" id="L873" title="1 of 2 branches missed.">        while (EOF != (c = reader.read())) {</span>
+<span class="nc" id="L874">            append((char) c, appendable);</span>
+<span class="nc bnc" id="L875" title="All 2 branches missed.">            if (c == quote) {</span>
+<span class="nc" id="L876">                append(quote, appendable);</span>
+            }
+        }
+<span class="fc" id="L879">        append(quote, appendable);</span>
+<span class="fc" id="L880">    }</span>
+    @Override
+    public String toString() {
+<span class="nc" id="L883">        final StringBuilder sb = new StringBuilder();</span>
+<span class="nc" id="L884">        sb.append(&quot;Delimiter=&lt;&quot;).append(delimiter).append('&gt;');</span>
+<span class="nc bnc" id="L885" title="All 2 branches missed.">        if (isEscapeCharacterSet()) {</span>
+<span class="nc" id="L886">            sb.append(Constants.SP);</span>
+<span class="nc" id="L887">            sb.append(&quot;Escape=&lt;&quot;).append(escapeCharacter).append('&gt;');</span>
+        }
+<span class="nc bnc" id="L889" title="All 2 branches missed.">        if (isQuoteCharacterSet()) {</span>
+<span class="nc" id="L890">            sb.append(Constants.SP);</span>
+<span class="nc" id="L891">            sb.append(&quot;QuoteChar=&lt;&quot;).append(quoteCharacter).append('&gt;');</span>
+        }
+<span class="nc bnc" id="L893" title="All 2 branches missed.">        if (quoteMode != null) {</span>
+<span class="nc" id="L894">            sb.append(Constants.SP);</span>
+<span class="nc" id="L895">            sb.append(&quot;QuoteMode=&lt;&quot;).append(quoteMode).append('&gt;');</span>
+        }
+<span class="nc bnc" id="L897" title="All 2 branches missed.">        if (isCommentMarkerSet()) {</span>
+<span class="nc" id="L898">            sb.append(Constants.SP);</span>
+<span class="nc" id="L899">            sb.append(&quot;CommentStart=&lt;&quot;).append(commentMarker).append('&gt;');</span>
+        }
+<span class="nc bnc" id="L901" title="All 2 branches missed.">        if (isNullStringSet()) {</span>
+<span class="nc" id="L902">            sb.append(Constants.SP);</span>
+<span class="nc" id="L903">            sb.append(&quot;NullString=&lt;&quot;).append(nullString).append('&gt;');</span>
+        }
+<span class="nc bnc" id="L905" title="All 2 branches missed.">        if (recordSeparator != null) {</span>
+<span class="nc" id="L906">            sb.append(Constants.SP);</span>
+<span class="nc" id="L907">            sb.append(&quot;RecordSeparator=&lt;&quot;).append(recordSeparator).append('&gt;');</span>
+        }
+<span class="nc bnc" id="L909" title="All 2 branches missed.">        if (getIgnoreEmptyLines()) {</span>
+<span class="nc" id="L910">            sb.append(&quot; EmptyLines:ignored&quot;);</span>
+        }
+<span class="nc bnc" id="L912" title="All 2 branches missed.">        if (getIgnoreSurroundingSpaces()) {</span>
+<span class="nc" id="L913">            sb.append(&quot; SurroundingSpaces:ignored&quot;);</span>
+        }
+<span class="nc bnc" id="L915" title="All 2 branches missed.">        if (getIgnoreHeaderCase()) {</span>
+<span class="nc" id="L916">            sb.append(&quot; IgnoreHeaderCase:ignored&quot;);</span>
+        }
+<span class="nc" id="L918">        sb.append(&quot; SkipHeaderRecord:&quot;).append(skipHeaderRecord);</span>
+<span class="nc bnc" id="L919" title="All 2 branches missed.">        if (headerComments != null) {</span>
+<span class="nc" id="L920">            sb.append(Constants.SP);</span>
+<span class="nc" id="L921">            sb.append(&quot;HeaderComments:&quot;).append(Arrays.toString(headerComments));</span>
+        }
+<span class="nc bnc" id="L923" title="All 2 branches missed.">        if (headers != null) {</span>
+<span class="nc" id="L924">            sb.append(Constants.SP);</span>
+<span class="nc" id="L925">            sb.append(&quot;Header:&quot;).append(Arrays.toString(headers));</span>
+        }
+<span class="nc" id="L927">        return sb.toString();</span>
+    }
+    String trim(final String value) {
+<span class="pc bpc" id="L930" title="1 of 2 branches missed.">        return getTrim() ? value.trim() : value;</span>
+    }
+    boolean useMaxRows() {
+<span class="pc bpc" id="L933" title="1 of 2 branches missed.">        return getMaxRows() &gt; 0;</span>
+    }
+    boolean useRow(final long rowNum) {
+<span class="pc bpc" id="L936" title="3 of 4 branches missed.">        return !useMaxRows() || rowNum &lt;= getMaxRows();</span>
+    }
+    private void validate() throws IllegalArgumentException {
+<span class="pc bpc" id="L939" title="1 of 4 branches missed.">        if (quoteCharacter != null &amp;&amp; contains(delimiter, quoteCharacter.charValue())) {</span>
+<span class="nc" id="L940">            throw new IllegalArgumentException(&quot;The quoteChar character and the delimiter cannot be the same ('&quot; + quoteCharacter + &quot;')&quot;);</span>
+        }
+<span class="pc bpc" id="L942" title="1 of 4 branches missed.">        if (escapeCharacter != null &amp;&amp; contains(delimiter, escapeCharacter.charValue())) {</span>
+<span class="nc" id="L943">            throw new IllegalArgumentException(&quot;The escape character and the delimiter cannot be the same ('&quot; + escapeCharacter + &quot;')&quot;);</span>
+        }
+<span class="pc bpc" id="L945" title="1 of 4 branches missed.">        if (commentMarker != null &amp;&amp; contains(delimiter, commentMarker.charValue())) {</span>
+<span class="nc" id="L946">            throw new IllegalArgumentException(&quot;The comment start character and the delimiter cannot be the same ('&quot; + commentMarker + &quot;')&quot;);</span>
+        }
+<span class="pc bpc" id="L948" title="1 of 4 branches missed.">        if (quoteCharacter != null &amp;&amp; quoteCharacter.equals(commentMarker)) {</span>
+<span class="nc" id="L949">            throw new IllegalArgumentException(&quot;The comment start character and the quoteChar cannot be the same ('&quot; + commentMarker + &quot;')&quot;);</span>
+        }
+<span class="pc bpc" id="L951" title="1 of 4 branches missed.">        if (escapeCharacter != null &amp;&amp; escapeCharacter.equals(commentMarker)) {</span>
+<span class="nc" id="L952">            throw new IllegalArgumentException(&quot;The comment start and the escape character cannot be the same ('&quot; + commentMarker + &quot;')&quot;);</span>
+        }
+<span class="pc bpc" id="L954" title="1 of 4 branches missed.">        if (escapeCharacter == null &amp;&amp; quoteMode == QuoteMode.NONE) {</span>
+<span class="nc" id="L955">            throw new IllegalArgumentException(&quot;Quote mode set to NONE but no escape character is set&quot;);</span>
+        }
+<span class="pc bpc" id="L957" title="1 of 4 branches missed.">        if (headers != null &amp;&amp; duplicateHeaderMode != DuplicateHeaderMode.ALLOW_ALL) {</span>
+<span class="nc" id="L958">            final Set&lt;String&gt; dupCheckSet = new HashSet&lt;&gt;(headers.length);</span>
+<span class="nc bnc" id="L959" title="All 2 branches missed.">            final boolean emptyDuplicatesAllowed = duplicateHeaderMode == DuplicateHeaderMode.ALLOW_EMPTY;</span>
+<span class="nc bnc" id="L960" title="All 2 branches missed.">            for (final String header : headers) {</span>
+<span class="nc" id="L961">                final boolean blank = isBlank(header);</span>
+<span class="nc bnc" id="L962" title="All 4 branches missed.">                final boolean containsHeader = !dupCheckSet.add(blank ? &quot;&quot; : header);</span>
+<span class="nc bnc" id="L963" title="All 6 branches missed.">                if (containsHeader &amp;&amp; !(blank &amp;&amp; emptyDuplicatesAllowed)) {</span>
+<span class="nc" id="L964">                    throw new IllegalArgumentException(String.format(</span>
+                            &quot;The header contains a duplicate name: \&quot;%s\&quot; in %s. If this is valid then use CSVFormat.Builder.setDuplicateHeaderMode().&quot;, header,
+<span class="nc" id="L966">                            Arrays.toString(headers)));</span>
+                }
+            }
+        }
+<span class="fc" id="L970">    }</span>
+    @Deprecated
+    public CSVFormat withAllowDuplicateHeaderNames() {
+<span class="nc" id="L973">        return builder().setDuplicateHeaderMode(DuplicateHeaderMode.ALLOW_ALL).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withAllowDuplicateHeaderNames(final boolean allowDuplicateHeaderNames) {
+<span class="nc bnc" id="L977" title="All 2 branches missed.">        final DuplicateHeaderMode mode = allowDuplicateHeaderNames ? DuplicateHeaderMode.ALLOW_ALL : DuplicateHeaderMode.ALLOW_EMPTY;</span>
+<span class="nc" id="L978">        return builder().setDuplicateHeaderMode(mode).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withAllowMissingColumnNames() {
+<span class="nc" id="L982">        return builder().setAllowMissingColumnNames(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withAllowMissingColumnNames(final boolean allowMissingColumnNames) {
+<span class="nc" id="L986">        return builder().setAllowMissingColumnNames(allowMissingColumnNames).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withAutoFlush(final boolean autoFlush) {
+<span class="nc" id="L990">        return builder().setAutoFlush(autoFlush).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withCommentMarker(final char commentMarker) {
+<span class="nc" id="L994">        return builder().setCommentMarker(commentMarker).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withCommentMarker(final Character commentMarker) {
+<span class="nc" id="L998">        return builder().setCommentMarker(commentMarker).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withDelimiter(final char delimiter) {
+<span class="nc" id="L1002">        return builder().setDelimiter(delimiter).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withEscape(final char escape) {
+<span class="nc" id="L1006">        return builder().setEscape(escape).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withEscape(final Character escape) {
+<span class="nc" id="L1010">        return builder().setEscape(escape).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withFirstRecordAsHeader() {
+<span class="nc" id="L1014">        return builder()</span>
+<span class="nc" id="L1015">                .setHeader()</span>
+<span class="nc" id="L1016">                .setSkipHeaderRecord(true)</span>
+<span class="nc" id="L1017">                .get();</span>
+    }
+    @Deprecated
+    public CSVFormat withHeader(final Class&lt;? extends Enum&lt;?&gt;&gt; headerEnum) {
+<span class="nc" id="L1021">        return builder().setHeader(headerEnum).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withHeader(final ResultSet resultSet) throws SQLException {
+<span class="nc" id="L1025">        return builder().setHeader(resultSet).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withHeader(final ResultSetMetaData resultSetMetaData) throws SQLException {
+<span class="nc" id="L1029">        return builder().setHeader(resultSetMetaData).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withHeader(final String... header) {
+<span class="fc" id="L1033">        return builder().setHeader(header).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withHeaderComments(final Object... headerComments) {
+<span class="nc" id="L1037">        return builder().setHeaderComments(headerComments).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withIgnoreEmptyLines() {
+<span class="nc" id="L1041">        return builder().setIgnoreEmptyLines(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withIgnoreEmptyLines(final boolean ignoreEmptyLines) {
+<span class="nc" id="L1045">        return builder().setIgnoreEmptyLines(ignoreEmptyLines).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withIgnoreHeaderCase() {
+<span class="nc" id="L1049">        return builder().setIgnoreHeaderCase(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withIgnoreHeaderCase(final boolean ignoreHeaderCase) {
+<span class="nc" id="L1053">        return builder().setIgnoreHeaderCase(ignoreHeaderCase).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withIgnoreSurroundingSpaces() {
+<span class="nc" id="L1057">        return builder().setIgnoreSurroundingSpaces(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withIgnoreSurroundingSpaces(final boolean ignoreSurroundingSpaces) {
+<span class="nc" id="L1061">        return builder().setIgnoreSurroundingSpaces(ignoreSurroundingSpaces).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withNullString(final String nullString) {
+<span class="nc" id="L1065">        return builder().setNullString(nullString).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withQuote(final char quoteChar) {
+<span class="nc" id="L1069">        return builder().setQuote(quoteChar).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withQuote(final Character quoteChar) {
+<span class="nc" id="L1073">        return builder().setQuote(quoteChar).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withQuoteMode(final QuoteMode quoteMode) {
+<span class="nc" id="L1077">        return builder().setQuoteMode(quoteMode).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withRecordSeparator(final char recordSeparator) {
+<span class="nc" id="L1081">        return builder().setRecordSeparator(recordSeparator).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withRecordSeparator(final String recordSeparator) {
+<span class="nc" id="L1085">        return builder().setRecordSeparator(recordSeparator).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withSkipHeaderRecord() {
+<span class="nc" id="L1089">        return builder().setSkipHeaderRecord(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withSkipHeaderRecord(final boolean skipHeaderRecord) {
+<span class="fc" id="L1093">        return builder().setSkipHeaderRecord(skipHeaderRecord).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withSystemRecordSeparator() {
+<span class="nc" id="L1097">        return builder().setRecordSeparator(System.lineSeparator()).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withTrailingDelimiter() {
+<span class="nc" id="L1101">        return builder().setTrailingDelimiter(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withTrailingDelimiter(final boolean trailingDelimiter) {
+<span class="nc" id="L1105">        return builder().setTrailingDelimiter(trailingDelimiter).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withTrim() {
+<span class="nc" id="L1109">        return builder().setTrim(true).get();</span>
+    }
+    @Deprecated
+    public CSVFormat withTrim(final boolean trim) {
+<span class="nc" id="L1113">        return builder().setTrim(trim).get();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

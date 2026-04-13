@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassInfo.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.dto</a> &gt; <span class="el_source">ClassInfo.java</span></div><h1>ClassInfo.java</h1><pre class="source lang-java linenums">package zju.cst.aces.dto;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.body.ClassOrInterfaceDeclaration;
+import com.github.javaparser.ast.body.EnumDeclaration;
+import lombok.Data;
+
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+@Data
+public class ClassInfo {
+    public String fullClassName;
+    public String className;
+    public int index;
+    public String modifier;
+    public String extend;
+    public String implement;
+    public String packageName;
+    public String packageDeclaration;
+    public String classSignature;
+    public boolean hasConstructor;
+    public boolean isPublic;
+    public boolean isInterface;
+    public boolean isAbstract;
+    public List&lt;String&gt; imports;
+    public List&lt;String&gt; fields;
+    public List&lt;String&gt; superClasses;
+    public List&lt;String&gt; implementedTypes;
+    public Map&lt;String, String&gt; methodSigs;
+    public List&lt;String&gt; methodsBrief;
+    public List&lt;String&gt; constructorSigs;
+    public List&lt;String&gt; constructorBrief;
+    public List&lt;String&gt; getterSetterSigs;
+    public List&lt;String&gt; getterSetterBrief;
+    public Map&lt;String, Set&lt;String&gt;&gt; constructorDeps;
+    public String compilationUnitCode;
+    public String classDeclarationCode;
+    public String initializerCode;
+    public List&lt;String&gt; subClasses;
+
+    public ClassInfo(CompilationUnit cu, ClassOrInterfaceDeclaration classNode, int index, String classSignature,
+                     List&lt;String&gt; imports, List&lt;String&gt; fields, List&lt;String&gt; superClasses, Map&lt;String, String&gt; methodSigs,
+                     List&lt;String&gt; methodsBrief, boolean hasConstructor, List&lt;String&gt; constructorSigs,
+                     List&lt;String&gt; constructorBrief, List&lt;String&gt; getterSetterSigs, List&lt;String&gt; getterSetterBrief, Map&lt;String, Set&lt;String&gt;&gt; constructorDeps, List&lt;String&gt; subClasses,
+<span class="nc" id="L47">                     String initializerCode) {</span>
+<span class="nc" id="L48">        this.className = classNode.getNameAsString();</span>
+<span class="nc" id="L49">        this.index = index;</span>
+<span class="nc" id="L50">        this.modifier = classNode.getModifiers().toString();</span>
+<span class="nc" id="L51">        this.extend = classNode.getExtendedTypes().toString();</span>
+<span class="nc" id="L52">        this.implement = classNode.getImplementedTypes().toString();</span>
+<span class="nc bnc" id="L53" title="All 2 branches missed.">        this.packageName = cu.getPackageDeclaration().orElse(null) == null ? &quot;&quot; : cu.getPackageDeclaration().get().getNameAsString();</span>
+<span class="nc" id="L54">        this.packageDeclaration = getPackageDeclaration(cu);</span>
+<span class="nc" id="L55">        this.classSignature = classSignature;</span>
+<span class="nc" id="L56">        this.imports = imports;</span>
+<span class="nc" id="L57">        this.fields = fields;</span>
+<span class="nc" id="L58">        this.superClasses = superClasses;</span>
+<span class="nc" id="L59">        this.methodSigs = methodSigs;</span>
+<span class="nc" id="L60">        this.methodsBrief = methodsBrief;</span>
+<span class="nc" id="L61">        this.hasConstructor = hasConstructor;</span>
+<span class="nc" id="L62">        this.constructorSigs = constructorSigs;</span>
+<span class="nc" id="L63">        this.constructorBrief = constructorBrief;</span>
+<span class="nc" id="L64">        this.getterSetterSigs = getterSetterSigs;</span>
+<span class="nc" id="L65">        this.getterSetterBrief = getterSetterBrief;</span>
+<span class="nc" id="L66">        this.constructorDeps = constructorDeps;</span>
+<span class="nc" id="L67">        this.subClasses = subClasses;</span>
+<span class="nc" id="L68">        this.initializerCode = initializerCode;</span>
+<span class="nc" id="L69">    }</span>
+
+    public ClassInfo(CompilationUnit cu, EnumDeclaration classNode, int index, String classSignature,
+                     List&lt;String&gt; imports, List&lt;String&gt; fields, List&lt;String&gt; superClasses, Map&lt;String, String&gt; methodSigs,
+                     List&lt;String&gt; methodsBrief, boolean hasConstructor, List&lt;String&gt; constructorSigs,
+<span class="nc" id="L74">                     List&lt;String&gt; constructorBrief, List&lt;String&gt; getterSetterSigs, List&lt;String&gt; getterSetterBrief, Map&lt;String, Set&lt;String&gt;&gt; constructorDeps, List&lt;String&gt; subClasses) {</span>
+<span class="nc" id="L75">        this.className = classNode.getNameAsString();</span>
+<span class="nc" id="L76">        this.index = index;</span>
+<span class="nc" id="L77">        this.modifier = classNode.getModifiers().toString();</span>
+<span class="nc" id="L78">        this.extend = &quot;&quot;;</span>
+<span class="nc" id="L79">        this.implement = classNode.getImplementedTypes().toString();</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">        this.packageName = cu.getPackageDeclaration().orElse(null) == null ? &quot;&quot; : cu.getPackageDeclaration().get().getNameAsString();</span>
+<span class="nc" id="L81">        this.packageDeclaration = getPackageDeclaration(cu);</span>
+<span class="nc" id="L82">        this.classSignature = classSignature;</span>
+<span class="nc" id="L83">        this.imports = imports;</span>
+<span class="nc" id="L84">        this.fields = fields;</span>
+<span class="nc" id="L85">        this.superClasses = superClasses;</span>
+<span class="nc" id="L86">        this.methodSigs = methodSigs;</span>
+<span class="nc" id="L87">        this.methodsBrief = methodsBrief;</span>
+<span class="nc" id="L88">        this.hasConstructor = hasConstructor;</span>
+<span class="nc" id="L89">        this.constructorSigs = constructorSigs;</span>
+<span class="nc" id="L90">        this.constructorBrief = constructorBrief;</span>
+<span class="nc" id="L91">        this.getterSetterSigs = getterSetterSigs;</span>
+<span class="nc" id="L92">        this.getterSetterBrief = getterSetterBrief;</span>
+<span class="nc" id="L93">        this.constructorDeps = constructorDeps;</span>
+<span class="nc" id="L94">        this.subClasses=subClasses;</span>
+<span class="nc" id="L95">    }</span>
+
+    public void setCode(String compilationUnitCode, String classDeclarationCode) {
+<span class="nc" id="L98">        this.compilationUnitCode = compilationUnitCode;</span>
+<span class="nc" id="L99">        this.classDeclarationCode = classDeclarationCode;</span>
+<span class="nc" id="L100">    }</span>
+
+    private String getPackageDeclaration(CompilationUnit compilationUnit) {
+<span class="nc bnc" id="L103" title="All 2 branches missed.">        if (compilationUnit.getPackageDeclaration().isPresent()) {</span>
+<span class="nc" id="L104">            return compilationUnit.getPackageDeclaration().get().toString().trim();</span>
+        } else {
+<span class="nc" id="L106">            return &quot;&quot;;</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

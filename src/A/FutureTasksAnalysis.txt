@@ -1,0 +1,15 @@
+```包路径：lang3.concurrent
+类名：FutureTasks
+父类：无
+依赖类：无
+---
+序号：1
+方法名：run(Callable<V> callable)
+返回类型：FutureTask<V>
+功能描述：创建并执行一个FutureTask实例，然后返回该实例
+---
+序号：2
+方法名：FutureTasks()
+返回类型：无
+功能描述：私有构造方法，防止类被实例化
+```

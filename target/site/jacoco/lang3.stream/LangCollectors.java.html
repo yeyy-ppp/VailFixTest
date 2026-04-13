@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LangCollectors.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3.stream</a> &gt; <span class="el_source">LangCollectors.java</span></div><h1>LangCollectors.java</h1><pre class="source lang-java linenums">package lang3.stream;
+import br.usp.each.saeg.commons.io.Streams;
+import org.apache.maven.surefire.shared.lang3.StringUtils;
+
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Set;
+import java.util.StringJoiner;
+import java.util.function.BiConsumer;
+import java.util.function.BinaryOperator;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+
+public final class LangCollectors {
+    private static final class SimpleCollector&lt;T, A, R&gt; implements Collector&lt;T, A, R&gt; {
+        private final BiConsumer&lt;A, T&gt; accumulator;
+        private final Set&lt;Characteristics&gt; characteristics;
+        private final BinaryOperator&lt;A&gt; combiner;
+        private final Function&lt;A, R&gt; finisher;
+        private final Supplier&lt;A&gt; supplier;
+        private SimpleCollector(final Supplier&lt;A&gt; supplier, final BiConsumer&lt;A, T&gt; accumulator, final BinaryOperator&lt;A&gt; combiner, final Function&lt;A, R&gt; finisher,
+<span class="fc" id="L23">            final Set&lt;Characteristics&gt; characteristics) {</span>
+<span class="fc" id="L24">            this.supplier = supplier;</span>
+<span class="fc" id="L25">            this.accumulator = accumulator;</span>
+<span class="fc" id="L26">            this.combiner = combiner;</span>
+<span class="fc" id="L27">            this.finisher = finisher;</span>
+<span class="fc" id="L28">            this.characteristics = characteristics;</span>
+<span class="fc" id="L29">        }</span>
+        @Override
+        public BiConsumer&lt;A, T&gt; accumulator() {
+<span class="fc" id="L32">            return accumulator;</span>
+        }
+        @Override
+        public Set&lt;Characteristics&gt; characteristics() {
+<span class="fc" id="L36">            return characteristics;</span>
+        }
+        @Override
+        public BinaryOperator&lt;A&gt; combiner() {
+<span class="fc" id="L40">            return combiner;</span>
+        }
+        @Override
+        public Function&lt;A, R&gt; finisher() {
+<span class="fc" id="L44">            return finisher;</span>
+        }
+        @Override
+        public Supplier&lt;A&gt; supplier() {
+<span class="fc" id="L48">            return supplier;</span>
+        }
+    }
+<span class="fc" id="L51">    private static final Set&lt;Collector.Characteristics&gt; CH_NOID = Collections.emptySet();</span>
+    public static Collector&lt;Object, ?, String&gt; joining() {
+<span class="fc" id="L53">        return new SimpleCollector&lt;&gt;(StringBuilder::new, StringBuilder::append, StringBuilder::append, StringBuilder::toString, CH_NOID);</span>
+    }
+    public static Collector&lt;Object, ?, String&gt; joining(final CharSequence delimiter) {
+<span class="fc" id="L56">        return joining(delimiter, StringUtils.EMPTY, StringUtils.EMPTY);</span>
+    }
+    public static Collector&lt;Object, ?, String&gt; joining(final CharSequence delimiter, final CharSequence prefix, final CharSequence suffix) {
+<span class="fc" id="L59">        return joining(delimiter, prefix, suffix, Objects::toString);</span>
+    }
+    public static Collector&lt;Object, ?, String&gt; joining(final CharSequence delimiter, final CharSequence prefix, final CharSequence suffix,
+        final Function&lt;Object, String&gt; toString) {
+<span class="fc" id="L63">        return new SimpleCollector&lt;&gt;(() -&gt; new StringJoiner(delimiter, prefix, suffix), (a, t) -&gt; a.add(toString.apply(t)), StringJoiner::merge,</span>
+            StringJoiner::toString, CH_NOID);
+    }
+    private LangCollectors() {
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DataDependencyArc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.arcs.pdg</a> &gt; <span class="el_source">DataDependencyArc.java</span></div><h1>DataDependencyArc.java</h1><pre class="source lang-java linenums">package slicing.arcs.pdg;
+
+import slicing.arcs.Arc;
+import slicing.graphs.pdg.PDG;
+import slicing.graphs.sdg.SDG;
+import slicing.nodes.VariableAction;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.BiPredicate;
+
+/**
+ * An arc used in the {@link PDG} and {@link SDG},
+ * representing the declaration of some data linked to its usage (of that value).
+ * There is data dependency between two nodes if and only if (1) the source &lt;it&gt;may&lt;/it&gt;
+ * declare a variable, (2) the destination &lt;it&gt;may&lt;/it&gt; use it, and (3) there is a
+ * path between the nodes where the variable is not redefined.
+ * &lt;br/&gt;
+ * Data dependency arcs are specific to a DEC-DEF or DEF-USE combination, and can
+ * be easily identified by source or target {@link VariableAction}.
+ */
+public class DataDependencyArc extends Arc {
+    /** Valid combinations of variable actions. */
+<span class="nc" id="L26">    private static final List&lt;BiPredicate&lt;VariableAction, VariableAction&gt;&gt; VALID_VA_COMBOS =</span>
+<span class="nc" id="L27">            Collections.unmodifiableList(Arrays.asList(</span>
+<span class="nc bnc" id="L28" title="All 4 branches missed.">                    (a, b) -&gt; a.isDefinition() &amp;&amp; b.isUsage(),</span>
+<span class="nc bnc" id="L29" title="All 4 branches missed.">                    (a, b) -&gt; a.isDeclaration() &amp;&amp; b.isDefinition()</span>
+            ));
+    protected final VariableAction sourceVar;
+    protected final VariableAction targetVar;
+
+    public DataDependencyArc(VariableAction sourceVar, VariableAction targetVar) {
+<span class="nc" id="L35">        super(sourceVar.getName());</span>
+<span class="nc bnc" id="L36" title="All 2 branches missed.">        if (VALID_VA_COMBOS.stream().noneMatch(p -&gt; p.test(sourceVar, targetVar)))</span>
+<span class="nc" id="L37">            throw new IllegalArgumentException(&quot;Illegal combination of actions: &quot; + sourceVar + &quot;, &quot; + targetVar);</span>
+<span class="nc" id="L38">        this.sourceVar = sourceVar;</span>
+<span class="nc" id="L39">        this.targetVar = targetVar;</span>
+<span class="nc" id="L40">    }</span>
+
+    public VariableAction getSourceVar() {
+<span class="nc" id="L43">        return sourceVar;</span>
+    }
+
+    public VariableAction getTargetVar() {
+<span class="nc" id="L47">        return targetVar;</span>
+    }
+
+    @Override
+    public boolean equals(Object o) {
+<span class="nc bnc" id="L52" title="All 8 branches missed.">        return super.equals(o)</span>
+                &amp;&amp; o instanceof DataDependencyArc
+                &amp;&amp; sourceVar == ((DataDependencyArc) o).sourceVar
+                &amp;&amp; targetVar == ((DataDependencyArc) o).targetVar;
+    }
+
+    @Override
+    public int hashCode() {
+<span class="nc" id="L60">        return Objects.hash(super.hashCode(), sourceVar, targetVar);</span>
+    }
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestGeneration.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.api.phase.step</a> &gt; <span class="el_source">TestGeneration.java</span></div><h1>TestGeneration.java</h1><pre class="source lang-java linenums">package zju.cst.aces.api.phase.step;
+
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.impl.ChatGenerator;
+import zju.cst.aces.api.impl.PromptConstructorImpl;
+import zju.cst.aces.api.impl.RepairImpl;
+import zju.cst.aces.api.impl.obfuscator.Obfuscator;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.prompt.PromptGenerator;
+import zju.cst.aces.runner.solution_runner.MethodRunner;
+import zju.cst.aces.util.CodeExtractor;
+
+import java.util.ArrayList;
+import java.util.List;
+
+<span class="nc" id="L16">public class TestGeneration {</span>
+    protected final Config config;
+    protected PromptGenerator promptGenerator;
+    protected MethodInfo methodInfo;
+
+<span class="nc" id="L21">    public TestGeneration(Config config) {</span>
+<span class="nc" id="L22">        this.config = config;</span>
+<span class="nc" id="L23">    }</span>
+
+    public void setUp(PromptInfo promptInfo) {
+<span class="nc" id="L26">        this.promptGenerator = new PromptGenerator(config);</span>
+<span class="nc" id="L27">        this.methodInfo = promptInfo.getMethodInfo();</span>
+<span class="nc" id="L28">    }</span>
+
+
+
+    //测试代码生成流程
+    public void execute(PromptConstructorImpl pc) {
+
+        //获取提示信息
+<span class="nc" id="L36">        PromptInfo promptInfo = pc.getPromptInfo();</span>
+<span class="nc bnc" id="L37" title="All 2 branches missed.">        if (promptGenerator == null) {</span>
+<span class="nc" id="L38">            setUp(promptInfo);</span>
+        }
+
+        //记录当前轮次信息
+<span class="nc bnc" id="L42" title="All 2 branches missed.">        assert (promptInfo.getRound() != null);</span>
+
+<span class="nc" id="L44">        int rounds = promptInfo.getRound();</span>
+<span class="nc" id="L45">        promptInfo.addRecord(new RoundRecord(rounds));</span>
+<span class="nc" id="L46">        RoundRecord record = promptInfo.getRecords().get(rounds);</span>
+<span class="nc" id="L47">        record.setAttempt(promptInfo.getTestNum());</span>
+
+        //记录日志
+<span class="nc bnc" id="L50" title="All 2 branches missed.">        if (rounds == 0) {</span>
+<span class="nc" id="L51">            config.getLogger().info(&quot;Generating test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+        } else {
+<span class="nc" id="L53">            config.getLogger().info(&quot;Fixing test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; round &quot; + rounds + &quot; ...&quot;);</span>
+        }
+
+        //生成提示并获取测试代码
+        List&lt;ChatMessage&gt; prompt;
+        String code;
+<span class="nc bnc" id="L59" title="All 2 branches missed.">        if (config.isEnableObfuscate()) {</span>
+            //代码混淆处理
+<span class="nc" id="L61">            Obfuscator obfuscator = new Obfuscator(config);</span>
+<span class="nc" id="L62">            PromptInfo obfuscatedPromptInfo = new PromptInfo(promptInfo);</span>
+<span class="nc" id="L63">            obfuscator.obfuscatePromptInfo(obfuscatedPromptInfo);</span>
+<span class="nc" id="L64">            prompt = promptGenerator.generateMessages(obfuscatedPromptInfo, config.getPhaseType());</span>
+<span class="nc" id="L65">            code = generateTest(prompt, record);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            if (!record.isHasCode()) {</span>
+<span class="nc" id="L67">                promptInfo.setUnitTest(&quot;&quot;);</span>
+<span class="nc" id="L68">                return;</span>
+            }
+<span class="nc" id="L70">            code = obfuscator.deobfuscateJava(code);</span>
+<span class="nc" id="L71">        } else {</span>
+<span class="nc" id="L72">            prompt = promptGenerator.generateMessages(promptInfo, config.getPhaseType());</span>
+<span class="nc" id="L73">            code = generateTest(prompt, record);</span>
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (!record.isHasCode()) {</span>
+<span class="nc" id="L75">                promptInfo.setUnitTest(&quot;&quot;);</span>
+<span class="nc" id="L76">                return;</span>
+            }
+        }
+
+        //包装测试方法
+<span class="nc bnc" id="L81" title="All 2 branches missed.">        if (CodeExtractor.isTestMethod(code)) {</span>
+<span class="nc" id="L82">            TestSkeleton skeleton = new TestSkeleton(promptInfo); // test skeleton to wrap a test method</span>
+<span class="nc" id="L83">            code = skeleton.build(code);</span>
+<span class="nc" id="L84">        } else {</span>
+            //规则修复
+<span class="nc" id="L86">            RepairImpl repair = new RepairImpl(config, pc);</span>
+<span class="nc" id="L87">            code = repair.ruleBasedRepair(code);</span>
+        }   //代码混淆
+<span class="nc" id="L89">          promptInfo.setUnitTest(code);   //验证通过</span>
+<span class="nc" id="L90">          record.setCode(code);</span>
+
+<span class="nc" id="L92">    }</span>
+
+        public String generateTest(List&lt;ChatMessage&gt; prompt, RoundRecord record) {
+
+<span class="nc bnc" id="L96" title="All 2 branches missed.">            if (MethodRunner.isExceedMaxTokens(config.getMaxPromptTokens(), prompt)) {</span>
+<span class="nc" id="L97">                config.getLogger().error(&quot;Exceed max prompt tokens: &quot; + methodInfo.methodName + &quot; Skipped.&quot;);</span>
+<span class="nc" id="L98">                record.setPromptToken(-1);</span>
+<span class="nc" id="L99">                record.setHasCode(false);</span>
+<span class="nc" id="L100">                return &quot;&quot;;</span>
+            }
+<span class="nc" id="L102">            config.getLogger().debug(&quot;[Prompt]:\n&quot; + prompt);</span>
+
+            //调用LLM生成测试代码
+<span class="nc" id="L105">            ChatResponse response = ChatGenerator.chat(config, prompt);</span>
+<span class="nc" id="L106">            String content = ChatGenerator.getContentByResponse(response);</span>
+<span class="nc" id="L107">            config.getLogger().debug(&quot;[Response]:\n&quot; + content);</span>
+<span class="nc" id="L108">            String code = ChatGenerator.extractCodeByContent(content);</span>
+
+
+<span class="nc bnc" id="L111" title="All 2 branches missed.">            if (code.isEmpty()) {</span>
+<span class="nc" id="L112">                config.getLogger().info(&quot;Test for method &lt; &quot; + methodInfo.methodName + &quot; &gt; extract code failed&quot;);</span>
+<span class="nc" id="L113">                record.setHasCode(false);</span>
+<span class="nc" id="L114">                return &quot;&quot;;</span>
+            }
+<span class="nc" id="L116">            record.setHasCode(true);</span>
+
+
+<span class="nc" id="L119">            int rounds = 0;</span>
+<span class="nc" id="L120">            boolean validationStatus = false;</span>
+<span class="nc" id="L121">            ValidationRecord validationRecord = new ValidationRecord();</span>
+
+            // 新增：验证生成的测试代码
+
+                // 验证生成的测试代码
+<span class="nc" id="L126">                validationStatus = validateTestCode(code, validationRecord); // 将 validationRecord 传递给 validateTestCode 方法</span>
+<span class="nc bnc" id="L127" title="All 2 branches missed.">                if (validationStatus) {</span>
+<span class="nc" id="L128">                    record.setPromptToken(response.getUsage().getPromptTokens());</span>
+<span class="nc" id="L129">                    record.setResponseToken(response.getUsage().getCompletionTokens());</span>
+<span class="nc" id="L130">                    record.setPrompt(prompt);</span>
+<span class="nc" id="L131">                    record.setResponse(content);</span>
+<span class="nc" id="L132">                    config.getLogger().info(&quot;Test case for method &lt; &quot; + methodInfo.methodName + &quot; &gt; passed LLM validation.&quot;);</span>
+<span class="nc" id="L133">                    record.setHasCode(true);</span>
+<span class="nc" id="L134">                    return code;</span>
+                } else {
+                    // 验证失败
+<span class="nc" id="L137">                    String validationMessage = extractFailureReason(validationRecord.getValidationResponse());</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">                    if (validationMessage.isEmpty()) {</span>
+<span class="nc" id="L139">                        validationMessage = &quot;Validation failed, but no specific reason provided.&quot;;</span>
+                    }
+<span class="nc" id="L141">                    config.getLogger().info(&quot;Generated test code for method &lt; &quot; + methodInfo.methodName + &quot; &gt; is invalid. &quot; + validationMessage);</span>
+                        // 触发修复流程，将失败原因和测试代码交给 LLM 修改
+<span class="nc" id="L143">                    triggerRepairProcess(prompt,code, validationMessage, rounds, validationRecord);</span>
+                        // 再次生成测试代码
+                        // 获取修复后的代码
+<span class="nc" id="L146">                    code = validationRecord.getRepairedCode();</span>
+                 // record.setHasCode(false);
+                    }
+
+            //记录token使用情况和结果
+<span class="nc" id="L151">            record.setPromptToken(response.getUsage().getPromptTokens());</span>
+<span class="nc" id="L152">            record.setResponseToken(response.getUsage().getCompletionTokens());</span>
+<span class="nc" id="L153">            record.setPrompt(prompt);</span>
+<span class="nc" id="L154">            record.setResponse(content);</span>
+<span class="nc" id="L155">            return code;</span>
+        }
+
+        // 新增：验证测试代码的方法 具体验证实现部分
+    // 调用 LLM 验证测试代码的方法 使用LLM作为审查器，验证测试代码是否符合要求//1.构建包含验证标准的提示//2.调用LLM评估测试代//3.解析LLM回复中的验证结果标识
+        // 构建验证提示信息 这里的验证提示信息是比较简单的
+        // 事实上生成的测试代码还应该可能包含其他错误类型，比如导入错误、版本错误、语法错误、逻辑错误
+        // 以及常见编译错误、常见运行错误等等 归纳总结该如何设计这个验证提示模板
+        private boolean validateTestCode(String code, ValidationRecord validationRecord) {
+<span class="nc" id="L164">            List&lt;ChatMessage&gt; validationPrompt = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L165">            String validationMessage = &quot;你是一个测试代码审查器，请你检查以下测试代码是否符合以下要求：\n&quot;</span>
+                    + &quot;1. **JUnit 5 格式**：测试类是否使用了 `@ExtendWith(MockitoExtension.class)` 或 `@RunWith(MockitoJUnitRunner.class)` 注解；每个测试方法是否使用了 `@Test` 注解。\n&quot;
+                    + &quot;2. **导入语句**：是否正确导入了所有必要的类，例如 `org.junit.jupiter.api.*`, `org.mockito.*` 等。\n&quot;
+                    + &quot;3. **Mockito 使用**：是否正确使用了 `@Mock` 和 `@InjectMocks` 注解来创建 mock 对象和注入依赖；是否在 `setUp` 方法中初始化了 mocks。\n&quot;
+                    + &quot;4. **测试方法逻辑**：是否正确调用了目标函数并进行了断言；是否覆盖了所有关键路径，包括正常情况、边界条件和异常情况。\n&quot;
+                    + &quot;5. **语法错误**：是否存在任何语法错误或拼写错误。\n&quot;
+                    + &quot;6. **编译错误**：是否存在任何可能导致编译失败的问题。\n&quot;
+                    + &quot;7. **运行时错误**：是否存在任何可能导致运行时异常的问题。\n&quot;
+                    + &quot;请逐项给出你的判断，并指出是否“通过验证”或“不通过验证”。若不通过，请详细说明理由，并按照以下格式标记出具体的错误位置和原因：\n&quot;
+                    + &quot;```\n&quot;
+                    + &quot;该测试代码在验证[验证项]时失败，错误位置：[行号]，错误原因：[错误原因]\n&quot;
+                    + &quot;```\n&quot;
+                    + &quot;附带的测试代码如下：\n\n&quot; + code;
+<span class="nc" id="L178">            validationPrompt.add(new ChatMessage(ChatMessage.Role.USER.getValue(), validationMessage));</span>
+            // 调用 LLM 进行验证
+<span class="nc" id="L180">            ChatResponse validationResponse = ChatGenerator.chat(config, validationPrompt);</span>
+<span class="nc" id="L181">            String validationContent = ChatGenerator.getContentByResponse(validationResponse);</span>
+<span class="nc" id="L182">            validationRecord.setValidationResponse(validationContent);</span>
+<span class="nc" id="L183">            boolean result = validationContent.contains(&quot;✅ 通过验证&quot;);</span>
+<span class="nc" id="L184">            return result;</span>
+        }
+
+
+    // 获取验证失败的信息，然后将这个失败信息+生成的测试代码交给LLM，让LLM修改代码
+    // 从验证结果中提取失败原因
+    private String extractFailureReason(String validationResponse) {
+<span class="nc bnc" id="L191" title="All 4 branches missed.">        if (validationResponse == null || validationResponse.isEmpty()) {</span>
+<span class="nc" id="L192">            return &quot;Validation failed, but no specific reason provided.&quot;;</span>
+        }
+
+        // 尝试按预定义格式提取失败原因
+<span class="nc" id="L196">        List&lt;String&gt; failureReasons = new ArrayList&lt;&gt;();</span>
+        while (true) {
+<span class="nc" id="L198">            int startIdx = validationResponse.indexOf(&quot;该测试代码在验证&quot;);</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">            if (startIdx == -1) {</span>
+<span class="nc" id="L200">                break;</span>
+            }
+<span class="nc" id="L202">            int endIdx = validationResponse.indexOf(&quot;\n&quot;, startIdx);</span>
+<span class="nc bnc" id="L203" title="All 2 branches missed.">            if (endIdx == -1) {</span>
+<span class="nc" id="L204">                endIdx = validationResponse.length();</span>
+            }
+<span class="nc" id="L206">            String reason = validationResponse.substring(startIdx, endIdx).trim();</span>
+<span class="nc" id="L207">            failureReasons.add(reason);</span>
+<span class="nc" id="L208">            validationResponse = validationResponse.substring(endIdx);</span>
+<span class="nc" id="L209">        }</span>
+
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        if (!failureReasons.isEmpty()) {</span>
+            // 将所有提取到的失败原因汇总
+<span class="nc" id="L213">            StringBuilder reasonsSummary = new StringBuilder();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">            for (String reason : failureReasons) {</span>
+<span class="nc" id="L215">                reasonsSummary.append(reason).append(&quot;\n&quot;);</span>
+<span class="nc" id="L216">            }</span>
+<span class="nc" id="L217">            return reasonsSummary.toString().trim();</span>
+        } else {
+            // 如果没有提取到预定义格式的失败原因，尝试提取其他可能的错误信息
+<span class="nc" id="L220">            int reasonStart = validationResponse.indexOf(&quot;理由：&quot;);</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">            if (reasonStart != -1) {</span>
+<span class="nc" id="L222">                String reason = validationResponse.substring(reasonStart + 3).trim();</span>
+<span class="nc" id="L223">                int endPos = reason.indexOf(&quot;\n&quot;);</span>
+<span class="nc bnc" id="L224" title="All 2 branches missed.">                if (endPos != -1) {</span>
+<span class="nc" id="L225">                    reason = reason.substring(0, endPos);</span>
+                }
+<span class="nc" id="L227">                return reason;</span>
+            } else {
+<span class="nc" id="L229">                return &quot;Validation failed, but no specific reason detected.&quot;;</span>
+            }
+        }
+    }
+
+    // 触发修复流程
+    private void triggerRepairProcess(List&lt;ChatMessage&gt; originalPrompt,String code, String validationMessage, int rounds, ValidationRecord validationRecord) {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        if (rounds &gt;= 3) {</span>
+            // 3 轮后仍然失败，标记失败，不保存生成的测试代码
+<span class="nc" id="L238">            config.getLogger().info(&quot;Failed to generate valid test code for method &lt; &quot; + methodInfo.methodName + &quot; &gt; after 3 rounds.&quot;);</span>
+
+<span class="nc" id="L240">            return ;</span>
+        }
+
+        // 构造修复 Prompt
+<span class="nc" id="L244">        List&lt;ChatMessage&gt; repairPrompt = new ArrayList&lt;&gt;(originalPrompt);</span>
+<span class="nc" id="L245">        String repairMessage = &quot;请基于以下反馈信息，修复下面的测试代码，使其满足以下要求：\n&quot;</span>
+                + &quot;【错误说明】\n&quot;
+                + validationMessage + &quot;\n&quot;  // 使用提取的失败原因作为错误说明
+                + &quot;【待修复测试代码】\n&quot;
+                + &quot;```java\n&quot; + code + &quot;\n```\n&quot;  // 添加代码块标记，提高可读性
+                + &quot;【上下文信息（函数、类名）】\n&quot;
+                + &quot;目标函数类名：&quot; + methodInfo.className + &quot;\n&quot;
+                + &quot;目标函数名：&quot; + methodInfo.methodName + &quot;\n&quot;
+                + &quot;请按照以下要求进行修复：\n&quot;
+                + &quot;- 修复所有标记的错误\n&quot;
+                + &quot;- 确保代码符合 JUnit 5 测试规范\n&quot;
+                + &quot;- 确保测试用例覆盖正常情况、边界条件和异常情况\n&quot;;
+<span class="nc" id="L257">        repairPrompt.add(new ChatMessage(ChatMessage.Role.USER.getValue(), repairMessage));</span>
+
+        // 调用 LLM 生成修复后的代码
+<span class="nc" id="L260">        ChatResponse repairResponse = ChatGenerator.chat(config, repairPrompt);</span>
+<span class="nc" id="L261">        String repairContent = ChatGenerator.getContentByResponse(repairResponse);</span>
+<span class="nc" id="L262">        String repairedCode = ChatGenerator.extractCodeByContent(repairContent);</span>
+
+<span class="nc bnc" id="L264" title="All 2 branches missed.">        if (repairedCode.isEmpty()) {</span>
+            // 修复失败，标记失败
+<span class="nc" id="L266">            config.getLogger().info(&quot;Failed to repair test code for method &lt; &quot; + methodInfo.methodName + &quot; &gt;.&quot;);</span>
+<span class="nc" id="L267">            return;</span>
+        }
+
+        // 验证修复后的代码
+<span class="nc" id="L271">        boolean repairedValidationStatus = validateTestCode(repairedCode, validationRecord);</span>
+<span class="nc bnc" id="L272" title="All 2 branches missed.">        if (repairedValidationStatus) {</span>
+            // 验证通过，记录日志
+<span class="nc" id="L274">            config.getLogger().info(&quot;Repaired test case for method &lt; &quot; + methodInfo.methodName + &quot; &gt; passed validation.&quot;);</span>
+<span class="nc" id="L275">            validationRecord.setRepairedCode(repairedCode);</span>
+        } else {
+            // 验证未通过，继续修复
+<span class="nc" id="L278">            String newValidationMessage = extractFailureReason(validationRecord.getValidationResponse());</span>
+<span class="nc" id="L279">            triggerRepairProcess(originalPrompt,repairedCode, newValidationMessage, rounds + 1, validationRecord);</span>
+        }
+<span class="nc" id="L281">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

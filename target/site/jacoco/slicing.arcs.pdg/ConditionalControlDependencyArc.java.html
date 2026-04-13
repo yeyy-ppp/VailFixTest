@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ConditionalControlDependencyArc.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.arcs.pdg</a> &gt; <span class="el_source">ConditionalControlDependencyArc.java</span></div><h1>ConditionalControlDependencyArc.java</h1><pre class="source lang-java linenums">package slicing.arcs.pdg;
+
+import slicing.graphs.exceptionsensitive.ConditionalControlDependencyBuilder;
+
+/**
+ * An arc that represents conditional control dependency (CCD): a node {@code a}
+ * is conditionally control dependent on a pair of nodes {@code b}, {@code c},
+ * if the presence of {@code a} allows the execution of {@code c} when {@code b}
+ * is executed and the absence of {@code a} prevents it. &lt;/br&gt;
+ * The representation is done by connecting {@code a} to {@code c} with a {@link CC2 CC2}
+ * arc, and {@code a} to {@code b} with a {@link CC1 CC1} arc.
+ * @see ConditionalControlDependencyBuilder
+ */
+<span class="nc" id="L14">public abstract class ConditionalControlDependencyArc extends ControlDependencyArc {</span>
+    /**
+     * Currently only used in exception handling, connecting a
+     * {@link com.github.javaparser.ast.stmt.CatchClause CatchClause} to statements
+     * that execute after its {@link com.github.javaparser.ast.stmt.TryStmt TryStmt}.
+     * @see ConditionalControlDependencyArc
+     */
+<span class="nc" id="L21">    public static class CC1 extends ConditionalControlDependencyArc {</span>
+    }
+
+    /**
+     * Currently only used in exception handling, connecting a
+     * {@link com.github.javaparser.ast.stmt.CatchClause CatchClause} to statements
+     * that may throw exceptions inside its corresponding {@link com.github.javaparser.ast.stmt.TryStmt TryStmt}.
+     * @see ConditionalControlDependencyArc
+     */
+<span class="nc" id="L30">    public static class CC2 extends ConditionalControlDependencyArc {</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

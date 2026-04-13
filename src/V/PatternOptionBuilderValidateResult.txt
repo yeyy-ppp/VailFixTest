@@ -1,0 +1,25 @@
+[2026-01-13 18:53:53] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: getValueType, isValueCode, parsePattern, unsupported
+  未覆盖: PatternOptionBuilder, getValueClass
+优化建议: 增加对构造函数的覆盖测试; 增加对getValueClass方法的测试; 添加parsePattern的异常模式测试（如连续值代码）
+
+[2026-01-13 18:56:46] 修复后验证结果
+错误类型: 编译错误, 错误行: 159, 错误原因: [未导入Converter类型], 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: PatternOptionBuilder, getValueClass, getValueType, isValueCode, parsePattern, unsupported
+  未覆盖: 全部覆盖
+
+[2026-01-15 12:11:48] 验证结果
+错误类型: 编译错误, 错误行: 136, 错误原因: 未导入Converter类型, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: PatternOptionBuilder, getValueClass, getValueType, isValueCode, parsePattern, unsupported
+  未覆盖: 全部覆盖
+
+[2026-01-15 12:13:24] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: PatternOptionBuilder, getValueClass, getValueType, isValueCode, parsePattern, unsupported
+  未覆盖: 全部覆盖
+

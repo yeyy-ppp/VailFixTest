@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ExceptionSensitiveCallConnector.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.exceptionsensitive</a> &gt; <span class="el_source">ExceptionSensitiveCallConnector.java</span></div><h1>ExceptionSensitiveCallConnector.java</h1><pre class="source lang-java linenums">package slicing.graphs.exceptionsensitive;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.type.ReferenceType;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
+import com.github.javaparser.resolution.types.ResolvedType;
+import lombok.var;
+import slicing.arcs.sdg.ReturnArc;
+import slicing.graphs.CallGraph;
+import slicing.graphs.sdg.CallConnector;
+import slicing.nodes.SyntheticNode;
+import slicing.nodes.exceptionsensitive.*;
+import slicing.nodes.io.CallNode;
+import slicing.utils.ASTUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/** An exception-sensitive call connector, which additionally connects exit nodes
+ * to their corresponding return nodes.
+ * @see ReturnArc */
+public class ExceptionSensitiveCallConnector extends CallConnector {
+    public ExceptionSensitiveCallConnector(ESSDG sdg) {
+<span class="nc" id="L26">        super(sdg);</span>
+<span class="nc" id="L27">    }</span>
+
+    @Override
+    protected void connectCall(CallNode callNode, CallGraph callGraph) {
+<span class="nc" id="L31">        var callExpr = callNode.getCallASTNode();</span>
+        // We can pick any call, because the signatures must match
+//        if (callGraph.getCallTargets(callExpr).findFirst().orElseThrow().getThrownExceptions().size() &gt; 0)
+//            handleExceptionReturnArcs(callExpr, callGraph);
+<span class="nc" id="L35">        super.connectCall(callNode, callGraph);</span>
+<span class="nc" id="L36">    }</span>
+
+    /** Creates the following connections:
+     * &lt;ul&gt;
+     *     &lt;li&gt;{@link ExceptionExitNode} to {@link ExceptionReturnNode} with a ratio of (* to 1), n per method&lt;/li&gt;
+     *     &lt;li&gt;{@link NormalExitNode} to {@link NormalReturnNode} with a ratio of (1 to 1), 1 per method&lt;/li&gt;
+     * &lt;/ul&gt;
+     * @param call The method call to be connected to its method declaration.
+     */
+    protected void handleExceptionReturnArcs(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, CallGraph callGraph) {
+<span class="nc" id="L46">        Set&lt;SyntheticNode&lt;?&gt;&gt; synthNodes = sdg.vertexSet().stream()</span>
+<span class="nc" id="L47">                .filter(SyntheticNode.class::isInstance)</span>
+<span class="nc" id="L48">                .map(n -&gt; (SyntheticNode&lt;?&gt;) n)</span>
+<span class="nc" id="L49">                .collect(Collectors.toSet());</span>
+<span class="nc" id="L50">        callGraph.getCallTargets(call).forEach(decl -&gt; {</span>
+<span class="nc" id="L51">            connectNormalNodes(synthNodes, call, decl);</span>
+<span class="nc" id="L52">            connectExceptionNodes(synthNodes, call, decl);</span>
+<span class="nc" id="L53">        });</span>
+<span class="nc" id="L54">    }</span>
+
+    /** Connects normal exit nodes to their corresponding return node. */
+    protected void connectNormalNodes(Set&lt;SyntheticNode&lt;?&gt;&gt; synthNodes, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, CallableDeclaration&lt;?&gt; decl) {
+<span class="nc" id="L58">        ReturnNode normalReturn = (ReturnNode) synthNodes.stream()</span>
+<span class="nc" id="L59">                .filter(NormalReturnNode.class::isInstance)</span>
+<span class="nc bnc" id="L60" title="All 4 branches missed.">                .filter(n -&gt; n.getAstNode() == call || ASTUtils.equalsWithRange(n.getAstNode(), call))</span>
+<span class="nc" id="L61">                .findAny()</span>
+<span class="nc" id="L62">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No matching NormalReturnNode found&quot;));</span>
+
+<span class="nc" id="L64">        ExitNode normalExit = (ExitNode) synthNodes.stream()</span>
+<span class="nc" id="L65">                .filter(NormalExitNode.class::isInstance)</span>
+<span class="nc bnc" id="L66" title="All 4 branches missed.">                .filter(n -&gt; n.getAstNode() == decl || ASTUtils.equalsWithRange(n.getAstNode(), decl))</span>
+<span class="nc" id="L67">                .findAny()</span>
+<span class="nc" id="L68">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No matching NormalExitNode found for the given declaration&quot;));</span>
+
+<span class="nc" id="L70">        ((ESSDG) sdg).addReturnArc(normalExit, normalReturn);</span>
+<span class="nc" id="L71">    }</span>
+
+    /**
+     * Connects exception exit nodes to their corresponding return node,
+     * taking into account that return nodes are generated from the 'throws' list
+     * in the method declaration and exit nodes are generated from the exception sources
+     * that appear in the method. This creates a mismatch that is solved in {@link #connectRemainingExceptionNodes(Map, Set)}
+     */
+    protected void connectExceptionNodes(Set&lt;SyntheticNode&lt;?&gt;&gt; synthNodes, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call, CallableDeclaration&lt;?&gt; decl) {
+<span class="nc" id="L80">        Map&lt;ResolvedType, ExceptionReturnNode&gt; exceptionReturnMap = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L81">        Set&lt;ExceptionExitNode&gt; eeNodes = synthNodes.stream()</span>
+<span class="nc" id="L82">                .filter(ExceptionExitNode.class::isInstance)</span>
+<span class="nc" id="L83">                .map(ExceptionExitNode.class::cast)</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">                .filter(n -&gt; n.getAstNode() == decl)</span>
+<span class="nc" id="L85">                .collect(Collectors.toSet());</span>
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        for (ReferenceType rType : decl.getThrownExceptions()) {</span>
+<span class="nc" id="L87">            ResolvedType type = rType.resolve();</span>
+<span class="nc" id="L88">            ExceptionReturnNode exceptionReturn = synthNodes.stream()</span>
+<span class="nc" id="L89">                    .filter(ExceptionReturnNode.class::isInstance)</span>
+<span class="nc" id="L90">                    .map(ExceptionReturnNode.class::cast)</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                    .filter(n -&gt; n.getAstNode() == call)</span>
+<span class="nc" id="L92">                    .filter(n -&gt; n.getExceptionType().equals(type))</span>
+<span class="nc" id="L93">                    .findAny()</span>
+<span class="nc" id="L94">                    .orElseThrow(() -&gt; new NoSuchElementException(&quot;No matching ExceptionReturnNode found for the given call and exception type&quot;));</span>
+
+<span class="nc" id="L96">            ExceptionExitNode exceptionExit = eeNodes.stream()</span>
+<span class="nc" id="L97">                    .filter(n -&gt; n.getExceptionType().equals(type))</span>
+<span class="nc" id="L98">                    .findAny()</span>
+<span class="nc" id="L99">                    .orElseThrow(() -&gt; new NoSuchElementException(&quot;No matching ExceptionExitNode found for the given exception type&quot;));</span>
+
+<span class="nc" id="L101">            eeNodes.remove(exceptionExit);</span>
+<span class="nc" id="L102">            exceptionReturnMap.put(type, exceptionReturn);</span>
+<span class="nc" id="L103">            ((ESSDG) sdg).addReturnArc(exceptionExit, exceptionReturn);</span>
+<span class="nc" id="L104">        }</span>
+
+<span class="nc" id="L106">        connectRemainingExceptionNodes(exceptionReturnMap, eeNodes);</span>
+<span class="nc" id="L107">    }</span>
+
+    /** Connects the remaining exception exit nodes to their closest exception return node. */
+    protected void connectRemainingExceptionNodes(Map&lt;ResolvedType, ExceptionReturnNode&gt; exceptionReturnMap, Set&lt;ExceptionExitNode&gt; eeNodes) {
+<span class="nc" id="L111">        boolean hasThrowable = resolvedTypeSetContains(exceptionReturnMap.keySet(), &quot;java.lang.Throwable&quot;);</span>
+<span class="nc" id="L112">        boolean hasException = resolvedTypeSetContains(exceptionReturnMap.keySet(), &quot;java.lang.Exception&quot;);</span>
+
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        eeFor: for (ExceptionExitNode ee : eeNodes) {</span>
+<span class="nc" id="L115">            List&lt;ResolvedReferenceType&gt; typeList = Collections.singletonList(ee.getExceptionType().asReferenceType());</span>
+<span class="nc bnc" id="L116" title="All 2 branches missed.">            while (!typeList.isEmpty()) {</span>
+<span class="nc" id="L117">                List&lt;ResolvedReferenceType&gt; newTypeList = new LinkedList&lt;&gt;();</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                for (ResolvedReferenceType type : typeList) {</span>
+<span class="nc bnc" id="L119" title="All 2 branches missed.">                    if (exceptionReturnMap.containsKey(type)) {</span>
+<span class="nc" id="L120">                        ((ESSDG) sdg).addReturnArc(ee, exceptionReturnMap.get(type));</span>
+<span class="nc" id="L121">                        continue eeFor;</span>
+                    }
+                    // Skip RuntimeException, unless Throwable or Exception are present as ER nodes
+<span class="nc bnc" id="L124" title="All 6 branches missed.">                    boolean skip1 = type.getQualifiedName().equals(&quot;java.lang.RuntimeException&quot;) &amp;&amp; !hasThrowable &amp;&amp; !hasException;</span>
+                    // Skip Error, unless Throwable is present as EE node
+<span class="nc bnc" id="L126" title="All 4 branches missed.">                    boolean skip2 = type.getQualifiedName().equals(&quot;java.lang.Error&quot;) &amp;&amp; !hasThrowable;</span>
+                    // Object has no ancestors, the startVisit has ended
+<span class="nc" id="L128">                    boolean skip3 = type.getQualifiedName().equals(&quot;java.lang.Object&quot;);</span>
+<span class="nc bnc" id="L129" title="All 6 branches missed.">                    if (!skip1 &amp;&amp; !skip2 &amp;&amp; !skip3)</span>
+<span class="nc" id="L130">                        newTypeList.addAll(type.asReferenceType().getDirectAncestors());</span>
+<span class="nc" id="L131">                }</span>
+<span class="nc" id="L132">                typeList = newTypeList;</span>
+<span class="nc" id="L133">            }</span>
+<span class="nc" id="L134">        }</span>
+<span class="nc" id="L135">    }</span>
+
+    /** Utility method. Finds whether or not a type can be found in a set of resolved types.
+     * The full qualified name should be used (e.g. 'java.lang.Object' for Object). */
+    protected static boolean resolvedTypeSetContains(Set&lt;ResolvedType&gt; set, String qualifiedType) {
+<span class="nc" id="L140">        return set.stream()</span>
+<span class="nc" id="L141">                .map(ResolvedType::asReferenceType)</span>
+<span class="nc" id="L142">                .map(ResolvedReferenceType::getQualifiedName)</span>
+<span class="nc" id="L143">                .anyMatch(qualifiedType::equals);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,11 @@
+```
+包路径：lang3
+类名：NumberRange
+父类：Range
+依赖类：Range
+---
+序号：1
+方法名：NumberRange(N, N, Comparator<N>)
+返回类型：-
+功能描述：使用给定的两个数值和比较器初始化范围对象
+```

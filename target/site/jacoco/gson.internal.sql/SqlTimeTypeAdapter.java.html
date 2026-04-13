@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SqlTimeTypeAdapter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.sql</a> &gt; <span class="el_source">SqlTimeTypeAdapter.java</span></div><h1>SqlTimeTypeAdapter.java</h1><pre class="source lang-java linenums">package gson.internal.sql;
+import gson.Gson;
+import gson.JsonSyntaxException;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.TimeZone;
+@SuppressWarnings(&quot;JavaUtilDate&quot;)
+final class SqlTimeTypeAdapter extends TypeAdapter&lt;Time&gt; {
+<span class="fc" id="L19">  static final TypeAdapterFactory FACTORY =</span>
+<span class="fc" id="L20">      new TypeAdapterFactory() {</span>
+        @SuppressWarnings(&quot;unchecked&quot;)
+        @Override
+        public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; typeToken) {
+<span class="pc bpc" id="L24" title="1 of 2 branches missed.">          return typeToken.getRawType() == Time.class</span>
+<span class="nc" id="L25">              ? (TypeAdapter&lt;T&gt;) new SqlTimeTypeAdapter()</span>
+<span class="fc" id="L26">              : null;</span>
+        }
+      };
+<span class="nc" id="L29">  private final DateFormat format = new SimpleDateFormat(&quot;hh:mm:ss a&quot;);</span>
+<span class="nc" id="L30">  private SqlTimeTypeAdapter() {}</span>
+  @Override
+  public Time read(JsonReader in) throws IOException {
+<span class="nc bnc" id="L33" title="All 2 branches missed.">    if (in.peek() == JsonToken.NULL) {</span>
+<span class="nc" id="L34">      in.nextNull();</span>
+<span class="nc" id="L35">      return null;</span>
+    }
+<span class="nc" id="L37">    String s = in.nextString();</span>
+<span class="nc" id="L38">    synchronized (this) {</span>
+<span class="nc" id="L39">      TimeZone originalTimeZone = format.getTimeZone();</span>
+      try {
+<span class="nc" id="L41">        Date date = format.parse(s);</span>
+<span class="nc" id="L42">        return new Time(date.getTime());</span>
+<span class="nc" id="L43">      } catch (ParseException e) {</span>
+<span class="nc" id="L44">        throw new JsonSyntaxException(</span>
+<span class="nc" id="L45">            &quot;Failed parsing '&quot; + s + &quot;' as SQL Time; at path &quot; + in.getPreviousPath(), e);</span>
+      } finally {
+<span class="nc" id="L47">        format.setTimeZone(originalTimeZone);</span>
+      }
+    }
+  }
+
+  @Override
+  public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L55">  }</span>
+
+  @Override
+  public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L59">    return null;</span>
+  }
+
+  @Override
+  public void write(JsonWriter out, Time value) throws IOException {
+<span class="nc bnc" id="L64" title="All 2 branches missed.">    if (value == null) {</span>
+<span class="nc" id="L65">      out.nullValue();</span>
+<span class="nc" id="L66">      return;</span>
+    }
+    String timeString;
+<span class="nc" id="L69">    synchronized (this) {</span>
+<span class="nc" id="L70">      timeString = format.format(value);</span>
+<span class="nc" id="L71">    }</span>
+<span class="nc" id="L72">    out.value(timeString);</span>
+<span class="nc" id="L73">  }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,11 @@
+```
+包路径：gson.internal
+类名：JsonReaderInternalAccess
+父类：无
+依赖类：gson.stream.JsonReader
+---
+序号：1
+方法名：promoteNameToValue(JsonReader reader)
+返回类型：void
+功能描述：将当前JSON名称提升为值
+```

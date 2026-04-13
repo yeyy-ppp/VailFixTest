@@ -1,0 +1,181 @@
+[2026-01-21 12:09:31] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 无 - 验证通过
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package csv;
+
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ConstantsTest {
+
+    @Test
+    void testConstantsConstructorIsPrivate() throws Exception {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        assertTrue(Modifier.isPrivate(constructor.getModifiers()));
+        constructor.setAccessible(true);
+        Constants instance = constructor.newInstance();
+        assertNotNull(instance);
+    }
+
+    @Test
+    void testAllConstantValues() {
+        assertEquals('\\', Constants.BACKSLASH);
+        assertEquals('\b', Constants.BACKSPACE);
+        assertEquals(",", Constants.COMMA);
+        assertEquals('#', Constants.COMMENT);
+        assertEquals('\r', Constants.CR);
+        assertEquals("\r\n", Constants.CRLF);
+        assertEquals(Character.valueOf('"'), Constants.DOUBLE_QUOTE_CHAR);
+        assertEquals("", Constants.EMPTY);
+        assertArrayEquals(new String[0], Constants.EMPTY_STRING_ARRAY);
+        assertEquals(-1, Constants.EOF);
+        assertEquals('\f', Constants.FF);
+        assertEquals('\n', Constants.LF);
+        assertEquals("\u2028", Constants.LINE_SEPARATOR);
+        assertEquals("\u0085", Constants.NEXT_LINE);
+        assertEquals("\u2029", Constants.PARAGRAPH_SEPARATOR);
+        assertEquals('|', Constants.PIPE);
+        assertEquals(30, Constants.RS);
+        assertEquals(' ', Constants.SP);
+        assertEquals("\\N", Constants.SQL_NULL_STRING);
+        assertEquals('\t', Constants.TAB);
+        assertEquals(-2, Constants.UNDEFINED);
+        assertEquals(31, Constants.US);
+    }
+}
+```
+
+[2026-01-21 16:30:52] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 无 - 验证通过
+修复后状态: 仍有问题 - 无 - 验证通过
+修复后方法覆盖: 未覆盖: Constants
+修复后代码:
+```java
+package csv;
+
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ConstantsTest {
+
+    @Test
+    void testConstructorAccessibility() throws NoSuchMethodException {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        assertFalse(constructor.isAccessible());
+    }
+
+    @Test
+    void testConstructorInvocation() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        assertNotNull(constructor.newInstance());
+    }
+
+    @Test
+    void testConstantsConstructor() throws Exception {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+
+    @Test
+    void testConstantValues() {
+        assertEquals('\\', Constants.BACKSLASH);
+        assertEquals('\b', Constants.BACKSPACE);
+        assertEquals(",", Constants.COMMA);
+        assertEquals('#', Constants.COMMENT);
+        assertEquals('\r', Constants.CR);
+        assertEquals("\r\n", Constants.CRLF);
+        assertEquals('"', Constants.DOUBLE_QUOTE_CHAR);
+        assertEquals("", Constants.EMPTY);
+        assertArrayEquals(new String[]{}, Constants.EMPTY_STRING_ARRAY);
+        assertEquals(-1, Constants.EOF);
+        assertEquals('\f', Constants.FF);
+        assertEquals('\n', Constants.LF);
+        assertEquals("\u2028", Constants.LINE_SEPARATOR);
+        assertEquals("\u0085", Constants.NEXT_LINE);
+        assertEquals("\u2029", Constants.PARAGRAPH_SEPARATOR);
+        assertEquals('|', Constants.PIPE);
+        assertEquals((char)30, Constants.RS);
+        assertEquals(' ', Constants.SP);
+        assertEquals("\\N", Constants.SQL_NULL_STRING);
+        assertEquals('\t', Constants.TAB);
+        assertEquals(-2, Constants.UNDEFINED);
+        assertEquals((char)31, Constants.US);
+    }
+}
+```
+
+[2026-01-21 16:31:12] 兜底处理
+兜底策略: FULL_CLASS
+兜底后代码:
+```java
+package csv;
+
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class ConstantsTest {
+    // [兜底] 保留了 4 个正确的测试方法
+
+    @Test
+    void testConstructorAccessibility() throws NoSuchMethodException {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        assertFalse(constructor.isAccessible());
+    }
+
+    @Test
+    void testConstructorInvocation() throws NoSuchMethodException, IllegalAccessException, InvocationTargetException, InstantiationException {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        assertNotNull(constructor.newInstance());
+    }
+
+    @Test
+    void testConstantsConstructor() throws Exception {
+        Constructor<Constants> constructor = Constants.class.getDeclaredConstructor();
+        constructor.setAccessible(true);
+        constructor.newInstance();
+    }
+
+    @Test
+    void testConstantValues() {
+        assertEquals('\\', Constants.BACKSLASH);
+        assertEquals('\b', Constants.BACKSPACE);
+        assertEquals(",", Constants.COMMA);
+        assertEquals('#', Constants.COMMENT);
+        assertEquals('\r', Constants.CR);
+        assertEquals("\r\n", Constants.CRLF);
+        assertEquals('"', Constants.DOUBLE_QUOTE_CHAR);
+        assertEquals("", Constants.EMPTY);
+        assertArrayEquals(new String[]{}, Constants.EMPTY_STRING_ARRAY);
+        assertEquals(-1, Constants.EOF);
+        assertEquals('\f', Constants.FF);
+        assertEquals('\n', Constants.LF);
+        assertEquals("\u2028", Constants.LINE_SEPARATOR);
+        assertEquals("\u0085", Constants.NEXT_LINE);
+        assertEquals("\u2029", Constants.PARAGRAPH_SEPARATOR);
+        assertEquals('|', Constants.PIPE);
+        assertEquals((char)30, Constants.RS);
+        assertEquals(' ', Constants.SP);
+        assertEquals("\\N", Constants.SQL_NULL_STRING);
+        assertEquals('\t', Constants.TAB);
+        assertEquals(-2, Constants.UNDEFINED);
+        assertEquals((char)31, Constants.US);
+    }
+
+}
+
+```
+

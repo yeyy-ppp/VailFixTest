@@ -1,0 +1,17 @@
+包路径：lang3.function
+类名：FailableConsumer
+父类：无
+依赖类：无
+---
+序号：1
+方法名：nop()
+返回类型：FailableConsumer
+功能描述：返回一个无操作的消费者实例
+序号：2
+方法名：accept(T)
+返回类型：void
+功能描述：执行消费者操作
+序号：3
+方法名：andThen(FailableConsumer)
+返回类型：FailableConsumer
+功能描述：组合当前消费者和另一个消费者，顺序执行

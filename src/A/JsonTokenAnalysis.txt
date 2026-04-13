@@ -1,0 +1,15 @@
+```
+包路径：gson.stream
+类名：JsonToken
+父类：java.lang.Enum
+依赖类：无
+---
+序号：1
+方法名：values()
+返回类型：JsonToken[]
+功能描述：返回包含该枚举类所有常量的数组
+序号：2
+方法名：valueOf(String name)
+返回类型：JsonToken
+功能描述：根据指定名称返回对应的枚举常量
+```

@@ -1,0 +1,107 @@
+[2026-01-13 18:26:36] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package cli;
+
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+import java.util.Collections;
+import java.util.Arrays;
+import java.util.List;
+
+class MissingOptionExceptionTest {
+
+    @Test
+    void constructorWithList_singleOption() {
+        List<String> missing = Collections.singletonList("file");
+        MissingOptionException exception = new MissingOptionException(missing);
+        
+        assertEquals("Missing required option: file", exception.getMessage());
+        assertEquals(missing, exception.getMissingOptions());
+    }
+
+    @Test
+    void constructorWithList_multipleOptions() {
+        List<String> missing = Arrays.asList("file", "output", "verbose");
+        MissingOptionException exception = new MissingOptionException(missing);
+        
+        assertEquals("Missing required options: file, output, verbose", exception.getMessage());
+        assertEquals(missing, exception.getMissingOptions());
+    }
+
+    @Test
+    void constructorWithList_emptyList() {
+        List<String> missing = Collections.emptyList();
+        MissingOptionException exception = new MissingOptionException(missing);
+        
+        assertEquals("Missing required options: ", exception.getMessage());
+        assertEquals(missing, exception.getMissingOptions());
+    }
+
+    @Test
+    void constructorWithList_null() {
+        assertThrows(NullPointerException.class, () -> new MissingOptionException((List) null));
+    }
+
+    @Test
+    void constructorWithMessage() {
+        String message = "Custom error message";
+        MissingOptionException exception = new MissingOptionException(message);
+        
+        assertEquals(message, exception.getMessage());
+        assertNull(exception.getMissingOptions());
+    }
+
+    @Test
+    void constructorWithMessage_null() {
+        MissingOptionException exception = new MissingOptionException((String) null);
+        assertNull(exception.getMessage());
+        assertNull(exception.getMissingOptions());
+    }
+
+    @Test
+    void getMissingOptions_afterListConstructor() {
+        List<String> missing = Arrays.asList("host", "port");
+        MissingOptionException exception = new MissingOptionException(missing);
+        
+        assertEquals(missing, exception.getMissingOptions());
+    }
+
+    @Test
+    void getMissingOptions_afterMessageConstructor() {
+        MissingOptionException exception = new MissingOptionException("Error");
+        assertNull(exception.getMissingOptions());
+    }
+
+    @Test
+    void createMessage_singleOption() {
+        List<String> missing = Collections.singletonList("file");
+        String message = MissingOptionException.createMessage(missing);
+        assertEquals("Missing required option: file", message);
+    }
+
+    @Test
+    void createMessage_multipleOptions() {
+        List<String> missing = Arrays.asList("file", "output", "verbose");
+        String message = MissingOptionException.createMessage(missing);
+        assertEquals("Missing required options: file, output, verbose", message);
+    }
+
+    @Test
+    void createMessage_emptyList() {
+        List<String> missing = Collections.emptyList();
+        String message = MissingOptionException.createMessage(missing);
+        assertEquals("Missing required options: ", message);
+    }
+
+    @Test
+    void createMessage_nullList() {
+        assertThrows(NullPointerException.class, () -> MissingOptionException.createMessage(null));
+    }
+}
+```
+

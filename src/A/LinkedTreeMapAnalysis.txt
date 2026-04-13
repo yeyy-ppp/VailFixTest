@@ -1,0 +1,99 @@
+```
+包路径：gson.internal
+类名：LinkedTreeMap
+父类：AbstractMap
+依赖类：com.google.errorprone.annotations.CanIgnoreReturnValue
+---
+序号：1
+方法名：LinkedTreeMap()
+返回类型：无
+功能描述：构造一个使用自然顺序的比较器并允许空值的LinkedTreeMap
+序号：2
+方法名：LinkedTreeMap(boolean allowNullValues)
+返回类型：无
+功能描述：构造一个使用自然顺序的比较器并指定空值允许状态的LinkedTreeMap
+序号：3
+方法名：LinkedTreeMap(Comparator<? super K> comparator, boolean allowNullValues)
+返回类型：无
+功能描述：使用指定比较器和空值允许状态构造LinkedTreeMap
+序号：4
+方法名：size()
+返回类型：int
+功能描述：返回映射中的键值对数量
+序号：5
+方法名：get(Object key)
+返回类型：V
+功能描述：根据键获取对应的值
+序号：6
+方法名：containsKey(Object key)
+返回类型：boolean
+功能描述：检查映射是否包含指定键
+序号：7
+方法名：put(K key, V value)
+返回类型：V
+功能描述：将键值对放入映射，返回键之前关联的值
+序号：8
+方法名：clear()
+返回类型：void
+功能描述：清空映射中的所有键值对
+序号：9
+方法名：remove(Object key)
+返回类型：V
+功能描述：移除键对应的映射，返回键之前关联的值
+序号：10
+方法名：find(K key, boolean create)
+返回类型：Node<K, V>
+功能描述：查找键对应的节点，不存在时根据参数决定是否创建新节点
+序号：11
+方法名：findByObject(Object key)
+返回类型：Node<K, V>
+功能描述：根据对象查找键对应的节点（不创建新节点）
+序号：12
+方法名：findByEntry(Entry<?, ?> entry)
+返回类型：Node<K, V>
+功能描述：根据条目对象查找对应的节点
+序号：13
+方法名：equal(Object a, Object b)
+返回类型：boolean
+功能描述：静态方法，比较两个对象是否相等
+序号：14
+方法名：removeInternal(Node<K, V> node, boolean unlink)
+返回类型：void
+功能描述：内部方法，移除指定节点并根据参数解除链表关联
+序号：15
+方法名：removeInternalByKey(Object key)
+返回类型：Node<K, V>
+功能描述：根据键查找并移除节点，返回被移除的节点
+序号：16
+方法名：replaceInParent(Node<K, V> node, Node<K, V> replacement)
+返回类型：void
+功能描述：在父节点中用新节点替换指定节点
+序号：17
+方法名：rebalance(Node<K, V> unbalanced, boolean insert)
+返回类型：void
+功能描述：重新平衡树结构，从指定节点向根节点调整
+序号：18
+方法名：rotateLeft(Node<K, V> root)
+返回类型：void
+功能描述：以指定节点为根进行左旋转操作
+序号：19
+方法名：rotateRight(Node<K, V> root)
+返回类型：void
+功能描述：以指定节点为根进行右旋转操作
+序号：20
+方法名：entrySet()
+返回类型：Set<Entry<K, V>>
+功能描述：返回映射条目（Entry）的集合视图
+序号：21
+方法名：keySet()
+返回类型：Set<K>
+功能描述：返回键（Key）的集合视图
+序号：22
+方法名：writeReplace()
+返回类型：Object
+功能描述：序列化时代理对象替换方法
+序号：23
+方法名：readObject(ObjectInputStream in)
+返回类型：void
+功能描述：反序列化方法（实际不支持反序列化）
+```

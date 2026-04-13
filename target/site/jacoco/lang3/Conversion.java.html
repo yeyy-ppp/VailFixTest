@@ -1,0 +1,763 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Conversion.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">lang3</a> &gt; <span class="el_source">Conversion.java</span></div><h1>Conversion.java</h1><pre class="source lang-java linenums">package lang3;
+import java.util.UUID;
+public class Conversion {
+<span class="fc" id="L4">    private static final boolean[] TTTT = { true, true, true, true };</span>
+<span class="fc" id="L5">    private static final boolean[] FTTT = { false, true, true, true };</span>
+<span class="fc" id="L6">    private static final boolean[] TFTT = { true, false, true, true };</span>
+<span class="fc" id="L7">    private static final boolean[] FFTT = { false, false, true, true };</span>
+<span class="fc" id="L8">    private static final boolean[] TTFT = { true, true, false, true };</span>
+<span class="fc" id="L9">    private static final boolean[] FTFT = { false, true, false, true };</span>
+<span class="fc" id="L10">    private static final boolean[] TFFT = { true, false, false, true };</span>
+<span class="fc" id="L11">    private static final boolean[] FFFT = { false, false, false, true };</span>
+<span class="fc" id="L12">    private static final boolean[] TTTF = { true, true, true, false };</span>
+<span class="fc" id="L13">    private static final boolean[] FTTF = { false, true, true, false };</span>
+<span class="fc" id="L14">    private static final boolean[] TFTF = { true, false, true, false };</span>
+<span class="fc" id="L15">    private static final boolean[] FFTF = { false, false, true, false };</span>
+<span class="fc" id="L16">    private static final boolean[] TTFF = { true, true, false, false };</span>
+<span class="fc" id="L17">    private static final boolean[] FTFF = { false, true, false, false };</span>
+<span class="fc" id="L18">    private static final boolean[] TFFF = { true, false, false, false };</span>
+<span class="fc" id="L19">    private static final boolean[] FFFF = { false, false, false, false };</span>
+    public static char binaryBeMsb0ToHexDigit(final boolean[] src) {
+<span class="nc" id="L21">        return binaryBeMsb0ToHexDigit(src, 0);</span>
+    }
+    public static char binaryBeMsb0ToHexDigit(final boolean[] src, final int srcPos) {
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (Integer.compareUnsigned(srcPos, src.length) &gt;= 0) {</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">            if (src.length == 0) {</span>
+<span class="fc" id="L26">                throw new IllegalArgumentException(&quot;Cannot convert an empty array.&quot;);</span>
+            }
+<span class="fc" id="L28">            throw new IndexOutOfBoundsException(srcPos + &quot; is not within array length &quot; + src.length);</span>
+        }
+<span class="fc" id="L30">        final int pos = src.length - 1 - srcPos;</span>
+<span class="fc bfc" id="L31" title="All 4 branches covered.">        if (3 &lt;= pos &amp;&amp; src[pos - 3]) {</span>
+<span class="pc bpc" id="L32" title="1 of 2 branches missed.">            if (src[pos - 2]) {</span>
+<span class="nc bnc" id="L33" title="All 2 branches missed.">                if (src[pos - 1]) {</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">                    return src[pos] ? 'f' : 'e';</span>
+                }
+<span class="nc bnc" id="L36" title="All 2 branches missed.">                return src[pos] ? 'd' : 'c';</span>
+            }
+<span class="pc bpc" id="L38" title="1 of 2 branches missed.">            if (src[pos - 1]) {</span>
+<span class="nc bnc" id="L39" title="All 2 branches missed.">                return src[pos] ? 'b' : 'a';</span>
+            }
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">            return src[pos] ? '9' : '8';</span>
+        }
+<span class="pc bpc" id="L43" title="1 of 4 branches missed.">        if (2 &lt;= pos &amp;&amp; src[pos - 2]) {</span>
+<span class="pc bpc" id="L44" title="1 of 2 branches missed.">            if (src[pos - 1]) {</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">                return src[pos] ? '7' : '6';</span>
+            }
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            return src[pos] ? '5' : '4';</span>
+        }
+<span class="pc bpc" id="L49" title="2 of 4 branches missed.">        if (1 &lt;= pos &amp;&amp; src[pos - 1]) {</span>
+<span class="pc bpc" id="L50" title="1 of 2 branches missed.">            return src[pos] ? '3' : '2';</span>
+        }
+<span class="nc bnc" id="L52" title="All 2 branches missed.">        return src[pos] ? '1' : '0';</span>
+    }
+    public static byte binaryToByte(final boolean[] src, final int srcPos, final byte dstInit, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L55" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBools) {</span>
+<span class="nc" id="L56">            return dstInit;</span>
+        }
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        if (nBools - 1 + dstPos &gt;= Byte.SIZE) {</span>
+<span class="fc" id="L59">            throw new IllegalArgumentException(&quot;nBools - 1 + dstPos &gt;= 8&quot;);</span>
+        }
+<span class="fc" id="L61">        byte out = dstInit;</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L63">            final int shift = i + dstPos;</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">            final int bits = (src[i + srcPos] ? 1 : 0) &lt;&lt; shift;</span>
+<span class="fc" id="L65">            final int mask = 0x1 &lt;&lt; shift;</span>
+<span class="fc" id="L66">            out = (byte) (out &amp; ~mask | bits);</span>
+        }
+<span class="fc" id="L68">        return out;</span>
+    }
+    public static char binaryToHexDigit(final boolean[] src) {
+<span class="nc" id="L71">        return binaryToHexDigit(src, 0);</span>
+    }
+    public static char binaryToHexDigit(final boolean[] src, final int srcPos) {
+<span class="fc bfc" id="L74" title="All 2 branches covered.">        if (src.length == 0) {</span>
+<span class="fc" id="L75">            throw new IllegalArgumentException(&quot;Cannot convert an empty array.&quot;);</span>
+        }
+<span class="pc bpc" id="L77" title="1 of 4 branches missed.">        if (src.length &gt; srcPos + 3 &amp;&amp; src[srcPos + 3]) {</span>
+<span class="pc bpc" id="L78" title="1 of 2 branches missed.">            if (src[srcPos + 2]) {</span>
+<span class="pc bpc" id="L79" title="1 of 2 branches missed.">                if (src[srcPos + 1]) {</span>
+<span class="pc bpc" id="L80" title="1 of 2 branches missed.">                    return src[srcPos] ? 'f' : 'e';</span>
+                }
+<span class="nc bnc" id="L82" title="All 2 branches missed.">                return src[srcPos] ? 'd' : 'c';</span>
+            }
+<span class="nc bnc" id="L84" title="All 2 branches missed.">            if (src[srcPos + 1]) {</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">                return src[srcPos] ? 'b' : 'a';</span>
+            }
+<span class="nc bnc" id="L87" title="All 2 branches missed.">            return src[srcPos] ? '9' : '8';</span>
+        }
+<span class="pc bpc" id="L89" title="1 of 4 branches missed.">        if (src.length &gt; srcPos + 2 &amp;&amp; src[srcPos + 2]) {</span>
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">            if (src[srcPos + 1]) {</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">                return src[srcPos] ? '7' : '6';</span>
+            }
+<span class="pc bpc" id="L93" title="1 of 2 branches missed.">            return src[srcPos] ? '5' : '4';</span>
+        }
+<span class="pc bpc" id="L95" title="3 of 4 branches missed.">        if (src.length &gt; srcPos + 1 &amp;&amp; src[srcPos + 1]) {</span>
+<span class="nc bnc" id="L96" title="All 2 branches missed.">            return src[srcPos] ? '3' : '2';</span>
+        }
+<span class="pc bpc" id="L98" title="1 of 2 branches missed.">        return src[srcPos] ? '1' : '0';</span>
+    }
+    public static char binaryToHexDigitMsb0_4bits(final boolean[] src) {
+<span class="nc" id="L101">        return binaryToHexDigitMsb0_4bits(src, 0);</span>
+    }
+    public static char binaryToHexDigitMsb0_4bits(final boolean[] src, final int srcPos) {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">        if (src.length &gt; Byte.SIZE) {</span>
+<span class="fc" id="L105">            throw new IllegalArgumentException(&quot;src.length &gt; 8: src.length=&quot; + src.length);</span>
+        }
+<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (src.length - srcPos &lt; 4) {</span>
+<span class="fc" id="L108">            throw new IllegalArgumentException(&quot;src.length - srcPos &lt; 4: src.length=&quot; + src.length + &quot;, srcPos=&quot; + srcPos);</span>
+        }
+<span class="fc bfc" id="L110" title="All 2 branches covered.">        if (src[srcPos + 3]) {</span>
+<span class="pc bpc" id="L111" title="1 of 2 branches missed.">            if (src[srcPos + 2]) {</span>
+<span class="pc bpc" id="L112" title="1 of 2 branches missed.">                if (src[srcPos + 1]) {</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">                    return src[srcPos] ? 'f' : '7';</span>
+                }
+<span class="pc bpc" id="L115" title="1 of 2 branches missed.">                return src[srcPos] ? 'b' : '3';</span>
+            }
+<span class="nc bnc" id="L117" title="All 2 branches missed.">            if (src[srcPos + 1]) {</span>
+<span class="nc bnc" id="L118" title="All 2 branches missed.">                return src[srcPos] ? 'd' : '5';</span>
+            }
+<span class="nc bnc" id="L120" title="All 2 branches missed.">            return src[srcPos] ? '9' : '1';</span>
+        }
+<span class="fc bfc" id="L122" title="All 2 branches covered.">        if (src[srcPos + 2]) {</span>
+<span class="pc bpc" id="L123" title="1 of 2 branches missed.">            if (src[srcPos + 1]) {</span>
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">                return src[srcPos] ? 'e' : '6';</span>
+            }
+<span class="nc bnc" id="L126" title="All 2 branches missed.">            return src[srcPos] ? 'a' : '2';</span>
+        }
+<span class="pc bpc" id="L128" title="1 of 2 branches missed.">        if (src[srcPos + 1]) {</span>
+<span class="nc bnc" id="L129" title="All 2 branches missed.">            return src[srcPos] ? 'c' : '4';</span>
+        }
+<span class="pc bpc" id="L131" title="1 of 2 branches missed.">        return src[srcPos] ? '8' : '0';</span>
+    }
+    public static int binaryToInt(final boolean[] src, final int srcPos, final int dstInit, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L134" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBools) {</span>
+<span class="nc" id="L135">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L137" title="1 of 2 branches missed.">        if (nBools - 1 + dstPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L138">            throw new IllegalArgumentException(&quot;nBools - 1 + dstPos &gt;= 32&quot;);</span>
+        }
+<span class="fc" id="L140">        int out = dstInit;</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L142">            final int shift = i + dstPos;</span>
+<span class="fc bfc" id="L143" title="All 2 branches covered.">            final int bits = (src[i + srcPos] ? 1 : 0) &lt;&lt; shift;</span>
+<span class="fc" id="L144">            final int mask = 0x1 &lt;&lt; shift;</span>
+<span class="fc" id="L145">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L147">        return out;</span>
+    }
+    public static long binaryToLong(final boolean[] src, final int srcPos, final long dstInit, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L150" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBools) {</span>
+<span class="nc" id="L151">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L153" title="1 of 2 branches missed.">        if (nBools - 1 + dstPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L154">            throw new IllegalArgumentException(&quot;nBools - 1 + dstPos &gt;= 64&quot;);</span>
+        }
+<span class="fc" id="L156">        long out = dstInit;</span>
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L158">            final int shift = i + dstPos;</span>
+<span class="fc bfc" id="L159" title="All 2 branches covered.">            final long bits = (src[i + srcPos] ? 1L : 0) &lt;&lt; shift;</span>
+<span class="fc" id="L160">            final long mask = 0x1L &lt;&lt; shift;</span>
+<span class="fc" id="L161">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L163">        return out;</span>
+    }
+    public static short binaryToShort(final boolean[] src, final int srcPos, final short dstInit, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L166" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBools) {</span>
+<span class="nc" id="L167">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L169" title="1 of 2 branches missed.">        if (nBools - 1 + dstPos &gt;= Short.SIZE) {</span>
+<span class="nc" id="L170">            throw new IllegalArgumentException(&quot;nBools - 1 + dstPos &gt;= 16&quot;);</span>
+        }
+<span class="fc" id="L172">        short out = dstInit;</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L174">            final int shift = i + dstPos;</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">            final int bits = (src[i + srcPos] ? 1 : 0) &lt;&lt; shift;</span>
+<span class="fc" id="L176">            final int mask = 0x1 &lt;&lt; shift;</span>
+<span class="fc" id="L177">            out = (short) (out &amp; ~mask | bits);</span>
+        }
+<span class="fc" id="L179">        return out;</span>
+    }
+    public static int byteArrayToInt(final byte[] src, final int srcPos, final int dstInit, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L182" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBytes) {</span>
+<span class="nc" id="L183">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if ((nBytes - 1) * Byte.SIZE + dstPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L186">            throw new IllegalArgumentException(&quot;(nBytes - 1) * 8 + dstPos &gt;= 32&quot;);</span>
+        }
+<span class="fc" id="L188">        int out = dstInit;</span>
+<span class="fc bfc" id="L189" title="All 2 branches covered.">        for (int i = 0; i &lt; nBytes; i++) {</span>
+<span class="fc" id="L190">            final int shift = i * Byte.SIZE + dstPos;</span>
+<span class="fc" id="L191">            final int bits = (0xff &amp; src[i + srcPos]) &lt;&lt; shift;</span>
+<span class="fc" id="L192">            final int mask = 0xff &lt;&lt; shift;</span>
+<span class="fc" id="L193">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L195">        return out;</span>
+    }
+    public static long byteArrayToLong(final byte[] src, final int srcPos, final long dstInit, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L198" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBytes) {</span>
+<span class="nc" id="L199">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L201" title="1 of 2 branches missed.">        if ((nBytes - 1) * Byte.SIZE + dstPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L202">            throw new IllegalArgumentException(&quot;(nBytes - 1) * 8 + dstPos &gt;= 64&quot;);</span>
+        }
+<span class="fc" id="L204">        long out = dstInit;</span>
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        for (int i = 0; i &lt; nBytes; i++) {</span>
+<span class="fc" id="L206">            final int shift = i * Byte.SIZE + dstPos;</span>
+<span class="fc" id="L207">            final long bits = (0xffL &amp; src[i + srcPos]) &lt;&lt; shift;</span>
+<span class="fc" id="L208">            final long mask = 0xffL &lt;&lt; shift;</span>
+<span class="fc" id="L209">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L211">        return out;</span>
+    }
+    public static short byteArrayToShort(final byte[] src, final int srcPos, final short dstInit, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L214" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nBytes) {</span>
+<span class="nc" id="L215">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if ((nBytes - 1) * Byte.SIZE + dstPos &gt;= Short.SIZE) {</span>
+<span class="nc" id="L218">            throw new IllegalArgumentException(&quot;(nBytes - 1) * 8 + dstPos &gt;= 16&quot;);</span>
+        }
+<span class="fc" id="L220">        short out = dstInit;</span>
+<span class="fc bfc" id="L221" title="All 2 branches covered.">        for (int i = 0; i &lt; nBytes; i++) {</span>
+<span class="fc" id="L222">            final int shift = i * Byte.SIZE + dstPos;</span>
+<span class="fc" id="L223">            final int bits = (0xff &amp; src[i + srcPos]) &lt;&lt; shift;</span>
+<span class="fc" id="L224">            final int mask = 0xff &lt;&lt; shift;</span>
+<span class="fc" id="L225">            out = (short) (out &amp; ~mask | bits);</span>
+        }
+<span class="fc" id="L227">        return out;</span>
+    }
+    public static UUID byteArrayToUuid(final byte[] src, final int srcPos) {
+<span class="fc bfc" id="L230" title="All 2 branches covered.">        if (src.length - srcPos &lt; 16) {</span>
+<span class="fc" id="L231">            throw new IllegalArgumentException(&quot;Need at least 16 bytes for UUID&quot;);</span>
+        }
+<span class="fc" id="L233">        return new UUID(byteArrayToLong(src, srcPos, 0, 0, Byte.SIZE), byteArrayToLong(src, srcPos + 8, 0, 0, Byte.SIZE));</span>
+    }
+    public static boolean[] byteToBinary(final byte src, final int srcPos, final boolean[] dst, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L236" title="1 of 2 branches missed.">        if (0 == nBools) {</span>
+<span class="nc" id="L237">            return dst;</span>
+        }
+<span class="pc bpc" id="L239" title="1 of 2 branches missed.">        if (nBools - 1 + srcPos &gt;= Byte.SIZE) {</span>
+<span class="nc" id="L240">            throw new IllegalArgumentException(&quot;nBools -  1 + srcPos &gt;= 8&quot;);</span>
+        }
+<span class="fc bfc" id="L242" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L243">            final int shift = i + srcPos;</span>
+<span class="fc bfc" id="L244" title="All 2 branches covered.">            dst[dstPos + i] = (0x1 &amp; src &gt;&gt; shift) != 0;</span>
+        }
+<span class="fc" id="L246">        return dst;</span>
+    }
+    public static String byteToHex(final byte src, final int srcPos, final String dstInit, final int dstPos, final int nHexs) {
+<span class="pc bpc" id="L249" title="1 of 2 branches missed.">        if (0 == nHexs) {</span>
+<span class="nc" id="L250">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L252" title="1 of 2 branches missed.">        if ((nHexs - 1) * 4 + srcPos &gt;= Byte.SIZE) {</span>
+<span class="nc" id="L253">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + srcPos &gt;= 8&quot;);</span>
+        }
+<span class="fc" id="L255">        final StringBuilder sb = new StringBuilder(dstInit);</span>
+<span class="fc" id="L256">        int append = sb.length();</span>
+<span class="fc bfc" id="L257" title="All 2 branches covered.">        for (int i = 0; i &lt; nHexs; i++) {</span>
+<span class="fc" id="L258">            final int shift = i * 4 + srcPos;</span>
+<span class="fc" id="L259">            final int bits = 0xF &amp; src &gt;&gt; shift;</span>
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">            if (dstPos + i == append) {</span>
+<span class="fc" id="L261">                ++append;</span>
+<span class="fc" id="L262">                sb.append(intToHexDigit(bits));</span>
+            } else {
+<span class="nc" id="L264">                sb.setCharAt(dstPos + i, intToHexDigit(bits));</span>
+            }
+        }
+<span class="fc" id="L267">        return sb.toString();</span>
+    }
+    public static boolean[] hexDigitMsb0ToBinary(final char hexChar) {
+<span class="pc bpc" id="L270" title="16 of 17 branches missed.">        switch (hexChar) {</span>
+        case '0':
+<span class="nc" id="L272">            return FFFF.clone();</span>
+        case '1':
+<span class="nc" id="L274">            return FFFT.clone();</span>
+        case '2':
+<span class="nc" id="L276">            return FFTF.clone();</span>
+        case '3':
+<span class="nc" id="L278">            return FFTT.clone();</span>
+        case '4':
+<span class="nc" id="L280">            return FTFF.clone();</span>
+        case '5':
+<span class="nc" id="L282">            return FTFT.clone();</span>
+        case '6':
+<span class="nc" id="L284">            return FTTF.clone();</span>
+        case '7':
+<span class="nc" id="L286">            return FTTT.clone();</span>
+        case '8':
+<span class="nc" id="L288">            return TFFF.clone();</span>
+        case '9':
+<span class="nc" id="L290">            return TFFT.clone();</span>
+        case 'a':
+        case 'A':
+<span class="nc" id="L293">            return TFTF.clone();</span>
+        case 'b':
+        case 'B':
+<span class="nc" id="L296">            return TFTT.clone();</span>
+        case 'c':
+        case 'C':
+<span class="nc" id="L299">            return TTFF.clone();</span>
+        case 'd':
+        case 'D':
+<span class="fc" id="L302">            return TTFT.clone();</span>
+        case 'e':
+        case 'E':
+<span class="nc" id="L305">            return TTTF.clone();</span>
+        case 'f':
+        case 'F':
+<span class="nc" id="L308">            return TTTT.clone();</span>
+        default:
+<span class="nc" id="L310">            throw new IllegalArgumentException(&quot;Cannot convert '&quot; + hexChar + &quot;' to a hexadecimal digit&quot;);</span>
+        }
+    }
+    public static int hexDigitMsb0ToInt(final char hexChar) {
+<span class="pc bpc" id="L314" title="13 of 17 branches missed.">        switch (hexChar) {</span>
+        case '0':
+<span class="fc" id="L316">            return 0x0;</span>
+        case '1':
+<span class="nc" id="L318">            return 0x8;</span>
+        case '2':
+<span class="nc" id="L320">            return 0x4;</span>
+        case '3':
+<span class="nc" id="L322">            return 0xC;</span>
+        case '4':
+<span class="nc" id="L324">            return 0x2;</span>
+        case '5':
+<span class="nc" id="L326">            return 0xA;</span>
+        case '6':
+<span class="nc" id="L328">            return 0x6;</span>
+        case '7':
+<span class="nc" id="L330">            return 0xE;</span>
+        case '8':
+<span class="nc" id="L332">            return 0x1;</span>
+        case '9':
+<span class="nc" id="L334">            return 0x9;</span>
+        case 'a':
+        case 'A':
+<span class="fc" id="L337">            return 0x5;</span>
+        case 'b':
+        case 'B':
+<span class="nc" id="L340">            return 0xD;</span>
+        case 'c':
+        case 'C':
+<span class="nc" id="L343">            return 0x3;</span>
+        case 'd':
+        case 'D':
+<span class="nc" id="L346">            return 0xB;</span>
+        case 'e':
+        case 'E':
+<span class="nc" id="L349">            return 0x7;</span>
+        case 'f':
+        case 'F':
+<span class="fc" id="L352">            return 0xF;</span>
+        default:
+<span class="fc" id="L354">            throw new IllegalArgumentException(&quot;Cannot convert '&quot; + hexChar + &quot;' to a hexadecimal digit&quot;);</span>
+        }
+    }
+    public static boolean[] hexDigitToBinary(final char hexChar) {
+<span class="pc bpc" id="L358" title="13 of 17 branches missed.">        switch (hexChar) {</span>
+        case '0':
+<span class="fc" id="L360">            return FFFF.clone();</span>
+        case '1':
+<span class="nc" id="L362">            return TFFF.clone();</span>
+        case '2':
+<span class="nc" id="L364">            return FTFF.clone();</span>
+        case '3':
+<span class="nc" id="L366">            return TTFF.clone();</span>
+        case '4':
+<span class="nc" id="L368">            return FFTF.clone();</span>
+        case '5':
+<span class="fc" id="L370">            return TFTF.clone();</span>
+        case '6':
+<span class="nc" id="L372">            return FTTF.clone();</span>
+        case '7':
+<span class="nc" id="L374">            return TTTF.clone();</span>
+        case '8':
+<span class="nc" id="L376">            return FFFT.clone();</span>
+        case '9':
+<span class="nc" id="L378">            return TFFT.clone();</span>
+        case 'a':
+        case 'A':
+<span class="nc" id="L381">            return FTFT.clone();</span>
+        case 'b':
+        case 'B':
+<span class="nc" id="L384">            return TTFT.clone();</span>
+        case 'c':
+        case 'C':
+<span class="nc" id="L387">            return FFTT.clone();</span>
+        case 'd':
+        case 'D':
+<span class="nc" id="L390">            return TFTT.clone();</span>
+        case 'e':
+        case 'E':
+<span class="nc" id="L393">            return FTTT.clone();</span>
+        case 'f':
+        case 'F':
+<span class="fc" id="L396">            return TTTT.clone();</span>
+        default:
+<span class="fc" id="L398">            throw new IllegalArgumentException(&quot;Cannot convert '&quot; + hexChar + &quot;' to a hexadecimal digit&quot;);</span>
+        }
+    }
+    public static int hexDigitToInt(final char hexChar) {
+<span class="fc" id="L402">        final int digit = Character.digit(hexChar, 16);</span>
+<span class="fc bfc" id="L403" title="All 2 branches covered.">        if (digit &lt; 0) {</span>
+<span class="fc" id="L404">            throw new IllegalArgumentException(&quot;Cannot convert '&quot; + hexChar + &quot;' to a hexadecimal digit&quot;);</span>
+        }
+<span class="fc" id="L406">        return digit;</span>
+    }
+    public static byte hexToByte(final String src, final int srcPos, final byte dstInit, final int dstPos, final int nHex) {
+<span class="pc bpc" id="L409" title="1 of 2 branches missed.">        if (0 == nHex) {</span>
+<span class="nc" id="L410">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L412" title="1 of 2 branches missed.">        if ((nHex - 1) * 4 + dstPos &gt;= Byte.SIZE) {</span>
+<span class="nc" id="L413">            throw new IllegalArgumentException(&quot;(nHex - 1) * 4 + dstPos &gt;= 8&quot;);</span>
+        }
+<span class="fc" id="L415">        byte out = dstInit;</span>
+<span class="fc bfc" id="L416" title="All 2 branches covered.">        for (int i = 0; i &lt; nHex; i++) {</span>
+<span class="fc" id="L417">            final int shift = i * 4 + dstPos;</span>
+<span class="fc" id="L418">            final int bits = (0xf &amp; hexDigitToInt(src.charAt(i + srcPos))) &lt;&lt; shift;</span>
+<span class="fc" id="L419">            final int mask = 0xf &lt;&lt; shift;</span>
+<span class="fc" id="L420">            out = (byte) (out &amp; ~mask | bits);</span>
+        }
+<span class="fc" id="L422">        return out;</span>
+    }
+    public static int hexToInt(final String src, final int srcPos, final int dstInit, final int dstPos, final int nHex) {
+<span class="pc bpc" id="L425" title="1 of 2 branches missed.">        if (0 == nHex) {</span>
+<span class="nc" id="L426">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L428" title="1 of 2 branches missed.">        if ((nHex - 1) * 4 + dstPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L429">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + dstPos &gt;= 32&quot;);</span>
+        }
+<span class="fc" id="L431">        int out = dstInit;</span>
+<span class="fc bfc" id="L432" title="All 2 branches covered.">        for (int i = 0; i &lt; nHex; i++) {</span>
+<span class="fc" id="L433">            final int shift = i * 4 + dstPos;</span>
+<span class="fc" id="L434">            final int bits = (0xf &amp; hexDigitToInt(src.charAt(i + srcPos))) &lt;&lt; shift;</span>
+<span class="fc" id="L435">            final int mask = 0xf &lt;&lt; shift;</span>
+<span class="fc" id="L436">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L438">        return out;</span>
+    }
+    public static long hexToLong(final String src, final int srcPos, final long dstInit, final int dstPos, final int nHex) {
+<span class="pc bpc" id="L441" title="1 of 2 branches missed.">        if (0 == nHex) {</span>
+<span class="nc" id="L442">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L444" title="1 of 2 branches missed.">        if ((nHex - 1) * 4 + dstPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L445">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + dstPos &gt;= 64&quot;);</span>
+        }
+<span class="fc" id="L447">        long out = dstInit;</span>
+<span class="fc bfc" id="L448" title="All 2 branches covered.">        for (int i = 0; i &lt; nHex; i++) {</span>
+<span class="fc" id="L449">            final int shift = i * 4 + dstPos;</span>
+<span class="fc" id="L450">            final long bits = (0xfL &amp; hexDigitToInt(src.charAt(i + srcPos))) &lt;&lt; shift;</span>
+<span class="fc" id="L451">            final long mask = 0xfL &lt;&lt; shift;</span>
+<span class="fc" id="L452">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L454">        return out;</span>
+    }
+    public static short hexToShort(final String src, final int srcPos, final short dstInit, final int dstPos, final int nHex) {
+<span class="pc bpc" id="L457" title="1 of 2 branches missed.">        if (0 == nHex) {</span>
+<span class="nc" id="L458">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L460" title="1 of 2 branches missed.">        if ((nHex - 1) * 4 + dstPos &gt;= Short.SIZE) {</span>
+<span class="nc" id="L461">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + dstPos &gt;= 16&quot;);</span>
+        }
+<span class="fc" id="L463">        short out = dstInit;</span>
+<span class="fc bfc" id="L464" title="All 2 branches covered.">        for (int i = 0; i &lt; nHex; i++) {</span>
+<span class="fc" id="L465">            final int shift = i * 4 + dstPos;</span>
+<span class="fc" id="L466">            final int bits = (0xf &amp; hexDigitToInt(src.charAt(i + srcPos))) &lt;&lt; shift;</span>
+<span class="fc" id="L467">            final int mask = 0xf &lt;&lt; shift;</span>
+<span class="fc" id="L468">            out = (short) (out &amp; ~mask | bits);</span>
+        }
+<span class="fc" id="L470">        return out;</span>
+    }
+    public static long intArrayToLong(final int[] src, final int srcPos, final long dstInit, final int dstPos, final int nInts) {
+<span class="pc bpc" id="L473" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nInts) {</span>
+<span class="nc" id="L474">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L476" title="1 of 2 branches missed.">        if ((nInts - 1) * Integer.SIZE + dstPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L477">            throw new IllegalArgumentException(&quot;(nInts - 1) * 32 + dstPos &gt;= 64&quot;);</span>
+        }
+<span class="fc" id="L479">        long out = dstInit;</span>
+<span class="fc bfc" id="L480" title="All 2 branches covered.">        for (int i = 0; i &lt; nInts; i++) {</span>
+<span class="fc" id="L481">            final int shift = i * Integer.SIZE + dstPos;</span>
+<span class="fc" id="L482">            final long bits = (0xffffffffL &amp; src[i + srcPos]) &lt;&lt; shift;</span>
+<span class="fc" id="L483">            final long mask = 0xffffffffL &lt;&lt; shift;</span>
+<span class="fc" id="L484">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L486">        return out;</span>
+    }
+    public static boolean[] intToBinary(final int src, final int srcPos, final boolean[] dst, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L489" title="1 of 2 branches missed.">        if (0 == nBools) {</span>
+<span class="nc" id="L490">            return dst;</span>
+        }
+<span class="pc bpc" id="L492" title="1 of 2 branches missed.">        if (nBools - 1 + srcPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L493">            throw new IllegalArgumentException(&quot;nBools -  1 + srcPos &gt;= 32&quot;);</span>
+        }
+<span class="fc bfc" id="L495" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L496">            final int shift = i + srcPos;</span>
+<span class="fc bfc" id="L497" title="All 2 branches covered.">            dst[dstPos + i] = (0x1 &amp; src &gt;&gt; shift) != 0;</span>
+        }
+<span class="fc" id="L499">        return dst;</span>
+    }
+    public static byte[] intToByteArray(final int src, final int srcPos, final byte[] dst, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L502" title="1 of 2 branches missed.">        if (0 == nBytes) {</span>
+<span class="nc" id="L503">            return dst;</span>
+        }
+<span class="pc bpc" id="L505" title="1 of 2 branches missed.">        if ((nBytes - 1) * Byte.SIZE + srcPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L506">            throw new IllegalArgumentException(&quot;(nBytes - 1) * 8 + srcPos &gt;= 32&quot;);</span>
+        }
+<span class="fc bfc" id="L508" title="All 2 branches covered.">        for (int i = 0; i &lt; nBytes; i++) {</span>
+<span class="fc" id="L509">            final int shift = i * Byte.SIZE + srcPos;</span>
+<span class="fc" id="L510">            dst[dstPos + i] = (byte) (0xff &amp; src &gt;&gt; shift);</span>
+        }
+<span class="fc" id="L512">        return dst;</span>
+    }
+    public static String intToHex(final int src, final int srcPos, final String dstInit, final int dstPos, final int nHexs) {
+<span class="nc bnc" id="L515" title="All 2 branches missed.">        if (0 == nHexs) {</span>
+<span class="nc" id="L516">            return dstInit;</span>
+        }
+<span class="nc bnc" id="L518" title="All 2 branches missed.">        if ((nHexs - 1) * 4 + srcPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L519">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + srcPos &gt;= 32&quot;);</span>
+        }
+<span class="nc" id="L521">        final StringBuilder sb = new StringBuilder(dstInit);</span>
+<span class="nc" id="L522">        int append = sb.length();</span>
+<span class="nc bnc" id="L523" title="All 2 branches missed.">        for (int i = 0; i &lt; nHexs; i++) {</span>
+<span class="nc" id="L524">            final int shift = i * 4 + srcPos;</span>
+<span class="nc" id="L525">            final int bits = 0xF &amp; src &gt;&gt; shift;</span>
+<span class="nc bnc" id="L526" title="All 2 branches missed.">            if (dstPos + i == append) {</span>
+<span class="nc" id="L527">                ++append;</span>
+<span class="nc" id="L528">                sb.append(intToHexDigit(bits));</span>
+            } else {
+<span class="nc" id="L530">                sb.setCharAt(dstPos + i, intToHexDigit(bits));</span>
+            }
+        }
+<span class="nc" id="L533">        return sb.toString();</span>
+    }
+    public static char intToHexDigit(final int nibble) {
+<span class="fc" id="L536">        final char c = Character.forDigit(nibble, 16);</span>
+<span class="fc bfc" id="L537" title="All 2 branches covered.">        if (c == Character.MIN_VALUE) {</span>
+<span class="fc" id="L538">            throw new IllegalArgumentException(&quot;nibble value not between 0 and 15: &quot; + nibble);</span>
+        }
+<span class="fc" id="L540">        return c;</span>
+    }
+    public static char intToHexDigitMsb0(final int nibble) {
+<span class="pc bpc" id="L543" title="12 of 17 branches missed.">        switch (nibble) {</span>
+        case 0x0:
+<span class="nc" id="L545">            return '0';</span>
+        case 0x1:
+<span class="fc" id="L547">            return '8';</span>
+        case 0x2:
+<span class="fc" id="L549">            return '4';</span>
+        case 0x3:
+<span class="fc" id="L551">            return 'c';</span>
+        case 0x4:
+<span class="nc" id="L553">            return '2';</span>
+        case 0x5:
+<span class="nc" id="L555">            return 'a';</span>
+        case 0x6:
+<span class="nc" id="L557">            return '6';</span>
+        case 0x7:
+<span class="nc" id="L559">            return 'e';</span>
+        case 0x8:
+<span class="nc" id="L561">            return '1';</span>
+        case 0x9:
+<span class="nc" id="L563">            return '9';</span>
+        case 0xA:
+<span class="nc" id="L565">            return '5';</span>
+        case 0xB:
+<span class="nc" id="L567">            return 'd';</span>
+        case 0xC:
+<span class="nc" id="L569">            return '3';</span>
+        case 0xD:
+<span class="nc" id="L571">            return 'b';</span>
+        case 0xE:
+<span class="nc" id="L573">            return '7';</span>
+        case 0xF:
+<span class="fc" id="L575">            return 'f';</span>
+        default:
+<span class="fc" id="L577">            throw new IllegalArgumentException(&quot;nibble value not between 0 and 15: &quot; + nibble);</span>
+        }
+    }
+    public static short[] intToShortArray(final int src, final int srcPos, final short[] dst, final int dstPos, final int nShorts) {
+<span class="pc bpc" id="L581" title="1 of 2 branches missed.">        if (0 == nShorts) {</span>
+<span class="nc" id="L582">            return dst;</span>
+        }
+<span class="pc bpc" id="L584" title="1 of 2 branches missed.">        if ((nShorts - 1) * Short.SIZE + srcPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L585">            throw new IllegalArgumentException(&quot;(nShorts - 1) * 16 + srcPos &gt;= 32&quot;);</span>
+        }
+<span class="fc bfc" id="L587" title="All 2 branches covered.">        for (int i = 0; i &lt; nShorts; i++) {</span>
+<span class="fc" id="L588">            final int shift = i * Short.SIZE + srcPos;</span>
+<span class="fc" id="L589">            dst[dstPos + i] = (short) (0xffff &amp; src &gt;&gt; shift);</span>
+        }
+<span class="fc" id="L591">        return dst;</span>
+    }
+    public static boolean[] longToBinary(final long src, final int srcPos, final boolean[] dst, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L594" title="1 of 2 branches missed.">        if (0 == nBools) {</span>
+<span class="nc" id="L595">            return dst;</span>
+        }
+<span class="pc bpc" id="L597" title="1 of 2 branches missed.">        if (nBools - 1 + srcPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L598">            throw new IllegalArgumentException(&quot;nBools -  1 + srcPos &gt;= 64&quot;);</span>
+        }
+<span class="fc bfc" id="L600" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L601">            final int shift = i + srcPos;</span>
+<span class="fc bfc" id="L602" title="All 2 branches covered.">            dst[dstPos + i] = (0x1 &amp; src &gt;&gt; shift) != 0;</span>
+        }
+<span class="fc" id="L604">        return dst;</span>
+    }
+    public static byte[] longToByteArray(final long src, final int srcPos, final byte[] dst, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L607" title="1 of 2 branches missed.">        if (0 == nBytes) {</span>
+<span class="nc" id="L608">            return dst;</span>
+        }
+<span class="pc bpc" id="L610" title="1 of 2 branches missed.">        if ((nBytes - 1) * Byte.SIZE + srcPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L611">            throw new IllegalArgumentException(&quot;(nBytes - 1) * 8 + srcPos &gt;= 64&quot;);</span>
+        }
+<span class="fc bfc" id="L613" title="All 2 branches covered.">        for (int i = 0; i &lt; nBytes; i++) {</span>
+<span class="fc" id="L614">            final int shift = i * Byte.SIZE + srcPos;</span>
+<span class="fc" id="L615">            dst[dstPos + i] = (byte) (0xff &amp; src &gt;&gt; shift);</span>
+        }
+<span class="fc" id="L617">        return dst;</span>
+    }
+    public static String longToHex(final long src, final int srcPos, final String dstInit, final int dstPos, final int nHexs) {
+<span class="pc bpc" id="L620" title="1 of 2 branches missed.">        if (0 == nHexs) {</span>
+<span class="nc" id="L621">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L623" title="1 of 2 branches missed.">        if ((nHexs - 1) * 4 + srcPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L624">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + srcPos &gt;= 64&quot;);</span>
+        }
+<span class="fc" id="L626">        final StringBuilder sb = new StringBuilder(dstInit);</span>
+<span class="fc" id="L627">        int append = sb.length();</span>
+<span class="fc bfc" id="L628" title="All 2 branches covered.">        for (int i = 0; i &lt; nHexs; i++) {</span>
+<span class="fc" id="L629">            final int shift = i * 4 + srcPos;</span>
+<span class="fc" id="L630">            final int bits = (int) (0xF &amp; src &gt;&gt; shift);</span>
+<span class="pc bpc" id="L631" title="1 of 2 branches missed.">            if (dstPos + i == append) {</span>
+<span class="fc" id="L632">                ++append;</span>
+<span class="fc" id="L633">                sb.append(intToHexDigit(bits));</span>
+            } else {
+<span class="nc" id="L635">                sb.setCharAt(dstPos + i, intToHexDigit(bits));</span>
+            }
+        }
+<span class="fc" id="L638">        return sb.toString();</span>
+    }
+    public static int[] longToIntArray(final long src, final int srcPos, final int[] dst, final int dstPos, final int nInts) {
+<span class="pc bpc" id="L641" title="1 of 2 branches missed.">        if (0 == nInts) {</span>
+<span class="nc" id="L642">            return dst;</span>
+        }
+<span class="pc bpc" id="L644" title="1 of 2 branches missed.">        if ((nInts - 1) * Integer.SIZE + srcPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L645">            throw new IllegalArgumentException(&quot;(nInts - 1) * 32 + srcPos &gt;= 64&quot;);</span>
+        }
+<span class="fc bfc" id="L647" title="All 2 branches covered.">        for (int i = 0; i &lt; nInts; i++) {</span>
+<span class="fc" id="L648">            final int shift = i * Integer.SIZE + srcPos;</span>
+<span class="fc" id="L649">            dst[dstPos + i] = (int) (0xffffffff &amp; src &gt;&gt; shift);</span>
+        }
+<span class="fc" id="L651">        return dst;</span>
+    }
+    public static short[] longToShortArray(final long src, final int srcPos, final short[] dst, final int dstPos, final int nShorts) {
+<span class="pc bpc" id="L654" title="1 of 2 branches missed.">        if (0 == nShorts) {</span>
+<span class="nc" id="L655">            return dst;</span>
+        }
+<span class="pc bpc" id="L657" title="1 of 2 branches missed.">        if ((nShorts - 1) * Short.SIZE + srcPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L658">            throw new IllegalArgumentException(&quot;(nShorts - 1) * 16 + srcPos &gt;= 64&quot;);</span>
+        }
+<span class="fc bfc" id="L660" title="All 2 branches covered.">        for (int i = 0; i &lt; nShorts; i++) {</span>
+<span class="fc" id="L661">            final int shift = i * Short.SIZE + srcPos;</span>
+<span class="fc" id="L662">            dst[dstPos + i] = (short) (0xffff &amp; src &gt;&gt; shift);</span>
+        }
+<span class="fc" id="L664">        return dst;</span>
+    }
+    public static int shortArrayToInt(final short[] src, final int srcPos, final int dstInit, final int dstPos, final int nShorts) {
+<span class="pc bpc" id="L667" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nShorts) {</span>
+<span class="nc" id="L668">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L670" title="1 of 2 branches missed.">        if ((nShorts - 1) * Short.SIZE + dstPos &gt;= Integer.SIZE) {</span>
+<span class="nc" id="L671">            throw new IllegalArgumentException(&quot;(nShorts - 1) * 16 + dstPos &gt;= 32&quot;);</span>
+        }
+<span class="fc" id="L673">        int out = dstInit;</span>
+<span class="fc bfc" id="L674" title="All 2 branches covered.">        for (int i = 0; i &lt; nShorts; i++) {</span>
+<span class="fc" id="L675">            final int shift = i * Short.SIZE + dstPos;</span>
+<span class="fc" id="L676">            final int bits = (0xffff &amp; src[i + srcPos]) &lt;&lt; shift;</span>
+<span class="fc" id="L677">            final int mask = 0xffff &lt;&lt; shift;</span>
+<span class="fc" id="L678">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L680">        return out;</span>
+    }
+    public static long shortArrayToLong(final short[] src, final int srcPos, final long dstInit, final int dstPos, final int nShorts) {
+<span class="pc bpc" id="L683" title="4 of 6 branches missed.">        if (src.length == 0 &amp;&amp; srcPos == 0 || 0 == nShorts) {</span>
+<span class="nc" id="L684">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L686" title="1 of 2 branches missed.">        if ((nShorts - 1) * Short.SIZE + dstPos &gt;= Long.SIZE) {</span>
+<span class="nc" id="L687">            throw new IllegalArgumentException(&quot;(nShorts - 1) * 16 + dstPos &gt;= 64&quot;);</span>
+        }
+<span class="fc" id="L689">        long out = dstInit;</span>
+<span class="fc bfc" id="L690" title="All 2 branches covered.">        for (int i = 0; i &lt; nShorts; i++) {</span>
+<span class="fc" id="L691">            final int shift = i * Short.SIZE + dstPos;</span>
+<span class="fc" id="L692">            final long bits = (0xffffL &amp; src[i + srcPos]) &lt;&lt; shift;</span>
+<span class="fc" id="L693">            final long mask = 0xffffL &lt;&lt; shift;</span>
+<span class="fc" id="L694">            out = out &amp; ~mask | bits;</span>
+        }
+<span class="fc" id="L696">        return out;</span>
+    }
+    public static boolean[] shortToBinary(final short src, final int srcPos, final boolean[] dst, final int dstPos, final int nBools) {
+<span class="pc bpc" id="L699" title="1 of 2 branches missed.">        if (0 == nBools) {</span>
+<span class="nc" id="L700">            return dst;</span>
+        }
+<span class="pc bpc" id="L702" title="1 of 2 branches missed.">        if (nBools - 1 + srcPos &gt;= Short.SIZE) {</span>
+<span class="nc" id="L703">            throw new IllegalArgumentException(&quot;nBools -  1 + srcPos &gt;= 16&quot;);</span>
+        }
+<span class="pc bpc" id="L705" title="1 of 2 branches missed.">        assert nBools - 1 &lt; Short.SIZE - srcPos;</span>
+<span class="fc bfc" id="L706" title="All 2 branches covered.">        for (int i = 0; i &lt; nBools; i++) {</span>
+<span class="fc" id="L707">            final int shift = i + srcPos;</span>
+<span class="fc bfc" id="L708" title="All 2 branches covered.">            dst[dstPos + i] = (0x1 &amp; src &gt;&gt; shift) != 0;</span>
+        }
+<span class="fc" id="L710">        return dst;</span>
+    }
+    public static byte[] shortToByteArray(final short src, final int srcPos, final byte[] dst, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L713" title="1 of 2 branches missed.">        if (0 == nBytes) {</span>
+<span class="nc" id="L714">            return dst;</span>
+        }
+<span class="pc bpc" id="L716" title="1 of 2 branches missed.">        if ((nBytes - 1) * Byte.SIZE + srcPos &gt;= Short.SIZE) {</span>
+<span class="nc" id="L717">            throw new IllegalArgumentException(&quot;(nBytes - 1) * 8 + srcPos &gt;= 16&quot;);</span>
+        }
+<span class="fc bfc" id="L719" title="All 2 branches covered.">        for (int i = 0; i &lt; nBytes; i++) {</span>
+<span class="fc" id="L720">            final int shift = i * Byte.SIZE + srcPos;</span>
+<span class="fc" id="L721">            dst[dstPos + i] = (byte) (0xff &amp; src &gt;&gt; shift);</span>
+        }
+<span class="fc" id="L723">        return dst;</span>
+    }
+    public static String shortToHex(final short src, final int srcPos, final String dstInit, final int dstPos, final int nHexs) {
+<span class="pc bpc" id="L726" title="1 of 2 branches missed.">        if (0 == nHexs) {</span>
+<span class="nc" id="L727">            return dstInit;</span>
+        }
+<span class="pc bpc" id="L729" title="1 of 2 branches missed.">        if ((nHexs - 1) * 4 + srcPos &gt;= Short.SIZE) {</span>
+<span class="nc" id="L730">            throw new IllegalArgumentException(&quot;(nHexs - 1) * 4 + srcPos &gt;= 16&quot;);</span>
+        }
+<span class="fc" id="L732">        final StringBuilder sb = new StringBuilder(dstInit);</span>
+<span class="fc" id="L733">        int append = sb.length();</span>
+<span class="fc bfc" id="L734" title="All 2 branches covered.">        for (int i = 0; i &lt; nHexs; i++) {</span>
+<span class="fc" id="L735">            final int shift = i * 4 + srcPos;</span>
+<span class="fc" id="L736">            final int bits = 0xF &amp; src &gt;&gt; shift;</span>
+<span class="pc bpc" id="L737" title="1 of 2 branches missed.">            if (dstPos + i == append) {</span>
+<span class="fc" id="L738">                ++append;</span>
+<span class="fc" id="L739">                sb.append(intToHexDigit(bits));</span>
+            } else {
+<span class="nc" id="L741">                sb.setCharAt(dstPos + i, intToHexDigit(bits));</span>
+            }
+        }
+<span class="fc" id="L744">        return sb.toString();</span>
+    }
+    public static byte[] uuidToByteArray(final UUID src, final byte[] dst, final int dstPos, final int nBytes) {
+<span class="pc bpc" id="L747" title="1 of 2 branches missed.">        if (0 == nBytes) {</span>
+<span class="nc" id="L748">            return dst;</span>
+        }
+<span class="fc bfc" id="L750" title="All 2 branches covered.">        if (nBytes &gt; 16) {</span>
+<span class="fc" id="L751">            throw new IllegalArgumentException(&quot;nBytes &gt; 16&quot;);</span>
+        }
+<span class="fc" id="L753">        longToByteArray(src.getMostSignificantBits(), 0, dst, dstPos, Math.min(nBytes, 8));</span>
+<span class="pc bpc" id="L754" title="1 of 2 branches missed.">        if (nBytes &gt;= 8) {</span>
+<span class="fc" id="L755">            longToByteArray(src.getLeastSignificantBits(), 0, dst, dstPos + 8, nBytes - 8);</span>
+        }
+<span class="fc" id="L757">        return dst;</span>
+    }
+    @Deprecated
+<span class="fc" id="L760">    public Conversion() {</span>
+<span class="fc" id="L761">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

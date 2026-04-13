@@ -1,0 +1,6 @@
+```
+包路径：csv
+类名：DuplicateHeaderMode
+父类：java.lang.Enum
+依赖类：无
+```

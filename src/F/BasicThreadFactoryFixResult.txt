@@ -1,0 +1,39 @@
+[2026-01-23 16:59:37] 修复结果
+修复类型: 致命错误修复
+修复前错误: 断言值错误 - [断言builder.priority为null，但实际可能不为空]
+修复后状态: 仍有问题 - 编译错误 - 变量builder未定义
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+@Test
+void testBuild() {
+    builder.priority(5);
+    BasicThreadFactory factory = builder.build();
+    assertNotNull(factory);
+    assertEquals(5, builder.priority.intValue());
+}
+
+```
+
+[2026-01-23 17:01:34] 兜底处理
+兜底策略: SINGLE_LINE
+兜底后代码:
+```java
+import lang3.concurrent.BasicThreadFactory;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+class BasicThreadFactoryTest {
+
+    @Test
+    void testBuild() {
+        BasicThreadFactory.Builder builder = BasicThreadFactory.builder();
+        builder.priority(5);
+        BasicThreadFactory factory = builder.build();
+        assertNotNull(factory);
+        assertEquals(5, factory.getPriority().intValue());
+    }
+}
+```
+

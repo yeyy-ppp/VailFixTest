@@ -1,0 +1,46 @@
+[2026-01-13 16:20:31] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+优化建议: 增加三个参数构造器中部分参数为null的混合场景测试; 补充对异常消息内容的精确断言（如格式校验）; ```
+
+[2026-01-13 16:22:52] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+优化建议: 建议增加getOption()返回null的边界场景测试; 建议增加getOptionGroup()返回null的边界场景测试
+
+[2026-01-13 17:42:41] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+优化建议: 增加测试OptionGroup组内已有选项被选择的边界场景; 增加三个参数构造函数的部分参数为null的组合测试
+
+[2026-01-14 09:36:41] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+优化建议: 建议增加AlreadySelectedException(String)传入null消息的测试; 建议增加测试三个参数构造方法中OptionGroup为null而Option非null的情况; 建议增加测试三个参数构造方法中OptionGroup非null而Option为null的情况
+
+[2026-01-14 11:08:37] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+
+[2026-01-14 11:33:38] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+
+[2026-01-14 11:53:38] 验证结果
+错误类型: 包路径错误, 错误行: 3, 错误原因: 使用了错误的导入 org.junit.jupiter.api.Test，应使用 cli 包下的类，但未发现导入 org.apache.commons.cli 包的直接证据。但需注意：测试代码中使用了 cli.Option 和 cli.OptionGroup，但未显式导入，可能导致编译错误。, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: AlreadySelectedException, AlreadySelectedException, AlreadySelectedException, getOption, getOptionGroup
+  未覆盖: 全部覆盖
+

@@ -1,0 +1,225 @@
+```
+包路径：cli
+类名：HelpFormatter
+父类：无
+依赖类：Option,Options,OptionGroup,Util,Char
+---
+序号：1
+方法名：HelpFormatter(Function<Option, String>, PrintWriter, boolean)
+返回类型：void
+功能描述：构造HelpFormatter实例
+序号：2
+方法名：appendOption(StringBuilder, Option, boolean)
+返回类型：void
+功能描述：向StringBuilder追加选项信息
+序号：3
+方法名：appendOptionGroup(StringBuilder, OptionGroup)
+返回类型：void
+功能描述：向StringBuilder追加选项组信息
+序号：4
+方法名：appendOptions(A, int, Options, int, int)
+返回类型：A
+功能描述：格式化并追加选项信息到Appendable对象
+序号：5
+方法名：appendWrappedText(A, int, int, String)
+返回类型：A
+功能描述：向Appendable对象追加带换行的文本
+序号：6
+方法名：createPadding(int)
+返回类型：String
+功能描述：创建指定长度的空格字符串
+序号：7
+方法名：determineMaxSinceLength(Options)
+返回类型：int
+功能描述：确定所有选项中"Since"字段的最大长度
+序号：8
+方法名：findWrapPos(String, int, int)
+返回类型：int
+功能描述：查找文本换行位置
+序号：9
+方法名：getArgName()
+返回类型：String
+功能描述：获取参数名称默认值
+序号：10
+方法名：getDescPadding()
+返回类型：int
+功能描述：获取描述填充默认值
+序号：11
+方法名：getLeftPadding()
+返回类型：int
+功能描述：获取左填充默认值
+序号：12
+方法名：getLongOptPrefix()
+返回类型：String
+功能描述：获取长选项前缀默认值
+序号：13
+方法名：getLongOptSeparator()
+返回类型：String
+功能描述：获取长选项分隔符
+序号：14
+方法名：getNewLine()
+返回类型：String
+功能描述：获取换行符默认值
+序号：15
+方法名：getOptionComparator()
+返回类型：Comparator<Option>
+功能描述：获取选项比较器
+序号：16
+方法名：getOptPrefix()
+返回类型：String
+功能描述：获取选项前缀默认值
+序号：17
+方法名：getSyntaxPrefix()
+返回类型：String
+功能描述：获取语法前缀默认值
+序号：18
+方法名：getWidth()
+返回类型：int
+功能描述：获取宽度默认值
+序号：19
+方法名：printHelp(int, String, String, Options, String)
+返回类型：void
+功能描述：打印帮助信息（带宽度参数）
+序号：20
+方法名：printHelp(int, String, String, Options, String, boolean)
+返回类型：void
+功能描述：打印帮助信息（带自动使用说明）
+序号：21
+方法名：printHelp(PrintWriter, int, String, String, Options, int, int, String)
+返回类型：void
+功能描述：打印帮助信息（指定PrintWriter）
+序号：22
+方法名：printHelp(PrintWriter, int, String, String, Options, int, int, String, boolean)
+返回类型：void
+功能描述：打印帮助信息（完整参数）
+序号：23
+方法名：printHelp(String, Options)
+返回类型：void
+功能描述：打印帮助信息（基本格式）
+序号：24
+方法名：printHelp(String, Options, boolean)
+返回类型：void
+功能描述：打印帮助信息（带自动使用说明）
+序号：25
+方法名：printHelp(String, String, Options, String)
+返回类型：void
+功能描述：打印帮助信息（带页眉页脚）
+序号：26
+方法名：printHelp(String, String, Options, String, boolean)
+返回类型：void
+功能描述：打印帮助信息（带页眉页脚和自动使用说明）
+序号：27
+方法名：printOptions(PrintWriter, int, Options, int, int)
+返回类型：void
+功能描述：格式化打印选项信息
+序号：28
+方法名：printUsage(PrintWriter, int, String)
+返回类型：void
+功能描述：打印使用说明
+序号：29
+方法名：printUsage(PrintWriter, int, String, Options)
+返回类型：void
+功能描述：根据选项打印使用说明
+序号：30
+方法名：printWrapped(PrintWriter, int, int, String)
+返回类型：void
+功能描述：打印带换行文本（指定下一行制表位）
+序号：31
+方法名：printWrapped(PrintWriter, int, String)
+返回类型：void
+功能描述：打印带换行文本
+序号：32
+方法名：renderOptions(StringBuffer, int, Options, int, int)
+返回类型：StringBuffer
+功能描述：渲染选项信息到StringBuffer
+序号：33
+方法名：renderWrappedText(StringBuffer, int, int, String)
+返回类型：StringBuffer
+功能描述：渲染带换行文本到StringBuffer
+序号：34
+方法名：renderWrappedTextBlock(A, int, int, String)
+返回类型：A
+功能描述：渲染多行文本块到Appendable对象
+序号：35
+方法名：rtrim(String)
+返回类型：String
+功能描述：去除字符串右侧空格
+序号：36
+方法名：setArgName(String)
+返回类型：void
+功能描述：设置参数名称默认值
+序号：37
+方法名：setDescPadding(int)
+返回类型：void
+功能描述：设置描述填充默认值
+序号：38
+方法名：setLeftPadding(int)
+返回类型：void
+功能描述：设置左填充默认值
+序号：39
+方法名：setLongOptPrefix(String)
+返回类型：void
+功能描述：设置长选项前缀默认值
+序号：40
+方法名：setLongOptSeparator(String)
+返回类型：void
+功能描述：设置长选项分隔符
+序号：41
+方法名：setNewLine(String)
+返回类型：void
+功能描述：设置换行符默认值
+序号：42
+方法名：setOptionComparator(Comparator<Option>)
+返回类型：void
+功能描述：设置选项比较器
+序号：43
+方法名：setOptPrefix(String)
+返回类型：void
+功能描述：设置选项前缀默认值
+序号：44
+方法名：setSyntaxPrefix(String)
+返回类型：void
+功能描述：设置语法前缀默认值
+序号：45
+方法名：setWidth(int)
+返回类型：void
+功能描述：设置宽度默认值
+包路径：cli
+类名：Builder
+父类：无
+依赖类：Option,HelpFormatter
+---
+序号：1
+方法名：Builder()
+返回类型：void
+功能描述：构造Builder实例
+序号：2
+方法名：get()
+返回类型：HelpFormatter
+功能描述：创建HelpFormatter实例
+序号：3
+方法名：setPrintWriter(PrintWriter)
+返回类型：Builder
+功能描述：设置PrintWriter
+序号：4
+方法名：setShowDeprecated(boolean)
+返回类型：Builder
+功能描述：设置是否显示弃用选项
+序号：5
+方法名：setShowDeprecated(Function<Option, String>)
+返回类型：Builder
+功能描述：设置弃用选项格式函数
+序号：6
+方法名：setShowSince(boolean)
+返回类型：Builder
+功能描述：设置是否显示"Since"字段
+包路径：cli
+类名：OptionComparator
+父类：无
+依赖类：Option
+---
+序号：1
+方法名：compare(Option, Option)
+返回类型：int
+功能描述：比较两个选项的键名（忽略大小写）
+```

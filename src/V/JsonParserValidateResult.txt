@@ -1,0 +1,12 @@
+[2026-01-24 02:53:57] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: parseString, parseReader, parseReader, parse, parse, parse
+  未覆盖: JsonParser
+
+[2026-01-24 02:56:41] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: JsonParser, parseString, parseReader, parseReader, parse, parse, parse
+  未覆盖: 全部覆盖
+

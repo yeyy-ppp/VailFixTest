@@ -1,0 +1,9 @@
+包路径：gson
+类名：ToNumberStrategy
+父类：无
+依赖类：JsonReader
+---
+序号：1
+方法名：readNumber(JsonReader in)
+返回类型：Number
+功能描述：从JSON读取器中读取一个数字

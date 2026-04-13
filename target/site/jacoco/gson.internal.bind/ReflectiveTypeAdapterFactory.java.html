@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReflectiveTypeAdapterFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">gson.internal.bind</a> &gt; <span class="el_source">ReflectiveTypeAdapterFactory.java</span></div><h1>ReflectiveTypeAdapterFactory.java</h1><pre class="source lang-java linenums">package gson.internal.bind;
+import gson.FieldNamingStrategy;
+import gson.Gson;
+import gson.JsonIOException;
+import gson.JsonParseException;
+import gson.JsonSyntaxException;
+import gson.ReflectionAccessFilter;
+import gson.ReflectionAccessFilter.FilterResult;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.annotations.JsonAdapter;
+import gson.annotations.SerializedName;
+import gson.internal.ConstructorConstructor;
+import gson.internal.Excluder;
+import gson.internal.GsonTypes;
+import gson.internal.ObjectConstructor;
+import gson.internal.Primitives;
+import gson.internal.ReflectionAccessFilterHelper;
+import gson.internal.TroubleshootingGuide;
+import gson.internal.reflect.ReflectionHelper;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.lang.reflect.AccessibleObject;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+public final class ReflectiveTypeAdapterFactory implements TypeAdapterFactory {
+  private final ConstructorConstructor constructorConstructor;
+  private final FieldNamingStrategy fieldNamingPolicy;
+  private final Excluder excluder;
+  private final JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory;
+  private final List&lt;ReflectionAccessFilter&gt; reflectionFilters;
+  public ReflectiveTypeAdapterFactory(
+      ConstructorConstructor constructorConstructor,
+      FieldNamingStrategy fieldNamingPolicy,
+      Excluder excluder,
+      JsonAdapterAnnotationTypeAdapterFactory jsonAdapterFactory,
+<span class="fc" id="L52">      List&lt;ReflectionAccessFilter&gt; reflectionFilters) {</span>
+<span class="fc" id="L53">    this.constructorConstructor = constructorConstructor;</span>
+<span class="fc" id="L54">    this.fieldNamingPolicy = fieldNamingPolicy;</span>
+<span class="fc" id="L55">    this.excluder = excluder;</span>
+<span class="fc" id="L56">    this.jsonAdapterFactory = jsonAdapterFactory;</span>
+<span class="fc" id="L57">    this.reflectionFilters = reflectionFilters;</span>
+<span class="fc" id="L58">  }</span>
+  private boolean includeField(Field f, boolean serialize) {
+<span class="fc bfc" id="L60" title="All 2 branches covered.">    return !excluder.excludeField(f, serialize);</span>
+  }
+  @SuppressWarnings(&quot;MixedMutabilityReturnType&quot;)
+  private List&lt;String&gt; getFieldNames(Field f) {
+    String fieldName;
+    List&lt;String&gt; alternates;
+<span class="fc" id="L66">    SerializedName annotation = f.getAnnotation(SerializedName.class);</span>
+<span class="pc bpc" id="L67" title="1 of 2 branches missed.">    if (annotation == null) {</span>
+<span class="fc" id="L68">      fieldName = fieldNamingPolicy.translateName(f);</span>
+<span class="fc" id="L69">      alternates = fieldNamingPolicy.alternateNames(f);</span>
+    } else {
+<span class="nc" id="L71">      fieldName = annotation.value();</span>
+<span class="nc" id="L72">      alternates = Arrays.asList(annotation.alternate());</span>
+    }
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">    if (alternates.isEmpty()) {</span>
+<span class="fc" id="L75">      return Collections.singletonList(fieldName);</span>
+    }
+<span class="nc" id="L77">    List&lt;String&gt; fieldNames = new ArrayList&lt;&gt;(alternates.size() + 1);</span>
+<span class="nc" id="L78">    fieldNames.add(fieldName);</span>
+<span class="nc" id="L79">    fieldNames.addAll(alternates);</span>
+<span class="nc" id="L80">    return fieldNames;</span>
+  }
+  @Override
+  public &lt;T&gt; TypeAdapter&lt;T&gt; create(Gson gson, TypeToken&lt;T&gt; type) {
+<span class="fc" id="L84">    Class&lt;? super T&gt; raw = type.getRawType();</span>
+<span class="pc bpc" id="L85" title="1 of 2 branches missed.">    if (!Object.class.isAssignableFrom(raw)) {</span>
+<span class="nc" id="L86">      return null;</span>
+    }
+<span class="fc bfc" id="L88" title="All 2 branches covered.">    if (ReflectionHelper.isAnonymousOrNonStaticLocal(raw)) {</span>
+<span class="fc" id="L89">      return new TypeAdapter&lt;T&gt;() {</span>
+        @Override
+        public T read(JsonReader in) throws IOException {
+<span class="nc" id="L92">          in.skipValue();</span>
+<span class="nc" id="L93">          return null;</span>
+        }
+
+        @Override
+        public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L99">        }</span>
+
+        @Override
+        public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L103">          return null;</span>
+        }
+
+        @Override
+        public void write(JsonWriter out, T value) throws IOException {
+<span class="fc" id="L108">          out.nullValue();</span>
+<span class="fc" id="L109">        }</span>
+        @Override
+        public String toString() {
+<span class="nc" id="L112">          return &quot;AnonymousOrNonStaticLocalClassAdapter&quot;;</span>
+        }
+      };
+    }
+<span class="fc" id="L116">    FilterResult filterResult =</span>
+<span class="fc" id="L117">        ReflectionAccessFilterHelper.getFilterResult(reflectionFilters, raw);</span>
+<span class="pc bpc" id="L118" title="1 of 2 branches missed.">    if (filterResult == FilterResult.BLOCK_ALL) {</span>
+<span class="nc" id="L119">      throw new JsonIOException(</span>
+          &quot;ReflectionAccessFilter does not permit using reflection for &quot;
+              + raw
+              + &quot;. Register a TypeAdapter for this type or adjust the access filter.&quot;);
+    }
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">    boolean blockInaccessible = filterResult == FilterResult.BLOCK_INACCESSIBLE;</span>
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">    if (ReflectionHelper.isRecord(raw)) {</span>
+      @SuppressWarnings(&quot;unchecked&quot;)
+<span class="nc" id="L127">      TypeAdapter&lt;T&gt; adapter =</span>
+          (TypeAdapter&lt;T&gt;)
+              new RecordAdapter&lt;&gt;(
+<span class="nc" id="L130">                  raw, getBoundFields(gson, type, raw, blockInaccessible, true), blockInaccessible);</span>
+<span class="nc" id="L131">      return adapter;</span>
+    }
+<span class="fc" id="L133">    ObjectConstructor&lt;T&gt; constructor = constructorConstructor.get(type, true);</span>
+<span class="fc" id="L134">    return new FieldReflectionAdapter&lt;&gt;(</span>
+<span class="fc" id="L135">        constructor, getBoundFields(gson, type, raw, blockInaccessible, false));</span>
+  }
+  private static &lt;M extends AccessibleObject &amp; Member&gt; void checkAccessible(
+      Object object, M member) {
+<span class="nc bnc" id="L139" title="All 2 branches missed.">    if (!ReflectionAccessFilterHelper.canAccess(</span>
+<span class="nc bnc" id="L140" title="All 2 branches missed.">        member, Modifier.isStatic(member.getModifiers()) ? null : object)) {</span>
+<span class="nc" id="L141">      String memberDescription = ReflectionHelper.getAccessibleObjectDescription(member, true);</span>
+<span class="nc" id="L142">      throw new JsonIOException(</span>
+          memberDescription
+              + &quot; is not accessible and ReflectionAccessFilter does not permit making it&quot;
+              + &quot; accessible. Register a TypeAdapter for the declaring type, adjust the access&quot;
+              + &quot; filter or increase the visibility of the element and its declaring type.&quot;);
+    }
+<span class="nc" id="L148">  }</span>
+  private BoundField createBoundField(
+      Gson context,
+      Field field,
+      Method accessor,
+      String serializedName,
+      TypeToken&lt;?&gt; fieldType,
+      boolean serialize,
+      boolean blockInaccessible) {
+<span class="fc" id="L157">    boolean isPrimitive = Primitives.isPrimitive(fieldType.getRawType());</span>
+<span class="fc" id="L158">    int modifiers = field.getModifiers();</span>
+<span class="pc bpc" id="L159" title="3 of 4 branches missed.">    boolean isStaticFinalField = Modifier.isStatic(modifiers) &amp;&amp; Modifier.isFinal(modifiers);</span>
+<span class="fc" id="L160">    JsonAdapter annotation = field.getAnnotation(JsonAdapter.class);</span>
+<span class="fc" id="L161">    TypeAdapter&lt;?&gt; mapped = null;</span>
+<span class="pc bpc" id="L162" title="1 of 2 branches missed.">    if (annotation != null) {</span>
+<span class="nc" id="L163">      mapped =</span>
+<span class="nc" id="L164">          jsonAdapterFactory.getTypeAdapter(</span>
+              constructorConstructor, context, fieldType, annotation, false);
+    }
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">    boolean jsonAdapterPresent = mapped != null;</span>
+<span class="pc bpc" id="L168" title="1 of 2 branches missed.">    if (mapped == null) {</span>
+<span class="fc" id="L169">      mapped = context.getAdapter(fieldType);</span>
+    }
+    @SuppressWarnings(&quot;unchecked&quot;)
+<span class="fc" id="L172">    TypeAdapter&lt;Object&gt; typeAdapter = (TypeAdapter&lt;Object&gt;) mapped;</span>
+    TypeAdapter&lt;Object&gt; writeTypeAdapter;
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">    if (serialize) {</span>
+      writeTypeAdapter =
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">          jsonAdapterPresent</span>
+<span class="nc" id="L177">              ? typeAdapter</span>
+<span class="fc" id="L178">              : new TypeAdapterRuntimeTypeWrapper&lt;&gt;(context, typeAdapter, fieldType.getType());</span>
+    } else {
+<span class="nc" id="L180">      writeTypeAdapter = typeAdapter;</span>
+    }
+<span class="fc" id="L182">    return new BoundField(serializedName, field) {</span>
+      @Override
+      void write(JsonWriter writer, Object source) throws IOException, IllegalAccessException {
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">        if (blockInaccessible) {</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">          if (accessor == null) {</span>
+<span class="nc" id="L187">            checkAccessible(source, field);</span>
+          } else {
+<span class="nc" id="L189">            checkAccessible(source, accessor);</span>
+          }
+        }
+        Object fieldValue;
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (accessor != null) {</span>
+          try {
+<span class="nc" id="L195">            fieldValue = accessor.invoke(source);</span>
+<span class="nc" id="L196">          } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L197">            String accessorDescription =</span>
+<span class="nc" id="L198">                ReflectionHelper.getAccessibleObjectDescription(accessor, false);</span>
+<span class="nc" id="L199">            throw new JsonIOException(</span>
+<span class="nc" id="L200">                &quot;Accessor &quot; + accessorDescription + &quot; threw exception&quot;, e.getCause());</span>
+<span class="nc" id="L201">          }</span>
+        } else {
+<span class="fc" id="L203">          fieldValue = field.get(source);</span>
+        }
+<span class="fc bfc" id="L205" title="All 2 branches covered.">        if (fieldValue == source) {</span>
+<span class="fc" id="L206">          return;</span>
+        }
+<span class="fc" id="L208">        writer.name(serializedName);</span>
+<span class="fc" id="L209">        writeTypeAdapter.write(writer, fieldValue);</span>
+<span class="fc" id="L210">      }</span>
+      @Override
+      void readIntoArray(JsonReader reader, int index, Object[] target)
+          throws IOException, JsonParseException {
+<span class="nc" id="L214">        Object fieldValue = typeAdapter.read(reader);</span>
+<span class="nc bnc" id="L215" title="All 4 branches missed.">        if (fieldValue == null &amp;&amp; isPrimitive) {</span>
+<span class="nc" id="L216">          throw new JsonParseException(</span>
+              &quot;null is not allowed as value for record component '&quot;
+                  + fieldName
+                  + &quot;' of primitive type; at path &quot;
+<span class="nc" id="L220">                  + reader.getPath());</span>
+        }
+<span class="nc" id="L222">        target[index] = fieldValue;</span>
+<span class="nc" id="L223">      }</span>
+      @Override
+      void readIntoField(JsonReader reader, Object target)
+          throws IOException, IllegalAccessException {
+<span class="fc" id="L227">        Object fieldValue = typeAdapter.read(reader);</span>
+<span class="pc bpc" id="L228" title="3 of 4 branches missed.">        if (fieldValue != null || !isPrimitive) {</span>
+<span class="pc bpc" id="L229" title="1 of 2 branches missed.">          if (blockInaccessible) {</span>
+<span class="nc" id="L230">            checkAccessible(target, field);</span>
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">          } else if (isStaticFinalField) {</span>
+<span class="nc" id="L232">            String fieldDescription = ReflectionHelper.getAccessibleObjectDescription(field, false);</span>
+<span class="nc" id="L233">            throw new JsonIOException(&quot;Cannot set value of 'static final' &quot; + fieldDescription);</span>
+          }
+<span class="fc" id="L235">          field.set(target, fieldValue);</span>
+        }
+<span class="fc" id="L237">      }</span>
+    };
+  }
+  private static class FieldsData {
+<span class="fc" id="L241">    static final FieldsData EMPTY = new FieldsData(Collections.emptyMap(), Collections.emptyList());</span>
+    final Map&lt;String, BoundField&gt; deserializedFields;
+    final List&lt;BoundField&gt; serializedFields;
+<span class="fc" id="L244">    FieldsData(Map&lt;String, BoundField&gt; deserializedFields, List&lt;BoundField&gt; serializedFields) {</span>
+<span class="fc" id="L245">      this.deserializedFields = deserializedFields;</span>
+<span class="fc" id="L246">      this.serializedFields = serializedFields;</span>
+<span class="fc" id="L247">    }</span>
+  }
+  private static IllegalArgumentException createDuplicateFieldException(
+      Class&lt;?&gt; declaringType, String duplicateName, Field field1, Field field2) {
+<span class="nc" id="L251">    throw new IllegalArgumentException(</span>
+        &quot;Class &quot;
+<span class="nc" id="L253">            + declaringType.getName()</span>
+            + &quot; declares multiple JSON fields named '&quot;
+            + duplicateName
+            + &quot;'; conflict is caused by fields &quot;
+<span class="nc" id="L257">            + ReflectionHelper.fieldToString(field1)</span>
+            + &quot; and &quot;
+<span class="nc" id="L259">            + ReflectionHelper.fieldToString(field2)</span>
+            + &quot;\nSee &quot;
+<span class="nc" id="L261">            + TroubleshootingGuide.createUrl(&quot;duplicate-fields&quot;));</span>
+  }
+  private FieldsData getBoundFields(
+      Gson context, TypeToken&lt;?&gt; type, Class&lt;?&gt; raw, boolean blockInaccessible, boolean isRecord) {
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">    if (raw.isInterface()) {</span>
+<span class="nc" id="L266">      return FieldsData.EMPTY;</span>
+    }
+<span class="fc" id="L268">    Map&lt;String, BoundField&gt; deserializedFields = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L269">    Map&lt;String, BoundField&gt; serializedFields = new LinkedHashMap&lt;&gt;();</span>
+<span class="fc" id="L270">    Class&lt;?&gt; originalRaw = raw;</span>
+<span class="fc bfc" id="L271" title="All 2 branches covered.">    while (raw != Object.class) {</span>
+<span class="fc" id="L272">      Field[] fields = raw.getDeclaredFields();</span>
+<span class="pc bpc" id="L273" title="1 of 4 branches missed.">      if (raw != originalRaw &amp;&amp; fields.length &gt; 0) {</span>
+<span class="fc" id="L274">        FilterResult filterResult =</span>
+<span class="fc" id="L275">            ReflectionAccessFilterHelper.getFilterResult(reflectionFilters, raw);</span>
+<span class="pc bpc" id="L276" title="1 of 2 branches missed.">        if (filterResult == FilterResult.BLOCK_ALL) {</span>
+<span class="nc" id="L277">          throw new JsonIOException(</span>
+              &quot;ReflectionAccessFilter does not permit using reflection for &quot;
+                  + raw
+                  + &quot; (supertype of &quot;
+                  + originalRaw
+                  + &quot;). Register a TypeAdapter for this type or adjust the access filter.&quot;);
+        }
+<span class="pc bpc" id="L284" title="1 of 2 branches missed.">        blockInaccessible = filterResult == FilterResult.BLOCK_INACCESSIBLE;</span>
+      }
+<span class="fc bfc" id="L286" title="All 2 branches covered.">      for (Field field : fields) {</span>
+<span class="fc" id="L287">        boolean serialize = includeField(field, true);</span>
+<span class="fc" id="L288">        boolean deserialize = includeField(field, false);</span>
+<span class="pc bpc" id="L289" title="1 of 4 branches missed.">        if (!serialize &amp;&amp; !deserialize) {</span>
+<span class="fc" id="L290">          continue;</span>
+        }
+<span class="fc" id="L292">        Method accessor = null;</span>
+<span class="pc bpc" id="L293" title="1 of 2 branches missed.">        if (isRecord) {</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">          if (Modifier.isStatic(field.getModifiers())) {</span>
+<span class="nc" id="L295">            deserialize = false;</span>
+          } else {
+<span class="nc" id="L297">            accessor = ReflectionHelper.getAccessor(raw, field);</span>
+<span class="nc bnc" id="L298" title="All 2 branches missed.">            if (!blockInaccessible) {</span>
+<span class="nc" id="L299">              ReflectionHelper.makeAccessible(accessor);</span>
+            }
+<span class="nc bnc" id="L301" title="All 2 branches missed.">            if (accessor.getAnnotation(SerializedName.class) != null</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">                &amp;&amp; field.getAnnotation(SerializedName.class) == null) {</span>
+<span class="nc" id="L303">              String methodDescription =</span>
+<span class="nc" id="L304">                  ReflectionHelper.getAccessibleObjectDescription(accessor, false);</span>
+<span class="nc" id="L305">              throw new JsonIOException(</span>
+                  &quot;@SerializedName on &quot; + methodDescription + &quot; is not supported&quot;);
+            }
+          }
+        }
+<span class="pc bpc" id="L310" title="2 of 4 branches missed.">        if (!blockInaccessible &amp;&amp; accessor == null) {</span>
+<span class="fc" id="L311">          ReflectionHelper.makeAccessible(field);</span>
+        }
+<span class="fc" id="L313">        Type fieldType = GsonTypes.resolve(type.getType(), raw, field.getGenericType());</span>
+<span class="fc" id="L314">        List&lt;String&gt; fieldNames = getFieldNames(field);</span>
+<span class="fc" id="L315">        String serializedName = fieldNames.get(0);</span>
+<span class="fc" id="L316">        BoundField boundField =</span>
+<span class="fc" id="L317">            createBoundField(</span>
+                context,
+                field,
+                accessor,
+                serializedName,
+<span class="fc" id="L322">                TypeToken.get(fieldType),</span>
+                serialize,
+                blockInaccessible);
+<span class="pc bpc" id="L325" title="1 of 2 branches missed.">        if (deserialize) {</span>
+<span class="fc bfc" id="L326" title="All 2 branches covered.">          for (String name : fieldNames) {</span>
+<span class="fc" id="L327">            BoundField replaced = deserializedFields.put(name, boundField);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">            if (replaced != null) {</span>
+<span class="nc" id="L329">              throw createDuplicateFieldException(originalRaw, name, replaced.field, field);</span>
+            }
+<span class="fc" id="L331">          }</span>
+        }
+<span class="pc bpc" id="L333" title="1 of 2 branches missed.">        if (serialize) {</span>
+<span class="fc" id="L334">          BoundField replaced = serializedFields.put(serializedName, boundField);</span>
+<span class="pc bpc" id="L335" title="1 of 2 branches missed.">          if (replaced != null) {</span>
+<span class="nc" id="L336">            throw createDuplicateFieldException(originalRaw, serializedName, replaced.field, field);</span>
+          }
+        }
+      }
+<span class="fc" id="L340">      type = TypeToken.get(GsonTypes.resolve(type.getType(), raw, raw.getGenericSuperclass()));</span>
+<span class="fc" id="L341">      raw = type.getRawType();</span>
+<span class="fc" id="L342">    }</span>
+<span class="fc" id="L343">    return new FieldsData(deserializedFields, new ArrayList&lt;&gt;(serializedFields.values()));</span>
+  }
+  abstract static class BoundField {
+    final String serializedName;
+    final Field field;
+    final String fieldName;
+<span class="fc" id="L349">    protected BoundField(String serializedName, Field field) {</span>
+<span class="fc" id="L350">      this.serializedName = serializedName;</span>
+<span class="fc" id="L351">      this.field = field;</span>
+<span class="fc" id="L352">      this.fieldName = field.getName();</span>
+<span class="fc" id="L353">    }</span>
+    abstract void write(JsonWriter writer, Object source)
+        throws IOException, IllegalAccessException;
+    abstract void readIntoArray(JsonReader reader, int index, Object[] target)
+        throws IOException, JsonParseException;
+    abstract void readIntoField(JsonReader reader, Object target)
+        throws IOException, IllegalAccessException;
+  }
+  public abstract static class Adapter&lt;T, A&gt; extends TypeAdapter&lt;T&gt; {
+    private final FieldsData fieldsData;
+<span class="fc" id="L363">    Adapter(FieldsData fieldsData) {</span>
+<span class="fc" id="L364">      this.fieldsData = fieldsData;</span>
+<span class="fc" id="L365">    }</span>
+    @Override
+    public void write(JsonWriter out, T value) throws IOException {
+<span class="fc bfc" id="L368" title="All 2 branches covered.">      if (value == null) {</span>
+<span class="fc" id="L369">        out.nullValue();</span>
+<span class="fc" id="L370">        return;</span>
+      }
+<span class="fc" id="L372">      out.beginObject();</span>
+      try {
+<span class="fc bfc" id="L374" title="All 2 branches covered.">        for (BoundField boundField : fieldsData.serializedFields) {</span>
+<span class="fc" id="L375">          boundField.write(out, value);</span>
+<span class="fc" id="L376">        }</span>
+<span class="nc" id="L377">      } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L378">        throw ReflectionHelper.createExceptionForUnexpectedIllegalAccess(e);</span>
+<span class="fc" id="L379">      }</span>
+<span class="fc" id="L380">      out.endObject();</span>
+<span class="fc" id="L381">    }</span>
+    @Override
+    public T read(JsonReader in) throws IOException {
+<span class="pc bpc" id="L384" title="1 of 2 branches missed.">      if (in.peek() == JsonToken.NULL) {</span>
+<span class="nc" id="L385">        in.nextNull();</span>
+<span class="nc" id="L386">        return null;</span>
+      }
+<span class="fc" id="L388">      A accumulator = createAccumulator();</span>
+<span class="fc" id="L389">      Map&lt;String, BoundField&gt; deserializedFields = fieldsData.deserializedFields;</span>
+      try {
+<span class="fc" id="L391">        in.beginObject();</span>
+<span class="fc bfc" id="L392" title="All 2 branches covered.">        while (in.hasNext()) {</span>
+<span class="fc" id="L393">          String name = in.nextName();</span>
+<span class="fc" id="L394">          BoundField field = deserializedFields.get(name);</span>
+<span class="pc bpc" id="L395" title="1 of 2 branches missed.">          if (field == null) {</span>
+<span class="nc" id="L396">            in.skipValue();</span>
+          } else {
+<span class="fc" id="L398">            readField(accumulator, in, field);</span>
+          }
+<span class="fc" id="L400">        }</span>
+<span class="nc" id="L401">      } catch (IllegalStateException e) {</span>
+<span class="nc" id="L402">        throw new JsonSyntaxException(e);</span>
+<span class="nc" id="L403">      } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L404">        throw ReflectionHelper.createExceptionForUnexpectedIllegalAccess(e);</span>
+<span class="fc" id="L405">      }</span>
+<span class="fc" id="L406">      in.endObject();</span>
+<span class="fc" id="L407">      return finalize(accumulator);</span>
+    }
+    abstract A createAccumulator();
+    abstract void readField(A accumulator, JsonReader in, BoundField field)
+        throws IllegalAccessException, IOException;
+    abstract T finalize(A accumulator);
+  }
+  private static final class FieldReflectionAdapter&lt;T&gt; extends Adapter&lt;T, T&gt; {
+    private final ObjectConstructor&lt;T&gt; constructor;
+    FieldReflectionAdapter(ObjectConstructor&lt;T&gt; constructor, FieldsData fieldsData) {
+<span class="fc" id="L417">      super(fieldsData);</span>
+<span class="fc" id="L418">      this.constructor = constructor;</span>
+<span class="fc" id="L419">    }</span>
+    @Override
+    T createAccumulator() {
+<span class="fc" id="L422">      return constructor.construct();</span>
+    }
+    @Override
+    void readField(T accumulator, JsonReader in, BoundField field)
+        throws IllegalAccessException, IOException {
+<span class="fc" id="L427">      field.readIntoField(in, accumulator);</span>
+<span class="fc" id="L428">    }</span>
+    @Override
+    T finalize(T accumulator) {
+<span class="fc" id="L431">      return accumulator;</span>
+    }
+
+    @Override
+    public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L437">    }</span>
+
+    @Override
+    public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L441">      return null;</span>
+    }
+  }
+  private static final class RecordAdapter&lt;T&gt; extends Adapter&lt;T, Object[]&gt; {
+<span class="nc" id="L445">    static final Map&lt;Class&lt;?&gt;, Object&gt; PRIMITIVE_DEFAULTS = primitiveDefaults();</span>
+    private final Constructor&lt;T&gt; constructor;
+    private final Object[] constructorArgsDefaults;
+<span class="nc" id="L448">    private final Map&lt;String, Integer&gt; componentIndices = new HashMap&lt;&gt;();</span>
+    RecordAdapter(Class&lt;T&gt; raw, FieldsData fieldsData, boolean blockInaccessible) {
+<span class="nc" id="L450">      super(fieldsData);</span>
+<span class="nc" id="L451">      constructor = ReflectionHelper.getCanonicalRecordConstructor(raw);</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">      if (blockInaccessible) {</span>
+<span class="nc" id="L453">        checkAccessible(null, constructor);</span>
+      } else {
+<span class="nc" id="L455">        ReflectionHelper.makeAccessible(constructor);</span>
+      }
+<span class="nc" id="L457">      String[] componentNames = ReflectionHelper.getRecordComponentNames(raw);</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">      for (int i = 0; i &lt; componentNames.length; i++) {</span>
+<span class="nc" id="L459">        componentIndices.put(componentNames[i], i);</span>
+      }
+<span class="nc" id="L461">      Class&lt;?&gt;[] parameterTypes = constructor.getParameterTypes();</span>
+<span class="nc" id="L462">      constructorArgsDefaults = new Object[parameterTypes.length];</span>
+<span class="nc bnc" id="L463" title="All 2 branches missed.">      for (int i = 0; i &lt; parameterTypes.length; i++) {</span>
+<span class="nc" id="L464">        constructorArgsDefaults[i] = PRIMITIVE_DEFAULTS.get(parameterTypes[i]);</span>
+      }
+<span class="nc" id="L466">    }</span>
+    private static Map&lt;Class&lt;?&gt;, Object&gt; primitiveDefaults() {
+<span class="nc" id="L468">      Map&lt;Class&lt;?&gt;, Object&gt; zeroes = new HashMap&lt;&gt;();</span>
+<span class="nc" id="L469">      zeroes.put(byte.class, (byte) 0);</span>
+<span class="nc" id="L470">      zeroes.put(short.class, (short) 0);</span>
+<span class="nc" id="L471">      zeroes.put(int.class, 0);</span>
+<span class="nc" id="L472">      zeroes.put(long.class, 0L);</span>
+<span class="nc" id="L473">      zeroes.put(float.class, 0F);</span>
+<span class="nc" id="L474">      zeroes.put(double.class, 0D);</span>
+<span class="nc" id="L475">      zeroes.put(char.class, '\0');</span>
+<span class="nc" id="L476">      zeroes.put(boolean.class, false);</span>
+<span class="nc" id="L477">      return zeroes;</span>
+    }
+    @Override
+    Object[] createAccumulator() {
+<span class="nc" id="L481">      return constructorArgsDefaults.clone();</span>
+    }
+    @Override
+    void readField(Object[] accumulator, JsonReader in, BoundField field) throws IOException {
+<span class="nc" id="L485">      Integer componentIndex = componentIndices.get(field.fieldName);</span>
+<span class="nc bnc" id="L486" title="All 2 branches missed.">      if (componentIndex == null) {</span>
+<span class="nc" id="L487">        throw new IllegalStateException(</span>
+            &quot;Could not find the index in the constructor '&quot;
+<span class="nc" id="L489">                + ReflectionHelper.constructorToString(constructor)</span>
+                + &quot;' for field with name '&quot;
+                + field.fieldName
+                + &quot;', unable to determine which argument in the constructor the field corresponds&quot;
+                + &quot; to. This is unexpected behavior, as we expect the RecordComponents to have the&quot;
+                + &quot; same names as the fields in the Java class, and that the order of the&quot;
+                + &quot; RecordComponents is the same as the order of the canonical constructor&quot;
+                + &quot; parameters.&quot;);
+      }
+<span class="nc" id="L498">      field.readIntoArray(in, componentIndex, accumulator);</span>
+<span class="nc" id="L499">    }</span>
+    @Override
+    T finalize(Object[] accumulator) {
+      try {
+<span class="nc" id="L503">        return constructor.newInstance(accumulator);</span>
+<span class="nc" id="L504">      } catch (IllegalAccessException e) {</span>
+<span class="nc" id="L505">        throw ReflectionHelper.createExceptionForUnexpectedIllegalAccess(e);</span>
+      }
+<span class="nc" id="L507">      catch (InstantiationException | IllegalArgumentException e) {</span>
+<span class="nc" id="L508">        throw new RuntimeException(</span>
+            &quot;Failed to invoke constructor '&quot;
+<span class="nc" id="L510">                + ReflectionHelper.constructorToString(constructor)</span>
+                + &quot;' with args &quot;
+<span class="nc" id="L512">                + Arrays.toString(accumulator),</span>
+            e);
+<span class="nc" id="L514">      } catch (InvocationTargetException e) {</span>
+<span class="nc" id="L515">        throw new RuntimeException(</span>
+            &quot;Failed to invoke constructor '&quot;
+<span class="nc" id="L517">                + ReflectionHelper.constructorToString(constructor)</span>
+                + &quot;' with args &quot;
+<span class="nc" id="L519">                + Arrays.toString(accumulator),</span>
+<span class="nc" id="L520">            e.getCause());</span>
+      }
+    }
+
+    @Override
+    public void write(com.google.gson.stream.JsonWriter out, String value) {
+
+<span class="nc" id="L527">    }</span>
+
+    @Override
+    public String read(com.google.gson.stream.JsonReader in) {
+<span class="nc" id="L531">      return null;</span>
+    }
+  }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

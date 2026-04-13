@@ -1,0 +1,226 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Counter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util</a> &gt; <span class="el_source">Counter.java</span></div><h1>Counter.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import zju.cst.aces.dto.ClassInfo;
+import zju.cst.aces.dto.MethodInfo;
+import zju.cst.aces.parser.ClassParser;
+
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.Collections;
+import java.util.Random;
+
+<span class="nc" id="L21">public class Counter {</span>
+<span class="nc" id="L22">    public static final Gson GSON = new GsonBuilder().setPrettyPrinting().disableHtmlEscaping().create();</span>
+
+    public static void main(String[] args) throws IOException {
+<span class="nc" id="L25">        String classInfoPath = &quot;/private/tmp/chatunitest-info/hep-ucs/ucs-server&quot;;</span>
+<span class="nc" id="L26">        System.out.println(countMethod(Paths.get(classInfoPath)));</span>
+//        String classInfoPath = &quot;/private/tmp/chatunitest-info/hep-ucs/ucs-server/class-info&quot;;
+//        String allMethodCsvPath = &quot;/private/tmp/chatunitest-info/commons-csv/focal_methods_all.csv&quot;;
+//        String sampledCsvPath = &quot;/private/tmp/chatunitest-info/commons-csv/focal_methods_sampled.csv&quot;;
+//        int sampleSize = 10; // Specify the desired sample size
+//        countClassMethod(Paths.get(classInfoPath), allMethodCsvPath);
+//        sampleMethods(allMethodCsvPath, sampledCsvPath, sampleSize);
+<span class="nc" id="L33">    }</span>
+
+    public static void sampleMethods(String inputCsvPath, String sampledCsvPath, int sampleSize) throws IOException {
+<span class="nc" id="L36">        List&lt;String&gt; lines = Files.readAllLines(Paths.get(inputCsvPath));</span>
+
+        // Skip header line
+<span class="nc" id="L39">        List&lt;String&gt; dataLines = lines.subList(1, lines.size());</span>
+
+        // Shuffle data lines randomly
+<span class="nc" id="L42">        Collections.shuffle(dataLines, new Random());</span>
+
+        // Take a sample of the specified size
+<span class="nc" id="L45">        List&lt;String&gt; sampledLines = dataLines.subList(0, Math.min(sampleSize, dataLines.size()));</span>
+
+        // Write sampled data to a new CSV file
+<span class="nc" id="L48">        try (FileWriter csvWriter = new FileWriter(sampledCsvPath)) {</span>
+            // Write header
+<span class="nc" id="L50">            csvWriter.append(&quot;Class Name,Method Signature\n&quot;);</span>
+
+            // Write sampled data
+<span class="nc bnc" id="L53" title="All 2 branches missed.">            for (String line : sampledLines) {</span>
+<span class="nc" id="L54">                csvWriter.append(line).append(&quot;\n&quot;);</span>
+<span class="nc" id="L55">            }</span>
+
+<span class="nc" id="L57">            System.out.println(&quot;Sampled CSV file created successfully at: &quot; + sampledCsvPath);</span>
+        }
+<span class="nc" id="L59">    }</span>
+
+    public static Map&lt;String, List&lt;String&gt;&gt; countClassMethod(Path parseOutputPath) throws IOException {
+<span class="nc" id="L62">        Map&lt;String, List&lt;String&gt;&gt; testMap = new HashMap&lt;&gt;();</span>
+        // get all json files names &quot;class.json&quot;
+<span class="nc" id="L64">        List&lt;String&gt; classJsonFiles = Files.walk(parseOutputPath)</span>
+<span class="nc" id="L65">                .filter(Files::isRegularFile)</span>
+<span class="nc" id="L66">                .map(Path::toString)</span>
+<span class="nc" id="L67">                .filter(f -&gt; f.endsWith(&quot;class.json&quot;))</span>
+<span class="nc" id="L68">                .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L70" title="All 2 branches missed.">        for (String classJsonFile : classJsonFiles) {</span>
+<span class="nc" id="L71">            File classInfoFile = new File(classJsonFile);</span>
+<span class="nc" id="L72">            ClassInfo classInfo = GSON.fromJson(new String(Files.readAllBytes(classInfoFile.toPath()), StandardCharsets.UTF_8), ClassInfo.class);</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if (!filter(classInfo)) {</span>
+<span class="nc" id="L75">                continue;</span>
+            }
+<span class="nc" id="L77">            List&lt;String&gt; methodList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">            for (String mSig : classInfo.methodSigs.keySet()) {</span>
+<span class="nc" id="L79">                MethodInfo methodInfo = getMethodInfo(parseOutputPath, classInfo, mSig);</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">                if (!filter(methodInfo)) {</span>
+<span class="nc" id="L81">                    continue;</span>
+                }
+<span class="nc" id="L83">                methodList.add(mSig);</span>
+<span class="nc" id="L84">            }</span>
+<span class="nc" id="L85">            testMap.put(classInfo.fullClassName, methodList);</span>
+<span class="nc" id="L86">        }</span>
+
+        // Print testMap
+<span class="nc bnc" id="L89" title="All 2 branches missed.">        for (String className : testMap.keySet()) {</span>
+<span class="nc" id="L90">            System.out.println(&quot;-----------------------&quot;);</span>
+<span class="nc" id="L91">            System.out.println(className + &quot;:\n&quot;);</span>
+<span class="nc" id="L92">            testMap.get(className).forEach(m -&gt; {</span>
+<span class="nc" id="L93">                System.out.println(m + &quot;\n&quot;);</span>
+<span class="nc" id="L94">            });</span>
+<span class="nc" id="L95">            System.out.println(&quot;\n&quot;);</span>
+<span class="nc" id="L96">        }</span>
+
+<span class="nc" id="L98">        System.out.println(&quot;Total class count: &quot; + testMap.size());</span>
+<span class="nc" id="L99">        System.out.println(&quot;Total method count: &quot; + testMap.values().stream().mapToInt(List::size).sum());</span>
+<span class="nc" id="L100">        return testMap;</span>
+    }
+
+
+    public static void countClassMethod(Path parseOutputPath, String outputCsvPath) throws IOException {
+<span class="nc" id="L105">        Map&lt;String, List&lt;String&gt;&gt; testMap = new HashMap&lt;&gt;();</span>
+
+        // get all json files names &quot;class.json&quot;
+<span class="nc" id="L108">        List&lt;String&gt; classJsonFiles = Files.walk(parseOutputPath)</span>
+<span class="nc" id="L109">                .filter(Files::isRegularFile)</span>
+<span class="nc" id="L110">                .map(Path::toString)</span>
+<span class="nc" id="L111">                .filter(f -&gt; f.endsWith(&quot;class.json&quot;))</span>
+<span class="nc" id="L112">                .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        for (String classJsonFile : classJsonFiles) {</span>
+<span class="nc" id="L115">            File classInfoFile = new File(classJsonFile);</span>
+<span class="nc" id="L116">            ClassInfo classInfo = GSON.fromJson(new String(Files.readAllBytes(classInfoFile.toPath()), StandardCharsets.UTF_8), ClassInfo.class);</span>
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">            if (!filter(classInfo)) {</span>
+<span class="nc" id="L119">                continue;</span>
+            }
+
+<span class="nc" id="L122">            List&lt;String&gt; methodList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">            for (String mSig : classInfo.methodSigs.keySet()) {</span>
+<span class="nc" id="L124">                MethodInfo methodInfo = getMethodInfo(parseOutputPath, classInfo, mSig);</span>
+<span class="nc bnc" id="L125" title="All 2 branches missed.">                if (!filter(methodInfo)) {</span>
+<span class="nc" id="L126">                    continue;</span>
+                }
+<span class="nc" id="L128">                methodList.add(mSig);</span>
+<span class="nc" id="L129">            }</span>
+
+<span class="nc" id="L131">            testMap.put(classInfo.fullClassName, methodList);</span>
+<span class="nc" id="L132">        }</span>
+
+        // Write to CSV
+<span class="nc" id="L135">        try (FileWriter csvWriter = new FileWriter(outputCsvPath)) {</span>
+            // Write header
+<span class="nc" id="L137">            csvWriter.append(&quot;Class Name,Method Signature\n&quot;);</span>
+
+            // Write data
+<span class="nc bnc" id="L140" title="All 2 branches missed.">            for (String className : testMap.keySet()) {</span>
+<span class="nc" id="L141">                List&lt;String&gt; methods = testMap.get(className);</span>
+<span class="nc bnc" id="L142" title="All 2 branches missed.">                for (String method : methods) {</span>
+//                    csvWriter.append(className).append(&quot;,&quot;).append(method).append(&quot;\n&quot;);
+<span class="nc" id="L144">                    csvWriter.append(className).append(&quot;,\&quot;&quot;).append(method).append(&quot;\&quot;\n&quot;);</span>
+<span class="nc" id="L145">                }</span>
+<span class="nc" id="L146">            }</span>
+
+<span class="nc" id="L148">            System.out.println(&quot;CSV file created successfully at: &quot; + outputCsvPath);</span>
+        }
+
+<span class="nc" id="L151">        System.out.println(&quot;Total class count: &quot; + testMap.size());</span>
+<span class="nc" id="L152">        System.out.println(&quot;Total method count: &quot; + testMap.values().stream().mapToInt(List::size).sum());</span>
+<span class="nc" id="L153">    }</span>
+
+    public static int countMethod(Path tmpOutputPath) throws IOException {
+<span class="nc" id="L156">        Path parseOutputPath = tmpOutputPath.resolve(&quot;class-info&quot;);</span>
+<span class="nc" id="L157">        Map&lt;String, List&lt;String&gt;&gt; testMap = new HashMap&lt;&gt;();</span>
+        // get all json files names &quot;class.json&quot;
+<span class="nc" id="L159">        List&lt;String&gt; classJsonFiles = Files.walk(parseOutputPath)</span>
+<span class="nc" id="L160">                .filter(Files::isRegularFile)</span>
+<span class="nc" id="L161">                .map(Path::toString)</span>
+<span class="nc" id="L162">                .filter(f -&gt; f.endsWith(&quot;class.json&quot;))</span>
+<span class="nc" id="L163">                .collect(Collectors.toList());</span>
+
+<span class="nc bnc" id="L165" title="All 2 branches missed.">        for (String classJsonFile : classJsonFiles) {</span>
+<span class="nc" id="L166">            File classInfoFile = new File(classJsonFile);</span>
+<span class="nc" id="L167">            ClassInfo classInfo = GSON.fromJson(new String(Files.readAllBytes(classInfoFile.toPath()), StandardCharsets.UTF_8), ClassInfo.class);</span>
+
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (!filter(classInfo)) {</span>
+<span class="nc" id="L170">                continue;</span>
+            }
+<span class="nc" id="L172">            List&lt;String&gt; methodList = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L173" title="All 2 branches missed.">            for (String mSig : classInfo.methodSigs.keySet()) {</span>
+<span class="nc" id="L174">                MethodInfo methodInfo = getMethodInfo(parseOutputPath, classInfo, mSig);</span>
+<span class="nc bnc" id="L175" title="All 2 branches missed.">                if (!filter(methodInfo)) {</span>
+<span class="nc" id="L176">                    continue;</span>
+                }
+<span class="nc" id="L178">                methodList.add(mSig);</span>
+<span class="nc" id="L179">            }</span>
+<span class="nc" id="L180">            testMap.put(classInfo.fullClassName, methodList);</span>
+<span class="nc" id="L181">        }</span>
+
+<span class="nc" id="L183">        Path tasklistPath = tmpOutputPath.resolve(&quot;tasklist.json&quot;);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        if(!Files.exists(tasklistPath)){</span>
+<span class="nc" id="L185">            Gson gson = new GsonBuilder().setPrettyPrinting().create();</span>
+<span class="nc" id="L186">            String json = gson.toJson(testMap);</span>
+<span class="nc" id="L187">            Files.write(tasklistPath, json.getBytes(StandardCharsets.UTF_8));</span>
+        }
+
+<span class="nc" id="L190">        return testMap.values().stream().mapToInt(List::size).sum();</span>
+    }
+
+    public static MethodInfo getMethodInfo(Path parseOutputPath, ClassInfo info, String mSig) throws IOException {
+<span class="nc" id="L194">        String packagePath = info.getPackageName()</span>
+<span class="nc" id="L195">                .replace(&quot;package &quot;, &quot;&quot;)</span>
+<span class="nc" id="L196">                .replace(&quot;.&quot;, File.separator)</span>
+<span class="nc" id="L197">                .replace(&quot;;&quot;, &quot;&quot;);</span>
+<span class="nc" id="L198">        Path depMethodInfoPath = parseOutputPath</span>
+<span class="nc" id="L199">                .resolve(packagePath)</span>
+<span class="nc" id="L200">                .resolve(info.className)</span>
+<span class="nc" id="L201">                .resolve(ClassParser.getFilePathBySig(mSig, info));</span>
+<span class="nc bnc" id="L202" title="All 2 branches missed.">        if (!depMethodInfoPath.toFile().exists()) {</span>
+<span class="nc" id="L203">            return null;</span>
+        }
+<span class="nc" id="L205">        return GSON.fromJson(new String(Files.readAllBytes(depMethodInfoPath), StandardCharsets.UTF_8),MethodInfo.class);</span>
+    }
+
+    public static boolean filter(ClassInfo classInfo) {
+<span class="nc bnc" id="L209" title="All 8 branches missed.">        if (classInfo == null || !classInfo.isPublic || classInfo.isAbstract || classInfo.isInterface) {</span>
+<span class="nc" id="L210">            return false;</span>
+        }
+<span class="nc" id="L212">        return true;</span>
+    }
+
+    public static boolean filter(MethodInfo methodInfo) {
+//        if (methodInfo == null) {
+//            return false;
+//        }
+<span class="nc bnc" id="L219" title="All 10 branches missed.">        if (methodInfo == null</span>
+                || methodInfo.isConstructor || methodInfo.isGetSet || methodInfo.isBoolean || !methodInfo.isPublic) {
+<span class="nc" id="L221">            return false;</span>
+        }
+<span class="nc" id="L223">        return true;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

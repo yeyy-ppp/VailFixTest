@@ -1,0 +1,38 @@
+类名：TextHelpAppendable
+分析阶段：
+  耗时：53646 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：21972 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：15800 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  失败原因：```
+该测试代码在验证测试逻辑完整性时失败，错误位置：第12行，错误原因：反射访问的textStyleBuilder字段可能不存在于TextHelpAppendable类中，或字段类型不匹配。
+该测试代码在验证语法正确性时失败，错误位置：第15行，错误原因：TextStyle类及其Builder类可能未正确定义或未导入，导致编译错误。
+该测试代码在验证编译正确性时失败，错误位置：第15行，错误原因：TextHelpAppendable类中DEFAULT_WIDTH、DEFAULT_LEFT_PAD、DEFAULT_INDENT常量可能未定义或不可访问。
+```
+修复阶段：
+  耗时：638341 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：4
+  修复失败原因：第 1 次修复失败，原因是：null
+第 2 次修复失败，原因是：null
+第 3 次修复失败，原因是：null
+
+  修复成功次数：0
+评估阶段：
+  耗时：-1748959532630 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  覆盖率数据：
+总耗时：730654 毫秒
+总消耗 token 数量：0
+测试代码生成结果：false
+失败原因：TextHelpAppendable, TextHelpAppendable, TextHelpAppendable
+--------------------------------------------------------

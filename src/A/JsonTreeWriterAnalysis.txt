@@ -1,0 +1,87 @@
+```
+包路径：gson.internal.bind
+类名：JsonTreeWriter
+父类：JsonWriter
+依赖类：CanIgnoreReturnValue,JsonArray,JsonElement,JsonNull,JsonObject,JsonPrimitive
+---
+序号：1
+方法名：JsonTreeWriter()
+返回类型：void
+功能描述：初始化JsonTreeWriter，设置不可写的Writer，初始化栈和当前产品
+序号：2
+方法名：get()
+返回类型：JsonElement
+功能描述：返回生成的JSON元素（根元素）
+序号：3
+方法名：peek()
+返回类型：JsonElement
+功能描述：获取栈顶的JSON元素（当前上下文）
+序号：4
+方法名：put(JsonElement value)
+返回类型：void
+功能描述：将值放入当前上下文（对象/数组）或设置为根元素
+序号：5
+方法名：beginArray()
+返回类型：JsonWriter
+功能描述：开始写入数组，创建JsonArray并压入栈
+序号：6
+方法名：endArray()
+返回类型：JsonWriter
+功能描述：结束当前数组，弹出栈顶元素
+序号：7
+方法名：beginObject()
+返回类型：JsonWriter
+功能描述：开始写入对象，创建JsonObject并压入栈
+序号：8
+方法名：endObject()
+返回类型：JsonWriter
+功能描述：结束当前对象，弹出栈顶元素
+序号：9
+方法名：name(String name)
+返回类型：JsonWriter
+功能描述：为当前对象写入属性名（键）
+序号：10
+方法名：value(String value)
+返回类型：JsonWriter
+功能描述：写入字符串值（若空则写入null）
+序号：11
+方法名：value(boolean value)
+返回类型：JsonWriter
+功能描述：写入布尔值
+序号：12
+方法名：value(Boolean value)
+返回类型：JsonWriter
+功能描述：写入布尔值（可空，若空则写入null）
+序号：13
+方法名：value(float value)
+返回类型：JsonWriter
+功能描述：写入浮点值（非数字/无穷大时根据配置抛异常）
+序号：14
+方法名：value(double value)
+返回类型：JsonWriter
+功能描述：写入双精度值（非数字/无穷大时根据配置抛异常）
+序号：15
+方法名：value(long value)
+返回类型：JsonWriter
+功能描述：写入长整数值
+序号：16
+方法名：value(Number value)
+返回类型：JsonWriter
+功能描述：写入数值（可空，非数字/无穷大时根据配置抛异常）
+序号：17
+方法名：nullValue()
+返回类型：JsonWriter
+功能描述：写入null值
+序号：18
+方法名：jsonValue(String value)
+返回类型：JsonWriter
+功能描述：不支持的操作（抛出异常）
+序号：19
+方法名：flush()
+返回类型：void
+功能描述：空操作（不执行任何处理）
+序号：20
+方法名：close()
+返回类型：void
+功能描述：关闭写入器，检查栈状态并标记关闭
+```

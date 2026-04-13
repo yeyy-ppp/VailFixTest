@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CallGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs</a> &gt; <span class="el_source">CallGraph.java</span></div><h1>CallGraph.java</h1><pre class="source lang-java linenums">package slicing.graphs;
+
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.ObjectCreationExpr;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
+import com.github.javaparser.ast.stmt.ExplicitConstructorInvocationStmt;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.Resolvable;
+import com.github.javaparser.resolution.declarations.ResolvedMethodLikeDeclaration;
+import lombok.var;
+import org.jgrapht.graph.DefaultEdge;
+import org.jgrapht.graph.DirectedPseudograph;
+import slicing.graphs.cfg.CFG;
+import slicing.nodes.GraphNode;
+import slicing.utils.ASTUtils;
+import slicing.utils.NodeHashSet;
+import slicing.utils.NodeNotFoundException;
+
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+/**
+ * A directed graph which displays the available method declarations as nodes and their
+ * invocations as edges (caller to callee).
+ * &lt;br/&gt;
+ * Method declarations include both {@link ConstructorDeclaration constructors}
+ * and {@link MethodDeclaration method declarations}.
+ * In the future, {@link InitializerDeclaration static initializer blocks} and field initializers will be included.
+ * &lt;br/&gt;
+ * Method calls include only direct method calls, from {@link MethodCallExpr normal call},
+ * to {@link ObjectCreationExpr object creation} and {@link ExplicitConstructorInvocationStmt
+ * explicit constructor invokation} ({@code this()}, {@code super()}).
+ */
+public class CallGraph extends DirectedPseudograph&lt;CallGraph.Vertex, CallGraph.Edge&lt;?&gt;&gt; implements Buildable&lt;NodeList&lt;CompilationUnit&gt;&gt; {
+    private final Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap;
+    private final ClassGraph classGraph;
+
+<span class="nc" id="L45">    private boolean built = false;</span>
+
+    public CallGraph(Map&lt;CallableDeclaration&lt;?&gt;, CFG&gt; cfgMap, ClassGraph classGraph) {
+<span class="nc" id="L48">        super(null, null, false);</span>
+<span class="nc" id="L49">        this.cfgMap = cfgMap;</span>
+<span class="nc" id="L50">        this.classGraph = classGraph;</span>
+<span class="nc" id="L51">    }</span>
+
+    /** Resolve a call to all its possible declarations, by using the call AST nodes stored on the edges. */
+    public Stream&lt;CallableDeclaration&lt;?&gt;&gt; getCallTargets(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L55">        return edgeSet().stream()</span>
+<span class="nc" id="L56">                .filter(e -&gt; ASTUtils.equalsWithRange(e.getCall(), call))</span>
+<span class="nc" id="L57">                .map(this::getEdgeTarget)</span>
+<span class="nc" id="L58">                .map(Vertex::getDeclaration)</span>
+<span class="nc" id="L59">                .map(decl -&gt; (CallableDeclaration&lt;?&gt;) decl);</span>
+    }
+
+    /** Locates the calls to a given declaration. The result is any node that represents a call. */
+    public Stream&lt;Node&gt; callsTo(CallableDeclaration&lt;?&gt; callee) {
+<span class="nc" id="L64">        return incomingEdgesOf(findVertexByDeclaration(callee)).stream()</span>
+<span class="nc" id="L65">                .map(Edge::getCall)</span>
+<span class="nc" id="L66">                .map(Node.class::cast);</span>
+    }
+
+    /** Locates the calls contained in a given method or constructor.
+     *  See {@link #callsTo(CallableDeclaration)} for the return value. */
+    public Stream&lt;Node&gt; callsFrom(CallableDeclaration&lt;?&gt; caller) {
+<span class="nc" id="L72">        return outgoingEdgesOf(findVertexByDeclaration(caller)).stream()</span>
+<span class="nc" id="L73">                .map(Edge::getCall)</span>
+<span class="nc" id="L74">                .map(Node.class::cast);</span>
+    }
+
+    /** Locates the methods that may call the given declaration. */
+    public Stream&lt;CallableDeclaration&lt;?&gt;&gt; callersOf(CallableDeclaration&lt;?&gt; callee) {
+<span class="nc" id="L79">        return incomingEdgesOf(findVertexByDeclaration(callee)).stream()</span>
+<span class="nc" id="L80">                .map(this::getEdgeSource)</span>
+<span class="nc" id="L81">                .map(Vertex::getDeclaration);</span>
+    }
+
+    /** Locates the methods that may be called when executing the given declaration. */
+    public Stream&lt;CallableDeclaration&lt;?&gt;&gt; calleesOf(CallableDeclaration&lt;?&gt; caller) {
+<span class="nc" id="L86">        return outgoingEdgesOf(findVertexByDeclaration(caller)).stream()</span>
+<span class="nc" id="L87">                .map(this::getEdgeTarget)</span>
+<span class="nc" id="L88">                .map(Vertex::getDeclaration);</span>
+    }
+
+    /** Locate the vertex that represents in this graph the given declaration. */
+    protected Vertex findVertexByDeclaration(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L93">        Optional&lt;Vertex&gt; matchingVertex = vertexSet().stream()</span>
+<span class="nc" id="L94">                .filter(v -&gt; v.matches(declaration))</span>
+<span class="nc" id="L95">                .findFirst();</span>
+
+<span class="nc bnc" id="L97" title="All 2 branches missed.">        if (matchingVertex.isPresent()) {</span>
+<span class="nc" id="L98">            return matchingVertex.get();</span>
+        } else {
+<span class="nc" id="L100">            throw new NoSuchElementException(&quot;No vertex matching the declaration found&quot;);</span>
+        }
+
+    }
+
+    @Override
+    public void build(NodeList&lt;CompilationUnit&gt; arg) {
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (isBuilt())</span>
+<span class="nc" id="L108">            return;</span>
+<span class="nc" id="L109">        buildVertices(arg);</span>
+<span class="nc" id="L110">        buildEdges(arg);</span>
+<span class="nc" id="L111">        built = true;</span>
+<span class="nc" id="L112">    }</span>
+
+    @Override
+    public boolean isBuilt() {
+<span class="nc" id="L116">        return built;</span>
+    }
+
+    /** Find the method and constructor declarations (vertices) in the given list of compilation units. */
+    protected void buildVertices(NodeList&lt;CompilationUnit&gt; arg) {
+<span class="nc" id="L121">        arg.accept(new VoidVisitorAdapter&lt;Void&gt;() {</span>
+            @Override
+            public void visit(MethodDeclaration n, Void arg) {
+<span class="nc" id="L124">                addVertex(new Vertex(n));</span>
+<span class="nc" id="L125">                super.visit(n, arg);</span>
+<span class="nc" id="L126">            }</span>
+
+            @Override
+            public void visit(ConstructorDeclaration n, Void arg) {
+<span class="nc" id="L130">                addVertex(new Vertex(n));</span>
+<span class="nc" id="L131">                super.visit(n, arg);</span>
+<span class="nc" id="L132">            }</span>
+        }, null);
+<span class="nc" id="L134">    }</span>
+
+    protected boolean addEdge(CallableDeclaration&lt;?&gt; source, CallableDeclaration&lt;?&gt; target, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+        try {
+<span class="nc" id="L138">            Edge&lt;?&gt; edge = new Edge&lt;&gt;(call, findGraphNode(call, source));</span>
+<span class="nc" id="L139">            return addEdge(findVertexByDeclaration(source), findVertexByDeclaration(target), edge);</span>
+<span class="nc" id="L140">        } catch (Exception e) {</span>
+            // Failed to create edge, just ignore
+<span class="nc" id="L142">            return false;</span>
+        }
+    }
+
+    protected boolean addEdge(TypeDeclaration&lt;?&gt; source, CallableDeclaration&lt;?&gt; target, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc" id="L147">        return false; // TODO: handle static blocks</span>
+    }
+
+    /** Find the calls to methods and constructors (edges) in the given list of compilation units. */
+    protected void buildEdges(NodeList&lt;CompilationUnit&gt; arg) {
+<span class="nc" id="L152">        arg.accept(new VoidVisitorAdapter&lt;Void&gt;() {</span>
+<span class="nc" id="L153">            private final Deque&lt;TypeDeclaration&lt;?&gt;&gt; typeStack = new LinkedList&lt;&gt;();</span>
+<span class="nc" id="L154">            private final Deque&lt;CallableDeclaration&lt;?&gt;&gt; declStack = new LinkedList&lt;&gt;();</span>
+
+            @Override
+            public void visit(ClassOrInterfaceDeclaration n, Void arg) {
+<span class="nc" id="L158">                typeStack.push(n);</span>
+<span class="nc" id="L159">                super.visit(n, arg);</span>
+<span class="nc" id="L160">                typeStack.pop();</span>
+<span class="nc" id="L161">            }</span>
+
+            @Override
+            public void visit(EnumDeclaration n, Void arg) {
+<span class="nc" id="L165">                typeStack.push(n);</span>
+<span class="nc" id="L166">                super.visit(n, arg);</span>
+<span class="nc" id="L167">                typeStack.pop();</span>
+<span class="nc" id="L168">            }</span>
+
+            // ============ Method declarations ===========
+            // There are some locations not considered, which may lead to an error in the stack.
+            // 1. Method calls in non-static field initializations are assigned to all constructors of that class
+            // 2. Method calls in static field initializations are assigned to the static block of that class
+
+            @Override
+            public void visit(MethodDeclaration n, Void arg) {
+<span class="nc" id="L177">                declStack.push(n);</span>
+<span class="nc" id="L178">                super.visit(n, arg);</span>
+<span class="nc" id="L179">                declStack.pop();</span>
+<span class="nc" id="L180">            }</span>
+
+            @Override
+            public void visit(ConstructorDeclaration n, Void arg) {
+<span class="nc" id="L184">                declStack.push(n);</span>
+<span class="nc" id="L185">                super.visit(n, arg);</span>
+<span class="nc" id="L186">                declStack.pop();</span>
+<span class="nc" id="L187">            }</span>
+
+            // =============== Method calls ===============
+            @Override
+            public void visit(MethodCallExpr n, Void arg) {
+                try {
+<span class="nc bnc" id="L193" title="All 2 branches missed.">                    if (!n.resolve().toAst().isPresent()) {</span>
+<span class="nc" id="L194">                        CallableDeclaration&lt;?&gt; decl = classGraph.getMethodDeclarationBySig(ASTUtils.processSignature(n.resolve().getQualifiedSignature()));</span>
+<span class="nc bnc" id="L195" title="All 2 branches missed.">                        if (decl != null) {</span>
+<span class="nc" id="L196">                            createPolyEdges(decl.asMethodDeclaration(), n);</span>
+                        }
+<span class="nc" id="L198">                    } else {</span>
+<span class="nc" id="L199">                        n.resolve().toAst().ifPresent(decl -&gt; createPolyEdges(decl, n));</span>
+                    }
+<span class="nc" id="L201">                } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L202">                super.visit(n, arg);</span>
+<span class="nc" id="L203">            }</span>
+
+            @Override
+            public void visit(ObjectCreationExpr n, Void arg) {
+                try {
+<span class="nc bnc" id="L208" title="All 2 branches missed.">                    if (!n.resolve().toAst().isPresent()) {</span>
+<span class="nc" id="L209">                        CallableDeclaration&lt;?&gt; decl = classGraph.getMethodDeclarationBySig(ASTUtils.processSignature(n.resolve().getQualifiedSignature()));</span>
+<span class="nc bnc" id="L210" title="All 2 branches missed.">                        if (decl != null) {</span>
+<span class="nc" id="L211">                            createNormalEdge(decl, n);</span>
+                        }
+<span class="nc" id="L213">                    } else {</span>
+<span class="nc" id="L214">                        n.resolve().toAst().ifPresent(decl -&gt; createNormalEdge(decl, n));</span>
+                    }
+<span class="nc" id="L216">                } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L217">                super.visit(n, arg);</span>
+<span class="nc" id="L218">            }</span>
+
+            @Override
+            public void visit(ExplicitConstructorInvocationStmt n, Void arg) {
+                try {
+<span class="nc" id="L223">                    n.resolve().toAst().ifPresent(decl -&gt; createNormalEdge(decl, n));</span>
+<span class="nc" id="L224">                } catch (RuntimeException ignored) {}</span>
+<span class="nc" id="L225">                super.visit(n, arg);</span>
+<span class="nc" id="L226">            }</span>
+
+            protected void createPolyEdges(MethodDeclaration decl, MethodCallExpr call) {
+                // Static calls have no polymorphism, ignore
+<span class="nc bnc" id="L230" title="All 2 branches missed.">                if (decl.isStatic()) {</span>
+<span class="nc" id="L231">                    createNormalEdge(decl, call);</span>
+<span class="nc" id="L232">                    return;</span>
+                }
+                try {
+<span class="nc" id="L235">                    Optional&lt;Expression&gt; scope = call.getScope();</span>
+                    // Determine the type of the call's scope
+                    Set&lt;? extends TypeDeclaration&lt;?&gt;&gt; dynamicTypes;
+<span class="nc bnc" id="L238" title="All 2 branches missed.">                    if (!scope.isPresent()) {</span>
+                        // a) No scope: any class the method is in, or any outer class if the class is not static.
+                        // Early exit: it is easier to find the methods that override the
+                        // detected call than to account for all cases (implicit inner or outer class)
+<span class="nc" id="L242">                        classGraph.overriddenSetOf(decl)</span>
+<span class="nc" id="L243">                                .forEach(methodDecl -&gt; createNormalEdge(methodDecl, call));</span>
+<span class="nc" id="L244">                        return;</span>
+<span class="nc bnc" id="L245" title="All 4 branches missed.">                    } else if (scope.get().isThisExpr() &amp;&amp; !scope.get().asThisExpr().getTypeName().isPresent()) {</span>
+                        // b) just 'this', the current class and any subclass
+<span class="nc" id="L247">                        dynamicTypes = classGraph.subclassesOf(typeStack.peek());</span>
+<span class="nc bnc" id="L248" title="All 2 branches missed.">                    } else if (scope.get().isThisExpr()) {</span>
+                        // c) 'ClassName.this', the given class and any subclass
+<span class="nc" id="L250">                        dynamicTypes = classGraph.subclassesOf(scope.get().asThisExpr().resolve().asClass());</span>
+<span class="nc bnc" id="L251" title="All 2 branches missed.">                    } else if (scope.get().isSuperExpr()) {</span>
+                        // d) 'super': start with the parent type and get the first implementation
+<span class="nc" id="L253">                        dynamicTypes = new HashSet&lt;&gt;(Collections.singleton(classGraph.parentOf(typeStack.peek()).orElseThrow(() -&gt; new NoSuchElementException(&quot;No parent found for the type&quot;))));</span>
+                    } else {
+                        // e) others: compute possible dynamic types of the expression (TODO)
+<span class="nc" id="L256">                        dynamicTypes = classGraph.subclassesOf(scope.get().calculateResolvedType().asReferenceType());</span>
+                    }
+                    // Locate the corresponding methods for each possible dynamic type, they must be available to all
+                    // To locate them, use the method signature and search for it in the class graph
+                    // Connect to each declaration
+<span class="nc" id="L261">                    AtomicInteger edgesCreated = new AtomicInteger();</span>
+<span class="nc" id="L262">                    dynamicTypes.stream()</span>
+<span class="nc" id="L263">                            .map(t -&gt; classGraph.findMethodByTypeAndSignature(t, decl))</span>
+<span class="nc" id="L264">                            .collect(Collectors.toCollection(NodeHashSet::new))</span>
+<span class="nc" id="L265">                            .forEach(methodDecl -&gt; {</span>
+<span class="nc" id="L266">                                edgesCreated.getAndIncrement();</span>
+<span class="nc" id="L267">                                createNormalEdge(methodDecl, call);</span>
+<span class="nc" id="L268">                            });</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">                    assert edgesCreated.get() &gt; 0;</span>
+<span class="nc" id="L270">                } catch (Exception e) {</span>
+                    // Failed to create edge, just ignore
+<span class="nc" id="L272">                    return;</span>
+<span class="nc" id="L273">                }</span>
+<span class="nc" id="L274">            }</span>
+
+            protected void createNormalEdge(CallableDeclaration&lt;?&gt; decl, Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; call) {
+<span class="nc bnc" id="L277" title="All 4 branches missed.">                if (declStack.isEmpty() &amp;&amp; typeStack.isEmpty())</span>
+<span class="nc" id="L278">                    throw new IllegalStateException(&quot;Trying to link call with empty declaration stack! &quot; + decl.getDeclarationAsString() + &quot; : &quot; + call.toString());</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">                if (declStack.isEmpty())</span>
+<span class="nc" id="L280">                    addEdge(typeStack.peek(), decl, call);</span>
+                else
+<span class="nc" id="L282">                    addEdge(declStack.peek(), decl, call);</span>
+<span class="nc" id="L283">            }</span>
+
+            // Other structures
+            @Override
+            public void visit(FieldDeclaration n, Void arg) {
+<span class="nc bnc" id="L288" title="All 4 branches missed.">                if (declStack.isEmpty() &amp;&amp; !n.isStatic()) {</span>
+<span class="nc bnc" id="L289" title="All 2 branches missed.">                    for (ConstructorDeclaration cd : typeStack.peek().getConstructors()) {</span>
+<span class="nc" id="L290">                        declStack.push(cd);</span>
+<span class="nc" id="L291">                        super.visit(n, arg);</span>
+<span class="nc" id="L292">                        declStack.pop();</span>
+<span class="nc" id="L293">                    }</span>
+                }
+<span class="nc" id="L295">            }</span>
+        }, null);
+<span class="nc" id="L297">    }</span>
+
+    /** Locates the node in the collection of CFGs that contains the given call. */
+    protected GraphNode&lt;?&gt; findGraphNode(Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt; n, CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc bnc" id="L301" title="All 2 branches missed.">        for (GraphNode&lt;?&gt; node : cfgMap.get(declaration).vertexSet())</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">            if (node.containsCall(n))</span>
+<span class="nc" id="L303">                return node;</span>
+<span class="nc" id="L304">        throw new NodeNotFoundException(&quot;call &quot; + n + &quot; could not be located! cfg was &quot; + cfgMap.get(declaration).rootNode.getLongLabel() + &quot; and declaration was &quot; + declaration.getDeclarationAsString());</span>
+    }
+
+    /** A vertex containing the declaration it represents. It only exists because
+     *  JGraphT relies heavily on equals comparison, which may not be correct in declarations. */
+<span class="nc" id="L309">    public static class Vertex {</span>
+        protected final CallableDeclaration&lt;?&gt; declaration;
+
+<span class="nc" id="L312">        public Vertex(CallableDeclaration&lt;?&gt; declaration) {</span>
+<span class="nc bnc" id="L313" title="All 4 branches missed.">            assert declaration instanceof ConstructorDeclaration || declaration instanceof MethodDeclaration;</span>
+<span class="nc" id="L314">            this.declaration = declaration;</span>
+<span class="nc" id="L315">        }</span>
+
+        /** The declaration represented by this node. */
+        public CallableDeclaration&lt;?&gt; getDeclaration() {
+<span class="nc" id="L319">            return declaration;</span>
+        }
+
+        @Override
+        public int hashCode() {
+<span class="nc" id="L324">            return Objects.hash(declaration.getSignature());</span>
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+<span class="nc bnc" id="L329" title="All 4 branches missed.">            return obj instanceof Vertex &amp;&amp; ((Vertex) obj).matches(declaration);</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L334">            return declaration.toString();</span>
+        }
+
+        public boolean matches(CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc bnc" id="L338" title="All 2 branches missed.">            if (this.declaration == declaration)</span>
+<span class="nc" id="L339">                return true;</span>
+<span class="nc bnc" id="L340" title="All 2 branches missed.">            if (!this.declaration.getSignature().toString().equals(declaration.getSignature().toString()))</span>
+<span class="nc" id="L341">                return false;</span>
+<span class="nc" id="L342">            NodeWithSimpleName t1 = this.declaration.findAncestor(NodeWithSimpleName.class).orElse(null);</span>
+<span class="nc" id="L343">            NodeWithSimpleName t2 = declaration.findAncestor(NodeWithSimpleName.class).orElse(null);</span>
+<span class="nc bnc" id="L344" title="All 6 branches missed.">            return t1 != null &amp;&amp; t2 != null &amp;&amp; t1.getNameAsString().equals(t2.getNameAsString());</span>
+        }
+    }
+
+    /** An edge containing the call it represents, and the graph node that contains it. */
+<span class="nc" id="L349">    public static class Edge&lt;T extends Resolvable&lt;? extends ResolvedMethodLikeDeclaration&gt;&gt; extends DefaultEdge {</span>
+        protected final T call;
+        protected final GraphNode&lt;?&gt; graphNode;
+
+<span class="nc" id="L353">        public Edge(T call, GraphNode&lt;?&gt; graphNode) {</span>
+<span class="nc bnc" id="L354" title="All 6 branches missed.">            assert call instanceof MethodCallExpr || call instanceof ObjectCreationExpr || call instanceof ExplicitConstructorInvocationStmt;</span>
+<span class="nc bnc" id="L355" title="All 2 branches missed.">            assert graphNode.containsCall(call);</span>
+<span class="nc" id="L356">            this.call = call;</span>
+<span class="nc" id="L357">            this.graphNode = graphNode;</span>
+<span class="nc" id="L358">        }</span>
+
+        /** The call represented by this edge. Using the {@link CallGraph} it can be effortlessly resolved. */
+        public T getCall() {
+<span class="nc" id="L362">            return call;</span>
+        }
+
+        /** The graph node that contains the call represented by this edge. */
+        public GraphNode&lt;?&gt; getGraphNode() {
+<span class="nc" id="L367">            return graphNode;</span>
+        }
+
+        public CallableDeclaration&lt;?&gt; getSource() {
+<span class="nc" id="L371">            return ((Vertex) super.getSource()).getDeclaration();</span>
+        }
+
+        public CallableDeclaration&lt;?&gt; getTarget() {
+<span class="nc" id="L375">            return ((Vertex) super.getTarget()).getDeclaration();</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L380">            return String.format(&quot;%s -%d-&gt; %s&quot;,</span>
+<span class="nc" id="L381">                    ((CallableDeclaration&lt;?&gt;) getSource()).getDeclarationAsString(false, false, false),</span>
+<span class="nc" id="L382">                    graphNode.getId(),</span>
+<span class="nc" id="L383">                    ((CallableDeclaration&lt;?&gt;) getTarget()).getDeclarationAsString(false, false, false));</span>
+        }
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,24 @@
+[2026-01-19 18:16:50] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: indexOfWrap, systemOut, TextHelpAppendable, adjustTableFormat, appendHeader, appendList, appendParagraph, appendTable, appendTitle, getIndent, getLeftPad, getMaxWidth, getTextStyleBuilder, makeColumnQueue, makeColumnQueues, printWrapped, printWrapped, resize, resize, setIndent, setLeftPad, setMaxWidth, writeColumnQueues
+  未覆盖: printQueue
+
+[2026-01-19 18:22:43] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: indexOfWrap, systemOut, TextHelpAppendable, adjustTableFormat, appendHeader, appendList, appendParagraph, appendTable, appendTitle, getIndent, getLeftPad, getMaxWidth, getTextStyleBuilder, makeColumnQueue, makeColumnQueues, printQueue, printWrapped, printWrapped, resize, resize, setIndent, setLeftPad, setMaxWidth, writeColumnQueues
+  未覆盖: 全部覆盖
+
+[2026-01-20 12:08:57] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: indexOfWrap, systemOut, TextHelpAppendable, adjustTableFormat, appendHeader, appendList, appendParagraph, appendTable, appendTitle, getIndent, getLeftPad, getMaxWidth, getTextStyleBuilder, makeColumnQueues, printWrapped, printWrapped, setIndent, setLeftPad, setMaxWidth, writeColumnQueues
+  未覆盖: makeColumnQueue, printQueue, resize, resize
+
+[2026-01-20 12:12:13] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: indexOfWrap, systemOut, TextHelpAppendable, adjustTableFormat, appendHeader, appendList, appendParagraph, appendTable, appendTitle, getIndent, getLeftPad, getMaxWidth, getTextStyleBuilder, makeColumnQueue, makeColumnQueues, printQueue, printWrapped, printWrapped, resize, resize, setIndent, setLeftPad, setMaxWidth, writeColumnQueues
+  未覆盖: 全部覆盖
+

@@ -1,0 +1,71 @@
+[2026-01-24 01:43:23] 修复结果
+修复类型: 方法覆盖补充
+修复前错误: 未知 - 无法解析验证结果，但检测到可能存在问题
+修复后状态: 成功
+修复后方法覆盖: 全部覆盖
+修复后代码:
+```java
+package gson.internal;
+
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.AbstractList;
+
+import org.junit.jupiter.api.Test;
+
+class UnsafeAllocatorTest {
+
+    @Test
+    void testNewInstance_Object() throws Exception {
+        Object result = UnsafeAllocator.INSTANCE.newInstance(Object.class);
+        assertNotNull(result);
+    }
+
+    @Test
+    void testNewInstance_Interface() {
+        assertThrows(AssertionError.class, () -> {
+            UnsafeAllocator.INSTANCE.newInstance(Runnable.class);
+        });
+    }
+
+    @Test
+    void testNewInstance_AbstractClass() {
+        assertThrows(AssertionError.class, () -> {
+            UnsafeAllocator.INSTANCE.newInstance(AbstractList.class);
+        });
+    }
+
+    @Test
+    void testNewInstance_UnsupportedAllocator() {
+        UnsafeAllocator allocator = new UnsafeAllocator() {
+            @Override
+            public <T> T newInstance(Class<T> c) {
+                throw new UnsupportedOperationException();
+            }
+        };
+        assertThrows(UnsupportedOperationException.class, () -> {
+            allocator.newInstance(Object.class);
+        });
+    }
+
+    @Test
+    void testAssertInstantiable() {
+        UnsafeAllocator.INSTANCE.assertInstantiable(Object.class);
+        assertThrows(AssertionError.class, () -> {
+            UnsafeAllocator.INSTANCE.assertInstantiable(Runnable.class);
+        });
+        assertThrows(AssertionError.class, () -> {
+            UnsafeAllocator.INSTANCE.assertInstantiable(AbstractList.class);
+        });
+    }
+
+    @Test
+    void testCreate() {
+        UnsafeAllocator allocator = UnsafeAllocator.create();
+        assertNotNull(allocator);
+        assertNotNull(allocator.newInstance(Object.class));
+    }
+}
+```
+

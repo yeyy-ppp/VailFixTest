@@ -1,0 +1,395 @@
+类名：AbstractHelpFormatter
+分析阶段：
+  耗时：25781 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：67884 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：66630 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  失败原因：
+修复阶段：
+  耗时：-1748915614682 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：0
+  修复失败原因：
+  修复成功次数：0
+评估阶段：
+  耗时：1748915628996 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【指令覆盖率】：【95%】  
+【分支覆盖率】：【100%】  
+【复杂度】：【3】  
+【行覆盖率】：【90%】  
+【方法覆盖率】：【100%】  
+【类覆盖率】：【100%】
+总耗时：176268 毫秒
+总消耗 token 数量：0
+测试代码生成结果：true
+失败原因：
+--------------------------------------------------------
+当前正在为AbstractHelpFormatter : AbstractHelpFormatter生成测试代码！
+
+起始时间：1748915454387
+
+套件 开始时间: 1748915454387
+分析起始时间：1748915454387
+
+分析 开始时间: 1748915454387
+解析提示内容：
+```
+包路径：help
+类名：AbstractHelpFormatter
+方法名：AbstractHelpFormatter
+返回类型：void
+功能描述：构造方法，初始化帮助格式化器实例的各个成员变量。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getComparator
+返回类型：Comparator<Option>
+功能描述：获取选项比较器，用于选项的排序。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getHelpAppendable
+返回类型：HelpAppendable
+功能描述：获取用于输出帮助信息的可追加对象。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getOptionFormatBuilder
+返回类型：OptionFormatter.Builder
+功能描述：获取选项格式构造器。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getOptionFormatter
+返回类型：OptionFormatter
+功能描述：根据指定选项构建选项格式化器。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getOptionGroupSeparator
+返回类型：String
+功能描述：获取选项组之间的分隔符。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getSerializer
+返回类型：HelpAppendable
+功能描述：获取帮助信息序列化器（同getHelpAppendable）。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getSyntaxPrefix
+返回类型：String
+功能描述：获取命令行语法前缀。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：getTableDefinition
+返回类型：TableDefinition
+功能描述：抽象方法，定义获取选项表格的具体实现。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：printHelp
+返回类型：void
+功能描述：输出完整的帮助信息，包含语法、头信息、选项表格和脚注。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：printHelp
+返回类型：void
+功能描述：重载方法，通过Options对象打印帮助信息。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：printOptions
+返回类型：void
+功能描述：打印选项表格。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：printOptions
+返回类型：void
+功能描述：重载方法，通过Options对象打印选项。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：printOptions
+返回类型：void
+功能描述：重载方法，通过表格定义直接打印选项。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：setSyntaxPrefix
+返回类型：void
+功能描述：设置命令行语法前缀。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：sort
+返回类型：List<Option>
+功能描述：对选项集合进行排序。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：sort
+返回类型：List<Option>
+功能描述：重载方法，通过Options对象进行排序。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：toArgName
+返回类型：String
+功能描述：转换参数名为特定格式。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：toSyntaxOptions
+返回类型：String
+功能描述：将选项集合转换为语法字符串表示。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：toSyntaxOptions
+返回类型：String
+功能描述：通过查找函数处理分组选项的语法字符串生成。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：toSyntaxOptions
+返回类型：String
+功能描述：将选项组转换为带分隔符的语法字符串。
+
+包路径：help
+类名：AbstractHelpFormatter
+方法名：toSyntaxOptions
+返回类型：String
+功能描述：通过Options对象生成语法选项字符串。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：Builder
+返回类型：void
+功能描述：构造Builder实例。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：asThis
+返回类型：B
+功能描述：返回当前类型转换后的Builder实例（用于链式调用）。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：getComparator
+返回类型：Comparator<Option>
+功能描述：获取当前的选项比较器。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：getHelpAppendable
+返回类型：HelpAppendable
+功能描述：获取当前的帮助信息追加器。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：getOptionFormatBuilder
+返回类型：OptionFormatter.Builder
+功能描述：获取选项格式化构造器。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：getOptionGroupSeparator
+返回类型：String
+功能描述：获取选项组分隔符。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：setComparator
+返回类型：B
+功能描述：设置选项比较器，返回当前Builder实例。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：setHelpAppendable
+返回类型：B
+功能描述：设置帮助信息追加器，返回当前Builder实例。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：setOptionFormatBuilder
+返回类型：B
+功能描述：设置选项格式化构造器，返回当前Builder实例。
+
+包路径：help
+类名：AbstractHelpFormatter.Builder
+方法名：setOptionGroupSeparator
+返回类型：B
+功能描述：设置选项组分隔符，返回当前Builder实例。
+```over
+
+分析结束时间：1748915480168
+
+分析总耗时：25781
+分析 结束时间: 1748915480168
+分析 耗时: 25.781 秒
+生成 开始时间: 1748915480172
+生成测试代码：
+```java
+package help;
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import java.lang.reflect.Field;
+import cli.Option;
+import cli.OptionGroup;
+import cli.Options;
+import cli.TextHelpAppendable;
+import java.io.IOException;
+import java.util.Comparator;
+
+class AbstractHelpFormatterTest {
+    private static class TestFormatter extends AbstractHelpFormatter {
+        TestFormatter(Builder<?, ?> builder) { super(builder); }
+        @Override
+        protected TableDefinition getTableDefinition(Iterable<Option> options) { return null; }
+    }
+
+    private static class TestBuilder extends AbstractHelpFormatter.Builder<TestBuilder, TestFormatter> {
+        @Override public TestFormatter get() { return new TestFormatter(this); }
+    }
+
+    private TestFormatter createFormatter(TestBuilder builder) { return new TestFormatter(builder); }
+
+    @Test
+    void testNormalInitialization() throws Exception {
+        TestBuilder builder = new TestBuilder();
+        TestFormatter formatter = createFormatter(builder);
+
+        Field comparatorField = AbstractHelpFormatter.class.getDeclaredField("comparator");
+        comparatorField.setAccessible(true);
+        assertEquals(AbstractHelpFormatter.DEFAULT_COMPARATOR, comparatorField.get(formatter));
+
+        Field helpAppendableField = AbstractHelpFormatter.class.getDeclaredField("helpAppendable");
+        helpAppendableField.setAccessible(true);
+        assertEquals(TextHelpAppendable.systemOut(), helpAppendableField.get(formatter));
+
+        Field optionFormatBuilderField = AbstractHelpFormatter.class.getDeclaredField("optionFormatBuilder");
+        optionFormatBuilderField.setAccessible(true);
+        assertNotNull(optionFormatBuilderField.get(formatter));
+
+        Field separatorField = AbstractHelpFormatter.class.getDeclaredField("optionGroupSeparator");
+        separatorField.setAccessible(true);
+        assertEquals(" | ", separatorField.get(formatter));
+    }
+
+    @Test
+    void testCustomComparator() throws Exception {
+        TestBuilder builder = new TestBuilder();
+        Comparator<Option> custom = (a, b) -> 0;
+        builder.setComparator(custom);
+        TestFormatter formatter = createFormatter(builder);
+        Field field = AbstractHelpFormatter.class.getDeclaredField("comparator");
+        field.setAccessible(true);
+        assertEquals(custom, field.get(formatter));
+    }
+
+    @Test
+    void testNullComparatorThrowsException() throws Exception {
+        TestBuilder builder = new TestBuilder();
+        Field field = Builder.class.getDeclaredField("comparator");
+        field.setAccessible(true);
+        field.set(builder, null);
+        assertThrows(NullPointerException.class, () -> createFormatter(builder));
+    }
+
+    @Test
+    void testNullHelpAppendableUsesDefault() throws Exception {
+        TestBuilder builder = new TestBuilder();
+        Field field = Builder.class.getDeclaredField("helpAppendable");
+        field.setAccessible(true);
+        field.set(builder, null);
+        TestFormatter formatter = createFormatter(builder);
+        Field helpAppendableField = AbstractHelpFormatter.class.getDeclaredField("helpAppendable");
+        helpAppendableField.setAccessible(true);
+        assertEquals(TextHelpAppendable.systemOut(), helpAppendableField.get(formatter));
+    }
+
+    @Test
+    void testOptionalGroupSeparatorHandling() throws Exception {
+        TestBuilder builder = new TestBuilder();
+        builder.setOptionGroupSeparator(null);
+        TestFormatter formatter = createFormatter(builder);
+        Field field = AbstractHelpFormatter.class.getDeclaredField("optionGroupSeparator");
+        field.setAccessible(true);
+        assertEquals("", field.get(formatter));
+    }
+
+    @Test
+    void testNullOptionFormatBuilderThrowsException() throws Exception {
+        TestBuilder builder = new TestBuilder();
+        Field field = Builder.class.getDeclaredField("optionFormatBuilder");
+        field.setAccessible(true);
+        field.set(builder, null);
+        assertThrows(NullPointerException.class, () -> createFormatter(builder));
+    }
+}
+```over
+
+生成 结束时间: 1748915548052
+生成 耗时: 67.88 秒
+验证 开始时间: 1748915548052
+测试代码验证结果：
+【全部验证通过】over
+
+验证 结束时间: 1748915614682
+验证 耗时: 66.63 秒
+评估 开始时间: 1748915614682
+测试代码评估结果：
+【指令覆盖率】：【95%】
+【分支覆盖率】：【100%】
+【复杂度】：【3】
+【行覆盖率】：【90%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】over
+
+评估 结束时间: 1748915628996
+评估 耗时: 14.314 秒
+测试类创建开始：
+测试类创建成功：src/test/java/help/AbstractHelpFormatterTest.java
+测试类编译开始：
+测试类编译失败！
+错误信息: src\test\java\help\AbstractHelpFormatterTest.java:8: ����: �Ҳ�������
+import cli.TextHelpAppendable;
+          ^
+  ����:   �� TextHelpAppendable
+  λ��: ����� cli
+src\test\java\help\AbstractHelpFormatterTest.java:61: ����: �Ҳ�������
+        Field field = Builder.class.getDeclaredField("comparator");
+                      ^
+  ����:   �� Builder
+  λ��: �� AbstractHelpFormatterTest
+src\test\java\help\AbstractHelpFormatterTest.java:70: ����: �Ҳ�������
+        Field field = Builder.class.getDeclaredField("helpAppendable");
+                      ^
+  ����:   �� Builder
+  λ��: �� AbstractHelpFormatterTest
+src\test\java\help\AbstractHelpFormatterTest.java:92: ����: �Ҳ�������
+        Field field = Builder.class.getDeclaredField("optionFormatBuilder");
+                      ^
+  ����:   �� Builder
+  λ��: �� AbstractHelpFormatterTest
+4 ������
+
+测试类编译失败！
+套件 结束时间: 1748915629773
+套件 耗时: 175.386 秒
+测试类不存在！AbstractHelpFormatter

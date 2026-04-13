@@ -1,0 +1,103 @@
+```
+包路径：cli.help
+类名：TextHelpAppendable
+父类：FilterHelpAppendable
+依赖类：TextStyle,TableDefinition,Util
+---
+序号：1
+方法名：indexOfWrap(CharSequence text, int width, int startPos)
+返回类型：int
+功能描述：查找文本中换行位置
+序号：2
+方法名：systemOut()
+返回类型：TextHelpAppendable
+功能描述：创建标准输出实例
+序号：3
+方法名：TextHelpAppendable(Appendable output)
+返回类型：void
+功能描述：初始化文本样式构建器
+序号：4
+方法名：adjustTableFormat(TableDefinition table)
+返回类型：TableDefinition
+功能描述：根据内容调整表格格式
+序号：5
+方法名：appendHeader(int level, CharSequence text)
+返回类型：void
+功能描述：输出指定级别标题
+序号：6
+方法名：appendList(boolean ordered, Collection<CharSequence> list)
+返回类型：void
+功能描述：输出有序/无序列表
+序号：7
+方法名：appendParagraph(CharSequence paragraph)
+返回类型：void
+功能描述：输出段落文本
+序号：8
+方法名：appendTable(TableDefinition rawTable)
+返回类型：void
+功能描述：格式化输出表格
+序号：9
+方法名：appendTitle(CharSequence title)
+返回类型：void
+功能描述：输出文档主标题
+序号：10
+方法名：getIndent()
+返回类型：int
+功能描述：获取缩进值
+序号：11
+方法名：getLeftPad()
+返回类型：int
+功能描述：获取左侧填充值
+序号：12
+方法名：getMaxWidth()
+返回类型：int
+功能描述：获取最大行宽
+序号：13
+方法名：getTextStyleBuilder()
+返回类型：TextStyle.Builder
+功能描述：获取文本样式构建器
+序号：14
+方法名：makeColumnQueue(CharSequence columnData, TextStyle style)
+返回类型：Queue<String>
+功能描述：生成文本列队列
+序号：15
+方法名：makeColumnQueues(List<String> columnData, List<TextStyle> styles)
+返回类型：List<Queue<String>>
+功能描述：生成多列文本队列
+序号：16
+方法名：printQueue(Queue<String> queue)
+返回类型：void
+功能描述：输出队列内容
+序号：17
+方法名：printWrapped(String text)
+返回类型：void
+功能描述：按默认样式输出换行文本
+序号：18
+方法名：printWrapped(String text, TextStyle style)
+返回类型：void
+功能描述：按指定样式输出换行文本
+序号：19
+方法名：resize(int orig, double fraction)
+返回类型：int
+功能描述：按比例调整数值
+序号：20
+方法名：resize(TextStyle.Builder builder, double fraction)
+返回类型：TextStyle.Builder
+功能描述：按比例调整文本样式
+序号：21
+方法名：setIndent(int indent)
+返回类型：void
+功能描述：设置缩进值
+序号：22
+方法名：setLeftPad(int leftPad)
+返回类型：void
+功能描述：设置左侧填充值
+序号：23
+方法名：setMaxWidth(int maxWidth)
+返回类型：void
+功能描述：设置最大行宽
+序号：24
+方法名：writeColumnQueues(List<Queue<String>> columnQueues, List<TextStyle> styles)
+返回类型：void
+功能描述：输出多列文本队列
+```

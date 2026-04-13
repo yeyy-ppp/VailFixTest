@@ -1,0 +1,37 @@
+[2026-01-13 18:12:03] 验证结果
+错误类型: 编译错误, 错误行: 156, 错误原因: 引用了未定义的DEFAULT字段, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: builder, getDescription, getSince, isForRemoval, toString, Builder, get, setDescription, setForRemoval, setSince
+  未覆盖: DeprecatedAttributes, toEmpty
+优化建议: 增加toEmpty方法的直接测试用例; 增加isForRemoval的边界值测试（如默认false的更多场景）
+
+[2026-01-13 18:15:57] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: builder, getDescription, getSince, isForRemoval, toEmpty, toString, Builder, get, setDescription, setForRemoval, setSince
+  未覆盖: DeprecatedAttributes
+
+[2026-01-15 10:35:59] 验证结果
+错误类型: 编译错误, 错误行: 72, 错误原因: DeprecatedAttributes类中不存在DEFAULT字段, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: builder, getDescription, getSince, isForRemoval, toEmpty, toString, get, setDescription, setForRemoval, setSince
+  未覆盖: 全部覆盖
+
+[2026-01-15 10:38:23] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: builder, getDescription, getSince, isForRemoval, toString, Builder, get, setDescription, setForRemoval, setSince
+  未覆盖: DeprecatedAttributes, toEmpty
+
+[2026-01-19 13:57:40] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: builder, getDescription, getSince, isForRemoval, toString, Builder, get, setDescription, setForRemoval, setSince
+  未覆盖: DeprecatedAttributes, toEmpty
+
+[2026-01-19 13:59:46] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: builder, getDescription, getSince, isForRemoval, toEmpty, toString, Builder, get, setDescription, setForRemoval, setSince
+  未覆盖: DeprecatedAttributes
+

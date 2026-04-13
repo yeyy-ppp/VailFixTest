@@ -1,0 +1,41 @@
+```
+包路径：lang3.concurrent
+类名：AbstractFutureProxy
+父类：无
+依赖类：无
+---
+序号：1
+方法名：AbstractFutureProxy(Future<V> future)
+返回类型：无
+功能描述：初始化代理，包装给定的Future对象
+---
+序号：2
+方法名：cancel(boolean mayInterruptIfRunning)
+返回类型：boolean
+功能描述：尝试取消异步任务执行
+---
+序号：3
+方法名：get()
+返回类型：V
+功能描述：获取异步计算的结果（阻塞直到完成）
+---
+序号：4
+方法名：get(long timeout, TimeUnit unit)
+返回类型：V
+功能描述：在指定超时时间内获取异步计算结果
+---
+序号：5
+方法名：getFuture()
+返回类型：Future<V>
+功能描述：返回被代理的Future对象
+---
+序号：6
+方法名：isCancelled()
+返回类型：boolean
+功能描述：检查任务是否已被取消
+---
+序号：7
+方法名：isDone()
+返回类型：boolean
+功能描述：检查异步计算是否已完成
+```

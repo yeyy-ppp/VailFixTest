@@ -1,0 +1,12 @@
+[2026-01-24 05:17:05] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过（未检测到错误）, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: write, toJson, toJson, toJsonTree, read, fromJson, fromJson, fromJsonTree, nullSafe
+  未覆盖: TypeAdapter
+
+[2026-01-24 05:19:27] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: write, toJson, toJson, toJsonTree, read, fromJson, fromJson, fromJsonTree, nullSafe
+  未覆盖: TypeAdapter
+

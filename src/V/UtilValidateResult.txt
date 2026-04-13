@@ -1,0 +1,31 @@
+[2026-01-13 19:12:34] 验证结果
+错误类型: 未知错误, 错误行: 15, 错误原因: 引用了Util类中未定义的字段EMPTY_STRING_ARRAY, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: isEmpty, isEmpty, stripLeadingAndTrailingQuotes, stripLeadingHyphens
+  未覆盖: Util
+优化建议: 添加stripLeadingAndTrailingQuotes方法对null输入的测试; 添加stripLeadingHyphens方法对null输入的测试; 添加stripLeadingAndTrailingQuotes方法对只有首引号或只有尾引号的测试用例; 构造方法测试中明确期望抛出的具体异常类型
+
+[2026-01-13 19:16:59] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: SUGGESTION
+方法覆盖情况: 
+  已覆盖: isEmpty, isEmpty, stripLeadingAndTrailingQuotes, stripLeadingHyphens
+  未覆盖: Util
+
+[2026-01-15 12:47:16] 验证结果
+错误类型: 断言值错误, 错误行: 65, 错误原因: 内部引号场景的期望值错误（应为"\"text\"here\""）, 严重程度: FATAL
+方法覆盖情况: 
+  已覆盖: isEmpty, isEmpty, stripLeadingAndTrailingQuotes, stripLeadingHyphens
+  未覆盖: Util
+
+[2026-01-20 12:38:47] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: isEmpty, isEmpty, stripLeadingAndTrailingQuotes, stripLeadingHyphens
+  未覆盖: Util
+
+[2026-01-20 12:41:07] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: isEmpty, isEmpty, stripLeadingAndTrailingQuotes, stripLeadingHyphens
+  未覆盖: Util
+

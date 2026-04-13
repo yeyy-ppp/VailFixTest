@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PromptGenerator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.prompt</a> &gt; <span class="el_source">PromptGenerator.java</span></div><h1>PromptGenerator.java</h1><pre class="source lang-java linenums">package zju.cst.aces.prompt;
+
+import zju.cst.aces.api.config.Config;
+import zju.cst.aces.api.phase.solution.CHATTESTER;
+import zju.cst.aces.api.phase.solution.COVERUP;
+import zju.cst.aces.api.phase.solution.SYMPROMPT;
+import zju.cst.aces.api.phase.solution.TELPA;
+import zju.cst.aces.dto.*;
+import zju.cst.aces.prompt.template.PromptTemplate;
+import zju.cst.aces.util.TokenCounter;
+import zju.cst.aces.util.symprompt.PathConstraintExtractor;
+
+import java.io.IOException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static zju.cst.aces.api.phase.solution.SYMPROMPT.convertedPaths;
+
+public class PromptGenerator {
+    public Config config;
+    public PromptTemplate promptTemplate;
+
+<span class="nc" id="L23">    public PromptGenerator(Config config) {</span>
+<span class="nc" id="L24">        this.config = config;</span>
+<span class="nc" id="L25">        this.promptTemplate = new PromptTemplate(config, config.properties, config.getPromptPath(), config.getMaxPromptTokens());</span>
+<span class="nc" id="L26">    }</span>
+
+    public void setConfig(Config config) {
+<span class="nc" id="L29">        this.config = config;</span>
+<span class="nc" id="L30">        this.promptTemplate = new PromptTemplate(config, config.properties, config.getPromptPath(), config.getMaxPromptTokens());</span>
+<span class="nc" id="L31">    }</span>
+
+//    /**
+//     * Generate messages for hits
+//     * @param promptInfo
+//     * @return
+//     */
+//    public List&lt;ChatMessage&gt; generateTestForHITS(PromptInfo promptInfo) {
+//        List&lt;ChatMessage&gt; chatMessages = new ArrayList&lt;&gt;();
+//        if (promptInfo.errorMsg == null) { // round 0
+//            chatMessages.add(ChatMessage.ofSystem(createSystemPrompt(promptInfo, promptTemplate.TEMPLATE_SYS_GEN)));
+//            chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, promptTemplate.TEMPLATE_GEN_CODE)));
+//        } else {
+//            chatMessages.add(ChatMessage.ofSystem(createSystemPrompt(promptInfo, promptTemplate.TEMPLATE_HITS_SYS_REPAIR)));
+//            chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, promptTemplate.TEMPLATE_HITS_REPAIR)));
+//        }
+//        return chatMessages;
+//    }
+//
+//    /**
+//     * Generate slices for hits
+//     * @param promptInfo
+//     * @return
+//     */
+//    public List&lt;ChatMessage&gt; generateSliceForHITS(PromptInfo promptInfo) {
+//        List&lt;ChatMessage&gt; chatMessages = new ArrayList&lt;&gt;();
+//        chatMessages.add(ChatMessage.ofSystem(createSystemPrompt(promptInfo, promptTemplate.TEMPLATE_SYS_GEN))); //todo 为空
+//        chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, promptTemplate.TEMPLATE_GEN_SLICE)));
+//        return chatMessages;
+//    }
+
+    /**
+     * Generate messages by promptInfo with no errors (generation - round 0) or errors (repair - round &gt; 0)
+     * @param promptInfo
+     * @return
+     */
+    public List&lt;ChatMessage&gt; generateMessages(PromptInfo promptInfo) {
+<span class="nc" id="L68">        List&lt;ChatMessage&gt; chatMessages = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        if (promptInfo.errorMsg == null) { // round 0</span>
+<span class="nc" id="L70">            chatMessages.add(ChatMessage.ofSystem(createSystemPrompt(promptInfo, promptTemplate.TEMPLATE_INIT_SYSTEM)));</span>
+<span class="nc" id="L71">            chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, promptTemplate.TEMPLATE_INIT)));</span>
+        } else {
+<span class="nc" id="L73">            chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, promptTemplate.TEMPLATE_REPAIR)));</span>
+        }
+<span class="nc" id="L75">        return chatMessages;</span>
+    }
+    /**
+     * Generate messages by promptInfo with no errors (generation - round 0) or errors (repair - round &gt; 0)
+     * @param promptInfo
+     * @return
+     */
+    public List&lt;ChatMessage&gt; generateMessages(PromptInfo promptInfo, String templateName) {
+<span class="nc" id="L83">        List&lt;ChatMessage&gt; chatMessages = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L84" title="All 2 branches missed.">        if (promptInfo.errorMsg == null) { // round 0</span>
+<span class="nc" id="L85">            chatMessages.add(ChatMessage.ofSystem(createSystemPrompt(promptInfo, selectPromptFile(templateName, false).getGenerateSystem())));</span>
+<span class="nc" id="L86">            chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, selectPromptFile(templateName, false).getGenerate())));</span>
+        } else {
+<span class="nc" id="L88">            processRepair(promptInfo);</span>
+<span class="nc" id="L89">            chatMessages.add(ChatMessage.ofSystem(createSystemPrompt(promptInfo, selectPromptFile(templateName, true).getGenerateSystem())));</span>
+<span class="nc" id="L90">            chatMessages.add(ChatMessage.of(createUserPrompt(promptInfo, selectPromptFile(templateName, true).getGenerate())));</span>
+        }
+
+<span class="nc" id="L93">        return chatMessages;</span>
+    }
+    public PromptFile selectPromptFile(String templateName, boolean ifRepair) {
+<span class="nc bnc" id="L96" title="All 2 branches missed.">        if (ifRepair) {</span>
+<span class="nc" id="L97">            return getRepairPromptFile(templateName);</span>
+        }
+<span class="nc" id="L99">        return getInitPromptFile(templateName);</span>
+    }
+
+    private PromptFile getRepairPromptFile(String templateName) {
+<span class="nc bnc" id="L103" title="All 7 branches missed.">        switch (templateName) {</span>
+            case &quot;TESTPILOT&quot;:
+<span class="nc" id="L105">                return PromptFile.testpilot_repair;</span>
+            case &quot;HITS&quot;:
+<span class="nc bnc" id="L107" title="All 2 branches missed.">                return config.useSlice ? PromptFile.hits_slice_init : PromptFile.hits_test_repair;</span>
+            case &quot;TESTSPARK&quot;:
+<span class="nc" id="L109">                return PromptFile.testspark_repair;</span>
+            case &quot;COVERUP&quot;:
+<span class="nc bnc" id="L111" title="All 2 branches missed.">                if (COVERUP.uncoveredLines.isEmpty()) { // todo 多线程应该会出问题</span>
+<span class="nc" id="L112">                    return PromptFile.chatunitest_repair;</span>
+                } else {
+<span class="nc" id="L114">                    setCoverUpRepairData();</span>
+<span class="nc" id="L115">                    return PromptFile.coverup_repair;</span>
+                }
+            case &quot;CHATTESTER&quot;:
+<span class="nc" id="L118">                return PromptFile.chattester_repair;</span>
+            case &quot;SYMPROMPT&quot;:
+<span class="nc" id="L120">                return PromptFile.chatunitest_repair;</span>
+            default:
+<span class="nc" id="L122">                return PromptFile.chatunitest_repair;</span>
+        }
+    }
+
+    private PromptFile getInitPromptFile(String templateName) {
+<span class="nc bnc" id="L127" title="All 9 branches missed.">        switch (templateName) {</span>
+            case &quot;TESTPILOT&quot;:
+<span class="nc" id="L129">                return PromptFile.testpilot_init;</span>
+            case &quot;HITS&quot;:
+<span class="nc bnc" id="L131" title="All 2 branches missed.">                return config.useSlice ? PromptFile.hits_slice_init : PromptFile.hits_test_init;</span>
+            case &quot;COVERUP&quot;:
+<span class="nc" id="L133">                return PromptFile.chatunitest_init;</span>
+            case &quot;TESTSPARK&quot;:
+<span class="nc" id="L135">                return PromptFile.testspark_init;</span>
+            case &quot;TELPA&quot;:
+<span class="nc" id="L137">                setTelpaInitData();</span>
+<span class="nc" id="L138">                return PromptFile.telpa_init;</span>
+            case &quot;CHATTESTER&quot;:
+<span class="nc bnc" id="L140" title="All 2 branches missed.">                return config.useExtra ? PromptFile.chattester_extra : PromptFile.chattester_init;</span>
+            case &quot;MUTAP&quot;:
+<span class="nc" id="L142">                return PromptFile.mutap_init;</span>
+            case &quot;SYMPROMPT&quot;:
+<span class="nc" id="L144">                setSymPromptInitData();</span>
+<span class="nc" id="L145">                return PromptFile.symprompt_init;</span>
+            default:
+<span class="nc" id="L147">                return PromptFile.chatunitest_init;</span>
+        }
+    }
+
+    private void setCoverUpRepairData() {
+<span class="nc" id="L152">        promptTemplate.dataModel.put(&quot;coverage_message&quot;, String.join(&quot;, &quot;, COVERUP.coverage_message));</span>
+<span class="nc" id="L153">        promptTemplate.dataModel.put(&quot;uncovered_lines&quot;, String.join(&quot;, &quot;, COVERUP.uncoveredLines));</span>
+<span class="nc" id="L154">    }</span>
+
+    private void setSymPromptInitData() {
+<span class="nc" id="L157">        promptTemplate.dataModel.put(&quot;minPaths&quot;, SYMPROMPT.convertedPaths);</span>
+<span class="nc" id="L158">    }</span>
+    private void setTelpaInitData() {
+<span class="nc" id="L160">        promptTemplate.dataModel.put(&quot;forward_analysis&quot;, TELPA.forwardAnalysis);</span>
+<span class="nc" id="L161">        promptTemplate.dataModel.put(&quot;backward_analysis&quot;, TELPA.backwardAnalysis);</span>
+<span class="nc" id="L162">        promptTemplate.dataModel.put(&quot;counter_examples&quot;,TELPA.counterExampleCode);</span>
+<span class="nc" id="L163">    }</span>
+
+
+    public String createUserPrompt(PromptInfo promptInfo, String templateName) {
+        try {
+<span class="nc" id="L168">            this.promptTemplate.buildDataModel(config, promptInfo);</span>
+<span class="nc bnc" id="L169" title="All 2 branches missed.">            if (templateName.equals(promptTemplate.TEMPLATE_REPAIR)) { // repair process</span>
+<span class="nc" id="L170">                return promptTemplate.renderTemplate(promptTemplate.TEMPLATE_REPAIR);</span>
+            } else {
+<span class="nc" id="L172">                return promptTemplate.renderTemplate(templateName);</span>
+            }
+<span class="nc" id="L174">        } catch (Exception e) {</span>
+<span class="nc" id="L175">            throw new RuntimeException(&quot;An error occurred while generating the user prompt: &quot; + e);</span>
+        }
+    }
+
+    public String createSystemPrompt(PromptInfo promptInfo, String templateName) {
+        try {
+<span class="nc" id="L181">            this.promptTemplate.buildDataModel(config, promptInfo);</span>
+            String filename;
+<span class="nc" id="L183">            filename = templateName;</span>
+<span class="nc" id="L184">            return promptTemplate.renderTemplate(filename);</span>
+<span class="nc" id="L185">        } catch (Exception e) {</span>
+<span class="nc bnc" id="L186" title="All 2 branches missed.">            if (e instanceof IOException) {</span>
+<span class="nc" id="L187">                return &quot;&quot;;</span>
+            }
+<span class="nc" id="L189">            throw new RuntimeException(&quot;An error occurred while generating the system prompt: &quot; + e);</span>
+        }
+    }
+
+
+
+    public String buildCOT(COT&lt;?&gt; cot) {
+<span class="nc" id="L196">        return &quot;&quot;;</span>
+    }
+
+    public String buildTOT(TOT&lt;?&gt; tot) {
+<span class="nc" id="L200">        return &quot;&quot;;</span>
+    }
+    public void processRepair(PromptInfo promptInfo){
+<span class="nc" id="L203">        int promptTokens = TokenCounter.countToken(promptInfo.getUnitTest())</span>
+<span class="nc" id="L204">                + TokenCounter.countToken(promptInfo.getMethodSignature())</span>
+<span class="nc" id="L205">                + TokenCounter.countToken(promptInfo.getClassName())</span>
+<span class="nc" id="L206">                + TokenCounter.countToken(promptInfo.getContext())</span>
+<span class="nc" id="L207">                + TokenCounter.countToken(promptInfo.getOtherMethodBrief());</span>
+<span class="nc" id="L208">        int allowedTokens = Math.max(config.getMaxPromptTokens() - promptTokens, config.getMinErrorTokens());</span>
+<span class="nc" id="L209">        TestMessage errorMsg = promptInfo.getErrorMsg();</span>
+<span class="nc" id="L210">        String processedErrorMsg = &quot;&quot;;</span>
+<span class="nc bnc" id="L211" title="All 2 branches missed.">        for (String error : errorMsg.getErrorMessage()) {</span>
+<span class="nc bnc" id="L212" title="All 2 branches missed.">            if (TokenCounter.countToken(processedErrorMsg + error + &quot;\n&quot;) &lt;= allowedTokens) {</span>
+<span class="nc" id="L213">                processedErrorMsg += error + &quot;\n&quot;;</span>
+            }
+<span class="nc" id="L215">        }</span>
+<span class="nc" id="L216">        config.getLogger().debug(&quot;Allowed tokens: &quot; + allowedTokens);</span>
+<span class="nc" id="L217">        config.getLogger().debug(&quot;Processed error message: \n&quot; + processedErrorMsg);</span>
+
+<span class="nc" id="L219">        promptTemplate.dataModel.put(&quot;unit_test&quot;, promptInfo.getUnitTest());</span>
+<span class="nc" id="L220">        promptTemplate.dataModel.put(&quot;error_message&quot;, processedErrorMsg);</span>
+<span class="nc" id="L221">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

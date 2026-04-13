@@ -1,0 +1,10 @@
+
+========== 批量处理日志 [2026-01-26 11:12:07] ==========
+待测试类总数: 47
+测试类生成成功: 47 - AppendableJoiner, ArrayFill, ArraySorter, AbstractSupplier, Builder, CharSet, CharSetUtils, ClassLoaderUtils, ClassPathUtils, AbstractFutureProxy, BasicThreadFactory, Computable, FutureTasks, LockingVisitors, UncheckedExecutionException, UncheckedFuture, UncheckedTimeoutException, Conversion, CloneFailedException, UncheckedException, UncheckedInterruptedException, Failable, FailableBiConsumer, FailableBiFunction, FailableBiPredicate, FailableCallable, FailableConsumer, FailableFunction, FailableIntFunction, FailablePredicate, FailableRunnable, FailableSupplier, Suppliers, LongRange, Mutable, MutableInt, NumberRange, RandomStringUtils, RandomUtils, Range, Typed, RuntimeEnvironment, SerializationException, IntStreams, LangCollectors, SystemProperties, SystemUtils
+测试类生成失败: 0 - 无
+测试类编译成功: 44 - ArrayFill, ArraySorter, AbstractSupplier, Builder, CharSet, CharSetUtils, ClassLoaderUtils, ClassPathUtils, AbstractFutureProxy, BasicThreadFactory, Computable, FutureTasks, LockingVisitors, UncheckedExecutionException, UncheckedFuture, UncheckedTimeoutException, Conversion, CloneFailedException, UncheckedException, UncheckedInterruptedException, FailableBiConsumer, FailableBiFunction, FailableBiPredicate, FailableCallable, FailableConsumer, FailableFunction, FailableIntFunction, FailablePredicate, FailableRunnable, FailableSupplier, Suppliers, LongRange, Mutable, MutableInt, NumberRange, RandomUtils, Range, Typed, RuntimeEnvironment, SerializationException, IntStreams, LangCollectors, SystemProperties, SystemUtils
+测试类编译失败: 3 - AppendableJoiner, Failable, RandomStringUtils
+JaCoCo覆盖率达标: false
+完整测试覆盖: false
+========================================

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>processNameForHITS.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util.hits</a> &gt; <span class="el_source">processNameForHITS.java</span></div><h1>processNameForHITS.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util.hits;
+
+import java.io.*;
+import java.nio.file.*;
+import java.util.regex.*;
+
+<span class="nc" id="L7">public class processNameForHITS {</span>
+
+    public static void main(String[] args) {
+        // 文件夹路径
+<span class="nc" id="L11">        String folderPath = &quot;D:\\APP\\IdeaProjects\\commons-csv-rel-commons-csv-1.10.0\\src\\test\\java\\org\\apache\\commons\\csv&quot;; // 请替换为你的文件夹路径</span>
+
+        // 正则表达式匹配文件名
+<span class="nc" id="L14">        Pattern filePattern = Pattern.compile(&quot;^(.*)_Test_slice(\\d+)\\.java$&quot;);</span>
+
+        // 遍历文件夹
+<span class="nc" id="L17">        File folder = new File(folderPath);</span>
+<span class="nc" id="L18">        File[] files = folder.listFiles();</span>
+
+<span class="nc bnc" id="L20" title="All 2 branches missed.">        if (files != null) {</span>
+<span class="nc bnc" id="L21" title="All 2 branches missed.">            for (File file : files) {</span>
+                // 只处理 .java 文件
+<span class="nc bnc" id="L23" title="All 4 branches missed.">                if (file.isFile() &amp;&amp; file.getName().endsWith(&quot;.java&quot;)) {</span>
+<span class="nc" id="L24">                    Matcher matcher = filePattern.matcher(file.getName());</span>
+<span class="nc bnc" id="L25" title="All 2 branches missed.">                    if (matcher.matches()) {</span>
+<span class="nc" id="L26">                        String xxx = matcher.group(1);</span>
+<span class="nc" id="L27">                        String n = matcher.group(2);</span>
+<span class="nc" id="L28">                        String newClassName = xxx + &quot;_slice&quot; + n + &quot;_Test&quot;;</span>
+<span class="nc" id="L29">                        String newFileName = xxx + &quot;_slice&quot; + n + &quot;_Test.java&quot;;</span>
+
+                        // 读取文件内容并替换类名
+                        try {
+<span class="nc" id="L33">                            String content = new String(Files.readAllBytes(file.toPath()));</span>
+<span class="nc" id="L34">                            content = content.replaceAll(&quot;class &quot; + Pattern.quote(xxx + &quot;_Test&quot;), &quot;class &quot; + newClassName);</span>
+
+                            // 写入新的文件内容
+<span class="nc" id="L37">                            Files.write(file.toPath(), content.getBytes());</span>
+
+                            // 重命名文件
+<span class="nc" id="L40">                            File newFile = new File(folderPath, newFileName);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">                            if (file.renameTo(newFile)) {</span>
+<span class="nc" id="L42">                                System.out.println(&quot;Renamed: &quot; + file.getName() + &quot; to &quot; + newFileName);</span>
+                            } else {
+<span class="nc" id="L44">                                System.out.println(&quot;Failed to rename: &quot; + file.getName());</span>
+                            }
+<span class="nc" id="L46">                        } catch (IOException e) {</span>
+<span class="nc" id="L47">                            System.err.println(&quot;Error processing file: &quot; + file.getName());</span>
+<span class="nc" id="L48">                            e.printStackTrace();</span>
+<span class="nc" id="L49">                        }</span>
+                    }
+                }
+            }
+        } else {
+<span class="nc" id="L54">            System.out.println(&quot;The specified folder does not exist or is empty.&quot;);</span>
+        }
+<span class="nc" id="L56">    }</span>
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

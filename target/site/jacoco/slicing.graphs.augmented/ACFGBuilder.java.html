@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ACFGBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs.augmented</a> &gt; <span class="el_source">ACFGBuilder.java</span></div><h1>ACFGBuilder.java</h1><pre class="source lang-java linenums">package slicing.graphs.augmented;
+
+import com.github.javaparser.ast.body.CallableDeclaration;
+import com.github.javaparser.ast.stmt.*;
+import slicing.graphs.cfg.CFGBuilder;
+import slicing.nodes.GraphNode;
+import slicing.utils.ASTUtils;
+
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.LinkedList;
+import java.util.List;
+
+/** Populates a {@link ACFG}, given one and an AST root node.
+ *  @see CFGBuilder Parent class for more instructions. */
+public class ACFGBuilder extends CFGBuilder {
+    /** Same as {@link #hangingNodes}, but to be connected as non-executable edges. */
+<span class="nc" id="L18">    protected final List&lt;GraphNode&lt;?&gt;&gt; nonExecHangingNodes = new LinkedList&lt;&gt;();</span>
+    /** Stack of non-executable hanging nodes for temporary storage. */
+<span class="nc" id="L20">    protected final Deque&lt;List&lt;GraphNode&lt;?&gt;&gt;&gt; nonExecHangingNodesStack = new LinkedList&lt;&gt;();</span>
+
+    protected ACFGBuilder(ACFG graph) {
+<span class="nc" id="L23">        super(graph);</span>
+<span class="nc" id="L24">    }</span>
+
+    @Override
+    protected void connectTo(GraphNode&lt;?&gt; node) {
+<span class="nc bnc" id="L28" title="All 2 branches missed.">        for (GraphNode&lt;?&gt; src : nonExecHangingNodes)</span>
+<span class="nc" id="L29">            ((ACFG) graph).addNonExecutableControlFlowArc(src, node);</span>
+<span class="nc" id="L30">        super.connectTo(node);</span>
+<span class="nc" id="L31">    }</span>
+
+    @Override
+    protected void clearHanging() {
+<span class="nc" id="L35">        super.clearHanging();</span>
+<span class="nc" id="L36">        nonExecHangingNodes.clear();</span>
+<span class="nc" id="L37">    }</span>
+
+    @Override
+    protected void saveHanging() {
+<span class="nc" id="L41">        nonExecHangingNodesStack.push(new ArrayList&lt;&gt;(nonExecHangingNodes));</span>
+<span class="nc" id="L42">        super.saveHanging();</span>
+<span class="nc" id="L43">    }</span>
+
+    @Override
+    protected void restoreHanging() {
+<span class="nc" id="L47">        nonExecHangingNodes.addAll(nonExecHangingNodesStack.pop());</span>
+<span class="nc" id="L48">        super.restoreHanging();</span>
+<span class="nc" id="L49">    }</span>
+
+    @Override
+    protected void dropHanging() {
+<span class="nc" id="L53">        nonExecHangingNodesStack.pop();</span>
+<span class="nc" id="L54">        super.dropHanging();</span>
+<span class="nc" id="L55">    }</span>
+
+    // ======================================================================
+    // ========================== Normal AST nodes ==========================
+    // ======================================================================
+
+    @Override
+    protected boolean isEmptyLoop(GraphNode&lt;?&gt; condition) {
+<span class="nc bnc" id="L63" title="All 4 branches missed.">        return super.isEmptyLoop(condition) &amp;&amp; nonExecHangingNodes.isEmpty();</span>
+    }
+
+    @Override
+    public void visit(SwitchStmt switchStmt, Void arg) {
+        // Link previous statement to the switch's selector
+<span class="nc" id="L69">        switchEntriesStack.push(new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L70">        breakStack.push(new LinkedList&lt;&gt;());</span>
+<span class="nc" id="L71">        GraphNode&lt;?&gt; cond = connectTo(switchStmt, String.format(&quot;switch (%s)&quot;, switchStmt.getSelector()));</span>
+<span class="nc" id="L72">        switchStmt.getSelector().accept(this, arg);</span>
+        // expr --&gt; each case (fallthrough by default, so case --&gt; case too)
+<span class="nc bnc" id="L74" title="All 2 branches missed.">        for (SwitchEntry entry : switchStmt.getEntries()) {</span>
+<span class="nc" id="L75">            entry.accept(this, arg); // expr &amp;&amp; prev case --&gt; case --&gt; next case</span>
+<span class="nc" id="L76">            hangingNodes.add(cond); // expr --&gt; next case</span>
+<span class="nc" id="L77">        }</span>
+        // The next statement will be linked to:
+        //		1. All break statements that broke from the switch (done with break section)
+        // 		2. If the switch doesn't have a default statement, the switch's selector (already present)
+        // 		3. If the last entry doesn't break, to the last statement (present already)
+        // If the last case is a default case, remove the selector node from the list of nodes (see 2)
+<span class="nc bnc" id="L83" title="All 2 branches missed.">        if (ASTUtils.switchHasDefaultCase(switchStmt))</span>
+<span class="nc" id="L84">            hangingNodes.remove(cond);</span>
+<span class="nc" id="L85">        List&lt;GraphNode&lt;SwitchEntry&gt;&gt; entries = switchEntriesStack.pop();</span>
+<span class="nc" id="L86">        GraphNode&lt;SwitchEntry&gt; def = null;</span>
+<span class="nc bnc" id="L87" title="All 2 branches missed.">        for (GraphNode&lt;SwitchEntry&gt; entry : entries) {</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            if (entry.getAstNode().getLabels().isEmpty()) {</span>
+<span class="nc" id="L89">                def = entry;</span>
+<span class="nc" id="L90">                break;</span>
+            }
+<span class="nc" id="L92">        }</span>
+<span class="nc bnc" id="L93" title="All 2 branches missed.">        if (def != null) {</span>
+<span class="nc" id="L94">            saveHanging();</span>
+<span class="nc" id="L95">            clearHanging();</span>
+<span class="nc" id="L96">            entries.remove(def);</span>
+<span class="nc" id="L97">            nonExecHangingNodes.addAll(entries);</span>
+<span class="nc" id="L98">            connectTo(def);</span>
+<span class="nc" id="L99">            clearHanging();</span>
+<span class="nc" id="L100">            restoreHanging();</span>
+<span class="nc" id="L101">            nonExecHangingNodes.add(def);</span>
+        } else {
+<span class="nc" id="L103">            nonExecHangingNodes.addAll(entries);</span>
+        }
+        // End block and break section
+<span class="nc" id="L106">        hangingNodes.addAll(breakStack.pop());</span>
+<span class="nc" id="L107">    }</span>
+
+    @Override
+    public void visit(BreakStmt breakStmt, Void arg) {
+<span class="nc" id="L111">        GraphNode&lt;BreakStmt&gt; node = connectTo(breakStmt);</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (breakStmt.getLabel().isPresent())</span>
+<span class="nc" id="L113">            breakMap.get(breakStmt.getLabel().get()).add(node);</span>
+        else
+<span class="nc" id="L115">            breakStack.peek().add(node);</span>
+<span class="nc" id="L116">        clearHanging();</span>
+<span class="nc" id="L117">        nonExecHangingNodes.add(node); // NEW vs CFG</span>
+<span class="nc" id="L118">    }</span>
+
+    @Override
+    public void visit(ContinueStmt continueStmt, Void arg) {
+<span class="nc" id="L122">        GraphNode&lt;ContinueStmt&gt; node = connectTo(continueStmt);</span>
+<span class="nc bnc" id="L123" title="All 2 branches missed.">        if (continueStmt.getLabel().isPresent())</span>
+<span class="nc" id="L124">            continueMap.get(continueStmt.getLabel().get()).add(node);</span>
+        else
+<span class="nc" id="L126">            continueStack.peek().add(node);</span>
+<span class="nc" id="L127">        clearHanging();</span>
+<span class="nc" id="L128">        nonExecHangingNodes.add(node); // NEW vs CFG</span>
+<span class="nc" id="L129">    }</span>
+
+    @Override
+    public void visit(ReturnStmt returnStmt, Void arg) {
+<span class="nc" id="L133">        GraphNode&lt;ReturnStmt&gt; node = connectTo(returnStmt);</span>
+<span class="nc" id="L134">        returnList.add(node);</span>
+<span class="nc" id="L135">        clearHanging();</span>
+<span class="nc" id="L136">        nonExecHangingNodes.add(node); // NEW vs CFG</span>
+<span class="nc" id="L137">    }</span>
+
+    // ======================================================================
+    // ============================ Declarations ============================
+    // ======================================================================
+
+    @Override
+    protected void buildExit(CallableDeclaration&lt;?&gt; callableDeclaration) {
+<span class="nc" id="L145">        nonExecHangingNodes.add(graph.getRootNode());</span>
+<span class="nc" id="L146">        super.buildExit(callableDeclaration);</span>
+<span class="nc" id="L147">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

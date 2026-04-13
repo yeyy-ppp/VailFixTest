@@ -1,0 +1,30 @@
+```包路径：lang3
+类名：LongRange
+父类：NumberRange<Long>
+依赖类：无
+---
+序号：1
+方法名：of(long fromInclusive, long toInclusive)
+返回类型：LongRange
+功能描述：通过长整型参数创建LongRange实例
+---
+序号：2
+方法名：of(Long fromInclusive, Long toInclusive)
+返回类型：LongRange
+功能描述：通过Long对象参数创建LongRange实例
+---
+序号：3
+方法名：LongRange(Long number1, Long number2)
+返回类型：void
+功能描述：初始化实例并调用父类构造函数
+---
+序号：4
+方法名：fit(long element)
+返回类型：long
+功能描述：将元素适配到当前范围内的长整型值
+---
+序号：5
+方法名：toLongStream()
+返回类型：LongStream
+功能描述：生成包含范围内所有长整数的顺序流
+```

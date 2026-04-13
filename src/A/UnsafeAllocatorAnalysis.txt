@@ -1,0 +1,17 @@
+包路径：gson.internal
+类名：UnsafeAllocator
+父类：java.lang.Object
+依赖类：ConstructorConstructor
+---
+序号：1
+方法名：newInstance(Class<T> c)
+返回类型：T
+功能描述：创建指定类的新实例
+序号：2
+方法名：assertInstantiable(Class<?> c)
+返回类型：void
+功能描述：检查类是否可实例化，否则抛出异常
+序号：3
+方法名：create()
+返回类型：UnsafeAllocator
+功能描述：创建并返回UnsafeAllocator实例，尝试不同机制

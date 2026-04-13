@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Token.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">csv</a> &gt; <span class="el_source">Token.java</span></div><h1>Token.java</h1><pre class="source lang-java linenums">package csv;
+import static csv.Token.Type.INVALID;
+<span class="fc" id="L3">public final class Token {</span>
+<span class="fc" id="L4">    enum Type {</span>
+<span class="fc" id="L5">        INVALID,</span>
+<span class="fc" id="L6">        TOKEN,</span>
+<span class="fc" id="L7">        EOF,</span>
+<span class="fc" id="L8">        EORECORD,</span>
+<span class="fc" id="L9">        COMMENT</span>
+    }
+    private static final int DEFAULT_CAPACITY = 50;
+<span class="fc" id="L12">    Type type = Type.INVALID;</span>
+<span class="fc" id="L13">    final StringBuilder content = new StringBuilder(DEFAULT_CAPACITY);</span>
+    boolean isReady;
+    boolean isQuoted;
+    void reset() {
+<span class="fc" id="L17">        content.setLength(0);</span>
+<span class="fc" id="L18">        type = Type.INVALID;</span>
+<span class="fc" id="L19">        isReady = false;</span>
+<span class="fc" id="L20">        isQuoted = false;</span>
+<span class="fc" id="L21">    }</span>
+    @Override
+    public String toString() {
+<span class="fc" id="L24">        return type + &quot; [&quot; + content.toString() + &quot;]&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

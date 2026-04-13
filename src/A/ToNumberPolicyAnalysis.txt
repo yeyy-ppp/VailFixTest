@@ -1,0 +1,31 @@
+```
+包路径：gson
+类名：ToNumberPolicy
+父类：java.lang.Enum
+依赖类：LazilyParsedNumber,NumberLimits,JsonReader,MalformedJsonException,JsonParseException,ToNumberStrategy
+---
+序号：1
+方法名：readNumber(JsonReader in)
+返回类型：Double
+功能描述：读取JSON数字作为Double类型
+---
+序号：2
+方法名：readNumber(JsonReader in)
+返回类型：Number
+功能描述：读取JSON数字字符串并封装为LazilyParsedNumber对象
+---
+序号：3
+方法名：readNumber(JsonReader in)
+返回类型：Number
+功能描述：根据数字字符串格式解析为Long或Double类型
+---
+序号：4
+方法名：parseAsDouble(String value, JsonReader in)
+返回类型：Number
+功能描述：解析字符串为Double并检查无穷/NaN值
+---
+序号：5
+方法名：readNumber(JsonReader in)
+返回类型：BigDecimal
+功能描述：读取JSON数字字符串并解析为BigDecimal对象
+```

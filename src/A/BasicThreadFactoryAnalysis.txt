@@ -1,0 +1,57 @@
+包路径：lang3.concurrent  
+类名：BasicThreadFactory  
+父类：无  
+依赖类：无  
+---  
+序号：1  
+方法名：Builder()  
+返回类型：void  
+功能描述：构造一个新的Builder实例（已弃用）  
+序号：2  
+方法名：build()  
+返回类型：BasicThreadFactory  
+功能描述：创建并返回BasicThreadFactory实例，并重置Builder状态  
+序号：3  
+方法名：priority(int priority)  
+返回类型：Builder  
+功能描述：设置线程优先级并返回Builder实例  
+序号：4  
+方法名：reset()  
+返回类型：void  
+功能描述：重置Builder的所有字段为null  
+序号：5  
+方法名：builder()  
+返回类型：Builder  
+功能描述：创建并返回一个新的Builder实例  
+序号：6  
+方法名：BasicThreadFactory(Builder builder)  
+返回类型：void  
+功能描述：使用给定的Builder配置初始化新的BasicThreadFactory实例  
+序号：7  
+方法名：getDaemonFlag()  
+返回类型：Boolean  
+功能描述：返回守护线程标志的值  
+序号：8  
+方法名：getNamingPattern()  
+返回类型：String  
+功能描述：返回线程命名模式  
+序号：9  
+方法名：getPriority()  
+返回类型：Integer  
+功能描述：返回线程优先级的值  
+序号：10  
+方法名：getUncaughtExceptionHandler()  
+返回类型：UncaughtExceptionHandler  
+功能描述：返回未捕获异常处理器  
+序号：11  
+方法名：getWrappedFactory()  
+返回类型：ThreadFactory  
+功能描述：返回包装的ThreadFactory  
+序号：12  
+方法名：initializeThread(Thread thread)  
+返回类型：void  
+功能描述：根据配置初始化线程对象（设置名称、异常处理器、优先级和守护标志）  
+序号：13  
+方法名：newThread(Runnable runnable)  
+返回类型：Thread  
+功能描述：创建并返回一个新的线程，根据配置初始化

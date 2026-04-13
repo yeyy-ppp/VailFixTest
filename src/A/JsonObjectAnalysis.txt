@@ -1,0 +1,85 @@
+包路径：gson
+类名：JsonObject
+父类：JsonElement
+依赖类：CanIgnoreReturnValue,LinkedTreeMap,JsonNull,JsonPrimitive,JsonArray
+---
+序号：1
+方法名：JsonObject()
+返回类型：无
+功能描述：构造方法，初始化成员映射
+序号：2
+方法名：deepCopy()
+返回类型：JsonObject
+功能描述：创建并返回此对象的深层副本
+序号：3
+方法名：add(String property, JsonElement value)
+返回类型：void
+功能描述：添加或替换指定属性的JSON元素，处理null值
+序号：4
+方法名：remove(String property)
+返回类型：JsonElement
+功能描述：移除并返回指定属性的JSON元素
+序号：5
+方法名：addProperty(String property, String value)
+返回类型：void
+功能描述：添加字符串属性，处理null值
+序号：6
+方法名：addProperty(String property, Number value)
+返回类型：void
+功能描述：添加数字属性，处理null值
+序号：7
+方法名：addProperty(String property, Boolean value)
+返回类型：void
+功能描述：添加布尔属性，处理null值
+序号：8
+方法名：addProperty(String property, Character value)
+返回类型：void
+功能描述：添加字符属性，处理null值
+序号：9
+方法名：entrySet()
+返回类型：Set<Map.Entry<String, JsonElement>>
+功能描述：返回包含所有成员条目的集合
+序号：10
+方法名：keySet()
+返回类型：Set<String>
+功能描述：返回所有成员键的集合
+序号：11
+方法名：size()
+返回类型：int
+功能描述：返回成员的数量
+序号：12
+方法名：isEmpty()
+返回类型：boolean
+功能描述：检查对象是否为空（无成员）
+序号：13
+方法名：has(String memberName)
+返回类型：boolean
+功能描述：检查是否存在指定名称的成员
+序号：14
+方法名：get(String memberName)
+返回类型：JsonElement
+功能描述：获取指定名称的JSON元素
+序号：15
+方法名：getAsJsonPrimitive(String memberName)
+返回类型：JsonPrimitive
+功能描述：获取指定名称的JSON原始值，并强制转换
+序号：16
+方法名：getAsJsonArray(String memberName)
+返回类型：JsonArray
+功能描述：获取指定名称的JSON数组，并强制转换
+序号：17
+方法名：getAsJsonObject(String memberName)
+返回类型：JsonObject
+功能描述：获取指定名称的JSON对象，并强制转换
+序号：18
+方法名：asMap()
+返回类型：Map<String, JsonElement>
+功能描述：返回内部映射的视图
+序号：19
+方法名：equals(Object o)
+返回类型：boolean
+功能描述：比较此对象与指定对象是否相等
+序号：20
+方法名：hashCode()
+返回类型：int
+功能描述：返回此对象的哈希码值

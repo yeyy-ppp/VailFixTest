@@ -1,0 +1,23 @@
+```
+包路径：cli
+类名：MissingOptionException
+父类：ParseException
+依赖类：无
+---
+序号：1
+方法名：createMessage(final List<?> missingOptions)
+返回类型：String
+功能描述：根据缺失的选项列表生成错误消息字符串
+序号：2
+方法名：MissingOptionException(final List missingOptions)
+返回类型：无
+功能描述：使用缺失的选项列表构造异常对象
+序号：3
+方法名：MissingOptionException(final String message)
+返回类型：无
+功能描述：使用指定的错误消息构造异常对象
+序号：4
+方法名：getMissingOptions()
+返回类型：List
+功能描述：获取缺失的选项列表
+```

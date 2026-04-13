@@ -1,0 +1,12 @@
+[2026-01-24 02:20:52] 验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: JsonElement, deepCopy, isJsonArray, isJsonObject, isJsonPrimitive, isJsonNull, getAsJsonObject, getAsJsonArray, getAsJsonPrimitive, getAsJsonNull, toString
+  未覆盖: getAsBoolean, getAsNumber, getAsString, getAsDouble, getAsFloat, getAsLong, getAsInt, getAsByte, getAsCharacter, getAsBigDecimal, getAsBigInteger, getAsShort
+
+[2026-01-24 02:25:47] 修复后验证结果
+错误类型: 未知, 错误行: -1, 错误原因: 无法解析验证结果，但检测到可能存在问题, 严重程度: WARNING
+方法覆盖情况: 
+  已覆盖: JsonElement, deepCopy, isJsonArray, isJsonObject, isJsonPrimitive, isJsonNull, getAsJsonObject, getAsJsonArray, getAsJsonPrimitive, getAsJsonNull, getAsBoolean, getAsNumber, getAsString, getAsDouble, getAsFloat, getAsLong, getAsInt, getAsByte, getAsCharacter, getAsBigDecimal, getAsBigInteger, getAsShort, toString
+  未覆盖: 全部覆盖
+

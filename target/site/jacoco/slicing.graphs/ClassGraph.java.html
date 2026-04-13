@@ -1,0 +1,550 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ClassGraph.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">slicing.graphs</a> &gt; <span class="el_source">ClassGraph.java</span></div><h1>ClassGraph.java</h1><pre class="source lang-java linenums">package slicing.graphs;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.Node;
+import com.github.javaparser.ast.NodeList;
+import com.github.javaparser.ast.body.*;
+import com.github.javaparser.ast.nodeTypes.NodeWithName;
+import com.github.javaparser.ast.nodeTypes.NodeWithSimpleName;
+import com.github.javaparser.ast.type.TypeParameter;
+import com.github.javaparser.ast.visitor.VoidVisitorAdapter;
+import com.github.javaparser.resolution.SymbolResolver;
+import com.github.javaparser.resolution.UnsolvedSymbolException;
+import com.github.javaparser.resolution.declarations.ResolvedClassDeclaration;
+import com.github.javaparser.resolution.types.ResolvedReferenceType;
+import com.github.javaparser.resolution.types.ResolvedType;
+import lombok.Getter;
+import lombok.var;
+import org.jgrapht.graph.DirectedPseudograph;
+import slicing.arcs.Arc;
+import slicing.nodes.ObjectTree;
+import slicing.utils.ASTUtils;
+import slicing.utils.StaticConfig;
+
+import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
+import static slicing.nodes.ObjectTree.ROOT_NODE;
+
+public class ClassGraph extends DirectedPseudograph&lt;ClassGraph.Vertex&lt;?&gt;, ClassGraph.ClassArc&gt; implements Buildable&lt;NodeList&lt;CompilationUnit&gt;&gt; {
+<span class="nc" id="L32">    private static ClassGraph instance = null;</span>
+
+    /** Generates and returns a new class graph. This destroys the reference to the previous instance. */
+    public static ClassGraph getNewInstance() {
+<span class="nc" id="L36">        instance = null;</span>
+<span class="nc" id="L37">        return getInstance();</span>
+    }
+
+    public static ClassGraph getInstance() {
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        if (instance == null)</span>
+<span class="nc" id="L42">            instance = new ClassGraph();</span>
+<span class="nc" id="L43">        return instance;</span>
+    }
+
+    /** A map from the FQ class name to its corresponding vertex. Use {@code mapKey(...)} to locate the key. */
+<span class="nc" id="L47">    private final Map&lt;String, ClassGraph.Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;&gt; classDeclarationMap = new HashMap&lt;&gt;();</span>
+    /** A map from the field name to its corresponding vertex. Use {@code mapKey(...)} to locate the key. */
+<span class="nc" id="L49">    private final Map&lt;String, ClassGraph.Vertex&lt;FieldDeclaration&gt;&gt; fieldDeclarationMap = new HashMap&lt;&gt;();</span>
+    /** A map from the method's signature to its corresponding vertex. Use {@code mapKey(...)} to locate the key. */
+<span class="nc" id="L51">    @Getter</span>
+    private final Map&lt;String, ClassGraph.Vertex&lt;CallableDeclaration&lt;?&gt;&gt;&gt; methodDeclarationMap = new HashMap&lt;&gt;();
+
+<span class="nc" id="L54">    private boolean built = false;</span>
+
+    private ClassGraph() {
+<span class="nc" id="L57">        super(null, null, false);</span>
+<span class="nc" id="L58">    }</span>
+
+    public CallableDeclaration&lt;?&gt; getMethodDeclarationBySig(String sig) {
+<span class="nc" id="L61">        ClassGraph.Vertex&lt;CallableDeclaration&lt;?&gt;&gt; decl = methodDeclarationMap.get(sig);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">        return decl == null ? null : decl.getDeclaration();</span>
+    }
+
+    public Collection&lt;ClassGraph.Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;&gt; typeVertices() {
+<span class="nc" id="L66">        return classDeclarationMap.values();</span>
+    }
+
+    /** Locates the vertex that represents a given class or interface declaration.
+     *  If the vertex is not contained in the graph, {@code null} will be returned. */
+    protected Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; findClassVertex(TypeDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L72">        return classDeclarationMap.get(mapKey(declaration));</span>
+    }
+
+    /** Whether this graph contains the given type as a vertex. */
+    public boolean containsType(ResolvedType type) {
+<span class="nc bnc" id="L77" title="All 4 branches missed.">        return type.isReferenceType() &amp;&amp; classDeclarationMap.containsKey(mapKey(type.asReferenceType()));</span>
+    }
+
+    /** Set of method declarations that override the given argument. */
+    public Set&lt;MethodDeclaration&gt; overriddenSetOf(MethodDeclaration method) {
+<span class="nc" id="L82">        TypeDeclaration&lt;?&gt; typeDeclaration = method.findAncestor(TypeDeclaration.class)</span>
+<span class="nc" id="L83">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No TypeDeclaration ancestor found for method&quot;));</span>
+
+<span class="nc" id="L85">        return subclassesStreamOf(findClassVertex(typeDeclaration))</span>
+<span class="nc" id="L86">                .flatMap(vertex -&gt; outgoingEdgesOf(vertex).stream()</span>
+<span class="nc" id="L87">                        .filter(ClassArc.Member.class::isInstance)</span>
+<span class="nc" id="L88">                        .map(ClassGraph.this::getEdgeTarget)</span>
+<span class="nc" id="L89">                        .filter(v -&gt; v.declaration.isMethodDeclaration())</span>
+<span class="nc" id="L90">                        .filter(v -&gt; v.declaration.asMethodDeclaration().getSignature().equals(method.getSignature()))</span>
+<span class="nc" id="L91">                        .map(v -&gt; v.declaration.asMethodDeclaration()))</span>
+<span class="nc" id="L92">                .collect(Collectors.toSet());</span>
+
+    }
+
+    /** Locates a field declaration within a given type, given its name. */
+    public Optional&lt;FieldDeclaration&gt; findClassField(ResolvedType resolvedType, String fieldName) {
+<span class="nc" id="L98">        return Optional.ofNullable(classDeclarationMap.get(mapKey(resolvedType.asReferenceType())))</span>
+<span class="nc" id="L99">                .flatMap(v -&gt; findClassField(v, fieldName));</span>
+    }
+
+    /** @see #findClassField(ResolvedType,String) */
+    @SuppressWarnings(&quot;unchecked&quot;)
+    public Optional&lt;FieldDeclaration&gt; findClassField(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; vertex, String fieldName) {
+<span class="nc" id="L105">        var field = vertex.getDeclaration().getFieldByName(fieldName);</span>
+<span class="nc bnc" id="L106" title="All 2 branches missed.">        if (field.isPresent())</span>
+<span class="nc" id="L107">            return field;</span>
+<span class="nc" id="L108">        return incomingEdgesOf(vertex).stream()</span>
+<span class="nc" id="L109">                .filter(ClassArc.Extends.class::isInstance)</span>
+<span class="nc" id="L110">                .map(this::getEdgeSource)</span>
+<span class="nc" id="L111">                .map(v -&gt; (Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;) v)</span>
+<span class="nc" id="L112">                .findAny()</span>
+<span class="nc" id="L113">                .flatMap(parent -&gt; findClassField(parent, fieldName));</span>
+    }
+
+    /** Returns all child classes of the given class, including itself. */
+    public Set&lt;? extends TypeDeclaration&lt;?&gt;&gt; subclassesOf(TypeDeclaration&lt;?&gt; clazz) {
+<span class="nc" id="L118">        return subclassesOf(findClassVertex(clazz));</span>
+    }
+
+    /** Returns all child classes of the given class, including itself. */
+    public Set&lt;? extends TypeDeclaration&lt;?&gt;&gt; subclassesOf(ResolvedClassDeclaration clazz) {
+<span class="nc" id="L123">        return subclassesOf(classDeclarationMap.get(mapKey(clazz)));</span>
+    }
+
+    public Set&lt;? extends TypeDeclaration&lt;?&gt;&gt; subclassesOf(ResolvedReferenceType type) {
+<span class="nc" id="L127">        return subclassesOf(classDeclarationMap.get(mapKey(type)));</span>
+    }
+
+    /** @see #subclassesOf(TypeDeclaration) */
+    protected Set&lt;? extends TypeDeclaration&lt;?&gt;&gt; subclassesOf(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; v) {
+<span class="nc bnc" id="L132" title="All 2 branches missed.">        if (v.getDeclaration() instanceof EnumDeclaration) {</span>
+<span class="nc" id="L133">            return new HashSet&lt;&gt;(Collections.singleton(v.getDeclaration()));</span>
+        }
+
+<span class="nc" id="L136">        return subclassesStreamOf(v)</span>
+<span class="nc" id="L137">                .map(Vertex::getDeclaration)</span>
+<span class="nc" id="L138">                .map(ClassOrInterfaceDeclaration.class::cast)</span>
+<span class="nc" id="L139">                .collect(Collectors.toSet());</span>
+    }
+
+    @SuppressWarnings(&quot;unchecked&quot;)
+    protected Stream&lt;Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;&gt; subclassesStreamOf(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; classVertex) {
+<span class="nc" id="L144">        return Stream.concat(Stream.of(classVertex), outgoingEdgesOf(classVertex).stream()</span>
+<span class="nc" id="L145">                .filter(ClassArc.Extends.class::isInstance)</span>
+<span class="nc" id="L146">                .map(this::getEdgeTarget)</span>
+<span class="nc" id="L147">                .map(v -&gt; (Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;) v)</span>
+<span class="nc" id="L148">                .flatMap(this::subclassesStreamOf));</span>
+    }
+
+    // TODO: this method ignores default method implementations in interfaces, as can be overridden.
+    /** Looks up a method in the graph, going up the class inheritance tree to locate a
+     *  matching method. If no match can be found, throws an {@link IllegalArgumentException}. */
+    public MethodDeclaration findMethodByTypeAndSignature(TypeDeclaration&lt;?&gt; type, CallableDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L155">        Vertex&lt;CallableDeclaration&lt;?&gt;&gt; v = methodDeclarationMap.get(mapKey(declaration, type));</span>
+<span class="nc bnc" id="L156" title="All 4 branches missed.">        if (v != null &amp;&amp; v.declaration.isMethodDeclaration())</span>
+<span class="nc" id="L157">            return v.declaration.asMethodDeclaration();</span>
+<span class="nc bnc" id="L158" title="All 2 branches missed.">        if (type.isClassOrInterfaceDeclaration()) {</span>
+<span class="nc" id="L159">            Optional&lt;ClassOrInterfaceDeclaration&gt; parentType = parentOf(type.asClassOrInterfaceDeclaration());</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">            if (parentType.isPresent())</span>
+<span class="nc" id="L161">                return findMethodByTypeAndSignature(parentType.get(), declaration);</span>
+        }
+<span class="nc" id="L163">        throw new IllegalArgumentException(&quot;Cannot find the given declaration: &quot; + declaration);</span>
+    }
+
+    /** Find the parent class or interface of a given class. */
+    public Optional&lt;ClassOrInterfaceDeclaration&gt; parentOf(ClassOrInterfaceDeclaration declaration) {
+<span class="nc" id="L168">        return incomingEdgesOf(findClassVertex(declaration)).stream()</span>
+<span class="nc" id="L169">                .filter(ClassArc.Extends.class::isInstance)</span>
+<span class="nc" id="L170">                .map(this::getEdgeSource)</span>
+<span class="nc" id="L171">                .map(Vertex::getDeclaration)</span>
+<span class="nc" id="L172">                .filter(BodyDeclaration::isClassOrInterfaceDeclaration)</span>
+<span class="nc" id="L173">                .map(BodyDeclaration::asClassOrInterfaceDeclaration)</span>
+<span class="nc" id="L174">                .findFirst();</span>
+    }
+
+    public Optional&lt;? extends TypeDeclaration&lt;?&gt;&gt; parentOf(TypeDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L178">        return incomingEdgesOf(findClassVertex(declaration)).stream()</span>
+<span class="nc" id="L179">                .filter(ClassArc.Extends.class::isInstance)</span>
+<span class="nc" id="L180">                .map(this::getEdgeSource)</span>
+<span class="nc" id="L181">                .map(Vertex::getDeclaration)</span>
+<span class="nc" id="L182">                .filter(BodyDeclaration::isTypeDeclaration)</span>
+<span class="nc" id="L183">                .map(bd -&gt; (TypeDeclaration&lt;?&gt;) bd)</span>
+<span class="nc" id="L184">                .findFirst();</span>
+    }
+
+    public Optional&lt;ObjectTree&gt; generateObjectTreeForReturnOf(CallableDeclaration&lt;?&gt; callableDeclaration) {
+<span class="nc bnc" id="L188" title="All 2 branches missed.">        if (callableDeclaration.isMethodDeclaration()) {</span>
+<span class="nc" id="L189">            MethodDeclaration method = callableDeclaration.asMethodDeclaration();</span>
+<span class="nc bnc" id="L190" title="All 2 branches missed.">            if (method.getType().isClassOrInterfaceType()) {</span>
+                try {
+<span class="nc" id="L192">                    Optional&lt;CompilationUnit&gt; optionalCu = method.getType().findCompilationUnit();</span>
+
+<span class="nc bnc" id="L194" title="All 2 branches missed.">                    if (optionalCu.isPresent()) {</span>
+<span class="nc" id="L195">                        CompilationUnit cu = optionalCu.get();</span>
+
+<span class="nc bnc" id="L197" title="All 2 branches missed.">                        if (!cu.containsData(Node.SYMBOL_RESOLVER_KEY)) {</span>
+<span class="nc" id="L198">                            SymbolResolver resolver = StaticJavaParser.getConfiguration()</span>
+<span class="nc" id="L199">                                    .getSymbolResolver()</span>
+<span class="nc" id="L200">                                    .orElseThrow(() -&gt; new IllegalStateException(&quot;Symbol resolution not configured: to configure consider setting a SymbolResolver in the ParserConfiguration&quot;));</span>
+
+                            // Assuming you have methods for adding data; if not, you need to ensure that such methods exist.
+<span class="nc" id="L203">                            cu.setData(Node.SYMBOL_RESOLVER_KEY, resolver);</span>
+                        }
+<span class="nc" id="L205">                    } else {</span>
+<span class="nc" id="L206">                        throw new IllegalStateException(&quot;The node is not inserted in a CompilationUnit&quot;);</span>
+                    }
+
+<span class="nc" id="L209">                    return Optional.of(generateObjectTreeFor(method.getType().asClassOrInterfaceType().resolve()));</span>
+<span class="nc" id="L210">                } catch (UnsolvedSymbolException | UnsupportedOperationException e) {</span>
+<span class="nc" id="L211">                    return Optional.empty();</span>
+                }
+            } else {
+<span class="nc" id="L214">                return Optional.empty();</span>
+            }
+
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        } else if (callableDeclaration.isConstructorDeclaration()) {</span>
+<span class="nc" id="L218">            TypeDeclaration&lt;?&gt; typeDeclaration = callableDeclaration.findAncestor(TypeDeclaration.class)</span>
+<span class="nc" id="L219">                    .orElseThrow(() -&gt; new NoSuchElementException(&quot;No TypeDeclaration ancestor found for callableDeclaration&quot;));</span>
+
+<span class="nc" id="L221">            return Optional.of(generateObjectTreeFor(typeDeclaration));</span>
+
+        } else {
+<span class="nc" id="L224">            throw new IllegalArgumentException(&quot;Invalid callable declaration type&quot;);</span>
+        }
+    }
+
+    public Optional&lt;ObjectTree&gt; generateObjectTreeForType(ResolvedType type) {
+<span class="nc bnc" id="L229" title="All 2 branches missed.">        if (type.isReferenceType()) {</span>
+<span class="nc" id="L230">            Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; v = classDeclarationMap.get(mapKey(type.asReferenceType()));</span>
+<span class="nc bnc" id="L231" title="All 2 branches missed.">            if (v != null)</span>
+<span class="nc" id="L232">                return Optional.of(generateObjectTreeFor(v));</span>
+        }
+<span class="nc" id="L234">        return Optional.empty();</span>
+    }
+
+    public ObjectTree generateObjectTreeFor(TypeDeclaration&lt;?&gt; declaration) {
+<span class="nc" id="L238">        return generateObjectTreeFor(classDeclarationMap.get(mapKey(declaration)));</span>
+    }
+
+    public ObjectTree generateObjectTreeFor(ResolvedReferenceType type) {
+<span class="nc" id="L242">        return generateObjectTreeFor(classDeclarationMap.get(mapKey(type)));</span>
+    }
+
+    protected ObjectTree generateObjectTreeFor(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; classVertex) {
+<span class="nc bnc" id="L246" title="All 2 branches missed.">        if (classVertex == null)</span>
+<span class="nc" id="L247">            return new ObjectTree();</span>
+<span class="nc" id="L248">        return generatePolyObjectTreeFor(classVertex, new ObjectTree(), ROOT_NODE, 0);</span>
+    }
+
+    protected ObjectTree generatePolyObjectTreeFor(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; classVertex, ObjectTree tree, String[] level, int depth) {
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (depth &gt;= StaticConfig.K_LIMIT)</span>
+<span class="nc" id="L253">            return tree;</span>
+<span class="nc" id="L254">        Set&lt;? extends TypeDeclaration&lt;?&gt;&gt; types = subclassesOf(classVertex);</span>
+<span class="nc bnc" id="L255" title="All 2 branches missed.">        if (types.isEmpty()) {</span>
+<span class="nc" id="L256">            generateObjectTreeFor(classVertex, tree, level, depth);</span>
+        } else {
+<span class="nc bnc" id="L258" title="All 2 branches missed.">            for (TypeDeclaration&lt;?&gt; type : types) {</span>
+<span class="nc" id="L259">                Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; subclassVertex = classDeclarationMap.get(mapKey(type));</span>
+<span class="nc bnc" id="L260" title="All 2 branches missed.">                if (!findAllFieldsOf(subclassVertex).isEmpty()) {</span>
+<span class="nc" id="L261">                    ObjectTree newType = tree.addType(ASTUtils.resolvedTypeDeclarationToResolvedType(type.resolve()), level);</span>
+<span class="nc" id="L262">                    String[] newLevel = new String[level.length + 1];</span>
+<span class="nc" id="L263">                    System.arraycopy(level, 0, newLevel, 0, level.length);</span>
+<span class="nc" id="L264">                    newLevel[level.length] = newType.getMemberNode().getLabel();</span>
+<span class="nc" id="L265">                    generateObjectTreeFor(subclassVertex, tree, newLevel, depth + 1);</span>
+                }
+<span class="nc" id="L267">            }</span>
+        }
+<span class="nc" id="L269">        return tree;</span>
+    }
+
+    protected void generateObjectTreeFor(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; classVertex, ObjectTree tree, String[] level, int depth) {
+<span class="nc" id="L273">        Map&lt;String, Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;&gt; classFields = findAllFieldsOf(classVertex);</span>
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        for (var entry : classFields.entrySet()) {</span>
+<span class="nc" id="L275">            String[] newLevel = new String[level.length + 1];</span>
+<span class="nc" id="L276">            System.arraycopy(level, 0, newLevel, 0, level.length);</span>
+<span class="nc" id="L277">            newLevel[level.length] = entry.getKey();</span>
+<span class="nc" id="L278">            tree.addField(newLevel);</span>
+<span class="nc bnc" id="L279" title="All 2 branches missed.">            if (entry.getValue() != null)</span>
+<span class="nc bnc" id="L280" title="All 2 branches missed.">                if (entry.getValue().equals(classVertex)) {</span>
+<span class="nc" id="L281">                    generatePolyObjectTreeFor(entry.getValue(), tree, newLevel, StaticConfig.K_LIMIT);</span>
+                } else {
+<span class="nc" id="L283">                    generatePolyObjectTreeFor(entry.getValue(), tree, newLevel, depth);</span>
+                }
+<span class="nc" id="L285">        }</span>
+<span class="nc" id="L286">    }</span>
+
+    protected Map&lt;String, Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;&gt; findAllFieldsOf(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; classVertex) {
+<span class="nc" id="L289">        TypeDeclaration&lt;?&gt; type = classVertex.getDeclaration();</span>
+<span class="nc bnc" id="L290" title="All 2 branches missed.">        assert !type.isClassOrInterfaceDeclaration() ||</span>
+<span class="nc bnc" id="L291" title="All 2 branches missed.">                !type.asClassOrInterfaceDeclaration().isInterface();</span>
+<span class="nc" id="L292">        Map&lt;String, Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt;&gt; fieldMap = new HashMap&lt;&gt;();</span>
+<span class="nc bnc" id="L293" title="All 2 branches missed.">        while (type != null) {</span>
+<span class="nc bnc" id="L294" title="All 2 branches missed.">            for (FieldDeclaration field : type.getFields()) {</span>
+<span class="nc bnc" id="L295" title="All 2 branches missed.">                for (VariableDeclarator var : field.getVariables()) {</span>
+<span class="nc bnc" id="L296" title="All 2 branches missed.">                    if (fieldMap.containsKey(var.getNameAsString()))</span>
+<span class="nc" id="L297">                        continue;</span>
+<span class="nc" id="L298">                    Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; v = null;</span>
+<span class="nc bnc" id="L299" title="All 2 branches missed.">                    if (var.getType().isClassOrInterfaceType()) {</span>
+<span class="nc" id="L300">                        boolean isTypeParameter = false;</span>
+<span class="nc bnc" id="L301" title="All 2 branches missed.">                        if (type.isClassOrInterfaceDeclaration()) {</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">                            for (TypeParameter typeParameter : type.asClassOrInterfaceDeclaration().getTypeParameters())</span>
+<span class="nc bnc" id="L303" title="All 2 branches missed.">                                if (typeParameter.getNameAsString().equals(var.getType().asClassOrInterfaceType().getNameAsString()))</span>
+<span class="nc" id="L304">                                    isTypeParameter = true;</span>
+<span class="nc bnc" id="L305" title="All 2 branches missed.">                            if (!isTypeParameter)</span>
+                                try {
+<span class="nc" id="L307">                                    v = classDeclarationMap.get(mapKey(var.getType().asClassOrInterfaceType().resolve()));</span>
+<span class="nc" id="L308">                                } catch (UnsolvedSymbolException ignored) {}</span>
+                        }
+                    }
+<span class="nc bnc" id="L311" title="All 2 branches missed.">                    if (v != null) {</span>
+<span class="nc" id="L312">                        fieldMap.put(var.getNameAsString(), v);</span>
+                    }
+<span class="nc" id="L314">                }</span>
+<span class="nc" id="L315">            }</span>
+<span class="nc bnc" id="L316" title="All 2 branches missed.">            if (type.isClassOrInterfaceDeclaration()) {</span>
+<span class="nc" id="L317">                type = parentOf(type.asClassOrInterfaceDeclaration()).orElse(null);</span>
+            } else {
+<span class="nc" id="L319">                type = null;</span>
+            }
+        }
+<span class="nc" id="L322">        return fieldMap;</span>
+    }
+
+    @Override
+    public void build(NodeList&lt;CompilationUnit&gt; arg) {
+<span class="nc bnc" id="L327" title="All 2 branches missed.">        if (isBuilt())</span>
+<span class="nc" id="L328">            return;</span>
+<span class="nc" id="L329">        buildVertices(arg);</span>
+<span class="nc" id="L330">        buildEdges(arg);</span>
+<span class="nc" id="L331">        built = true;</span>
+<span class="nc" id="L332">    }</span>
+
+    @Override
+    public boolean isBuilt() {
+<span class="nc" id="L336">        return built;</span>
+    }
+
+    protected String mapKey(TypeDeclaration&lt;?&gt; n) {
+<span class="nc" id="L340">        String fullyQualifiedName = n.getFullyQualifiedName()</span>
+<span class="nc" id="L341">                .orElseThrow(() -&gt; new NoSuchElementException(&quot;No fully qualified name found&quot;));</span>
+
+<span class="nc" id="L343">        return fullyQualifiedName;</span>
+
+    }
+
+    protected String mapKey(ResolvedClassDeclaration n) {
+<span class="nc" id="L348">        return n.getQualifiedName();</span>
+    }
+
+    protected String mapKey(ResolvedReferenceType n) {
+<span class="nc" id="L352">        return n.getQualifiedName();</span>
+    }
+
+    protected String mapKey(CallableDeclaration&lt;?&gt; declaration, TypeDeclaration&lt;?&gt; clazz) {
+<span class="nc" id="L356">        return clazz.getFullyQualifiedName().orElseThrow(() -&gt; new NoSuchElementException(&quot;Fully qualified name is not present&quot;))+ &quot;.&quot; + declaration.getSignature();</span>
+    }
+
+    protected String mapKey(FieldDeclaration declaration, TypeDeclaration&lt;?&gt; clazz) {
+<span class="nc" id="L360">        return clazz.getFullyQualifiedName().orElseThrow(() -&gt; new NoSuchElementException(&quot;Fully qualified name is not present&quot;)) + &quot;.&quot; + declaration;</span>
+
+    }
+
+    /** Find the class declarations, the field declaration, and method and constructor declarations (vertices)
+     * in the given list of compilation units. */
+    protected void buildVertices(NodeList&lt;CompilationUnit&gt; arg) {
+<span class="nc" id="L367">        arg.accept(new VoidVisitorAdapter&lt;Void&gt;() {</span>
+<span class="nc" id="L368">            private final Deque&lt;TypeDeclaration&lt;?&gt;&gt; typeStack = new LinkedList&lt;&gt;();</span>
+//            QUESTIONS &amp; LACKS:
+//              1) Is it necessary to include something apart from class vertices?
+//              2) Private classes inside other classes?
+//              3) Static declaration blocks not considered
+
+            @Override
+            public void visit(ClassOrInterfaceDeclaration n, Void arg) {
+<span class="nc" id="L376">                typeStack.push(n);</span>
+<span class="nc" id="L377">                addTypeDeclaration(n);</span>
+<span class="nc" id="L378">                super.visit(n, arg);</span>
+<span class="nc" id="L379">                typeStack.pop();</span>
+<span class="nc" id="L380">            }</span>
+
+            @Override
+            public void visit(EnumDeclaration n, Void arg) {
+<span class="nc" id="L384">                typeStack.push(n);</span>
+<span class="nc" id="L385">                addTypeDeclaration(n);</span>
+<span class="nc" id="L386">                super.visit(n, arg);</span>
+<span class="nc" id="L387">                typeStack.pop();</span>
+<span class="nc" id="L388">            }</span>
+
+            @Override
+            public void visit(FieldDeclaration n, Void arg) {
+<span class="nc bnc" id="L392" title="All 2 branches missed.">                assert typeStack.peek() != null;</span>
+<span class="nc" id="L393">                addFieldDeclaration(n, typeStack.peek());</span>
+<span class="nc" id="L394">            }</span>
+
+            @Override
+            public void visit(MethodDeclaration n, Void arg) {
+<span class="nc bnc" id="L398" title="All 2 branches missed.">                assert typeStack.peek() != null;</span>
+<span class="nc" id="L399">                addCallableDeclaration(n, typeStack.peek());</span>
+<span class="nc" id="L400">            }</span>
+
+            @Override
+            public void visit(ConstructorDeclaration n, Void arg) {
+<span class="nc bnc" id="L404" title="All 2 branches missed.">                assert typeStack.peek() != null;</span>
+<span class="nc" id="L405">                addCallableDeclaration(n, typeStack.peek());</span>
+<span class="nc" id="L406">            }</span>
+        }, null);
+<span class="nc" id="L408">    }</span>
+
+    /** Add a type declaration vertex to the class graph, to represent classes and enums. */
+    protected void addTypeDeclaration(TypeDeclaration&lt;?&gt; n) {
+<span class="nc" id="L412">        ClassGraph.Vertex&lt;TypeDeclaration&lt;?&gt;&gt; v = new ClassGraph.Vertex&lt;&gt;(n);</span>
+<span class="nc" id="L413">        classDeclarationMap.put(mapKey(n), v);</span>
+<span class="nc" id="L414">        addVertex(v);</span>
+<span class="nc" id="L415">    }</span>
+
+    /** Add a field declaration vertex to the class graph */
+    protected void addFieldDeclaration(FieldDeclaration n, TypeDeclaration&lt;?&gt; c){
+<span class="nc" id="L419">        ClassGraph.Vertex&lt;FieldDeclaration&gt; v = new ClassGraph.Vertex&lt;&gt;(n);</span>
+<span class="nc" id="L420">        fieldDeclarationMap.put(mapKey(n, c), v);</span>
+<span class="nc" id="L421">        addVertex(v);</span>
+<span class="nc" id="L422">    }</span>
+
+    /** Add a method/constructor declaration vertex to the class graph */
+    protected void addCallableDeclaration(CallableDeclaration&lt;?&gt; n, TypeDeclaration&lt;?&gt; c){
+<span class="nc bnc" id="L426" title="All 4 branches missed.">        assert n instanceof ConstructorDeclaration || n instanceof MethodDeclaration;</span>
+<span class="nc" id="L427">        ClassGraph.Vertex&lt;CallableDeclaration&lt;?&gt;&gt; v = new ClassGraph.Vertex&lt;&gt;(n);</span>
+<span class="nc" id="L428">        methodDeclarationMap.put(mapKey(n, c), v);</span>
+<span class="nc" id="L429">        addVertex(v);</span>
+<span class="nc" id="L430">    }</span>
+
+    /** Find the class declarations, field declarations, and method declarations and build the corresponding
+     * member/extends/implements relationships in the given list of compilation units. */
+    protected void buildEdges(NodeList&lt;CompilationUnit&gt; arg) {
+<span class="nc" id="L435">        arg.accept(new VoidVisitorAdapter&lt;Void&gt;() {</span>
+<span class="nc" id="L436">            private final Deque&lt;TypeDeclaration&lt;?&gt;&gt; typeStack = new LinkedList&lt;&gt;();</span>
+
+            @Override
+            public void visit(ClassOrInterfaceDeclaration n, Void arg) {
+<span class="nc" id="L440">                typeStack.push(n);</span>
+<span class="nc" id="L441">                var v = classDeclarationMap.get(mapKey(n));</span>
+<span class="nc" id="L442">                addClassEdges(v);</span>
+<span class="nc" id="L443">                super.visit(n, arg);</span>
+<span class="nc" id="L444">                typeStack.pop();</span>
+<span class="nc" id="L445">            }</span>
+
+            @Override
+            public void visit(EnumDeclaration n, Void arg) {
+<span class="nc" id="L449">                typeStack.push(n);</span>
+<span class="nc" id="L450">                super.visit(n, arg);</span>
+<span class="nc" id="L451">                typeStack.pop();</span>
+<span class="nc" id="L452">            }</span>
+
+            @Override
+            public void visit(FieldDeclaration n, Void arg) {
+<span class="nc bnc" id="L456" title="All 2 branches missed.">                assert !typeStack.isEmpty();</span>
+<span class="nc" id="L457">                TypeDeclaration&lt;?&gt; type = typeStack.peek();</span>
+<span class="nc" id="L458">                var c = classDeclarationMap.get(mapKey(type));</span>
+<span class="nc" id="L459">                Vertex&lt;FieldDeclaration&gt; v = fieldDeclarationMap.get(mapKey(n, type));</span>
+<span class="nc" id="L460">                addEdge(c, v, new ClassArc.Member());</span>
+<span class="nc" id="L461">            }</span>
+
+            @Override
+            public void visit(MethodDeclaration n, Void arg) {
+<span class="nc bnc" id="L465" title="All 2 branches missed.">                assert !typeStack.isEmpty();</span>
+<span class="nc" id="L466">                TypeDeclaration&lt;?&gt; type = typeStack.peek();</span>
+<span class="nc" id="L467">                var c = classDeclarationMap.get(mapKey(type));</span>
+<span class="nc" id="L468">                Vertex&lt;CallableDeclaration&lt;?&gt;&gt; v = methodDeclarationMap.get(mapKey(n, type));</span>
+<span class="nc" id="L469">                addEdge(c, v, new ClassArc.Member());</span>
+<span class="nc" id="L470">            }</span>
+
+            @Override
+            public void visit(ConstructorDeclaration n, Void arg) {
+<span class="nc bnc" id="L474" title="All 2 branches missed.">                assert !typeStack.isEmpty();</span>
+<span class="nc" id="L475">                TypeDeclaration&lt;?&gt; type = typeStack.peek();</span>
+<span class="nc" id="L476">                var c = classDeclarationMap.get(mapKey(type));</span>
+<span class="nc" id="L477">                Vertex&lt;CallableDeclaration&lt;?&gt;&gt; v = methodDeclarationMap.get(mapKey(n, type));</span>
+<span class="nc" id="L478">                addEdge(c, v, new ClassArc.Member());</span>
+<span class="nc" id="L479">            }</span>
+        }, null);
+<span class="nc" id="L481">    }</span>
+
+    protected void addClassEdges(Vertex&lt;? extends TypeDeclaration&lt;?&gt;&gt; v) {
+<span class="nc bnc" id="L484" title="All 2 branches missed.">        if (v.declaration instanceof EnumDeclaration)</span>
+<span class="nc" id="L485">            return; // nothing to do, it is final and cannot extend nor implement user-defined types</span>
+<span class="nc" id="L486">        ClassOrInterfaceDeclaration c = (ClassOrInterfaceDeclaration) v.declaration;</span>
+<span class="nc" id="L487">        c.getExtendedTypes().forEach(p -&gt; {</span>
+<span class="nc" id="L488">            Vertex&lt;?&gt; source = classDeclarationMap.get(mapKey(p.resolve()));</span>
+<span class="nc bnc" id="L489" title="All 4 branches missed.">            if (source != null &amp;&amp; containsVertex(v))</span>
+<span class="nc" id="L490">                addEdge(source, v, new ClassArc.Extends());</span>
+<span class="nc" id="L491">        });</span>
+<span class="nc" id="L492">        c.getImplementedTypes().forEach(p -&gt; {</span>
+<span class="nc" id="L493">            Vertex&lt;?&gt; source = classDeclarationMap.get(mapKey(p.resolve()));</span>
+<span class="nc bnc" id="L494" title="All 4 branches missed.">            if (source != null &amp;&amp; containsVertex(v))</span>
+<span class="nc" id="L495">                addEdge(source, v, new ClassArc.Implements());</span>
+<span class="nc" id="L496">        });</span>
+<span class="nc" id="L497">    }</span>
+
+    /** A vertex containing the declaration it represents. It only exists because
+     *  JGraphT relies heavily on equals comparison, which may not be correct in declarations. */
+    public static class Vertex&lt;T extends BodyDeclaration&lt;?&gt;&gt; {
+        // First ancestor common class in the JavaParser hierarchy for
+        // ClassOrInterfaceDeclaration, FieldDeclaration and CallableDeclaration
+        protected final T declaration;
+
+<span class="nc" id="L506">        public Vertex(T declaration) {</span>
+<span class="nc" id="L507">            this.declaration = declaration;</span>
+<span class="nc" id="L508">        }</span>
+
+        /** The declaration represented by this node. */
+        public T getDeclaration() {
+<span class="nc" id="L512">            return declaration;</span>
+        }
+
+        @Override
+        public int hashCode() {
+<span class="nc bnc" id="L517" title="All 2 branches missed.">            if (declaration instanceof NodeWithName&lt;?&gt;)</span>
+<span class="nc" id="L518">                return Objects.hash(((NodeWithName&lt;?&gt;) declaration).getNameAsString());</span>
+<span class="nc bnc" id="L519" title="All 2 branches missed.">            if (declaration instanceof NodeWithSimpleName&lt;?&gt;)</span>
+<span class="nc" id="L520">                return Objects.hash(((NodeWithSimpleName&lt;?&gt;) declaration).getNameAsString());</span>
+<span class="nc bnc" id="L521" title="All 2 branches missed.">            if (declaration instanceof FieldDeclaration)</span>
+<span class="nc" id="L522">                return Objects.hash(String.valueOf(declaration));</span>
+<span class="nc" id="L523">            throw new IllegalStateException(&quot;Invalid vertex in graph&quot;);</span>
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+<span class="nc bnc" id="L528" title="All 2 branches missed.">            if (obj == this)</span>
+<span class="nc" id="L529">                return true;</span>
+<span class="nc bnc" id="L530" title="All 4 branches missed.">            return obj instanceof CallGraph.Vertex &amp;&amp; ASTUtils.equalsWithRangeInCU(((CallGraph.Vertex) obj).declaration, declaration);</span>
+        }
+
+        @Override
+        public String toString() {
+<span class="nc" id="L535">            return declaration.toString();</span>
+        }
+    }
+
+<span class="nc" id="L539">    public static class ClassArc extends Arc {</span>
+        /** An arc that connects a class with another one that inherits from it. */
+<span class="nc" id="L541">        protected static class Extends extends ClassArc {}</span>
+        /** An arc that connects an interface to a class that implements it. */
+<span class="nc" id="L543">        protected static class Implements extends ClassArc {}</span>
+        /** An arc that connects a class with a field or method contained in it. */
+<span class="nc" id="L545">        protected static class Member extends ClassArc {}</span>
+    }
+}
+
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

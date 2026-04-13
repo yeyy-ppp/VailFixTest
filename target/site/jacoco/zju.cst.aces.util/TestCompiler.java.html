@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TestCompiler.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.util</a> &gt; <span class="el_source">TestCompiler.java</span></div><h1>TestCompiler.java</h1><pre class="source lang-java linenums">package zju.cst.aces.util;
+
+import lombok.Data;
+import org.apache.maven.project.MavenProject;
+import org.apache.maven.project.DefaultProjectBuildingRequest;
+import org.apache.maven.project.ProjectBuildingRequest;
+import org.apache.maven.shared.dependency.graph.DependencyGraphBuilder;
+import org.apache.maven.shared.dependency.graph.DependencyNode;
+import org.codehaus.plexus.util.FileUtils;
+import org.junit.platform.engine.TestEngine;
+import org.junit.platform.engine.TestExecutionResult;
+import org.junit.platform.launcher.Launcher;
+import org.junit.platform.launcher.LauncherDiscoveryRequest;
+import org.junit.platform.launcher.TestIdentifier;
+import org.junit.platform.launcher.core.LauncherConfig;
+import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
+import org.junit.platform.launcher.core.LauncherFactory;
+import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
+import org.junit.platform.launcher.listeners.TestExecutionSummary;
+import zju.cst.aces.dto.PromptInfo;
+import zju.cst.aces.dto.TestMessage;
+import zju.cst.aces.parser.ProjectParser;
+
+import javax.tools.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.net.URI;
+import java.net.URL;
+import java.net.URLClassLoader;
+import java.nio.CharBuffer;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
+
+@Data
+public class TestCompiler {
+<span class="nc" id="L43">    public static String OS = System.getProperty(&quot;os.name&quot;).toLowerCase();</span>
+<span class="nc" id="L44">    public static File srcTestFolder = new File(&quot;src&quot; + File.separator + &quot;test&quot; + File.separator + &quot;java&quot;);</span>
+<span class="nc" id="L45">    public static File testBackupFolder = new File(&quot;src&quot; + File.separator + &quot;backup&quot;);</span>
+    public static File testOutputFolder;
+    public static File buildFolder;
+    public static File targetTestsFolder;
+    public static File buildBackupFolder;
+    public List&lt;String&gt; classpathElements;
+    public String testName;
+    public String fullTestName;
+    public String code;
+
+<span class="nc" id="L55">    public TestCompiler(Path testOutputPath, Path compileOutputPath, Path targetPath, List&lt;String&gt; classpathElements) {</span>
+<span class="nc" id="L56">        this.code = &quot;&quot;;</span>
+<span class="nc" id="L57">        this.testOutputFolder = testOutputPath.toFile();</span>
+<span class="nc" id="L58">        this.buildFolder = compileOutputPath.toFile();</span>
+<span class="nc" id="L59">        this.buildBackupFolder = targetPath.resolve(&quot;test-classes-backup&quot;).toFile();</span>
+<span class="nc" id="L60">        this.targetTestsFolder = targetPath.resolve(&quot;test-classes&quot;).toFile();</span>
+<span class="nc" id="L61">        this.classpathElements = classpathElements;</span>
+<span class="nc" id="L62">    }</span>
+<span class="nc" id="L63">    public TestCompiler(String code, Path testOutputPath, Path compileOutputPath, Path targetPath, List&lt;String&gt; classpathElements) {</span>
+<span class="nc" id="L64">        this.code = code;</span>
+<span class="nc" id="L65">        this.testOutputFolder = testOutputPath.toFile();</span>
+<span class="nc" id="L66">        this.buildFolder = compileOutputPath.toFile();</span>
+<span class="nc" id="L67">        this.buildBackupFolder = targetPath.resolve(&quot;test-classes-backup&quot;).toFile();</span>
+<span class="nc" id="L68">        this.targetTestsFolder = targetPath.resolve(&quot;test-classes&quot;).toFile();</span>
+<span class="nc" id="L69">        this.classpathElements = classpathElements;</span>
+<span class="nc" id="L70">    }</span>
+
+    public TestExecutionSummary executeTest(String fullTestName) {
+<span class="nc" id="L73">        this.fullTestName = fullTestName;</span>
+        try {
+<span class="nc" id="L75">            List&lt;URL&gt; urls = new ArrayList&lt;&gt;();</span>
+<span class="nc bnc" id="L76" title="All 2 branches missed.">            for (String classpath : this.classpathElements) {</span>
+<span class="nc" id="L77">                URL url = new File(classpath).toURI().toURL();</span>
+<span class="nc" id="L78">                urls.add(url);</span>
+<span class="nc" id="L79">            }</span>
+<span class="nc" id="L80">            urls.add(this.buildFolder.toURI().toURL());</span>
+//            urls.add(targetTestsFolder.toURI().toURL());
+
+<span class="nc" id="L83">            ClassLoader classLoader = new URLClassLoader(urls.toArray(new URL[0]), getClass().getClassLoader());</span>
+
+<span class="nc" id="L85">            LauncherDiscoveryRequest request = LauncherDiscoveryRequestBuilder.request()</span>
+<span class="nc" id="L86">                    .selectors(selectClass(classLoader.loadClass(fullTestName)))</span>
+<span class="nc" id="L87">                    .build();</span>
+
+<span class="nc" id="L89">            Launcher launcher = LauncherFactory.create();</span>
+
+            // Register a listener to collect test execution results.
+<span class="nc" id="L92">            SummaryGeneratingListener listener = new SummaryGeneratingListener();</span>
+<span class="nc" id="L93">            launcher.registerTestExecutionListeners(listener);</span>
+
+<span class="nc" id="L95">            launcher.execute(request);</span>
+
+<span class="nc" id="L97">            TestExecutionSummary summary = listener.getSummary();</span>
+<span class="nc" id="L98">            return summary;</span>
+<span class="nc" id="L99">        } catch (Exception e) {</span>
+<span class="nc" id="L100">            throw new RuntimeException(&quot;In TestCompiler.executeTest: &quot; + e);</span>
+        }
+    }
+
+    // 实现自定义监听器以捕获更详细的测试执行信息
+<span class="nc" id="L105">    public class DetailedTestExecutionListener extends SummaryGeneratingListener {</span>
+        @Override
+        public void executionFinished(TestIdentifier testIdentifier, TestExecutionResult testExecutionResult) {
+<span class="nc" id="L108">            super.executionFinished(testIdentifier, testExecutionResult);</span>
+            // 在这里，你可以记录更多关于失败的详细信息或者执行额外的错误处理逻辑
+<span class="nc" id="L110">            System.err.println(&quot;测试失败: &quot; + testIdentifier.getDisplayName() + &quot;, 错误: &quot; );</span>
+<span class="nc" id="L111">        }</span>
+    }
+
+    /**
+     * Compile test file
+     */
+    public boolean compileTest(String className, Path outputPath, PromptInfo promptInfo) {
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (this.code == &quot;&quot;) {</span>
+<span class="nc" id="L119">            throw new RuntimeException(&quot;In TestCompiler.compileTest: code is empty&quot;);</span>
+        }
+<span class="nc" id="L121">        this.testName = className;</span>
+        boolean result;
+        try {
+<span class="nc bnc" id="L124" title="All 2 branches missed.">            if (!outputPath.toAbsolutePath().getParent().toFile().exists()) {</span>
+<span class="nc" id="L125">                outputPath.toAbsolutePath().getParent().toFile().mkdirs();</span>
+            }
+<span class="nc bnc" id="L127" title="All 2 branches missed.">            if(!buildFolder.exists()){</span>
+<span class="nc" id="L128">                buildFolder.mkdir();</span>
+            }
+<span class="nc" id="L130">            JavaCompiler compiler = ToolProvider.getSystemJavaCompiler();</span>
+<span class="nc" id="L131">            StandardJavaFileManager fileManager = compiler.getStandardFileManager(null, null, null);</span>
+
+<span class="nc" id="L133">            SimpleJavaFileObject sourceJavaFileObject = new SimpleJavaFileObject(URI.create(className + &quot;.java&quot;),</span>
+<span class="nc" id="L134">                    JavaFileObject.Kind.SOURCE){</span>
+                public CharBuffer getCharContent(boolean b) {
+<span class="nc" id="L136">                    return CharBuffer.wrap(code);</span>
+                }
+            };
+
+<span class="nc" id="L140">            Iterable&lt;? extends JavaFileObject&gt; compilationUnits = Arrays.asList(sourceJavaFileObject);</span>
+<span class="nc bnc" id="L141" title="All 2 branches missed.">            Iterable&lt;String&gt; options = Arrays.asList(&quot;-classpath&quot;, String.join(this.OS.contains(&quot;win&quot;) ? &quot;;&quot; : &quot;:&quot;, this.classpathElements),</span>
+<span class="nc" id="L142">                    &quot;-d&quot;, buildFolder.toPath().toString());</span>
+
+<span class="nc" id="L144">            DiagnosticCollector&lt;JavaFileObject&gt; diagnostics = new DiagnosticCollector&lt;&gt;();</span>
+<span class="nc" id="L145">            JavaCompiler.CompilationTask task = compiler.getTask(null, fileManager, diagnostics, options, null, compilationUnits);</span>
+
+<span class="nc" id="L147">            result = task.call();</span>
+<span class="nc bnc" id="L148" title="All 4 branches missed.">            if (!result &amp;&amp; promptInfo != null) {</span>
+<span class="nc" id="L149">                TestMessage testMessage = new TestMessage();</span>
+<span class="nc" id="L150">                List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L151">                diagnostics.getDiagnostics().forEach(diagnostic -&gt; {</span>
+<span class="nc" id="L152">                    errors.add(&quot;Error in &quot; + testName +</span>
+<span class="nc" id="L153">                            &quot;: line &quot; + diagnostic.getLineNumber() + &quot; : &quot;</span>
+<span class="nc" id="L154">                            + diagnostic.getMessage(null));</span>
+<span class="nc" id="L155">                });</span>
+<span class="nc" id="L156">                testMessage.setErrorType(TestMessage.ErrorType.COMPILE_ERROR);</span>
+<span class="nc" id="L157">                testMessage.setErrorMessage(errors);</span>
+<span class="nc" id="L158">                promptInfo.setErrorMsg(testMessage);</span>
+
+<span class="nc" id="L160">                exportError(errors, outputPath);</span>
+            }
+<span class="nc" id="L162">        } catch (Exception e) {</span>
+<span class="nc" id="L163">            throw new RuntimeException(&quot;In TestCompiler.compileTest: &quot; + e);</span>
+<span class="nc" id="L164">        }</span>
+<span class="nc" id="L165">        return result;</span>
+    }
+
+    public void exportError(List&lt;String&gt; errors, Path outputPath) {
+        try {
+<span class="nc" id="L170">            BufferedWriter writer = new BufferedWriter(new FileWriter(outputPath.toFile()));</span>
+<span class="nc" id="L171">            writer.write(code);</span>
+<span class="nc" id="L172">            writer.write(&quot;\n--------------------------------------------\n&quot;);</span>
+<span class="nc" id="L173">            writer.write(errors.stream().collect(Collectors.joining(&quot;\n&quot;)));</span>
+<span class="nc" id="L174">            writer.close();</span>
+<span class="nc" id="L175">        } catch (Exception e) {</span>
+<span class="nc" id="L176">            throw new RuntimeException(&quot;In TestCompiler.exportError: &quot; + e);</span>
+<span class="nc" id="L177">        }</span>
+<span class="nc" id="L178">    }</span>
+
+    //TODO: only support MavenProject
+    public static List&lt;String&gt; listClassPaths(MavenProject project, DependencyGraphBuilder dependencyGraphBuilder) {
+<span class="nc" id="L182">        List&lt;String&gt; classPaths = new ArrayList&lt;&gt;();</span>
+<span class="nc" id="L183">        Path artifactPath = Paths.get(project.getBuild().getDirectory()).resolve(project.getBuild().getFinalName() + &quot;.jar&quot;);</span>
+<span class="nc bnc" id="L184" title="All 2 branches missed.">        if (!artifactPath.toFile().exists()) {</span>
+<span class="nc" id="L185">            throw new RuntimeException(&quot;In TestCompiler.listClassPaths: &quot; + artifactPath + &quot; does not exist. Run mvn install first.&quot;);</span>
+        }
+<span class="nc" id="L187">        classPaths.add(artifactPath.toString());</span>
+        try {
+<span class="nc" id="L189">            classPaths.addAll(project.getCompileClasspathElements());</span>
+<span class="nc" id="L190">            Class&lt;?&gt; clazz = project.getClass();</span>
+<span class="nc" id="L191">            Field privateField = clazz.getDeclaredField(&quot;projectBuilderConfiguration&quot;);</span>
+<span class="nc" id="L192">            privateField.setAccessible(true);</span>
+<span class="nc" id="L193">            ProjectBuildingRequest buildingRequest = new DefaultProjectBuildingRequest((DefaultProjectBuildingRequest) privateField.get(project));</span>
+<span class="nc" id="L194">            buildingRequest.setProject(project);</span>
+<span class="nc" id="L195">            DependencyNode root = dependencyGraphBuilder.buildDependencyGraph(buildingRequest, null);</span>
+<span class="nc" id="L196">            Set&lt;DependencyNode&gt; depSet = new HashSet&lt;&gt;();</span>
+<span class="nc" id="L197">            ProjectParser.walkDep(root, depSet);</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">            for (DependencyNode dep : depSet) {</span>
+<span class="nc bnc" id="L199" title="All 2 branches missed.">                if (dep.getArtifact().getFile() != null) {</span>
+<span class="nc" id="L200">                    classPaths.add(dep.getArtifact().getFile().getAbsolutePath());</span>
+                }
+<span class="nc" id="L202">            }</span>
+<span class="nc" id="L203">        } catch (Exception e) {</span>
+<span class="nc" id="L204">            System.out.println(e);</span>
+<span class="nc" id="L205">        }</span>
+<span class="nc" id="L206">        return classPaths;</span>
+    }
+
+    /**
+     * Copy generated tests to src/test/java and move the original src/test/java folder to a backup folder
+     */
+    public void copyAndBackupTestFolder() {
+<span class="nc" id="L213">        restoreBackupFolder();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">        if (srcTestFolder.exists()) {</span>
+            try {
+<span class="nc" id="L216">                FileUtils.copyDirectoryStructure(srcTestFolder, testBackupFolder);</span>
+<span class="nc" id="L217">                FileUtils.deleteDirectory(srcTestFolder);</span>
+<span class="nc" id="L218">                FileUtils.copyDirectoryStructure(this.testOutputFolder, srcTestFolder);</span>
+<span class="nc" id="L219">            } catch (IOException e) {</span>
+<span class="nc" id="L220">                throw new RuntimeException(&quot;In TestCompiler.copyAndBackupTestFolder: &quot; + e);</span>
+<span class="nc" id="L221">            }</span>
+        }
+<span class="nc" id="L223">    }</span>
+
+    /**
+     * Copy compiled generated tests to target/test-classes and move the original folder to a backup folder
+     */
+    public void copyAndBackupCompiledTest() {
+<span class="nc" id="L229">        File target = this.targetTestsFolder;</span>
+        try {
+<span class="nc bnc" id="L231" title="All 4 branches missed.">            if (!buildBackupFolder.exists() &amp;&amp; target.exists()) {</span>
+<span class="nc" id="L232">                FileUtils.copyDirectoryStructure(target, buildBackupFolder);</span>
+<span class="nc" id="L233">                FileUtils.deleteDirectory(target);</span>
+            }
+<span class="nc" id="L235">            FileUtils.copyDirectoryStructure(buildFolder, target);</span>
+<span class="nc" id="L236">        } catch (IOException e) {</span>
+<span class="nc" id="L237">            throw new RuntimeException(&quot;In TestCompiler.copyAndBackupCompiledTest: &quot; + e);</span>
+<span class="nc" id="L238">        }</span>
+<span class="nc" id="L239">    }</span>
+
+    /**
+     * Restore the backup folder to src/test/java
+     */
+    public void restoreBackupFolder() {
+<span class="nc bnc" id="L245" title="All 2 branches missed.">        if (testBackupFolder.exists()) {</span>
+            try {
+<span class="nc bnc" id="L247" title="All 2 branches missed.">                if (srcTestFolder.exists()) {</span>
+<span class="nc" id="L248">                    FileUtils.deleteDirectory(srcTestFolder);</span>
+                }
+<span class="nc" id="L250">                FileUtils.copyDirectoryStructure(testBackupFolder, srcTestFolder);</span>
+<span class="nc" id="L251">                FileUtils.deleteDirectory(testBackupFolder);</span>
+<span class="nc" id="L252">            } catch (IOException e) {</span>
+<span class="nc" id="L253">                throw new RuntimeException(&quot;In TestCompiler.restoreTestFolder: &quot; + e);</span>
+<span class="nc" id="L254">            }</span>
+        }
+<span class="nc bnc" id="L256" title="All 2 branches missed.">        if (buildBackupFolder.exists()) {</span>
+<span class="nc" id="L257">            File target = this.targetTestsFolder;</span>
+            try {
+<span class="nc bnc" id="L259" title="All 2 branches missed.">                if (target.exists()) {</span>
+<span class="nc" id="L260">                    FileUtils.deleteDirectory(target);</span>
+                }
+<span class="nc" id="L262">                FileUtils.copyDirectoryStructure(buildBackupFolder, target);</span>
+<span class="nc" id="L263">                FileUtils.deleteDirectory(buildBackupFolder);</span>
+<span class="nc" id="L264">            } catch (IOException e) {</span>
+<span class="nc" id="L265">                throw new RuntimeException(&quot;In TestCompiler.restoreTestFolder: &quot; + e);</span>
+<span class="nc" id="L266">            }</span>
+        }
+<span class="nc" id="L268">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

@@ -1,0 +1,301 @@
+类名：DeprecatedAttributes
+分析阶段：
+  耗时：194073 毫秒
+  消耗 token 数量：0
+  是否成功：true
+生成阶段：
+  耗时：90970 毫秒
+  消耗 token 数量：0
+  是否成功：true
+验证阶段：
+  耗时：24603 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  失败原因：
+修复阶段：
+  耗时：-1748409319459 毫秒
+  消耗 token 数量：0
+  是否成功：false
+  修复尝试次数：0
+  修复失败原因：
+  修复成功次数：0
+评估阶段：
+  耗时：1748409443035 毫秒
+  消耗 token 数量：0
+  是否成功：true
+  覆盖率数据：【指令覆盖率】：【100%】  
+【分支覆盖率】：【100%】  
+【复杂度】：【4】  
+【行覆盖率】：【100%】  
+【方法覆盖率】：【100%】  
+【类覆盖率】：【100%】
+总耗时：434748 毫秒
+总消耗 token 数量：0
+测试代码生成结果：true
+失败原因：
+--------------------------------------------------------
+起始时间：1748409009813
+
+套件 开始时间: 1748409009813
+分析起始时间：1748409009813
+
+分析 开始时间: 1748409009813
+解析提示内容：
+```
+包路径：cli
+类名：DeprecatedAttributes
+方法名：builder
+返回类型：Builder
+功能描述：创建并返回一个新的Builder实例用于配置DeprecatedAttributes。
+
+包路径：cli
+类名：DeprecatedAttributes
+方法名：getDescription
+返回类型：String
+功能描述：获取已弃用属性的描述内容。
+
+包路径：cli
+类名：DeprecatedAttributes
+方法名：getSince
+返回类型：String
+功能描述：获取该属性被标记为弃用的起始版本信息。
+
+包路径：cli
+类名：DeprecatedAttributes
+方法名：isForRemoval
+返回类型：boolean
+功能描述：检查该属性是否被标记为即将移除。
+
+包路径：cli
+类名：DeprecatedAttributes
+方法名：toString
+返回类型：String
+功能描述：生成包含所有弃用信息的格式化字符串表示。
+
+包路径：cli
+类名：DeprecatedAttributes
+方法名：toEmpty
+返回类型：String
+功能描述：将输入的null字符串转换为空字符串，非null字符串保持不变（私有方法）。
+
+包路径：cli
+类名：DeprecatedAttributes.Builder
+方法名：Builder
+返回类型：void
+功能描述：构造一个新的Builder实例（已过时）。
+
+包路径：cli
+类名：DeprecatedAttributes.Builder
+方法名：get
+返回类型：DeprecatedAttributes
+功能描述：根据当前Builder配置构建并返回一个DeprecatedAttributes实例。
+
+包路径：cli
+类名：DeprecatedAttributes.Builder
+方法名：setDescription
+返回类型：Builder
+功能描述：设置描述信息并返回当前Builder以支持链式调用。
+
+包路径：cli
+类名：DeprecatedAttributes.Builder
+方法名：setForRemoval
+返回类型：Builder
+功能描述：设置是否标记为移除并返回当前Builder以支持链式调用。
+
+包路径：cli
+类名：DeprecatedAttributes.Builder
+方法名：setSince
+返回类型：Builder
+功能描述：设置属性弃用的起始版本并返回当前Builder以支持链式调用。
+```over
+
+分析结束时间：1748409203886
+
+分析总耗时：194073
+分析 结束时间: 1748409203886
+分析 耗时: 194.073 秒
+生成 开始时间: 1748409203887
+生成测试代码：
+```java
+package cli;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import org.junit.jupiter.api.Test;
+
+class DeprecatedAttributeTest {
+
+    @Test
+    void testDefaultBuilderConfiguration() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder().get();
+        assertEquals("", attribute.getDescription());
+        assertEquals("", attribute.getSince());
+        assertFalse(attribute.isForRemoval());
+        assertEquals("Deprecated", attribute.toString());
+    }
+
+    @Test
+    void testForRemovalConfiguration() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+            .setForRemoval(true)
+            .get();
+        assertTrue(attribute.isForRemoval());
+        assertEquals("Deprecated for removal", attribute.toString());
+    }
+
+    @Test
+    void testSinceConfiguration() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+            .setSince("1.0")
+            .get();
+        assertEquals("1.0", attribute.getSince());
+        assertEquals("Deprecated since 1.0", attribute.toString());
+    }
+
+    @Test
+    void testFullConfiguration() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+            .setForRemoval(true)
+            .setSince("2.0")
+            .setDescription("Use new API")
+            .get();
+        assertEquals("Use new API", attribute.getDescription());
+        assertEquals("2.0", attribute.getSince());
+        assertTrue(attribute.isForRemoval());
+        assertEquals("Deprecated for removal since 2.0: Use new API", attribute.toString());
+    }
+
+    @Test
+    void testNullParametersHandling() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+            .setSince(null)
+            .setDescription(null)
+            .get();
+        assertEquals("", attribute.getSince());
+        assertEquals("", attribute.getDescription());
+        assertEquals("Deprecated", attribute.toString());
+    }
+
+    @Test
+    void testEmptyStringParameters() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+            .setSince("")
+            .setDescription("")
+            .get();
+        assertEquals("", attribute.getSince());
+        assertEquals("", attribute.getDescription());
+        assertEquals("Deprecated", attribute.toString());
+    }
+
+    @Test
+    void testCombinedEmptyParameters() {
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+            .setForRemoval(true)
+            .setSince("")
+            .setDescription("")
+            .get();
+        assertEquals("Deprecated for removal", attribute.toString());
+    }
+}
+```over
+
+生成 结束时间: 1748409294856
+生成 耗时: 90.969 秒
+验证 开始时间: 1748409294857
+测试代码验证结果：
+【全部验证通过】over
+
+验证 结束时间: 1748409319459
+验证 耗时: 24.602 秒
+评估 开始时间: 1748409319459
+测试代码评估结果：
+【指令覆盖率】：【100%】
+【分支覆盖率】：【100%】
+【复杂度】：【4】
+【行覆盖率】：【100%】
+【方法覆盖率】：【100%】
+【类覆盖率】：【100%】over
+
+评估 结束时间: 1748409443035
+评估 耗时: 123.576 秒
+测试类创建开始：
+测试类创建成功：src/test/java/cli/DeprecatedAttributesTest.java
+测试类编译开始：
+测试类编译失败！
+错误信息: src\test\java\cli\DeprecatedAttributesTest.java:11: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder().get();
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:11: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder().get();
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:20: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:20: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:29: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:29: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:38: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:38: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:51: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:51: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:62: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:62: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:73: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+        ^
+  ����:   �� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+src\test\java\cli\DeprecatedAttributesTest.java:73: ����: �Ҳ�������
+        DeprecatedAttribute attribute = DeprecatedAttribute.builder()
+                                        ^
+  ����:   ���� DeprecatedAttribute
+  λ��: �� DeprecatedAttributeTest
+14 ������
+
+测试类编译失败！
+套件 结束时间: 1748409443679
+套件 耗时: 433.866 秒
+
+Process finished with exit code 0

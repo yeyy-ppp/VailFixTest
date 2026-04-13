@@ -1,0 +1,12 @@
+[2026-01-24 00:18:11] 验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: get, size, set, add, remove, clear, remove, removeAll, retainAll, contains, indexOf, lastIndexOf, toArray, toArray, equals, hashCode
+  未覆盖: NonNullElementWrapperList, nonNull
+
+[2026-01-24 00:23:27] 修复后验证结果
+错误类型: 无, 错误行: -1, 错误原因: 验证通过, 严重程度: UNKNOWN
+方法覆盖情况: 
+  已覆盖: get, size, nonNull, set, add, remove, clear, remove, removeAll, retainAll, contains, indexOf, lastIndexOf, toArray, toArray, equals, hashCode
+  未覆盖: NonNullElementWrapperList
+
