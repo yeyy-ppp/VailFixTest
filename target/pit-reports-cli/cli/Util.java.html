@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>Util.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package cli;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public final class Util {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    static final String[] EMPTY_STRING_ARRAY = {};</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    static boolean isEmpty(final Object[] array) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_5'/>
+5
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_5'>3</a>
+<span>
+
+1. isEmpty : negated conditional &rarr; KILLED<br/>
+
+2. isEmpty : negated conditional &rarr; KILLED<br/>
+
+3. isEmpty : replaced boolean return with true for cli/Util::isEmpty &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return array == null || array.length == 0;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static boolean isEmpty(final String str) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_8'/>
+8
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_8'>3</a>
+<span>
+
+1. isEmpty : negated conditional &rarr; KILLED<br/>
+
+2. isEmpty : replaced boolean return with true for cli/Util::isEmpty &rarr; KILLED<br/>
+
+3. isEmpty : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return str == null || str.isEmpty();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    static String stripLeadingAndTrailingQuotes(final String str) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_11'/>
+11
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_11'>1</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (isEmpty(str)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_12'/>
+12
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_12'>1</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : replaced return value with &#34;&#34; for cli/Util::stripLeadingAndTrailingQuotes &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return str;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        final int length = str.length();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_15'/>
+15
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_15'>2</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : changed conditional boundary &rarr; SURVIVED<br/>
+
+2. stripLeadingAndTrailingQuotes : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        if (length &#62; 1</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_16'/>
+16
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_16'>1</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                &#38;&#38; str.startsWith(&#34;\&#34;&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_17'/>
+17
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_17'>2</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : negated conditional &rarr; KILLED<br/>
+
+2. stripLeadingAndTrailingQuotes : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                &#38;&#38; str.endsWith(&#34;\&#34;&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_18'/>
+18
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_18'>1</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                &#38;&#38; str.substring(1, length - 1).indexOf(&#39;&#34;&#39;) == -1) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_19'/>
+19
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_19'>2</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : replaced return value with &#34;&#34; for cli/Util::stripLeadingAndTrailingQuotes &rarr; KILLED<br/>
+
+2. stripLeadingAndTrailingQuotes : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return str.substring(1, length - 1);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_21'/>
+21
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_21'>1</a>
+<span>
+
+1. stripLeadingAndTrailingQuotes : replaced return value with &#34;&#34; for cli/Util::stripLeadingAndTrailingQuotes &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return str;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    static String stripLeadingHyphens(final String str) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_24'/>
+24
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_24'>1</a>
+<span>
+
+1. stripLeadingHyphens : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (isEmpty(str)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_25'/>
+25
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_25'>1</a>
+<span>
+
+1. stripLeadingHyphens : replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return str;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_27'/>
+27
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_27'>1</a>
+<span>
+
+1. stripLeadingHyphens : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (str.startsWith(&#34;--&#34;)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_28'/>
+28
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_28'>1</a>
+<span>
+
+1. stripLeadingHyphens : replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return str.substring(2);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_30'/>
+30
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_30'>1</a>
+<span>
+
+1. stripLeadingHyphens : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (str.startsWith(&#34;-&#34;)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_31'/>
+31
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_31'>1</a>
+<span>
+
+1. stripLeadingHyphens : replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return str.substring(1);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_33'/>
+33
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_33'>1</a>
+<span>
+
+1. stripLeadingHyphens : replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return str;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    private Util() {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@716125a3_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_5'>5</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_5'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_ObjectArray_NonEmpty()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_ObjectArray_NonEmpty()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_ObjectArray_NonEmpty()]</span></span> replaced boolean return with true for cli/Util::isEmpty &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_8'>8</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_8'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_String_NonEmpty()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_String_NonEmpty()]</span></span> replaced boolean return with true for cli/Util::isEmpty &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_String_Null()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_11'>11</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_11'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_Null()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_12'>12</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_12'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_Null()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingAndTrailingQuotes &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_15'>15</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_15'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_ValidQuotes()]</span></span> negated conditional &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_16'>16</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_16'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_TrailingQuoteOnly()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_17'>17</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_17'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_LeadingQuoteOnly()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_InternalQuotes()]</span></span> Replaced integer subtraction with addition &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_18'>18</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_18'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_InternalQuotes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_19'>19</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_19'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_ValidQuotes()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingAndTrailingQuotes &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_ValidQuotes()]</span></span> Replaced integer subtraction with addition &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_21'>21</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_21'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingAndTrailingQuotes<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_LeadingQuoteOnly()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingAndTrailingQuotes &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_24'>24</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_24'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_SingleHyphenOnly()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_25'>25</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_25'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_Null()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_27'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_SingleHyphenOnly()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_28'>28</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_28'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_DoubleHyphen()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_30'>30</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_30'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_SingleHyphenOnly()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_31'>31</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_31'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_SingleHyphen()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@716125a3_33'>33</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@716125a3_33'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>stripLeadingHyphens<br/><b>Killed by : </b>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_NoHyphen()]</span></span> replaced return value with &#34;&#34; for cli/Util::stripLeadingHyphens &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_ObjectArray_NonEmpty()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_ObjectArray_Null()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_ObjectArray_Empty()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_LeadingQuoteOnly()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_TrailingQuoteOnly()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_NoQuotes()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_SingleChar()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_InternalQuotes()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_ValidQuotes()] (0 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithOptionAndArgument()] (0 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithLongOption()] (1 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithMultipleOptions()] (0 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithRequiredOptionPresent()] (1 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_SingleHyphenOnly()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_NoHyphen()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_DoubleHyphen()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_SingleHyphen()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_DoubleHyphenOnly()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_TripleHyphen()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_OptionNotExists_StopAtNonOptionFalse()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testProcessOptionUnrecognizedThrowsException()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_OptionWithEqualSign_InvalidOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testGetOptionReturnsNull()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_ExistingLongOption()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_OptionNotExists_StopAtNonOptionTrue()] (2 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddOptionWithObject()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddFullOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testGetOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddOptionWithShortOptAndArgs()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testGetMatchingOptionsWithExactMatch()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testGetOptionByLongOpt()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_StopAtNonOptionTriggeredByNonOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testHasOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testHasLongOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testHasShortOption()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_ExistingShortOption()] (0 ms)</li><li>cli.DefaultParserTest.[engine:junit-jupiter]/[class:cli.DefaultParserTest]/[method:testIsLongOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testGetMatchingOptions()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testGetMatchingOptionsWithNoMatch()] (0 ms)</li><li>cli.DefaultParserTest.[engine:junit-jupiter]/[class:cli.DefaultParserTest]/[method:testIsShortOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddRequiredOption()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_ShortOptionCombinationExists()] (0 ms)</li><li>cli.DefaultParserTest.[engine:junit-jupiter]/[class:cli.DefaultParserTest]/[method:testGetMatchingLongOptionsPartialDisabled()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddOptionWithShortOpt()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddOptionsWithDuplicateThrowsException()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_OptionWithEqualSign_ValidOption()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testFlatten_ShortOptionExists()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testProcessOptionToken_WithoutArg()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testBurstToken_AllOptionsExist()] (0 ms)</li><li>cli.GnuParserTest.[engine:junit-jupiter]/[class:cli.GnuParserTest]/[method:testFlatten_CombinationWithEqualSignAndShortOption()] (0 ms)</li><li>cli.OptionsTest.[engine:junit-jupiter]/[class:cli.OptionsTest]/[method:testAddOptions()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testFlatten_StopAtNonOptionTrue()] (0 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_RequiredOption()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testBurstToken_NonExistingOptionStopAtNonOptionTrue()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testProcessOptionToken_WithArg()] (1 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithEmptyArguments()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testFlatten_LongOption()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testFlatten_ShortOptionsBursting()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testFlatten_LongOptionWithEqual()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testProcessOptionAddsValidOption()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testProcessPropertiesAddsDefaultOption()] (0 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_SingleOptionNoArg()] (3 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithUnrecognizedOption()] (1 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_ValueCodeAtEnd()] (0 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_ValueCodeAtStart()] (0 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_SingleOptionWithArg()] (0 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_OptionWithMultipleValueCodes()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testParseWithPropertiesAppliesDefaults()] (0 ms)</li><li>cli.PatternOptionBuilderTest.[engine:junit-jupiter]/[class:cli.PatternOptionBuilderTest]/[method:testParsePattern_MultipleOptions()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testCheckRequiredOptionsNoThrowWhenRequiredMet()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testParseWithValidRequiredOptionSucceeds()] (0 ms)</li><li>cli.PosixParserTest.[engine:junit-jupiter]/[class:cli.PosixParserTest]/[method:testFlatten_ShortOptionWithArgInBurst()] (8 ms)</li><li>cli.DefaultParserTest.[engine:junit-jupiter]/[class:cli.DefaultParserTest]/[method:testParseWithStopAtNonOption()] (0 ms)</li><li>cli.ParserTest.[engine:junit-jupiter]/[class:cli.ParserTest]/[method:testParseWithStopAtNonOptionStopsProcessing()] (0 ms)</li><li>cli.DefaultParserTest.[engine:junit-jupiter]/[class:cli.DefaultParserTest]/[method:testParseBasic()] (1 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithStopAtNonOptionTrue()] (1 ms)</li><li>cli.CommandLineParserTest.[engine:junit-jupiter]/[class:cli.CommandLineParserTest]/[method:parse_WithStopAtNonOptionFalse()] (34 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_String_NonEmpty()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_Empty()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_Empty()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_String_Empty()] (0 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testRtrimEmpty()] (0 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testRtrim()] (1 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testPrintUsageWithoutOptions()] (0 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testPrintWrappedText()] (0 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testPrintOptions()] (0 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testPrintUsageWithOptions()] (1 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testPrintHelpBasic()] (0 ms)</li><li>cli.HelpFormatterTest.[engine:junit-jupiter]/[class:cli.HelpFormatterTest]/[method:testPrintHelpWithAutoUsage()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testIsEmpty_String_Null()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingAndTrailingQuotes_Null()] (0 ms)</li><li>cli.UtilTest.[engine:junit-jupiter]/[class:cli.UtilTest]/[method:testStripLeadingHyphens_Null()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

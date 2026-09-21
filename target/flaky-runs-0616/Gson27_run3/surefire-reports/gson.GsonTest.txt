@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: gson.GsonTest
+-------------------------------------------------------------------------------
+Tests run: 38, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.048 s <<< FAILURE! - in gson.GsonTest
+testGetDelegateAdapter  Time elapsed: 0.019 s  <<< ERROR!
+gson.JsonIOException: 
+Failed making field 'java.lang.String#value' accessible; either increase its visibility or write a custom TypeAdapter for its declaring type.
+See https://github.com/google/gson/blob/main/Troubleshooting.md#reflection-inaccessible
+	at gson.GsonTest.testGetDelegateAdapter(GsonTest.java:200)
+Caused by: java.lang.reflect.InaccessibleObjectException: Unable to make field private final byte[] java.lang.String.value accessible: module java.base does not "opens java.lang" to unnamed module @24a35978
+	at gson.GsonTest.testGetDelegateAdapter(GsonTest.java:200)
+

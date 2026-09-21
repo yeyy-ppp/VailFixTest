@@ -12,21 +12,21 @@ public class ReflectionHelper {
   static {
     RecordHelper instance;
     try {
-<span class="nc" id="L15">      instance = new RecordSupportedHelper();</span>
-<span class="fc" id="L16">    } catch (ReflectiveOperationException e) {</span>
-<span class="fc" id="L17">      instance = new RecordNotSupportedHelper();</span>
-<span class="nc" id="L18">    }</span>
+<span class="fc" id="L15">      instance = new RecordSupportedHelper();</span>
+<span class="nc" id="L16">    } catch (ReflectiveOperationException e) {</span>
+<span class="nc" id="L17">      instance = new RecordNotSupportedHelper();</span>
+<span class="fc" id="L18">    }</span>
 <span class="fc" id="L19">    RECORD_HELPER = instance;</span>
 <span class="fc" id="L20">  }</span>
   private ReflectionHelper() {}
   private static String getInaccessibleTroubleshootingSuffix(Exception e) {
-<span class="pc bpc" id="L23" title="1 of 2 branches missed.">    if (e.getClass().getName().equals(&quot;java.lang.reflect.InaccessibleObjectException&quot;)) {</span>
-<span class="nc" id="L24">      String message = e.getMessage();</span>
+<span class="fc bfc" id="L23" title="All 2 branches covered.">    if (e.getClass().getName().equals(&quot;java.lang.reflect.InaccessibleObjectException&quot;)) {</span>
+<span class="fc" id="L24">      String message = e.getMessage();</span>
       String troubleshootingId =
-<span class="nc bnc" id="L26" title="All 4 branches missed.">          message != null &amp;&amp; message.contains(&quot;to module com.google.gson&quot;)</span>
+<span class="pc bpc" id="L26" title="2 of 4 branches missed.">          message != null &amp;&amp; message.contains(&quot;to module com.google.gson&quot;)</span>
 <span class="nc" id="L27">              ? &quot;reflection-inaccessible-to-module-gson&quot;</span>
-<span class="nc" id="L28">              : &quot;reflection-inaccessible&quot;;</span>
-<span class="nc" id="L29">      return &quot;\nSee &quot; + TroubleshootingGuide.createUrl(troubleshootingId);</span>
+<span class="fc" id="L28">              : &quot;reflection-inaccessible&quot;;</span>
+<span class="fc" id="L29">      return &quot;\nSee &quot; + TroubleshootingGuide.createUrl(troubleshootingId);</span>
     }
 <span class="fc" id="L31">    return &quot;&quot;;</span>
   }
@@ -152,16 +152,16 @@ public class ReflectionHelper {
     private final Method getName;
     private final Method getType;
 <span class="fc" id="L154">    private RecordSupportedHelper() throws NoSuchMethodException, ClassNotFoundException {</span>
-<span class="nc" id="L155">      isRecord = Class.class.getMethod(&quot;isRecord&quot;);</span>
-<span class="nc" id="L156">      getRecordComponents = Class.class.getMethod(&quot;getRecordComponents&quot;);</span>
-<span class="nc" id="L157">      Class&lt;?&gt; classRecordComponent = Class.forName(&quot;java.lang.reflect.RecordComponent&quot;);</span>
-<span class="nc" id="L158">      getName = classRecordComponent.getMethod(&quot;getName&quot;);</span>
-<span class="nc" id="L159">      getType = classRecordComponent.getMethod(&quot;getType&quot;);</span>
-<span class="nc" id="L160">    }</span>
+<span class="fc" id="L155">      isRecord = Class.class.getMethod(&quot;isRecord&quot;);</span>
+<span class="fc" id="L156">      getRecordComponents = Class.class.getMethod(&quot;getRecordComponents&quot;);</span>
+<span class="fc" id="L157">      Class&lt;?&gt; classRecordComponent = Class.forName(&quot;java.lang.reflect.RecordComponent&quot;);</span>
+<span class="fc" id="L158">      getName = classRecordComponent.getMethod(&quot;getName&quot;);</span>
+<span class="fc" id="L159">      getType = classRecordComponent.getMethod(&quot;getType&quot;);</span>
+<span class="fc" id="L160">    }</span>
     @Override
     boolean isRecord(Class&lt;?&gt; raw) {
       try {
-<span class="nc" id="L164">        return (boolean) isRecord.invoke(raw);</span>
+<span class="fc" id="L164">        return (boolean) isRecord.invoke(raw);</span>
 <span class="nc" id="L165">      } catch (ReflectiveOperationException e) {</span>
 <span class="nc" id="L166">        throw createExceptionForRecordReflectionException(e);</span>
       }
@@ -201,24 +201,24 @@ public class ReflectionHelper {
       }
     }
   }
-<span class="fc" id="L204">  private static class RecordNotSupportedHelper extends RecordHelper {</span>
+<span class="nc" id="L204">  private static class RecordNotSupportedHelper extends RecordHelper {</span>
     @Override
     boolean isRecord(Class&lt;?&gt; clazz) {
-<span class="fc" id="L207">      return false;</span>
+<span class="nc" id="L207">      return false;</span>
     }
     @Override
     String[] getRecordComponentNames(Class&lt;?&gt; clazz) {
-<span class="fc" id="L211">      throw new UnsupportedOperationException(</span>
+<span class="nc" id="L211">      throw new UnsupportedOperationException(</span>
           &quot;Records are not supported on this JVM, this method should not be called&quot;);
     }
     @Override
     &lt;T&gt; Constructor&lt;T&gt; getCanonicalRecordConstructor(Class&lt;T&gt; raw) {
-<span class="fc" id="L216">      throw new UnsupportedOperationException(</span>
+<span class="nc" id="L216">      throw new UnsupportedOperationException(</span>
           &quot;Records are not supported on this JVM, this method should not be called&quot;);
     }
     @Override
     public Method getAccessor(Class&lt;?&gt; raw, Field field) {
-<span class="fc" id="L221">      throw new UnsupportedOperationException(</span>
+<span class="nc" id="L221">      throw new UnsupportedOperationException(</span>
           &quot;Records are not supported on this JVM, this method should not be called&quot;);
     }
   }

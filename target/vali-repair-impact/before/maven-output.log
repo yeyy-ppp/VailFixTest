@@ -1,0 +1,534 @@
+[INFO] Scanning for projects...
+[WARNING] 
+[WARNING] Some problems were encountered while building the effective model for io.github.zju-aces-ise:chatunitest-core:jar:1.1.0
+[WARNING] 'dependencies.dependency.version' for org.junit.jupiter:junit-jupiter:jar is either LATEST or RELEASE (both of them are being deprecated) @ line 307, column 22
+[WARNING] 'dependencies.dependency.version' for org.junit.jupiter:junit-jupiter:jar is either LATEST or RELEASE (both of them are being deprecated) @ line 313, column 22
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.junit.jupiter:junit-jupiter:jar -> duplicate declaration of version RELEASE @ line 310, column 21
+[WARNING] 'dependencies.dependency.version' for org.junit.jupiter:junit-jupiter:jar is either LATEST or RELEASE (both of them are being deprecated) @ line 319, column 22
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.junit.jupiter:junit-jupiter:jar -> duplicate declaration of version RELEASE @ line 316, column 21
+[WARNING] 'dependencies.dependency.version' for org.projectlombok:lombok:jar is either LATEST or RELEASE (both of them are being deprecated) @ line 325, column 22
+[WARNING] 'dependencies.dependency.(groupId:artifactId:type:classifier)' must be unique: org.projectlombok:lombok:jar -> version 1.18.28 vs RELEASE @ line 322, column 21
+[WARNING] 'build.plugins.plugin.version' for org.apache.maven.plugins:maven-deploy-plugin is missing. @ line 432, column 21
+[WARNING] 
+[WARNING] It is highly recommended to fix these problems because they threaten the stability of your build.
+[WARNING] 
+[WARNING] For this reason, future Maven versions might no longer support building such malformed projects.
+[WARNING] 
+[INFO] 
+[INFO] --------------< io.github.zju-aces-ise:chatunitest-core >---------------
+[INFO] Building chatunitest-core 1.1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- jacoco:0.8.8:prepare-agent (prepare-agent) @ chatunitest-core ---
+[INFO] jacocoArgLine set to -javaagent:D:\\TopNew-SpringBoot\\maven\\apache-maven-3.9.1-bin\\apache-maven-3.9.1\\repository\\org\\jacoco\\org.jacoco.agent\\0.8.8\\org.jacoco.agent-0.8.8-runtime.jar=destfile=D:\\fx\\jafx\\chatunitest-core\\target\\jacoco.exec,excludes=csv/Uncheck.class:csv/IOStream.class:csv/IOStream$*.class:csv/Base64OutputStream.class:csv/AppendableOutputStream.class:csv/IOUtilsHelper.class:csv/IOUtilsHelper$*.class:csv/AbstractStreamBuilder.class:csv/Charsets.class:csv/UnsynchronizedBufferedReader.class:lang3/builder/IDKey.class:lang3/reflect/AccessibleObjects.class:lang3/reflect/MemberUtils.class
+[INFO] 
+[INFO] --- resources:3.3.0:resources (default-resources) @ chatunitest-core ---
+[INFO] Copying 25 resources
+[INFO] 
+[INFO] --- compiler:3.10.1:compile (default-compile) @ chatunitest-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 417 source files to D:\fx\jafx\chatunitest-core\target\classes
+[INFO] /D:/fx/jafx/chatunitest-core/src/main/java/lang3/CharSetUtils.java: 某些输入文件使用或覆盖了已过时的 API。
+[INFO] /D:/fx/jafx/chatunitest-core/src/main/java/lang3/CharSetUtils.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] /D:/fx/jafx/chatunitest-core/src/main/java/slicing/graphs/ClassGraph.java: 某些输入文件使用了未经检查或不安全的操作。
+[INFO] /D:/fx/jafx/chatunitest-core/src/main/java/slicing/graphs/ClassGraph.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- resources:3.3.0:testResources (default-testResources) @ chatunitest-core ---
+[INFO] skip non existing resourceDirectory D:\fx\jafx\chatunitest-core\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.10.1:testCompile (default-testCompile) @ chatunitest-core ---
+[INFO] Changes detected - recompiling the module!
+[INFO] Compiling 159 source files to D:\fx\jafx\chatunitest-core\target\test-classes
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/lang3/ConversionTest.java: 某些输入文件使用或覆盖了已过时的 API。
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/lang3/ConversionTest.java: 有关详细信息, 请使用 -Xlint:deprecation 重新编译。
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/lang3/function/FailablePredicateTest.java: 某些输入文件使用了未经检查或不安全的操作。
+[INFO] /D:/fx/jafx/chatunitest-core/src/test/java/lang3/function/FailablePredicateTest.java: 有关详细信息, 请使用 -Xlint:unchecked 重新编译。
+[INFO] 
+[INFO] --- surefire:2.22.2:test (default-test) @ chatunitest-core ---
+[WARNING] Parameter 'localRepository' is deprecated core expression; Avoid use of ArtifactRepository type. If you need access to local repository, switch to '${repositorySystemSession}' expression and get LRM from it instead.
+[INFO] 
+[INFO] -------------------------------------------------------
+[INFO]  T E S T S
+[INFO] -------------------------------------------------------
+6月 24, 2026 6:38:34 下午 org.junit.jupiter.engine.discovery.MethodSelectorResolver resolve
+警告: Possible configuration error: method [void gson.stream.JsonReaderTest.testPush() throws java.lang.Exception] resulted in multiple TestDescriptors [org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor, org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor]. This is typically the result of annotating a method with multiple competing annotations such as @Test, @RepeatedTest, @ParameterizedTest, @TestFactory, etc.
+6月 24, 2026 6:38:34 下午 org.junit.jupiter.engine.discovery.MethodSelectorResolver resolve
+警告: Possible configuration error: method [void gson.stream.JsonReaderTest.testPush() throws java.lang.Exception] resulted in multiple TestDescriptors [org.junit.jupiter.engine.descriptor.TestTemplateTestDescriptor, org.junit.jupiter.engine.descriptor.TestMethodTestDescriptor]. This is typically the result of annotating a method with multiple competing annotations such as @Test, @RepeatedTest, @ParameterizedTest, @TestFactory, etc.
+[INFO] Running cli.AlreadySelectedExceptionTest
+[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.098 s - in cli.AlreadySelectedExceptionTest
+[INFO] Running cli.AmbiguousOptionExceptionTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.AmbiguousOptionExceptionTest
+[INFO] Running cli.BasicParserTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.BasicParserTest
+[INFO] Running cli.BuilderTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.BuilderTest
+[INFO] Running cli.CharTest
+[ERROR] Tests run: 3, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in cli.CharTest
+[ERROR] testPrivateConstructorInvocation  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+	at cli.CharTest.testPrivateConstructorInvocation(CharTest.java:24)
+
+[INFO] Running cli.CommandLineParserTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.CommandLineParserTest
+[INFO] Running cli.CommandLineTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in cli.CommandLineTest
+[INFO] Running cli.ConverterTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.ConverterTest
+[INFO] Running cli.DefaultParserTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.DefaultParserTest
+[INFO] Running cli.DeprecatedAttributesTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.DeprecatedAttributesTest
+[INFO] Running cli.GnuParserTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.GnuParserTest
+[INFO] Running cli.help.AbstractHelpFormatterTest
+ usage:  cmd
+
+ header
+
+ Options     Since     Description
+
+ footer
+
+ usage:  cmd
+
+ header
+
+ Options     Since     Description
+
+ footer
+
+ usage:  cmd
+
+ header
+
+ Options     Since     Description
+
+ footer
+
+ Options     Since     Description
+
+ Options     Since     Description
+
+[INFO] Tests run: 33, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s - in cli.help.AbstractHelpFormatterTest
+[INFO] Running cli.help.FilterHelpAppendableTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.help.FilterHelpAppendableTest
+[INFO] Running cli.help.HelpAppendableTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.help.HelpAppendableTest
+[INFO] Running cli.help.OptionFormatterBuilderTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.help.OptionFormatterBuilderTest
+[INFO] Running cli.help.OptionFormatterTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.help.OptionFormatterTest
+[INFO] Running cli.help.TableDefinitionTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.004 s - in cli.help.TableDefinitionTest
+[INFO] Running cli.help.TextHelpAppendableTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.help.TextHelpAppendableTest
+[INFO] Running cli.help.TextStyleTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.help.TextStyleTest
+[INFO] Running cli.HelpFormatterTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.HelpFormatterTest
+[INFO] Running cli.MissingArgumentExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.MissingArgumentExceptionTest
+[INFO] Running cli.MissingOptionExceptionTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.MissingOptionExceptionTest
+[INFO] Running cli.OptionBuilderTest
+[ERROR] Tests run: 28, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in cli.OptionBuilderTest
+[ERROR] constructorIsPrivate  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.IllegalStateException to be thrown, but nothing was thrown.
+	at cli.OptionBuilderTest.constructorIsPrivate(OptionBuilderTest.java:211)
+
+[INFO] Running cli.OptionGroupTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.OptionGroupTest
+[INFO] Running cli.OptionsTest
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.OptionsTest
+[INFO] Running cli.OptionTest
+[INFO] Tests run: 47, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.OptionTest
+[INFO] Running cli.OptionValidatorTest
+[INFO] Tests run: 42, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.OptionValidatorTest
+[INFO] Running cli.ParseExceptionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.ParseExceptionTest
+[INFO] Running cli.ParserTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.ParserTest
+[INFO] Running cli.PatternOptionBuilderTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.PatternOptionBuilderTest
+[INFO] Running cli.PosixParserTest
+[INFO] Tests run: 16, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.PosixParserTest
+[INFO] Running cli.TypeHandlerTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.TypeHandlerTest
+[INFO] Running cli.UnrecognizedOptionExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in cli.UnrecognizedOptionExceptionTest
+[INFO] Running cli.UtilTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in cli.UtilTest
+[INFO] Running codeing.AddExampleTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in codeing.AddExampleTest
+[INFO] Running codeing.AddTest
+[INFO] Tests run: 28, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in codeing.AddTest
+[INFO] Running codeing.CalculatorTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in codeing.CalculatorTest
+[INFO] Running codeing.ExampleTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in codeing.ExampleTest
+[INFO] Running codeing.FixTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in codeing.FixTest
+[INFO] Running csv.ConstantsTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in csv.ConstantsTest
+[INFO] Running csv.CSVExceptionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in csv.CSVExceptionTest
+[INFO] Running csv.CSVParserTest
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.189 s - in csv.CSVParserTest
+[INFO] Running csv.CSVPrinterTest
+[INFO] Tests run: 18, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 5.68 s - in csv.CSVPrinterTest
+[INFO] Running csv.CSVRecordTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.038 s - in csv.CSVRecordTest
+[INFO] Running csv.DuplicateHeaderModeTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in csv.DuplicateHeaderModeTest
+[INFO] Running csv.ExtendedBufferedReaderTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in csv.ExtendedBufferedReaderTest
+[INFO] Running csv.LexerTest
+[INFO] Tests run: 24, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.025 s - in csv.LexerTest
+[INFO] Running csv.QuoteModeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in csv.QuoteModeTest
+[INFO] Running csv.TokenTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in csv.TokenTest
+[INFO] Running gson.ExclusionStrategyTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.ExclusionStrategyTest
+[INFO] Running gson.FieldAttributesTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.FieldAttributesTest
+[INFO] Running gson.FieldNamingPolicyTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.009 s - in gson.FieldNamingPolicyTest
+[INFO] Running gson.FieldNamingStrategyTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s - in gson.FieldNamingStrategyTest
+[INFO] Running gson.FormattingStyleTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.007 s - in gson.FormattingStyleTest
+[INFO] Running gson.GsonBuilderTest
+[INFO] Tests run: 34, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.325 s - in gson.GsonBuilderTest
+[INFO] Running gson.GsonTest
+[INFO] Tests run: 38, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s - in gson.GsonTest
+[INFO] Running gson.InstanceCreatorTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.InstanceCreatorTest
+[INFO] Running gson.internal.bind.ArrayTypeAdapterTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.bind.ArrayTypeAdapterTest
+[INFO] Running gson.internal.bind.CollectionTypeAdapterFactoryTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.bind.CollectionTypeAdapterFactoryTest
+[INFO] Running gson.internal.bind.DefaultDateTypeAdapterTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in gson.internal.bind.DefaultDateTypeAdapterTest
+[INFO] Running gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest
+[INFO] Running gson.internal.bind.JsonElementTypeAdapterTest
+[ERROR] Tests run: 18, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.007 s <<< FAILURE! - in gson.internal.bind.JsonElementTypeAdapterTest
+[ERROR] testReadTerminal  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at gson.internal.bind.JsonElementTypeAdapterTest.testReadTerminal(JsonElementTypeAdapterTest.java:254)
+
+[INFO] Running gson.internal.bind.JsonTreeReaderTest
+[INFO] Tests run: 25, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.014 s - in gson.internal.bind.JsonTreeReaderTest
+[INFO] Running gson.internal.bind.JsonTreeWriterTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 s - in gson.internal.bind.JsonTreeWriterTest
+[INFO] Running gson.internal.bind.MapTypeAdapterFactoryTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.018 s - in gson.internal.bind.MapTypeAdapterFactoryTest
+[INFO] Running gson.internal.bind.NumberTypeAdapterTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in gson.internal.bind.NumberTypeAdapterTest
+[INFO] Running gson.internal.bind.ObjectTypeAdapterTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in gson.internal.bind.ObjectTypeAdapterTest
+[INFO] Running gson.internal.bind.ReflectiveTypeAdapterFactoryTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.002 s - in gson.internal.bind.ReflectiveTypeAdapterFactoryTest
+[INFO] Running gson.internal.bind.SerializationDelegatingTypeAdapterTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.bind.SerializationDelegatingTypeAdapterTest
+[INFO] Running gson.internal.bind.TreeTypeAdapterTest
+[ERROR] Tests run: 14, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.091 s <<< FAILURE! - in gson.internal.bind.TreeTypeAdapterTest
+[ERROR] testWriteWithDelegateAdapter  Time elapsed: 0.077 s  <<< ERROR!
+gson.JsonIOException: 
+Failed making field 'java.io.File#path' accessible; either increase its visibility or write a custom TypeAdapter for its declaring type.
+See https://github.com/google/gson/blob/main/Troubleshooting.md#reflection-inaccessible
+	at gson.internal.bind.TreeTypeAdapterTest.testWriteWithDelegateAdapter(TreeTypeAdapterTest.java:84)
+Caused by: java.lang.reflect.InaccessibleObjectException: Unable to make field private final java.lang.String java.io.File.path accessible: module java.base does not "opens java.io" to unnamed module @5479e3f
+	at gson.internal.bind.TreeTypeAdapterTest.testWriteWithDelegateAdapter(TreeTypeAdapterTest.java:84)
+
+[INFO] Running gson.internal.bind.util.ISO8601UtilsTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.012 s - in gson.internal.bind.util.ISO8601UtilsTest
+[INFO] Running gson.internal.ConstructorConstructorTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in gson.internal.ConstructorConstructorTest
+[INFO] Running gson.internal.ExcluderTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.031 s - in gson.internal.ExcluderTest
+[INFO] Running gson.internal.GsonTypesTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.003 s - in gson.internal.GsonTypesTest
+[INFO] Running gson.internal.JavaVersionTest
+[ERROR] Tests run: 5, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in gson.internal.JavaVersionTest
+[ERROR] testIsJava9OrLater  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchFieldException: modifiers
+	at gson.internal.JavaVersionTest.testIsJava9OrLater(JavaVersionTest.java:83)
+
+[ERROR] testGetMajorJavaVersion  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchFieldException: modifiers
+	at gson.internal.JavaVersionTest.testGetMajorJavaVersion(JavaVersionTest.java:62)
+
+[INFO] Running gson.internal.JsonReaderInternalAccessTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.JsonReaderInternalAccessTest
+[INFO] Running gson.internal.LazilyParsedNumberTest
+[INFO] Tests run: 23, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.LazilyParsedNumberTest
+[INFO] Running gson.internal.LinkedTreeMapTest
+[INFO] Tests run: 27, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.LinkedTreeMapTest
+[INFO] Running gson.internal.NonNullElementWrapperListTest
+[INFO] Tests run: 41, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.NonNullElementWrapperListTest
+[INFO] Running gson.internal.NumberLimitsTest
+[ERROR] Tests run: 8, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in gson.internal.NumberLimitsTest
+[ERROR] testConstructorIsPrivate  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+	at gson.internal.NumberLimitsTest.testConstructorIsPrivate(NumberLimitsTest.java:21)
+
+[INFO] Running gson.internal.ObjectConstructorTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.ObjectConstructorTest
+[INFO] Running gson.internal.PreJava9DateFormatProviderTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.PreJava9DateFormatProviderTest
+[INFO] Running gson.internal.PrimitivesTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.PrimitivesTest
+[INFO] Running gson.internal.reflect.ReflectionHelperTest
+[ERROR] Tests run: 12, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in gson.internal.reflect.ReflectionHelperTest
+[ERROR] testRecordNotSupportedMethods  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <java.lang.UnsupportedOperationException> but was: <java.lang.NullPointerException>
+	at gson.internal.reflect.ReflectionHelperTest.testRecordNotSupportedMethods(ReflectionHelperTest.java:129)
+Caused by: java.lang.NullPointerException: Cannot read the array length because "recordComponents" is null
+	at gson.internal.reflect.ReflectionHelperTest.lambda$testRecordNotSupportedMethods$1(ReflectionHelperTest.java:130)
+	at gson.internal.reflect.ReflectionHelperTest.testRecordNotSupportedMethods(ReflectionHelperTest.java:129)
+
+[INFO] Running gson.internal.ReflectionAccessFilterHelperTest
+[INFO] Tests run: 8, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.ReflectionAccessFilterHelperTest
+[INFO] Running gson.internal.sql.SqlTypesSupportTest
+[ERROR] Tests run: 2, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in gson.internal.sql.SqlTypesSupportTest
+[ERROR] testCannotInstantiateViaReflection  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+	at gson.internal.sql.SqlTypesSupportTest.testCannotInstantiateViaReflection(SqlTypesSupportTest.java:23)
+
+[INFO] Running gson.internal.StreamsTest
+[ERROR] Tests run: 19, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in gson.internal.StreamsTest
+[ERROR] testStreamsConstructor  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <java.lang.UnsupportedOperationException> but was: <java.lang.reflect.InvocationTargetException>
+	at gson.internal.StreamsTest.testStreamsConstructor(StreamsTest.java:27)
+Caused by: java.lang.reflect.InvocationTargetException
+	at gson.internal.StreamsTest.lambda$testStreamsConstructor$0(StreamsTest.java:27)
+	at gson.internal.StreamsTest.testStreamsConstructor(StreamsTest.java:27)
+Caused by: java.lang.UnsupportedOperationException
+	at gson.internal.StreamsTest.lambda$testStreamsConstructor$0(StreamsTest.java:27)
+	at gson.internal.StreamsTest.testStreamsConstructor(StreamsTest.java:27)
+
+[ERROR] testAppendableWriterCloseCloseable  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.io.IOException to be thrown, but nothing was thrown.
+	at gson.internal.StreamsTest.testAppendableWriterCloseCloseable(StreamsTest.java:99)
+
+[INFO] Running gson.internal.TroubleshootingGuideTest
+[ERROR] Tests run: 5, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in gson.internal.TroubleshootingGuideTest
+[ERROR] constructorIsPrivate  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+	at gson.internal.TroubleshootingGuideTest.constructorIsPrivate(TroubleshootingGuideTest.java:49)
+
+[INFO] Running gson.internal.UnsafeAllocatorTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.internal.UnsafeAllocatorTest
+[INFO] Running gson.JsonArrayTest
+[INFO] Tests run: 32, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in gson.JsonArrayTest
+[INFO] Running gson.JsonDeserializationContextTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonDeserializationContextTest
+[INFO] Running gson.JsonDeserializerTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonDeserializerTest
+[INFO] Running gson.JsonElementTest
+[INFO] Tests run: 48, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonElementTest
+[INFO] Running gson.JsonNullTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonNullTest
+[INFO] Running gson.JsonObjectTest
+[INFO] Tests run: 20, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonObjectTest
+[INFO] Running gson.JsonParseExceptionTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonParseExceptionTest
+[INFO] Running gson.JsonParserTest
+[INFO] Tests run: 13, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonParserTest
+[INFO] Running gson.JsonPrimitiveTest
+[ERROR] Tests run: 46, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.003 s <<< FAILURE! - in gson.JsonPrimitiveTest
+[ERROR] testHashCodeBigDecimalInteger  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <123> but was: <1079951360>
+	at gson.JsonPrimitiveTest.testHashCodeBigDecimalInteger(JsonPrimitiveTest.java:295)
+
+[ERROR] testGetAsBooleanFromNumber  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at gson.JsonPrimitiveTest.testGetAsBooleanFromNumber(JsonPrimitiveTest.java:60)
+
+[INFO] Running gson.JsonSerializationContextTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonSerializationContextTest
+[INFO] Running gson.JsonSerializerTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonSerializerTest
+[INFO] Running gson.JsonStreamParserTest
+[ERROR] Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in gson.JsonStreamParserTest
+[ERROR] testHasNextWithMalformedJsonThrowsJsonSyntaxException  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected gson.JsonSyntaxException to be thrown, but nothing was thrown.
+	at gson.JsonStreamParserTest.testHasNextWithMalformedJsonThrowsJsonSyntaxException(JsonStreamParserTest.java:53)
+
+[INFO] Running gson.JsonSyntaxExceptionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.JsonSyntaxExceptionTest
+[INFO] Running gson.LongSerializationPolicyTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in gson.LongSerializationPolicyTest
+[INFO] Running gson.reflect.TypeTokenTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.reflect.TypeTokenTest
+[INFO] Running gson.ReflectionAccessFilterTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.ReflectionAccessFilterTest
+[INFO] Running gson.stream.JsonReaderTest
+[INFO] Tests run: 35, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.053 s - in gson.stream.JsonReaderTest
+[INFO] Running gson.stream.JsonTokenTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s - in gson.stream.JsonTokenTest
+[INFO] Running gson.stream.JsonWriterTest
+[INFO] Tests run: 35, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.stream.JsonWriterTest
+[INFO] Running gson.stream.MalformedJsonExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in gson.stream.MalformedJsonExceptionTest
+[INFO] Running gson.StrictnessTest
+[INFO] Tests run: 17, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 1.014 s - in gson.StrictnessTest
+[INFO] Running gson.ToNumberPolicyTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.006 s - in gson.ToNumberPolicyTest
+[INFO] Running gson.ToNumberStrategyTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.015 s - in gson.ToNumberStrategyTest
+[INFO] Running gson.TypeAdapterTest
+[INFO] Tests run: 22, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.011 s - in gson.TypeAdapterTest
+[INFO] Running lang3.AppendableJoinerTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.005 s - in lang3.AppendableJoinerTest
+[INFO] Running lang3.ArrayFillTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.ArrayFillTest
+[INFO] Running lang3.ArraySorterTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.ArraySorterTest
+[INFO] Running lang3.builder.AbstractSupplierTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.builder.AbstractSupplierTest
+[INFO] Running lang3.builder.BuilderTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.builder.BuilderTest
+[INFO] Running lang3.CharSetTest
+[INFO] Tests run: 35, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in lang3.CharSetTest
+[INFO] Running lang3.CharSetUtilsTest
+[ERROR] Tests run: 7, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in lang3.CharSetUtilsTest
+[ERROR] testCount  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <4> but was: <3>
+	at lang3.CharSetUtilsTest.testCount(CharSetUtilsTest.java:25)
+
+[ERROR] testDelete  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <bn> but was: <bnn>
+	at lang3.CharSetUtilsTest.testDelete(CharSetUtilsTest.java:34)
+
+[ERROR] testSqueeze  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <abcd> but was: <aabbccdd>
+	at lang3.CharSetUtilsTest.testSqueeze(CharSetUtilsTest.java:58)
+
+[INFO] Running lang3.ClassLoaderUtilsTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.ClassLoaderUtilsTest
+[INFO] Running lang3.ClassPathUtilsTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.ClassPathUtilsTest
+[INFO] Running lang3.concurrent.AbstractFutureProxyTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.112 s - in lang3.concurrent.AbstractFutureProxyTest
+[INFO] Running lang3.concurrent.BasicThreadFactoryTest
+[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.concurrent.BasicThreadFactoryTest
+[INFO] Running lang3.concurrent.ComputableTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.concurrent.ComputableTest
+[INFO] Running lang3.concurrent.FutureTasksTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.concurrent.FutureTasksTest
+[INFO] Running lang3.concurrent.locks.LockingVisitorsTest
+[INFO] Tests run: 21, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.013 s - in lang3.concurrent.locks.LockingVisitorsTest
+[INFO] Running lang3.concurrent.UncheckedExecutionExceptionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.concurrent.UncheckedExecutionExceptionTest
+[INFO] Running lang3.concurrent.UncheckedFutureTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.01 s - in lang3.concurrent.UncheckedFutureTest
+[INFO] Running lang3.concurrent.UncheckedTimeoutExceptionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.concurrent.UncheckedTimeoutExceptionTest
+[INFO] Running lang3.ConversionTest
+[INFO] Tests run: 39, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.008 s - in lang3.ConversionTest
+[INFO] Running lang3.exception.CloneFailedExceptionTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.exception.CloneFailedExceptionTest
+[INFO] Running lang3.exception.UncheckedExceptionTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.exception.UncheckedExceptionTest
+[INFO] Running lang3.exception.UncheckedInterruptedExceptionTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.exception.UncheckedInterruptedExceptionTest
+[INFO] Running lang3.function.FailableBiConsumerTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableBiConsumerTest
+[INFO] Running lang3.function.FailableBiFunctionTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in lang3.function.FailableBiFunctionTest
+[INFO] Running lang3.function.FailableBiPredicateTest
+[INFO] Tests run: 14, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableBiPredicateTest
+[INFO] Running lang3.function.FailableCallableTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableCallableTest
+[INFO] Running lang3.function.FailableConsumerTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableConsumerTest
+[INFO] Running lang3.function.FailableFunctionTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableFunctionTest
+[INFO] Running lang3.function.FailableIntFunctionTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableIntFunctionTest
+[INFO] Running lang3.function.FailablePredicateTest
+[INFO] Tests run: 15, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailablePredicateTest
+[INFO] Running lang3.function.FailableRunnableTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableRunnableTest
+[INFO] Running lang3.function.FailableSupplierTest
+[INFO] Tests run: 2, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableSupplierTest
+[INFO] Running lang3.function.FailableTest
+[INFO] Tests run: 44, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.FailableTest
+[INFO] Running lang3.function.SuppliersTest
+[INFO] Tests run: 4, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.function.SuppliersTest
+[INFO] Running lang3.LongRangeTest
+[INFO] Tests run: 5, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.LongRangeTest
+[INFO] Running lang3.mutable.MutableIntTest
+[INFO] Tests run: 31, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in lang3.mutable.MutableIntTest
+[INFO] Running lang3.mutable.MutableTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.mutable.MutableTest
+[INFO] Running lang3.NumberRangeTest
+[INFO] Tests run: 10, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.NumberRangeTest
+[INFO] Running lang3.RandomStringUtilsTest
+[INFO] Tests run: 39, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s - in lang3.RandomStringUtilsTest
+[INFO] Running lang3.RandomUtilsTest
+[INFO] Tests run: 39, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.127 s - in lang3.RandomUtilsTest
+[INFO] Running lang3.RangeTest
+[INFO] Tests run: 26, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in lang3.RangeTest
+[INFO] Running lang3.reflect.TypedTest
+[INFO] Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.reflect.TypedTest
+[INFO] Running lang3.RuntimeEnvironmentTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.058 s - in lang3.RuntimeEnvironmentTest
+[INFO] Running lang3.SerializationExceptionTest
+[INFO] Tests run: 12, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.001 s - in lang3.SerializationExceptionTest
+[INFO] Running lang3.stream.IntStreamsTest
+[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.stream.IntStreamsTest
+[INFO] Running lang3.stream.LangCollectorsTest
+[INFO] Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.stream.LangCollectorsTest
+[INFO] Running lang3.SystemPropertiesTest
+[INFO] Tests run: 19, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.016 s - in lang3.SystemPropertiesTest
+[INFO] Running lang3.SystemUtilsTest
+[INFO] Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.SystemUtilsTest
+[INFO] 
+[INFO] Results:
+[INFO] 
+[ERROR] Failures: 
+[ERROR]   CharTest.testPrivateConstructorInvocation:24 Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+[ERROR]   OptionBuilderTest.constructorIsPrivate:211 Expected java.lang.IllegalStateException to be thrown, but nothing was thrown.
+[ERROR]   JsonPrimitiveTest.testGetAsBooleanFromNumber:60 expected: <true> but was: <false>
+[ERROR]   JsonPrimitiveTest.testHashCodeBigDecimalInteger:295 expected: <123> but was: <1079951360>
+[ERROR]   JsonStreamParserTest.testHasNextWithMalformedJsonThrowsJsonSyntaxException:53 Expected gson.JsonSyntaxException to be thrown, but nothing was thrown.
+[ERROR]   NumberLimitsTest.testConstructorIsPrivate:21 Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+[ERROR]   StreamsTest.testAppendableWriterCloseCloseable:99 Expected java.io.IOException to be thrown, but nothing was thrown.
+[ERROR]   StreamsTest.testStreamsConstructor:27 Unexpected exception type thrown, expected: <java.lang.UnsupportedOperationException> but was: <java.lang.reflect.InvocationTargetException>
+[ERROR]   TroubleshootingGuideTest.constructorIsPrivate:49 Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+[ERROR]   JsonElementTypeAdapterTest.testReadTerminal:254 expected: <true> but was: <false>
+[ERROR]   ReflectionHelperTest.testRecordNotSupportedMethods:129 Unexpected exception type thrown, expected: <java.lang.UnsupportedOperationException> but was: <java.lang.NullPointerException>
+[ERROR]   SqlTypesSupportTest.testCannotInstantiateViaReflection:23 Expected java.lang.reflect.InvocationTargetException to be thrown, but nothing was thrown.
+[ERROR]   CharSetUtilsTest.testCount:25 expected: <4> but was: <3>
+[ERROR]   CharSetUtilsTest.testDelete:34 expected: <bn> but was: <bnn>
+[ERROR]   CharSetUtilsTest.testSqueeze:58 expected: <abcd> but was: <aabbccdd>
+[ERROR] Errors: 
+[ERROR]   JavaVersionTest.testGetMajorJavaVersion:62 ? NoSuchField modifiers
+[ERROR]   JavaVersionTest.testIsJava9OrLater:83 ? NoSuchField modifiers
+[ERROR]   TreeTypeAdapterTest.testWriteWithDelegateAdapter:84 ? JsonIO Failed making fie...
+[INFO] 
+[ERROR] Tests run: 2108, Failures: 15, Errors: 3, Skipped: 0
+[INFO] 
+[ERROR] There are test failures.
+
+Please refer to D:\fx\jafx\chatunitest-core\target\surefire-reports for the individual test results.
+Please refer to dump files (if any exist) [date].dump, [date]-jvmRun[N].dump and [date].dumpstream.
+[INFO] 
+[INFO] --- jacoco:0.8.8:report (report) @ chatunitest-core ---
+[INFO] Loading execution data file D:\fx\jafx\chatunitest-core\target\jacoco.exec
+[INFO] Analyzed bundle 'chatunitest-core' with 675 classes
+[INFO] 
+[INFO] --- jacoco:0.8.8:report (default-cli) @ chatunitest-core ---
+[INFO] Loading execution data file D:\fx\jafx\chatunitest-core\target\jacoco.exec
+[INFO] Analyzed bundle 'chatunitest-core' with 675 classes
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  01:07 min
+[INFO] Finished at: 2026-06-24T18:38:57+08:00
+[INFO] ------------------------------------------------------------------------

@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: cli.OptionBuilderTest
+-------------------------------------------------------------------------------
+Tests run: 28, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.012 s <<< FAILURE! - in cli.OptionBuilderTest
+constructorIsPrivate  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.lang.IllegalStateException to be thrown, but nothing was thrown.
+	at cli.OptionBuilderTest.constructorIsPrivate(OptionBuilderTest.java:205)
+
+createCharOption_success  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at cli.OptionBuilderTest.createCharOption_success(OptionBuilderTest.java:29)
+

@@ -1,0 +1,415 @@
+package gson.stream;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
+import org.junit.jupiter.params.provider.CsvSource;
+import java.io.*;
+import java.lang.reflect.*;
+import gson.stream.MalformedJsonException;
+import gson.Strictness;
+
+class JsonReaderTest {
+
+    @ParameterizedTest
+    @ValueSource(booleans = {true, false})
+    void testSetLenientAndIsLenient(boolean lenient) throws IOException {
+        try (JsonReader reader = new JsonReader(new StringReader(""))) {
+            reader.setLenient(lenient);
+            assertEquals(lenient, reader.isLenient());
+        }
+    }
+
+    @Test
+    void testSetStrictnessAndGetStrictness() throws IOException {
+        try (JsonReader reader = new JsonReader(new StringReader(""))) {
+            reader.setStrictness(Strictness.LENIENT);
+            assertEquals(Strictness.LENIENT, reader.getStrictness());
+            
+            reader.setStrictness(Strictness.STRICT);
+            assertEquals(Strictness.STRICT, reader.getStrictness());
+        }
+    }
+
+    @Test
+    void testSetNestingLimitAndGetNestingLimit() throws IOException {
+        try (JsonReader reader = new JsonReader(new StringReader(""))) {
+            reader.setNestingLimit(100);
+            assertEquals(100, reader.getNestingLimit());
+            
+            assertThrows(IllegalArgumentException.class, () -> reader.setNestingLimit(-1));
+        }
+    }
+
+    @Test
+    void testBeginAndEndArray() throws IOException {
+        String json = "[1,2,3]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertTrue(isScope(reader, JsonScope.EMPTY_ARRAY));
+            
+            while (reader.hasNext()) {
+                reader.nextInt();
+            }
+            
+            reader.endArray();
+            assertTrue(isScope(reader, JsonScope.NONEMPTY_DOCUMENT));
+        }
+    }
+
+    @Test
+    void testBeginAndEndObject() throws IOException {
+        String json = "{\"key\":\"value\"}";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginObject();
+            assertTrue(isScope(reader, JsonScope.EMPTY_OBJECT));
+            
+            reader.nextName();
+            reader.nextString();
+            
+            reader.endObject();
+            assertTrue(isScope(reader, JsonScope.NONEMPTY_DOCUMENT));
+        }
+    }
+
+    @Test
+    void testHasNext() throws IOException {
+        String json = "[1,2]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertTrue(reader.hasNext());
+            reader.nextInt();
+            assertTrue(reader.hasNext());
+            reader.nextInt();
+            assertFalse(reader.hasNext());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testPeek() throws IOException {
+        String json = "{\"key\":[true,null,10.5]}";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            assertEquals(JsonToken.BEGIN_OBJECT, reader.peek());
+            reader.beginObject();
+            
+            assertEquals(JsonToken.NAME, reader.peek());
+            reader.nextName();
+            
+            assertEquals(JsonToken.BEGIN_ARRAY, reader.peek());
+            reader.beginArray();
+            
+            assertEquals(JsonToken.BOOLEAN, reader.peek());
+            assertTrue(reader.nextBoolean());
+            
+            assertEquals(JsonToken.NULL, reader.peek());
+            reader.nextNull();
+            
+            assertEquals(JsonToken.NUMBER, reader.peek());
+            reader.nextDouble();
+            
+            assertEquals(JsonToken.END_ARRAY, reader.peek());
+            reader.endArray();
+            
+            assertEquals(JsonToken.END_OBJECT, reader.peek());
+            reader.endObject();
+            
+            assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+        }
+    }
+
+    @Test
+    void testNextName() throws IOException {
+        String json = "{\"name1\":\"value\",'name2':null}";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginObject();
+            assertEquals("name1", reader.nextName());
+            reader.nextString();
+            assertEquals("name2", reader.nextName());
+            reader.nextNull();
+            reader.endObject();
+        }
+    }
+
+    @Test
+    void testNextString() throws IOException {
+        String json = "[\"str1\",'str2',12345]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertEquals("str1", reader.nextString());
+            assertEquals("str2", reader.nextString());
+            assertThrows(IllegalStateException.class, reader::nextString);
+        }
+    }
+
+    @Test
+    void testNextBoolean() throws IOException {
+        String json = "[true,false]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertTrue(reader.nextBoolean());
+            assertFalse(reader.nextBoolean());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testNextNull() throws IOException {
+        String json = "[null]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            reader.nextNull();
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testNextDouble() throws IOException {
+        String json = "[123.45, \"678.90\"]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertEquals(123.45, reader.nextDouble());
+            assertEquals(678.90, reader.nextDouble());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testNextLong() throws IOException {
+        String json = "[123456789, \"987654321\"]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertEquals(123456789L, reader.nextLong());
+            assertEquals(987654321L, reader.nextLong());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testNextInt() throws IOException {
+        String json = "[123, \"456\"]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertEquals(123, reader.nextInt());
+            assertEquals(456, reader.nextInt());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testClose() throws IOException, NoSuchFieldException, IllegalAccessException {
+        JsonReader reader = new JsonReader(new StringReader("{}"));
+        reader.close();
+        assertEquals(JsonScope.CLOSED, getScope(reader));
+    }
+
+    @Test
+    void testSkipValue() throws IOException {
+        String json = "[1,{\"skip\":[true]},3]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertEquals(1, reader.nextInt());
+            reader.skipValue();
+            assertEquals(3, reader.nextInt());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testLocationString() throws IOException {
+        String json = "{\n\"key\": 123\n}";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginObject();
+            reader.nextName();
+            assertTrue(reader.locationString().contains("line 2 column 6"));
+        }
+    }
+
+    @Test
+    void testGetPath() throws IOException {
+        String json = "{\"obj\":[1,2]}";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginObject();
+            reader.nextName();
+            assertEquals("$.obj", reader.getPath());
+            
+            reader.beginArray();
+            assertEquals("$.obj[0]", reader.getPath());
+            
+            reader.nextInt();
+            assertEquals("$.obj[1]", reader.getPath());
+            
+            reader.nextInt();
+            reader.endArray();
+            reader.endObject();
+        }
+    }
+
+    @Test
+    void testGetPreviousPath() throws IOException {
+        String json = "[1,2]";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            reader.nextInt();
+            assertEquals("$[0]", reader.getPreviousPath());
+            reader.nextInt();
+            assertEquals("$[1]", reader.getPreviousPath());
+            reader.endArray();
+        }
+    }
+
+    @Test
+    void testToString() throws IOException {
+        String json = "123";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            String result = reader.toString();
+            assertTrue(result.contains("JsonReader"));
+            assertTrue(result.contains("line 1 column 1"));
+        }
+    }
+
+    @Test
+    void testReadEscapeCharacter() throws Exception {
+        Method readEscape = JsonReader.class.getDeclaredMethod("readEscapeCharacter");
+        readEscape.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader("\"\\u2028\""))) {
+            reader.setStrictness(Strictness.LENIENT);
+            reader.peek();
+        }
+    }
+
+    @Test
+    void testSyntaxError() throws IOException {
+        String json = "{invalid}";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginObject();
+            MalformedJsonException ex = assertThrows(MalformedJsonException.class, reader::nextName);
+            assertTrue(ex.getMessage().contains("Expected name"));
+        }
+    }
+
+    @Test
+    void testUnexpectedTokenError() throws IOException {
+        String json = "123";
+        try (JsonReader reader = new JsonReader(new StringReader(json))) {
+            reader.beginArray();
+            assertThrows(IllegalStateException.class, reader::endArray);
+        }
+    }
+
+    @Test
+    void testConsumeNonExecutePrefix() throws Exception {
+        Method consumePrefix = JsonReader.class.getDeclaredMethod("consumeNonExecutePrefix");
+        consumePrefix.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader(")]}'\n123"))) {
+            reader.setStrictness(Strictness.LENIENT);
+            consumePrefix.invoke(reader);
+            assertEquals(123, reader.nextInt());
+        }
+    }
+
+    @Test
+    void testCheckLenient() throws Exception {
+        Method checkLenient = JsonReader.class.getDeclaredMethod("checkLenient");
+        checkLenient.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader("[ , ]"))) {
+            reader.setStrictness(Strictness.LENIENT);
+            reader.beginArray();
+            assertDoesNotThrow(() -> checkLenient.invoke(reader));
+        }
+    }
+
+    @Test
+    void testSkipToEndOfLine() throws Exception {
+        Method skipToEnd = JsonReader.class.getDeclaredMethod("skipToEndOfLine");
+        skipToEnd.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader("// comment\n123"))) {
+            reader.setStrictness(Strictness.LENIENT);
+            skipToEnd.invoke(reader);
+            assertEquals(123, reader.nextInt());
+        }
+    }
+
+    @Test
+    void testSkipTo() throws Exception {
+        Method skipTo = JsonReader.class.getDeclaredMethod("skipTo", String.class);
+        skipTo.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader("text123"))) {
+            assertTrue((Boolean) skipTo.invoke(reader, "123"));
+            assertEquals('1', reader.peek());
+        }
+    }
+
+    @ParameterizedTest
+    @CsvSource({
+        "a, true",
+        "_, true",
+        "0, false",
+        " , false"
+    })
+    void testIsLiteral(char c, boolean expected) throws Exception {
+        Method isLiteral = JsonReader.class.getDeclaredMethod("isLiteral", char.class);
+        isLiteral.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader(""))) {
+            assertEquals(expected, isLiteral.invoke(reader, c));
+        }
+    }
+
+    @Test
+    void testPush() throws Exception {
+        Method push = JsonReader.class.getDeclaredMethod("push", int.class);
+        push.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader(""))) {
+            push.invoke(reader, JsonScope.EMPTY_ARRAY);
+            assertEquals(JsonScope.EMPTY_ARRAY, getScope(reader));
+        }
+    }
+
+    @Test
+    void testFillBuffer() throws Exception {
+        Method fillBuffer = JsonReader.class.getDeclaredMethod("fillBuffer", int.class);
+        fillBuffer.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader("1234567890"))) {
+            assertTrue((Boolean) fillBuffer.invoke(reader, 5));
+        }
+    }
+
+    @Test
+    void testNextNonWhitespace() throws Exception {
+        Method nextNonWhitespace = JsonReader.class.getDeclaredMethod("nextNonWhitespace", boolean.class);
+        nextNonWhitespace.setAccessible(true);
+        
+        try (JsonReader reader = new JsonReader(new StringReader("   a"))) {
+            assertEquals('a', nextNonWhitespace.invoke(reader, true));
+        }
+    }
+
+    private int getScope(JsonReader reader) throws NoSuchFieldException, IllegalAccessException {
+        Field stackField = JsonReader.class.getDeclaredField("stack");
+        stackField.setAccessible(true);
+        int[] stack = (int[]) stackField.get(reader);
+
+        Field stackSizeField = JsonReader.class.getDeclaredField("stackSize");
+        stackSizeField.setAccessible(true);
+        int stackSize = stackSizeField.getInt(reader);
+
+        return stack[stackSize - 1];
+    }
+
+    private boolean isScope(JsonReader reader, int scope) {
+        try {
+            return getScope(reader) == scope;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+}

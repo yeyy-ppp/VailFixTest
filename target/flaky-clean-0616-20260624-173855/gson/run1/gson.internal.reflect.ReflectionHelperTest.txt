@@ -1,0 +1,11 @@
+-------------------------------------------------------------------------------
+Test set: gson.internal.reflect.ReflectionHelperTest
+-------------------------------------------------------------------------------
+Tests run: 12, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in gson.internal.reflect.ReflectionHelperTest
+testRecordNotSupportedMethods  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <java.lang.UnsupportedOperationException> but was: <java.lang.NullPointerException>
+	at gson.internal.reflect.ReflectionHelperTest.testRecordNotSupportedMethods(ReflectionHelperTest.java:129)
+Caused by: java.lang.NullPointerException: Cannot read the array length because "recordComponents" is null
+	at gson.internal.reflect.ReflectionHelperTest.lambda$testRecordNotSupportedMethods$1(ReflectionHelperTest.java:130)
+	at gson.internal.reflect.ReflectionHelperTest.testRecordNotSupportedMethods(ReflectionHelperTest.java:129)
+

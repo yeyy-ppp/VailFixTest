@@ -1,0 +1,306 @@
+package gson;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import java.math.BigDecimal;
+import java.math.BigInteger;
+
+class JsonPrimitiveTest {
+
+    @Test
+    void testBooleanConstructor() {
+        JsonPrimitive primitive = new JsonPrimitive(true);
+        assertTrue(primitive.isBoolean());
+        assertTrue(primitive.getAsBoolean());
+    }
+
+    @Test
+    void testNumberConstructor() {
+        JsonPrimitive primitive = new JsonPrimitive(123);
+        assertTrue(primitive.isNumber());
+        assertEquals(123, primitive.getAsInt());
+    }
+
+    @Test
+    void testStringConstructor() {
+        JsonPrimitive primitive = new JsonPrimitive("test");
+        assertTrue(primitive.isString());
+        assertEquals("test", primitive.getAsString());
+    }
+
+    @Test
+    void testCharacterConstructor() {
+        JsonPrimitive primitive = new JsonPrimitive('a');
+        assertTrue(primitive.isString());
+        assertEquals("a", primitive.getAsString());
+    }
+
+    @Test
+    void testDeepCopy() {
+        JsonPrimitive primitive = new JsonPrimitive("original");
+        JsonPrimitive copy = primitive.deepCopy();
+        assertSame(primitive, copy);
+    }
+
+    @Test
+    void testGetAsBooleanFromBoolean() {
+        JsonPrimitive primitive = new JsonPrimitive(true);
+        assertTrue(primitive.getAsBoolean());
+    }
+
+    @Test
+    void testGetAsBooleanFromString() {
+        JsonPrimitive primitive = new JsonPrimitive("true");
+        assertTrue(primitive.getAsBoolean());
+    }
+
+    @Test
+    void testGetAsBooleanFromNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(1);
+        assertTrue(primitive.getAsBoolean());
+    }
+
+    @Test
+    void testGetAsNumberFromNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(123);
+        assertEquals(123, primitive.getAsNumber().intValue());
+    }
+
+    @Test
+    void testGetAsNumberFromString() {
+        JsonPrimitive primitive = new JsonPrimitive("456");
+        assertEquals(456, primitive.getAsNumber().intValue());
+    }
+
+    @Test
+    void testGetAsNumberFails() {
+        JsonPrimitive primitive = new JsonPrimitive(true);
+        assertThrows(UnsupportedOperationException.class, primitive::getAsNumber);
+    }
+
+    @Test
+    void testGetAsStringFromString() {
+        JsonPrimitive primitive = new JsonPrimitive("text");
+        assertEquals("text", primitive.getAsString());
+    }
+
+    @Test
+    void testGetAsStringFromNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(123);
+        assertEquals("123", primitive.getAsString());
+    }
+
+    @Test
+    void testGetAsStringFromBoolean() {
+        JsonPrimitive primitive = new JsonPrimitive(true);
+        assertEquals("true", primitive.getAsString());
+    }
+
+    @Test
+    void testGetAsDoubleFromNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(1.5);
+        assertEquals(1.5, primitive.getAsDouble());
+    }
+
+    @Test
+    void testGetAsDoubleFromString() {
+        JsonPrimitive primitive = new JsonPrimitive("2.5");
+        assertEquals(2.5, primitive.getAsDouble());
+    }
+
+    @Test
+    void testGetAsBigDecimalFromBigDecimal() {
+        BigDecimal bd = new BigDecimal("3.141592653589793");
+        JsonPrimitive primitive = new JsonPrimitive(bd);
+        assertEquals(bd, primitive.getAsBigDecimal());
+    }
+
+    @Test
+    void testGetAsBigDecimalFromString() {
+        JsonPrimitive primitive = new JsonPrimitive("3.141592653589793");
+        assertEquals(new BigDecimal("3.141592653589793"), primitive.getAsBigDecimal());
+    }
+
+    @Test
+    void testGetAsBigIntegerFromBigInteger() {
+        BigInteger bi = new BigInteger("1234567890");
+        JsonPrimitive primitive = new JsonPrimitive(bi);
+        assertEquals(bi, primitive.getAsBigInteger());
+    }
+
+    @Test
+    void testGetAsBigIntegerFromIntegralNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(1234567890L);
+        assertEquals(BigInteger.valueOf(1234567890L), primitive.getAsBigInteger());
+    }
+
+    @Test
+    void testGetAsBigIntegerFromNonIntegralNumber() {
+        JsonPrimitive primitive = new JsonPrimitive("1234567890");
+        assertEquals(new BigInteger("1234567890"), primitive.getAsBigInteger());
+    }
+
+    @Test
+    void testGetAsFloat() {
+        JsonPrimitive primitive = new JsonPrimitive(1.234f);
+        assertEquals(1.234f, primitive.getAsFloat());
+    }
+
+    @Test
+    void testGetAsLong() {
+        JsonPrimitive primitive = new JsonPrimitive(123456789L);
+        assertEquals(123456789L, primitive.getAsLong());
+    }
+
+    @Test
+    void testGetAsShort() {
+        JsonPrimitive primitive = new JsonPrimitive((short) 12345);
+        assertEquals(12345, primitive.getAsShort());
+    }
+
+    @Test
+    void testGetAsInt() {
+        JsonPrimitive primitive = new JsonPrimitive(123456);
+        assertEquals(123456, primitive.getAsInt());
+    }
+
+    @Test
+    void testGetAsByte() {
+        JsonPrimitive primitive = new JsonPrimitive((byte) 127);
+        assertEquals(127, primitive.getAsByte());
+    }
+
+    @Test
+    void testGetAsCharacter() {
+        JsonPrimitive primitive = new JsonPrimitive('x');
+        assertEquals('x', primitive.getAsCharacter());
+    }
+
+    @Test
+    void testGetAsCharacterEmptyString() {
+        JsonPrimitive primitive = new JsonPrimitive("");
+        assertThrows(UnsupportedOperationException.class, primitive::getAsCharacter);
+    }
+
+    @Test
+    void testHashCodeBoolean() {
+        JsonPrimitive primitive = new JsonPrimitive(true);
+        assertEquals(Boolean.TRUE.hashCode(), primitive.hashCode());
+    }
+
+    @Test
+    void testHashCodeIntegralNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(123);
+        assertEquals(123, primitive.hashCode());
+    }
+
+    @Test
+    void testHashCodeNonIntegralNumber() {
+        JsonPrimitive primitive = new JsonPrimitive(1.23);
+        long bits = Double.doubleToLongBits(1.23);
+        int expected = (int)(bits ^ (bits >>> 32));
+        assertEquals(expected, primitive.hashCode());
+    }
+
+    @Test
+    void testHashCodeString() {
+        JsonPrimitive primitive = new JsonPrimitive("test");
+        assertEquals("test".hashCode(), primitive.hashCode());
+    }
+
+    @Test
+    void testEqualsSameObject() {
+        JsonPrimitive primitive = new JsonPrimitive("test");
+        assertTrue(primitive.equals(primitive));
+    }
+
+    @Test
+    void testEqualsDifferentClass() {
+        JsonPrimitive primitive = new JsonPrimitive("test");
+        assertFalse(primitive.equals(new Object()));
+    }
+
+    @Test
+    void testEqualsNull() {
+        JsonPrimitive primitive = new JsonPrimitive("test");
+        assertFalse(primitive.equals(null));
+    }
+
+    @Test
+    void testEqualsIntegralNumbers() {
+        JsonPrimitive p1 = new JsonPrimitive(123L);
+        JsonPrimitive p2 = new JsonPrimitive(123);
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsBigIntegers() {
+        JsonPrimitive p1 = new JsonPrimitive(new BigInteger("12345678901234567890"));
+        JsonPrimitive p2 = new JsonPrimitive(new BigInteger("12345678901234567890"));
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsBigDecimals() {
+        JsonPrimitive p1 = new JsonPrimitive(new BigDecimal("1.2345678901234567890"));
+        JsonPrimitive p2 = new JsonPrimitive(new BigDecimal("1.2345678901234567890"));
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsDifferentNumbersAsDouble() {
+        JsonPrimitive p1 = new JsonPrimitive(1.234);
+        JsonPrimitive p2 = new JsonPrimitive(1.234);
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsNaNDoubles() {
+        JsonPrimitive p1 = new JsonPrimitive(Double.NaN);
+        JsonPrimitive p2 = new JsonPrimitive(Double.NaN);
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsSameStrings() {
+        JsonPrimitive p1 = new JsonPrimitive("text");
+        JsonPrimitive p2 = new JsonPrimitive("text");
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsDifferentValues() {
+        JsonPrimitive p1 = new JsonPrimitive("text1");
+        JsonPrimitive p2 = new JsonPrimitive("text2");
+        assertFalse(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsIntegerAndBigDecimalInteger() {
+        JsonPrimitive p1 = new JsonPrimitive(123);
+        JsonPrimitive p2 = new JsonPrimitive(new BigDecimal("123"));
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testEqualsBigDecimalNonIntegerAndDouble() {
+        JsonPrimitive p1 = new JsonPrimitive(new BigDecimal("123.456"));
+        JsonPrimitive p2 = new JsonPrimitive(123.456);
+        assertTrue(p1.equals(p2));
+    }
+
+    @Test
+    void testHashCodeBigDecimalInteger() {
+        JsonPrimitive primitive = new JsonPrimitive(new BigDecimal("123"));
+        assertEquals(123, primitive.hashCode());
+    }
+
+    @Test
+    void testHashCodeBigDecimalNonInteger() {
+        JsonPrimitive primitive = new JsonPrimitive(new BigDecimal("123.456"));
+        double d = 123.456;
+        long bits = Double.doubleToLongBits(d);
+        int expected = (int)(bits ^ (bits >>> 32));
+        assertEquals(expected, primitive.hashCode());
+    }
+}

@@ -90,12 +90,12 @@ public class JsonReader implements Closeable {
 <span class="fc bfc" id="L90" title="All 2 branches covered.">    if (p == PEEKED_NONE) {</span>
 <span class="fc" id="L91">      p = doPeek();</span>
     }
-<span class="pc bpc" id="L93" title="1 of 2 branches missed.">    if (p == PEEKED_BEGIN_ARRAY) {</span>
+<span class="fc bfc" id="L93" title="All 2 branches covered.">    if (p == PEEKED_BEGIN_ARRAY) {</span>
 <span class="fc" id="L94">      push(JsonScope.EMPTY_ARRAY);</span>
 <span class="fc" id="L95">      pathIndices[stackSize - 1] = 0;</span>
 <span class="fc" id="L96">      peeked = PEEKED_NONE;</span>
     } else {
-<span class="nc" id="L98">      throw unexpectedTokenError(&quot;BEGIN_ARRAY&quot;);</span>
+<span class="fc" id="L98">      throw unexpectedTokenError(&quot;BEGIN_ARRAY&quot;);</span>
     }
 <span class="fc" id="L100">  }</span>
   public void endArray() throws IOException {

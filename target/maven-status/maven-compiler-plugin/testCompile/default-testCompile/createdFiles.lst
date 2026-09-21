@@ -47,7 +47,6 @@ gson\LongSerializationPolicyTest.class
 cli\help\FilterHelpAppendableTest$9.class
 gson\FieldAttributesTest.class
 lang3\concurrent\AbstractFutureProxyTest$8.class
-gson\GsonBuilderTest$4.class
 gson\FieldNamingStrategyTest$5.class
 gson\GsonTest$1.class
 gson\InstanceCreatorTest$1WildcardInstanceCreator.class
@@ -62,7 +61,6 @@ gson\internal\bind\CollectionTypeAdapterFactoryTest$2.class
 gson\internal\bind\JsonAdapterAnnotationTypeAdapterFactoryTest$3.class
 gson\JsonSerializerTest$CustomType.class
 cli\TypeHandlerTest.class
-gson\GsonBuilderTest$3.class
 lang3\ConversionTest.class
 gson\JsonSerializerTest$CircularReference.class
 gson\reflect\TypeTokenTest$3.class
@@ -98,7 +96,6 @@ gson\ExclusionStrategyTest.class
 csv\CSVPrinterTest$ExtendedBufferedReader.class
 gson\internal\ConstructorConstructorTest$2.class
 lang3\concurrent\AbstractFutureProxyTest$2.class
-gson\GsonBuilderTest.class
 gson\internal\ExcluderTest.class
 lang3\reflect\TypedTest.class
 cli\CommandLineParserTest.class
@@ -169,7 +166,6 @@ lang3\SerializationExceptionTest.class
 cli\help\FilterHelpAppendableTest$10.class
 csv\ConstantsTest.class
 gson\internal\bind\MapTypeAdapterFactoryTest$3.class
-gson\GsonBuilderTest$1.class
 gson\internal\JavaVersionTest.class
 gson\internal\ReflectionAccessFilterHelperTest.class
 lang3\concurrent\UncheckedFutureTest.class
@@ -179,22 +175,17 @@ cli\help\FilterHelpAppendableTest$5.class
 gson\internal\ObjectConstructorTest$1.class
 gson\internal\reflect\ReflectionHelperTest$1LocalClass.class
 cli\GnuParserTest.class
-gson\internal\bind\ReflectiveTypeAdapterFactoryTest.class
 lang3\concurrent\AbstractFutureProxyTest$1.class
 gson\internal\bind\JsonTreeWriterTest.class
 cli\CommandLineTest.class
 gson\JsonArrayTest.class
-lang3\builder\AbstractSupplierTest.class
 gson\InstanceCreatorTest.class
 lang3\RangeTest.class
 gson\internal\UnsafeAllocatorTest.class
-gson\internal\bind\ReflectiveTypeAdapterFactoryTest$TestClass.class
 gson\internal\ExcluderTest$4.class
-gson\internal\PreJava9DateFormatProviderTest.class
 lang3\exception\UncheckedInterruptedExceptionTest.class
 cli\DeprecatedAttributesTest.class
 gson\internal\GsonTypesTest$Holder.class
-lang3\builder\AbstractSupplierTest$ConcreteSupplier.class
 lang3\ArrayFillTest.class
 cli\help\TextHelpAppendableTest.class
 lang3\RandomStringUtilsTest.class
@@ -217,8 +208,6 @@ gson\internal\reflect\ReflectionHelperTest$SampleClass.class
 gson\JsonSerializerTest$1.class
 lang3\AppendableJoinerTest.class
 cli\BasicParserTest.class
-gson\GsonBuilderTest$2.class
-gson\internal\bind\ReflectiveTypeAdapterFactoryTest$1.class
 cli\help\FilterHelpAppendableTest$1.class
 gson\GsonTest$2.class
 lang3\function\FailableBiFunctionTest.class
@@ -238,7 +227,6 @@ lang3\concurrent\BasicThreadFactoryTest.class
 gson\internal\ConstructorConstructorTest.class
 cli\ParserTest.class
 gson\InstanceCreatorTest$1ConcreteInstanceCreator.class
-gson\internal\bind\NumberTypeAdapterTest.class
 gson\reflect\TypeTokenTest$2.class
 lang3\RuntimeEnvironmentTest.class
 gson\internal\ExcluderTest$1.class
@@ -247,7 +235,6 @@ gson\JsonParserTest.class
 lang3\ClassLoaderUtilsTest.class
 csv\CSVRecordTest$TestEnum.class
 lang3\CharSetUtilsTest.class
-cli\BuilderTest.class
 gson\ToNumberStrategyTest$3.class
 gson\JsonSerializationContextTest$1.class
 cli\MissingArgumentExceptionTest.class
@@ -269,7 +256,6 @@ lang3\SystemPropertiesTest.class
 lang3\function\FailableBiPredicateTest.class
 lang3\function\FailableFunctionTest.class
 csv\CSVPrinterTest.class
-gson\internal\bind\ReflectiveTypeAdapterFactoryTest$3.class
 gson\internal\bind\JsonAdapterAnnotationTypeAdapterFactoryTest$6.class
 cli\MissingOptionExceptionTest.class
 gson\FormattingStyleTest.class
@@ -292,6 +278,5 @@ gson\internal\bind\MapTypeAdapterFactoryTest$2.class
 lang3\exception\CloneFailedExceptionTest.class
 gson\InstanceCreatorTest$2.class
 gson\internal\GsonTypesTest$InnerClass.class
-gson\internal\bind\ReflectiveTypeAdapterFactoryTest$2.class
 lang3\concurrent\UncheckedFutureTest$MockFuture.class
 gson\internal\bind\SerializationDelegatingTypeAdapterTest.class

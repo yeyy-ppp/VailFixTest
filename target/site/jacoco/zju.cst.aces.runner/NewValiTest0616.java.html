@@ -1,0 +1,1990 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="zh"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NewValiTest0616.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">chatunitest-core</a> &gt; <a href="index.source.html" class="el_package">zju.cst.aces.runner</a> &gt; <span class="el_source">NewValiTest0616.java</span></div><h1>NewValiTest0616.java</h1><pre class="source lang-java linenums">package zju.cst.aces.runner;
+
+import com.github.javaparser.StaticJavaParser;
+import com.github.javaparser.ast.CompilationUnit;
+import com.github.javaparser.ast.expr.Expression;
+import com.github.javaparser.ast.expr.MethodCallExpr;
+import com.github.javaparser.ast.expr.Name;
+import com.github.javaparser.ast.expr.StringLiteralExpr;
+import com.github.javaparser.ast.expr.AnnotationExpr;
+import com.github.javaparser.ast.body.MethodDeclaration;
+import com.github.javaparser.ast.body.TypeDeclaration;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.FileVisitResult;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+/**
+ * Evaluates the test files generated under src/test/java without changing those
+ * tests or ValiFixTextCoreDemo5.
+ */
+<span class="nc" id="L57">public class NewValiTest0616 {</span>
+<span class="nc" id="L58">    private static final Path DEFAULT_TEST_DIR = Paths.get(&quot;src&quot;, &quot;test&quot;, &quot;java&quot;);</span>
+<span class="nc" id="L59">    private static final Path DEFAULT_SOURCE_DIR = Paths.get(&quot;src&quot;, &quot;main&quot;, &quot;java&quot;);</span>
+<span class="nc" id="L60">    private static final Path DEFAULT_REPORT = Paths.get(&quot;target&quot;, &quot;new-vali-test-0616-report.txt&quot;);</span>
+<span class="nc" id="L61">    private static final Path SUREFIRE_DIR = Paths.get(&quot;target&quot;, &quot;surefire-reports&quot;);</span>
+<span class="nc" id="L62">    private static final Path PIT_DIR = Paths.get(&quot;target&quot;, &quot;pit-reports&quot;);</span>
+<span class="nc" id="L63">    private static final Path DEFAULT_FIX_RESULT_DIR = Paths.get(&quot;src&quot;, &quot;F&quot;);</span>
+<span class="nc" id="L64">    private static final Path DEFAULT_AFTER_JACOCO_CSV = Paths.get(&quot;target&quot;, &quot;site&quot;, &quot;jacoco&quot;, &quot;jacoco.csv&quot;);</span>
+<span class="nc" id="L65">    private static final Path DEFAULT_BENCHMARK_DATA = Paths.get(&quot;docs&quot;, &quot;benchmark-comparison.csv&quot;);</span>
+<span class="nc" id="L66">    private static final Path DEFAULT_REPAIR_IMPACT_WORK_DIR = Paths.get(&quot;target&quot;, &quot;vali-repair-impact&quot;);</span>
+    private static final long DEFAULT_COMMAND_TIMEOUT_MINUTES = 30L;
+
+<span class="nc" id="L69">    private static final Set&lt;String&gt; TEST_ANNOTATIONS = new HashSet&lt;String&gt;(Arrays.asList(</span>
+            &quot;Test&quot;, &quot;ParameterizedTest&quot;, &quot;RepeatedTest&quot;, &quot;TestFactory&quot;, &quot;TestTemplate&quot;
+    ));
+
+<span class="nc" id="L73">    private static final Set&lt;String&gt; ASSERTION_METHODS = new HashSet&lt;String&gt;(Arrays.asList(</span>
+            &quot;assertArrayEquals&quot;, &quot;assertEquals&quot;, &quot;assertFalse&quot;, &quot;assertIterableEquals&quot;,
+            &quot;assertLinesMatch&quot;, &quot;assertNotEquals&quot;, &quot;assertNotNull&quot;, &quot;assertNotSame&quot;,
+            &quot;assertNull&quot;, &quot;assertSame&quot;, &quot;assertThrows&quot;, &quot;assertThrowsExactly&quot;,
+            &quot;assertTimeout&quot;, &quot;assertTimeoutPreemptively&quot;, &quot;assertTrue&quot;, &quot;assertAll&quot;,
+            &quot;assertDoesNotThrow&quot;, &quot;fail&quot;
+    ));
+
+<span class="nc" id="L81">    private static final Set&lt;String&gt; STRONG_ASSERTIONS = new HashSet&lt;String&gt;(Arrays.asList(</span>
+            &quot;assertArrayEquals&quot;, &quot;assertEquals&quot;, &quot;assertIterableEquals&quot;, &quot;assertLinesMatch&quot;,
+            &quot;assertNotEquals&quot;, &quot;assertSame&quot;, &quot;assertNotSame&quot;, &quot;assertThrows&quot;,
+            &quot;assertThrowsExactly&quot;, &quot;assertTimeout&quot;, &quot;assertTimeoutPreemptively&quot;
+    ));
+
+    public static void main(String[] args) throws Exception {
+<span class="nc" id="L88">        Config config = Config.fromArgs(args);</span>
+<span class="nc" id="L89">        NewValiTest0616 validator = new NewValiTest0616();</span>
+<span class="nc" id="L90">        EvaluationResult result = validator.evaluate(config);</span>
+<span class="nc" id="L91">        String report = result.toReport();</span>
+<span class="nc" id="L92">        validator.writeReport(config.reportPath, report);</span>
+<span class="nc" id="L93">        System.out.println(report);</span>
+<span class="nc" id="L94">    }</span>
+
+    public EvaluationResult evaluate(Config config) throws Exception {
+<span class="nc" id="L97">        EvaluationResult result = new EvaluationResult();</span>
+<span class="nc" id="L98">        result.config = config;</span>
+<span class="nc" id="L99">        result.startedAt = new Date();</span>
+
+<span class="nc" id="L101">        result.sourceMetrics = analyzeTestSources(config.testDir);</span>
+<span class="nc bnc" id="L102" title="All 2 branches missed.">        result.beforeSourceMetrics = Files.isDirectory(config.beforeTestDir) ? analyzeTestSources(config.beforeTestDir) : null;</span>
+<span class="nc" id="L103">        result.surefireSummaryBeforeRun = readSurefireSummary(SUREFIRE_DIR);</span>
+
+<span class="nc bnc" id="L105" title="All 2 branches missed.">        if (config.runTests) {</span>
+<span class="nc" id="L106">            result.testRuns = runTestsRepeatedly(config);</span>
+<span class="nc" id="L107">            result.flakySummary = calculateFlakySummary(result.testRuns);</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">            if (!result.testRuns.isEmpty()) {</span>
+<span class="nc" id="L109">                result.executionTimeMillis = result.testRuns.get(result.testRuns.size() - 1).wallTimeMillis;</span>
+            }
+        } else {
+<span class="nc" id="L112">            result.flakySummary = FlakySummary.notMeasured(&quot;Use --run-tests --flaky-runs=N to repeat the generated tests.&quot;);</span>
+<span class="nc bnc" id="L113" title="All 2 branches missed.">            if (result.surefireSummaryBeforeRun.available) {</span>
+<span class="nc" id="L114">                result.executionTimeMillis = result.surefireSummaryBeforeRun.timeMillis;</span>
+            }
+        }
+
+<span class="nc bnc" id="L118" title="All 2 branches missed.">        if (config.runPit) {</span>
+<span class="nc" id="L119">            result.pitCommandResult = runPit(config);</span>
+        }
+<span class="nc" id="L121">        result.mutationSummary = readMutationSummary(PIT_DIR);</span>
+<span class="nc" id="L122">        result.coverageAfterRepair = readCoverageSummary(config.afterCoverageCsv);</span>
+<span class="nc" id="L123">        result.coverageBeforeRepair = readCoverageSummary(config.beforeCoverageCsv);</span>
+<span class="nc" id="L124">        result.repairCost = calculateRepairCost(result.sourceMetrics, result.surefireSummaryBeforeRun);</span>
+<span class="nc" id="L125">        result.minimalRepairImpact = calculateMinimalRepairImpact(config, result);</span>
+<span class="nc bnc" id="L126" title="All 2 branches missed.">        if (config.measureRepairImpact) {</span>
+<span class="nc" id="L127">            measureMinimalRepairImpact(config, result.minimalRepairImpact);</span>
+        }
+<span class="nc" id="L129">        result.benchmarkComparison = readBenchmarkComparison(config.benchmarkDataPath);</span>
+<span class="nc" id="L130">        result.defectDetection = calculateDefectDetection(result);</span>
+<span class="nc" id="L131">        result.finishedAt = new Date();</span>
+<span class="nc" id="L132">        return result;</span>
+    }
+
+    private SourceMetrics analyzeTestSources(Path testDir) throws IOException {
+<span class="nc" id="L136">        SourceMetrics metrics = new SourceMetrics();</span>
+<span class="nc" id="L137">        metrics.testDir = testDir.toAbsolutePath().normalize();</span>
+<span class="nc bnc" id="L138" title="All 2 branches missed.">        if (!Files.isDirectory(testDir)) {</span>
+<span class="nc" id="L139">            metrics.notes.add(&quot;Test directory does not exist: &quot; + metrics.testDir);</span>
+<span class="nc" id="L140">            return metrics;</span>
+        }
+
+<span class="nc" id="L143">        List&lt;Path&gt; files = findFiles(testDir, &quot;Test.java&quot;);</span>
+<span class="nc" id="L144">        Collections.sort(files);</span>
+<span class="nc" id="L145">        metrics.testFileCount = files.size();</span>
+
+<span class="nc bnc" id="L147" title="All 2 branches missed.">        for (Path file : files) {</span>
+<span class="nc" id="L148">            FileMetrics fileMetrics = analyzeSingleTestFile(file);</span>
+<span class="nc" id="L149">            metrics.files.add(fileMetrics);</span>
+<span class="nc" id="L150">            metrics.testMethodCount += fileMetrics.testMethodCount;</span>
+<span class="nc" id="L151">            metrics.assertionCount += fileMetrics.assertionCount;</span>
+<span class="nc" id="L152">            metrics.meaningfulAssertionCount += fileMetrics.meaningfulAssertionCount;</span>
+<span class="nc" id="L153">            metrics.weakAssertionCount += fileMetrics.weakAssertionCount;</span>
+<span class="nc" id="L154">            metrics.exceptionAssertionCount += fileMetrics.exceptionAssertionCount;</span>
+<span class="nc" id="L155">            metrics.nonCommentCodeLines += fileMetrics.nonCommentCodeLines;</span>
+<span class="nc bnc" id="L156" title="All 2 branches missed.">            metrics.parseErrorCount += fileMetrics.parseError == null ? 0 : 1;</span>
+<span class="nc" id="L157">        }</span>
+
+<span class="nc" id="L159">        metrics.assertionsPerTestMethod = safeDivide(metrics.assertionCount, metrics.testMethodCount);</span>
+<span class="nc" id="L160">        metrics.meaningfulAssertionsPerTestMethod = safeDivide(metrics.meaningfulAssertionCount, metrics.testMethodCount);</span>
+<span class="nc" id="L161">        metrics.assertionsPerHundredLines = safeDivide(metrics.assertionCount * 100.0, metrics.nonCommentCodeLines);</span>
+<span class="nc" id="L162">        metrics.meaningfulAssertionRatio = safeDivide(metrics.meaningfulAssertionCount, metrics.assertionCount);</span>
+<span class="nc" id="L163">        return metrics;</span>
+    }
+
+    private FileMetrics analyzeSingleTestFile(Path file) {
+<span class="nc" id="L167">        FileMetrics metrics = new FileMetrics();</span>
+<span class="nc" id="L168">        metrics.path = file.toAbsolutePath().normalize();</span>
+        try {
+<span class="nc" id="L170">            String code = readFile(file);</span>
+<span class="nc" id="L171">            metrics.nonCommentCodeLines = countNonCommentCodeLines(code);</span>
+<span class="nc" id="L172">            CompilationUnit unit = StaticJavaParser.parse(file);</span>
+<span class="nc" id="L173">            metrics.packageName = unit.getPackageDeclaration().map(pd -&gt; pd.getNameAsString()).orElse(&quot;&quot;);</span>
+
+<span class="nc" id="L175">            List&lt;MethodDeclaration&gt; methods = unit.findAll(MethodDeclaration.class);</span>
+<span class="nc bnc" id="L176" title="All 2 branches missed.">            for (MethodDeclaration method : methods) {</span>
+<span class="nc bnc" id="L177" title="All 2 branches missed.">                if (isTestMethod(method)) {</span>
+<span class="nc" id="L178">                    metrics.testMethodCount++;</span>
+                }
+<span class="nc" id="L180">            }</span>
+
+<span class="nc" id="L182">            List&lt;MethodCallExpr&gt; calls = unit.findAll(MethodCallExpr.class);</span>
+<span class="nc bnc" id="L183" title="All 2 branches missed.">            for (MethodCallExpr call : calls) {</span>
+<span class="nc" id="L184">                String name = call.getNameAsString();</span>
+<span class="nc bnc" id="L185" title="All 2 branches missed.">                if (ASSERTION_METHODS.contains(name)) {</span>
+<span class="nc" id="L186">                    metrics.assertionCount++;</span>
+<span class="nc bnc" id="L187" title="All 2 branches missed.">                    if (isMeaningfulAssertion(call)) {</span>
+<span class="nc" id="L188">                        metrics.meaningfulAssertionCount++;</span>
+                    } else {
+<span class="nc" id="L190">                        metrics.weakAssertionCount++;</span>
+                    }
+<span class="nc bnc" id="L192" title="All 4 branches missed.">                    if (&quot;assertThrows&quot;.equals(name) || &quot;assertThrowsExactly&quot;.equals(name)) {</span>
+<span class="nc" id="L193">                        metrics.exceptionAssertionCount++;</span>
+                    }
+                }
+<span class="nc" id="L196">            }</span>
+<span class="nc" id="L197">        } catch (Exception ex) {</span>
+<span class="nc" id="L198">            metrics.parseError = ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage();</span>
+            try {
+<span class="nc" id="L200">                String code = readFile(file);</span>
+<span class="nc" id="L201">                metrics.nonCommentCodeLines = countNonCommentCodeLines(code);</span>
+<span class="nc" id="L202">                metrics.assertionCount = countByRegex(code, &quot;\\bassert[A-Za-z0-9_]*\\s*\\(&quot;);</span>
+<span class="nc" id="L203">                metrics.meaningfulAssertionCount = metrics.assertionCount;</span>
+<span class="nc" id="L204">            } catch (IOException ignored) {</span>
+<span class="nc" id="L205">                metrics.parseError = metrics.parseError + &quot;; also failed to read file&quot;;</span>
+<span class="nc" id="L206">            }</span>
+<span class="nc" id="L207">        }</span>
+<span class="nc" id="L208">        return metrics;</span>
+    }
+
+    private boolean isTestMethod(MethodDeclaration method) {
+<span class="nc bnc" id="L212" title="All 2 branches missed.">        for (AnnotationExpr annotation : method.getAnnotations()) {</span>
+<span class="nc" id="L213">            String name = annotation.getNameAsString();</span>
+<span class="nc bnc" id="L214" title="All 2 branches missed.">            if (TEST_ANNOTATIONS.contains(name)) {</span>
+<span class="nc" id="L215">                return true;</span>
+            }
+<span class="nc" id="L217">        }</span>
+<span class="nc" id="L218">        return false;</span>
+    }
+
+    private boolean isMeaningfulAssertion(MethodCallExpr call) {
+<span class="nc" id="L222">        String name = call.getNameAsString();</span>
+<span class="nc bnc" id="L223" title="All 2 branches missed.">        if (STRONG_ASSERTIONS.contains(name)) {</span>
+<span class="nc" id="L224">            return hasNonTrivialArguments(call);</span>
+        }
+<span class="nc bnc" id="L226" title="All 2 branches missed.">        if (&quot;assertAll&quot;.equals(name)) {</span>
+<span class="nc bnc" id="L227" title="All 2 branches missed.">            return !call.getArguments().isEmpty();</span>
+        }
+<span class="nc bnc" id="L229" title="All 4 branches missed.">        if (&quot;assertDoesNotThrow&quot;.equals(name) || &quot;fail&quot;.equals(name)) {</span>
+<span class="nc" id="L230">            return false;</span>
+        }
+<span class="nc bnc" id="L232" title="All 4 branches missed.">        if (&quot;assertTrue&quot;.equals(name) || &quot;assertFalse&quot;.equals(name)) {</span>
+<span class="nc" id="L233">            return isNonConstantBooleanAssertion(call);</span>
+        }
+<span class="nc bnc" id="L235" title="All 4 branches missed.">        if (&quot;assertNull&quot;.equals(name) || &quot;assertNotNull&quot;.equals(name)) {</span>
+<span class="nc bnc" id="L236" title="All 4 branches missed.">            return hasNonTrivialArguments(call) &amp;&amp; hasMessageOrNonNameArgument(call);</span>
+        }
+<span class="nc" id="L238">        return hasNonTrivialArguments(call);</span>
+    }
+
+    private boolean hasNonTrivialArguments(MethodCallExpr call) {
+<span class="nc bnc" id="L242" title="All 2 branches missed.">        for (Expression argument : call.getArguments()) {</span>
+<span class="nc" id="L243">            String text = argument.toString().trim();</span>
+<span class="nc bnc" id="L244" title="All 8 branches missed.">            if (!&quot;true&quot;.equals(text) &amp;&amp; !&quot;false&quot;.equals(text) &amp;&amp; !&quot;null&quot;.equals(text) &amp;&amp; !text.isEmpty()) {</span>
+<span class="nc" id="L245">                return true;</span>
+            }
+<span class="nc" id="L247">        }</span>
+<span class="nc" id="L248">        return false;</span>
+    }
+
+    private boolean isNonConstantBooleanAssertion(MethodCallExpr call) {
+<span class="nc bnc" id="L252" title="All 2 branches missed.">        if (call.getArguments().isEmpty()) {</span>
+<span class="nc" id="L253">            return false;</span>
+        }
+<span class="nc" id="L255">        Expression first = call.getArgument(0);</span>
+<span class="nc" id="L256">        String text = first.toString().trim();</span>
+<span class="nc bnc" id="L257" title="All 4 branches missed.">        if (&quot;true&quot;.equals(text) || &quot;false&quot;.equals(text)) {</span>
+<span class="nc" id="L258">            return false;</span>
+        }
+<span class="nc bnc" id="L260" title="All 2 branches missed.">        if (first.isNameExpr()) {</span>
+<span class="nc bnc" id="L261" title="All 2 branches missed.">            return call.getArguments().size() &gt; 1;</span>
+        }
+<span class="nc" id="L263">        return true;</span>
+    }
+
+    private boolean hasMessageOrNonNameArgument(MethodCallExpr call) {
+<span class="nc bnc" id="L267" title="All 2 branches missed.">        if (call.getArguments().size() &gt; 1) {</span>
+<span class="nc bnc" id="L268" title="All 2 branches missed.">            for (int i = 1; i &lt; call.getArguments().size(); i++) {</span>
+<span class="nc bnc" id="L269" title="All 2 branches missed.">                if (call.getArgument(i) instanceof StringLiteralExpr) {</span>
+<span class="nc" id="L270">                    return true;</span>
+                }
+            }
+        }
+<span class="nc bnc" id="L274" title="All 2 branches missed.">        if (call.getArguments().isEmpty()) {</span>
+<span class="nc" id="L275">            return false;</span>
+        }
+<span class="nc" id="L277">        Expression first = call.getArgument(0);</span>
+<span class="nc bnc" id="L278" title="All 2 branches missed.">        return !first.isNameExpr();</span>
+    }
+
+    private List&lt;TestRunResult&gt; runTestsRepeatedly(Config config) throws IOException, InterruptedException {
+<span class="nc" id="L282">        List&lt;TestRunResult&gt; runs = new ArrayList&lt;TestRunResult&gt;();</span>
+<span class="nc" id="L283">        int count = Math.max(1, config.flakyRuns);</span>
+<span class="nc bnc" id="L284" title="All 2 branches missed.">        for (int i = 1; i &lt;= count; i++) {</span>
+<span class="nc" id="L285">            long start = System.nanoTime();</span>
+<span class="nc" id="L286">            CommandResult command = runCommand(config.mavenCommand(), Arrays.asList(&quot;test&quot;), DEFAULT_COMMAND_TIMEOUT_MINUTES);</span>
+<span class="nc" id="L287">            long elapsed = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);</span>
+<span class="nc" id="L288">            TestRunResult run = new TestRunResult();</span>
+<span class="nc" id="L289">            run.index = i;</span>
+<span class="nc" id="L290">            run.commandResult = command;</span>
+<span class="nc" id="L291">            run.wallTimeMillis = elapsed;</span>
+<span class="nc" id="L292">            run.surefireSummary = readSurefireSummary(SUREFIRE_DIR);</span>
+<span class="nc" id="L293">            runs.add(run);</span>
+        }
+<span class="nc" id="L295">        return runs;</span>
+    }
+
+    private CommandResult runPit(Config config) throws IOException, InterruptedException {
+<span class="nc" id="L299">        List&lt;String&gt; args = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L300">        args.add(&quot;org.pitest:pitest-maven:mutationCoverage&quot;);</span>
+<span class="nc" id="L301">        args.add(&quot;-DskipTests=false&quot;);</span>
+<span class="nc bnc" id="L302" title="All 2 branches missed.">        if (!config.pitTargetClasses.isEmpty()) {</span>
+<span class="nc" id="L303">            args.add(&quot;-DtargetClasses=&quot; + join(config.pitTargetClasses, &quot;,&quot;));</span>
+        }
+<span class="nc bnc" id="L305" title="All 2 branches missed.">        if (!config.pitTargetTests.isEmpty()) {</span>
+<span class="nc" id="L306">            args.add(&quot;-DtargetTests=&quot; + join(config.pitTargetTests, &quot;,&quot;));</span>
+        }
+<span class="nc" id="L308">        return runCommand(config.mavenCommand(), args, Math.max(DEFAULT_COMMAND_TIMEOUT_MINUTES, config.pitTimeoutMinutes));</span>
+    }
+
+    private CommandResult runCommand(String executable, List&lt;String&gt; arguments, long timeoutMinutes)
+            throws IOException, InterruptedException {
+<span class="nc" id="L313">        List&lt;String&gt; command = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L314">        command.add(executable);</span>
+<span class="nc" id="L315">        command.addAll(arguments);</span>
+<span class="nc" id="L316">        ProcessBuilder builder = new ProcessBuilder(command);</span>
+<span class="nc" id="L317">        builder.redirectErrorStream(true);</span>
+<span class="nc" id="L318">        builder.directory(new File(&quot;.&quot;).getAbsoluteFile());</span>
+<span class="nc" id="L319">        long start = System.nanoTime();</span>
+<span class="nc" id="L320">        Process process = builder.start();</span>
+<span class="nc" id="L321">        List&lt;String&gt; output = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L322">        BufferedReader reader = new BufferedReader(new InputStreamReader(</span>
+<span class="nc bnc" id="L323" title="All 2 branches missed.">                process.getInputStream(), isWindows() ? Charset.forName(&quot;GBK&quot;) : StandardCharsets.UTF_8));</span>
+        String line;
+<span class="nc bnc" id="L325" title="All 2 branches missed.">        while ((line = reader.readLine()) != null) {</span>
+<span class="nc" id="L326">            output.add(line);</span>
+        }
+<span class="nc" id="L328">        boolean completed = process.waitFor(timeoutMinutes, TimeUnit.MINUTES);</span>
+<span class="nc" id="L329">        CommandResult result = new CommandResult();</span>
+<span class="nc" id="L330">        result.command = join(command, &quot; &quot;);</span>
+<span class="nc" id="L331">        result.output = output;</span>
+<span class="nc" id="L332">        result.wallTimeMillis = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);</span>
+<span class="nc bnc" id="L333" title="All 2 branches missed.">        if (completed) {</span>
+<span class="nc" id="L334">            result.exitCode = process.exitValue();</span>
+        } else {
+<span class="nc" id="L336">            process.destroyForcibly();</span>
+<span class="nc" id="L337">            result.exitCode = -1;</span>
+<span class="nc" id="L338">            result.timedOut = true;</span>
+        }
+<span class="nc" id="L340">        return result;</span>
+    }
+
+    private SurefireSummary readSurefireSummary(Path surefireDir) {
+<span class="nc" id="L344">        SurefireSummary summary = new SurefireSummary();</span>
+<span class="nc" id="L345">        summary.directory = surefireDir.toAbsolutePath().normalize();</span>
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        if (!Files.isDirectory(surefireDir)) {</span>
+<span class="nc" id="L347">            summary.available = false;</span>
+<span class="nc" id="L348">            summary.note = &quot;Surefire report directory is absent.&quot;;</span>
+<span class="nc" id="L349">            return summary;</span>
+        }
+        try {
+<span class="nc" id="L352">            List&lt;Path&gt; xmlFiles = findFiles(surefireDir, &quot;.xml&quot;);</span>
+<span class="nc bnc" id="L353" title="All 2 branches missed.">            for (Path xml : xmlFiles) {</span>
+<span class="nc bnc" id="L354" title="All 2 branches missed.">                if (!xml.getFileName().toString().startsWith(&quot;TEST-&quot;)) {</span>
+<span class="nc" id="L355">                    continue;</span>
+                }
+<span class="nc" id="L357">                parseSurefireXml(xml, summary);</span>
+<span class="nc" id="L358">            }</span>
+<span class="nc bnc" id="L359" title="All 4 branches missed.">            summary.available = summary.testCases &gt; 0 || summary.testSuites &gt; 0;</span>
+<span class="nc bnc" id="L360" title="All 2 branches missed.">            if (!summary.available) {</span>
+<span class="nc" id="L361">                summary.note = &quot;No TEST-*.xml files were found.&quot;;</span>
+            }
+<span class="nc" id="L363">        } catch (Exception ex) {</span>
+<span class="nc" id="L364">            summary.available = false;</span>
+<span class="nc" id="L365">            summary.note = ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage();</span>
+<span class="nc" id="L366">        }</span>
+<span class="nc" id="L367">        return summary;</span>
+    }
+
+    private void parseSurefireXml(Path xml, SurefireSummary summary) throws Exception {
+<span class="nc" id="L371">        Document document = parseXml(xml);</span>
+<span class="nc" id="L372">        Element root = document.getDocumentElement();</span>
+<span class="nc" id="L373">        String rootName = root.getTagName();</span>
+<span class="nc bnc" id="L374" title="All 2 branches missed.">        if (&quot;testsuite&quot;.equals(rootName)) {</span>
+<span class="nc" id="L375">            addSurefireSuite(root, summary);</span>
+<span class="nc bnc" id="L376" title="All 2 branches missed.">        } else if (&quot;testsuites&quot;.equals(rootName)) {</span>
+<span class="nc" id="L377">            NodeList suites = root.getElementsByTagName(&quot;testsuite&quot;);</span>
+<span class="nc bnc" id="L378" title="All 2 branches missed.">            for (int i = 0; i &lt; suites.getLength(); i++) {</span>
+<span class="nc" id="L379">                addSurefireSuite((Element) suites.item(i), summary);</span>
+            }
+        }
+<span class="nc" id="L382">    }</span>
+
+    private void addSurefireSuite(Element suite, SurefireSummary summary) {
+<span class="nc" id="L385">        summary.testSuites++;</span>
+<span class="nc" id="L386">        summary.tests += intAttr(suite, &quot;tests&quot;);</span>
+<span class="nc" id="L387">        summary.failures += intAttr(suite, &quot;failures&quot;);</span>
+<span class="nc" id="L388">        summary.errors += intAttr(suite, &quot;errors&quot;);</span>
+<span class="nc" id="L389">        summary.skipped += intAttr(suite, &quot;skipped&quot;);</span>
+<span class="nc" id="L390">        summary.timeMillis += Math.round(doubleAttr(suite, &quot;time&quot;) * 1000.0);</span>
+
+<span class="nc" id="L392">        NodeList cases = suite.getElementsByTagName(&quot;testcase&quot;);</span>
+<span class="nc bnc" id="L393" title="All 2 branches missed.">        for (int i = 0; i &lt; cases.getLength(); i++) {</span>
+<span class="nc" id="L394">            Element testCase = (Element) cases.item(i);</span>
+<span class="nc" id="L395">            summary.testCases++;</span>
+<span class="nc" id="L396">            TestCaseStatus status = new TestCaseStatus();</span>
+<span class="nc" id="L397">            status.className = testCase.getAttribute(&quot;classname&quot;);</span>
+<span class="nc" id="L398">            status.methodName = testCase.getAttribute(&quot;name&quot;);</span>
+<span class="nc" id="L399">            status.timeMillis = Math.round(doubleAttr(testCase, &quot;time&quot;) * 1000.0);</span>
+<span class="nc bnc" id="L400" title="All 4 branches missed.">            status.failed = hasChild(testCase, &quot;failure&quot;) || hasChild(testCase, &quot;error&quot;);</span>
+<span class="nc" id="L401">            status.skipped = hasChild(testCase, &quot;skipped&quot;);</span>
+<span class="nc" id="L402">            summary.testCaseStatuses.put(status.id(), status);</span>
+        }
+<span class="nc" id="L404">    }</span>
+
+    private FlakySummary calculateFlakySummary(List&lt;TestRunResult&gt; runs) {
+<span class="nc bnc" id="L407" title="All 4 branches missed.">        if (runs == null || runs.size() &lt; 2) {</span>
+<span class="nc" id="L408">            return FlakySummary.notMeasured(&quot;At least two runs are required to calculate flaky ratio.&quot;);</span>
+        }
+
+<span class="nc" id="L411">        Map&lt;String, List&lt;Boolean&gt;&gt; outcomes = new LinkedHashMap&lt;String, List&lt;Boolean&gt;&gt;();</span>
+<span class="nc bnc" id="L412" title="All 2 branches missed.">        for (TestRunResult run : runs) {</span>
+<span class="nc bnc" id="L413" title="All 2 branches missed.">            for (Map.Entry&lt;String, TestCaseStatus&gt; entry : run.surefireSummary.testCaseStatuses.entrySet()) {</span>
+<span class="nc" id="L414">                List&lt;Boolean&gt; values = outcomes.get(entry.getKey());</span>
+<span class="nc bnc" id="L415" title="All 2 branches missed.">                if (values == null) {</span>
+<span class="nc" id="L416">                    values = new ArrayList&lt;Boolean&gt;();</span>
+<span class="nc" id="L417">                    outcomes.put(entry.getKey(), values);</span>
+                }
+<span class="nc bnc" id="L419" title="All 4 branches missed.">                values.add(!entry.getValue().failed &amp;&amp; !entry.getValue().skipped);</span>
+<span class="nc" id="L420">            }</span>
+<span class="nc" id="L421">        }</span>
+
+<span class="nc" id="L423">        int flaky = 0;</span>
+<span class="nc bnc" id="L424" title="All 2 branches missed.">        for (List&lt;Boolean&gt; values : outcomes.values()) {</span>
+<span class="nc" id="L425">            boolean sawPass = false;</span>
+<span class="nc" id="L426">            boolean sawFail = false;</span>
+<span class="nc bnc" id="L427" title="All 2 branches missed.">            for (Boolean value : values) {</span>
+<span class="nc bnc" id="L428" title="All 2 branches missed.">                if (Boolean.TRUE.equals(value)) {</span>
+<span class="nc" id="L429">                    sawPass = true;</span>
+                } else {
+<span class="nc" id="L431">                    sawFail = true;</span>
+                }
+<span class="nc" id="L433">            }</span>
+<span class="nc bnc" id="L434" title="All 4 branches missed.">            if (sawPass &amp;&amp; sawFail) {</span>
+<span class="nc" id="L435">                flaky++;</span>
+            }
+<span class="nc" id="L437">        }</span>
+
+<span class="nc" id="L439">        FlakySummary summary = new FlakySummary();</span>
+<span class="nc" id="L440">        summary.available = true;</span>
+<span class="nc" id="L441">        summary.runCount = runs.size();</span>
+<span class="nc" id="L442">        summary.observedTestCases = outcomes.size();</span>
+<span class="nc" id="L443">        summary.flakyTestCases = flaky;</span>
+<span class="nc" id="L444">        summary.flakyRatio = safeDivide(flaky, outcomes.size());</span>
+<span class="nc" id="L445">        return summary;</span>
+    }
+
+    private MutationSummary readMutationSummary(Path pitDir) {
+<span class="nc" id="L449">        MutationSummary summary = new MutationSummary();</span>
+<span class="nc" id="L450">        summary.pitDir = pitDir.toAbsolutePath().normalize();</span>
+<span class="nc bnc" id="L451" title="All 2 branches missed.">        if (!Files.isDirectory(pitDir)) {</span>
+<span class="nc" id="L452">            summary.available = false;</span>
+<span class="nc" id="L453">            summary.note = &quot;PIT report directory is absent. Use --run-pit to generate it.&quot;;</span>
+<span class="nc" id="L454">            return summary;</span>
+        }
+        try {
+<span class="nc" id="L457">            List&lt;Path&gt; mutationFiles = findFiles(pitDir, &quot;mutations.xml&quot;);</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">            if (mutationFiles.isEmpty()) {</span>
+<span class="nc" id="L459">                summary.available = false;</span>
+<span class="nc" id="L460">                summary.note = &quot;No mutations.xml file was found under PIT reports.&quot;;</span>
+<span class="nc" id="L461">                return summary;</span>
+            }
+<span class="nc" id="L463">            Collections.sort(mutationFiles, new Comparator&lt;Path&gt;() {</span>
+                public int compare(Path a, Path b) {
+                    try {
+<span class="nc" id="L466">                        return Files.getLastModifiedTime(b).compareTo(Files.getLastModifiedTime(a));</span>
+<span class="nc" id="L467">                    } catch (IOException e) {</span>
+<span class="nc" id="L468">                        return 0;</span>
+                    }
+                }
+            });
+<span class="nc" id="L472">            summary.reportFile = mutationFiles.get(0).toAbsolutePath().normalize();</span>
+<span class="nc" id="L473">            parseMutationsXml(summary.reportFile, summary);</span>
+<span class="nc bnc" id="L474" title="All 2 branches missed.">            summary.available = summary.totalMutants &gt; 0;</span>
+<span class="nc bnc" id="L475" title="All 2 branches missed.">            if (!summary.available) {</span>
+<span class="nc" id="L476">                summary.note = &quot;PIT report exists, but no mutation entries were read.&quot;;</span>
+            }
+<span class="nc" id="L478">        } catch (Exception ex) {</span>
+<span class="nc" id="L479">            summary.available = false;</span>
+<span class="nc" id="L480">            summary.note = ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage();</span>
+<span class="nc" id="L481">        }</span>
+<span class="nc" id="L482">        return summary;</span>
+    }
+
+    private void parseMutationsXml(Path xml, MutationSummary summary) throws Exception {
+<span class="nc" id="L486">        Document document = parseXml(xml);</span>
+<span class="nc" id="L487">        NodeList mutations = document.getElementsByTagName(&quot;mutation&quot;);</span>
+<span class="nc bnc" id="L488" title="All 2 branches missed.">        for (int i = 0; i &lt; mutations.getLength(); i++) {</span>
+<span class="nc" id="L489">            Element mutation = (Element) mutations.item(i);</span>
+<span class="nc" id="L490">            summary.totalMutants++;</span>
+<span class="nc" id="L491">            String status = mutation.getAttribute(&quot;status&quot;);</span>
+<span class="nc" id="L492">            boolean detected = Boolean.parseBoolean(mutation.getAttribute(&quot;detected&quot;));</span>
+<span class="nc bnc" id="L493" title="All 8 branches missed.">            if (detected || &quot;KILLED&quot;.equals(status) || &quot;TIMED_OUT&quot;.equals(status) || &quot;MEMORY_ERROR&quot;.equals(status)) {</span>
+<span class="nc" id="L494">                summary.detectedMutants++;</span>
+            }
+<span class="nc bnc" id="L496" title="All 2 branches missed.">            if (&quot;KILLED&quot;.equals(status)) {</span>
+<span class="nc" id="L497">                summary.killedMutants++;</span>
+<span class="nc bnc" id="L498" title="All 2 branches missed.">            } else if (&quot;SURVIVED&quot;.equals(status)) {</span>
+<span class="nc" id="L499">                summary.survivedMutants++;</span>
+<span class="nc bnc" id="L500" title="All 2 branches missed.">            } else if (&quot;NO_COVERAGE&quot;.equals(status)) {</span>
+<span class="nc" id="L501">                summary.noCoverageMutants++;</span>
+            } else {
+<span class="nc" id="L503">                Integer count = summary.otherStatuses.get(status);</span>
+<span class="nc bnc" id="L504" title="All 2 branches missed.">                summary.otherStatuses.put(status, count == null ? 1 : count + 1);</span>
+            }
+        }
+<span class="nc" id="L507">        summary.mutationScore = safeDivide(summary.detectedMutants, summary.totalMutants);</span>
+<span class="nc" id="L508">        summary.killScore = safeDivide(summary.killedMutants, summary.totalMutants);</span>
+<span class="nc" id="L509">    }</span>
+
+    private CoverageSummary readCoverageSummary(Path jacocoCsv) {
+<span class="nc" id="L512">        CoverageSummary summary = new CoverageSummary();</span>
+<span class="nc bnc" id="L513" title="All 2 branches missed.">        summary.csvFile = jacocoCsv == null ? null : jacocoCsv.toAbsolutePath().normalize();</span>
+<span class="nc bnc" id="L514" title="All 4 branches missed.">        if (jacocoCsv == null || !Files.isRegularFile(jacocoCsv)) {</span>
+<span class="nc" id="L515">            summary.available = false;</span>
+<span class="nc" id="L516">            summary.note = &quot;JaCoCo CSV not found. Run mvn test or pass --after-coverage-csv/--before-coverage-csv.&quot;;</span>
+<span class="nc" id="L517">            return summary;</span>
+        }
+        try {
+<span class="nc" id="L520">            List&lt;String&gt; lines = Files.readAllLines(jacocoCsv, StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L521" title="All 2 branches missed.">            for (int i = 1; i &lt; lines.size(); i++) {</span>
+<span class="nc" id="L522">                List&lt;String&gt; cells = parseCsvLine(lines.get(i));</span>
+<span class="nc bnc" id="L523" title="All 2 branches missed.">                if (cells.size() &lt; 13) {</span>
+<span class="nc" id="L524">                    continue;</span>
+                }
+<span class="nc" id="L526">                summary.instructionMissed += parseLong(cells.get(3));</span>
+<span class="nc" id="L527">                summary.instructionCovered += parseLong(cells.get(4));</span>
+<span class="nc" id="L528">                summary.branchMissed += parseLong(cells.get(5));</span>
+<span class="nc" id="L529">                summary.branchCovered += parseLong(cells.get(6));</span>
+<span class="nc" id="L530">                summary.lineMissed += parseLong(cells.get(7));</span>
+<span class="nc" id="L531">                summary.lineCovered += parseLong(cells.get(8));</span>
+<span class="nc" id="L532">                summary.methodMissed += parseLong(cells.get(11));</span>
+<span class="nc" id="L533">                summary.methodCovered += parseLong(cells.get(12));</span>
+            }
+<span class="nc" id="L535">            summary.available = true;</span>
+<span class="nc" id="L536">            summary.instructionCoverage = ratio(summary.instructionCovered, summary.instructionMissed + summary.instructionCovered);</span>
+<span class="nc" id="L537">            summary.branchCoverage = ratio(summary.branchCovered, summary.branchMissed + summary.branchCovered);</span>
+<span class="nc" id="L538">            summary.lineCoverage = ratio(summary.lineCovered, summary.lineMissed + summary.lineCovered);</span>
+<span class="nc" id="L539">            summary.methodCoverage = ratio(summary.methodCovered, summary.methodMissed + summary.methodCovered);</span>
+<span class="nc" id="L540">        } catch (Exception ex) {</span>
+<span class="nc" id="L541">            summary.available = false;</span>
+<span class="nc" id="L542">            summary.note = ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage();</span>
+<span class="nc" id="L543">        }</span>
+<span class="nc" id="L544">        return summary;</span>
+    }
+
+    private MinimalRepairImpact calculateMinimalRepairImpact(Config config, EvaluationResult result) throws IOException {
+<span class="nc" id="L548">        MinimalRepairImpact impact = new MinimalRepairImpact();</span>
+<span class="nc" id="L549">        impact.fixResultDir = config.fixResultDir.toAbsolutePath().normalize();</span>
+<span class="nc" id="L550">        impact.beforeTestDir = config.beforeTestDir.toAbsolutePath().normalize();</span>
+<span class="nc" id="L551">        impact.afterTestDir = config.testDir.toAbsolutePath().normalize();</span>
+
+<span class="nc bnc" id="L553" title="All 2 branches missed.">        if (result.beforeSourceMetrics != null) {</span>
+<span class="nc" id="L554">            impact.beforeMethods = result.beforeSourceMetrics.testMethodCount;</span>
+<span class="nc" id="L555">            impact.beforeLines = result.beforeSourceMetrics.nonCommentCodeLines;</span>
+<span class="nc" id="L556">            impact.beforeAssertions = result.beforeSourceMetrics.assertionCount;</span>
+<span class="nc" id="L557">            impact.afterMethods = result.sourceMetrics.testMethodCount;</span>
+<span class="nc" id="L558">            impact.afterLines = result.sourceMetrics.nonCommentCodeLines;</span>
+<span class="nc" id="L559">            impact.afterAssertions = result.sourceMetrics.assertionCount;</span>
+<span class="nc" id="L560">            impact.deletedOrCommentedMethods = Math.max(0, impact.beforeMethods - impact.afterMethods);</span>
+<span class="nc" id="L561">            impact.deletedOrCommentedLines = Math.max(0, impact.beforeLines - impact.afterLines);</span>
+<span class="nc" id="L562">            impact.deletedOrCommentedAssertions = Math.max(0, impact.beforeAssertions - impact.afterAssertions);</span>
+        }
+
+<span class="nc" id="L565">        impact.coverageBefore = result.coverageBeforeRepair;</span>
+<span class="nc" id="L566">        impact.coverageAfter = result.coverageAfterRepair;</span>
+<span class="nc" id="L567">        SurefireSummary beforeSurefire = readSurefireSummary(config.beforeSurefireDir);</span>
+<span class="nc bnc" id="L568" title="All 4 branches missed.">        impact.hasBeforePassRate = beforeSurefire.available &amp;&amp; beforeSurefire.tests &gt; 0;</span>
+<span class="nc bnc" id="L569" title="All 2 branches missed.">        impact.passRateBefore = impact.hasBeforePassRate</span>
+<span class="nc" id="L570">                ? ratio(beforeSurefire.tests - beforeSurefire.failures - beforeSurefire.errors, beforeSurefire.tests)</span>
+<span class="nc" id="L571">                : 0.0;</span>
+<span class="nc bnc" id="L572" title="All 2 branches missed.">        impact.passRateAfter = result.surefireSummaryBeforeRun.available</span>
+<span class="nc" id="L573">                ? ratio(result.surefireSummaryBeforeRun.tests - result.surefireSummaryBeforeRun.failures - result.surefireSummaryBeforeRun.errors,</span>
+                result.surefireSummaryBeforeRun.tests)
+<span class="nc" id="L575">                : 0.0;</span>
+<span class="nc" id="L576">        impact.hasAfterPassRate = result.surefireSummaryBeforeRun.available;</span>
+<span class="nc" id="L577">        impact.beforeCoverageCsv = config.beforeCoverageCsv.toAbsolutePath().normalize();</span>
+<span class="nc" id="L578">        impact.afterCoverageCsv = config.afterCoverageCsv.toAbsolutePath().normalize();</span>
+<span class="nc" id="L579">        impact.beforeSurefireDir = config.beforeSurefireDir.toAbsolutePath().normalize();</span>
+<span class="nc" id="L580">        impact.afterSurefireDir = SUREFIRE_DIR.toAbsolutePath().normalize();</span>
+
+<span class="nc bnc" id="L582" title="All 2 branches missed.">        if (!Files.isDirectory(config.fixResultDir)) {</span>
+<span class="nc" id="L583">            impact.note = &quot;Fix result directory not found. Pass --fix-result-dir=... if ValiFixTextCoreDemo5 writes logs elsewhere.&quot;;</span>
+<span class="nc" id="L584">            return impact;</span>
+        }
+
+<span class="nc" id="L587">        List&lt;Path&gt; fixLogs = findFiles(config.fixResultDir, &quot;FixResult.txt&quot;);</span>
+<span class="nc" id="L588">        impact.fixResultFileCount = fixLogs.size();</span>
+<span class="nc bnc" id="L589" title="All 2 branches missed.">        for (Path fixLog : fixLogs) {</span>
+<span class="nc" id="L590">            FixLogImpact logImpact = analyzeFixLog(fixLog);</span>
+<span class="nc bnc" id="L591" title="All 2 branches missed.">            if (logImpact.hasFallback) {</span>
+<span class="nc" id="L592">                impact.fallbackFileCount++;</span>
+<span class="nc" id="L593">                impact.fallbackMethodsCommented += logImpact.methodsCommented;</span>
+<span class="nc" id="L594">                impact.fallbackLinesCommented += logImpact.linesCommented;</span>
+<span class="nc" id="L595">                impact.fallbackAssertionsCommented += logImpact.assertionsCommented;</span>
+<span class="nc" id="L596">                impact.fallbackMethodsDeleted += logImpact.methodsDeleted;</span>
+<span class="nc" id="L597">                impact.fallbackLinesDeleted += logImpact.linesDeleted;</span>
+<span class="nc" id="L598">                impact.fallbackAssertionsDeleted += logImpact.assertionsDeleted;</span>
+<span class="nc" id="L599">                impact.fixLogImpacts.add(logImpact);</span>
+            }
+<span class="nc" id="L601">        }</span>
+
+<span class="nc bnc" id="L603" title="All 4 branches missed.">        if (impact.deletedOrCommentedMethods == 0 &amp;&amp; impact.fallbackMethodsCommented + impact.fallbackMethodsDeleted &gt; 0) {</span>
+<span class="nc" id="L604">            impact.deletedOrCommentedMethods = impact.fallbackMethodsCommented + impact.fallbackMethodsDeleted;</span>
+<span class="nc" id="L605">            impact.deletedOrCommentedLines = impact.fallbackLinesCommented + impact.fallbackLinesDeleted;</span>
+<span class="nc" id="L606">            impact.deletedOrCommentedAssertions = impact.fallbackAssertionsCommented + impact.fallbackAssertionsDeleted;</span>
+        }
+<span class="nc" id="L608">        return impact;</span>
+    }
+
+    private FixLogImpact analyzeFixLog(Path fixLog) throws IOException {
+<span class="nc" id="L612">        FixLogImpact impact = new FixLogImpact();</span>
+<span class="nc" id="L613">        impact.file = fixLog.toAbsolutePath().normalize();</span>
+<span class="nc" id="L614">        String text = readFile(fixLog);</span>
+<span class="nc bnc" id="L615" title="All 8 branches missed.">        impact.hasFallback = text.contains(&quot;兜底&quot;) || text.contains(&quot;[兜底]&quot;) || text.contains(&quot;注释错误&quot;) || text.contains(&quot;修复失败&quot;);</span>
+<span class="nc" id="L616">        List&lt;CodeBlock&gt; blocks = extractJavaBlocks(text);</span>
+<span class="nc" id="L617">        CodeBlock beforeFallback = null;</span>
+<span class="nc" id="L618">        CodeBlock fallback = null;</span>
+<span class="nc bnc" id="L619" title="All 2 branches missed.">        for (CodeBlock block : blocks) {</span>
+<span class="nc bnc" id="L620" title="All 4 branches missed.">            if (block.label.contains(&quot;兜底后代码&quot;) || block.label.contains(&quot;兜底&quot;)) {</span>
+<span class="nc" id="L621">                fallback = block;</span>
+<span class="nc" id="L622">                break;</span>
+            }
+<span class="nc" id="L624">            beforeFallback = block;</span>
+<span class="nc" id="L625">        }</span>
+<span class="nc bnc" id="L626" title="All 6 branches missed.">        if (fallback == null &amp;&amp; impact.hasFallback &amp;&amp; !blocks.isEmpty()) {</span>
+<span class="nc" id="L627">            fallback = blocks.get(blocks.size() - 1);</span>
+        }
+<span class="nc bnc" id="L629" title="All 2 branches missed.">        if (fallback != null) {</span>
+<span class="nc" id="L630">            impact.methodsCommented = countCommentedTestMethods(fallback.code);</span>
+<span class="nc" id="L631">            impact.linesCommented = countFallbackCommentedLines(fallback.code);</span>
+<span class="nc" id="L632">            impact.assertionsCommented = countCommentedAssertions(fallback.code);</span>
+        }
+<span class="nc bnc" id="L634" title="All 4 branches missed.">        if (beforeFallback != null &amp;&amp; fallback != null) {</span>
+<span class="nc" id="L635">            SourceMetrics before = analyzeCodeSnapshot(beforeFallback.code, fixLog);</span>
+<span class="nc" id="L636">            SourceMetrics after = analyzeCodeSnapshot(fallback.code, fixLog);</span>
+<span class="nc" id="L637">            impact.methodsDeleted = Math.max(0, before.testMethodCount - after.testMethodCount - impact.methodsCommented);</span>
+<span class="nc" id="L638">            impact.linesDeleted = Math.max(0, before.nonCommentCodeLines - after.nonCommentCodeLines - impact.linesCommented);</span>
+<span class="nc" id="L639">            impact.assertionsDeleted = Math.max(0, before.assertionCount - after.assertionCount - impact.assertionsCommented);</span>
+        }
+<span class="nc" id="L641">        return impact;</span>
+    }
+
+    private void measureMinimalRepairImpact(Config config, MinimalRepairImpact impact) {
+<span class="nc" id="L645">        impact.autoMeasurementRequested = true;</span>
+        try {
+<span class="nc" id="L647">            RepairImpactSnapshots snapshots = buildRepairImpactSnapshots(config, impact);</span>
+<span class="nc bnc" id="L648" title="All 2 branches missed.">            if (!snapshots.available) {</span>
+<span class="nc" id="L649">                appendImpactNote(impact, snapshots.note);</span>
+<span class="nc" id="L650">                return;</span>
+            }
+
+<span class="nc" id="L653">            Path originalTestDir = config.testDir.toAbsolutePath().normalize();</span>
+<span class="nc" id="L654">            Path backupTestDir = config.repairImpactWorkDir.resolve(&quot;original-src-test-java&quot;);</span>
+<span class="nc" id="L655">            deleteTree(backupTestDir);</span>
+<span class="nc" id="L656">            copyTree(originalTestDir, backupTestDir);</span>
+
+            try {
+<span class="nc" id="L659">                impact.beforeMeasurement = runRepairImpactSnapshot(config, snapshots.beforeTestDir, backupTestDir, &quot;before&quot;);</span>
+<span class="nc" id="L660">                impact.afterMeasurement = runRepairImpactSnapshot(config, snapshots.afterTestDir, backupTestDir, &quot;after&quot;);</span>
+            } finally {
+<span class="nc" id="L662">                deleteTree(originalTestDir);</span>
+<span class="nc" id="L663">                copyTree(backupTestDir, originalTestDir);</span>
+            }
+
+<span class="nc" id="L666">            impact.beforeCoverageCsv = impact.beforeMeasurement.coverage.csvFile;</span>
+<span class="nc" id="L667">            impact.afterCoverageCsv = impact.afterMeasurement.coverage.csvFile;</span>
+<span class="nc" id="L668">            impact.beforeSurefireDir = impact.beforeMeasurement.surefire.directory;</span>
+<span class="nc" id="L669">            impact.afterSurefireDir = impact.afterMeasurement.surefire.directory;</span>
+<span class="nc bnc" id="L670" title="All 2 branches missed.">            if (impact.beforeMeasurement.coverage.available) {</span>
+<span class="nc" id="L671">                impact.coverageBefore = impact.beforeMeasurement.coverage;</span>
+            }
+<span class="nc bnc" id="L673" title="All 2 branches missed.">            if (impact.afterMeasurement.coverage.available) {</span>
+<span class="nc" id="L674">                impact.coverageAfter = impact.afterMeasurement.coverage;</span>
+            }
+<span class="nc bnc" id="L676" title="All 4 branches missed.">            if (impact.beforeMeasurement.surefire.available &amp;&amp; impact.beforeMeasurement.surefire.tests &gt; 0) {</span>
+<span class="nc" id="L677">                impact.hasBeforePassRate = true;</span>
+<span class="nc" id="L678">                impact.passRateBefore = passRate(impact.beforeMeasurement.surefire);</span>
+            }
+<span class="nc bnc" id="L680" title="All 4 branches missed.">            if (impact.afterMeasurement.surefire.available &amp;&amp; impact.afterMeasurement.surefire.tests &gt; 0) {</span>
+<span class="nc" id="L681">                impact.hasAfterPassRate = true;</span>
+<span class="nc" id="L682">                impact.passRateAfter = passRate(impact.afterMeasurement.surefire);</span>
+            }
+<span class="nc" id="L684">        } catch (Exception ex) {</span>
+<span class="nc" id="L685">            appendImpactNote(impact, &quot;Automatic before/after measurement failed: &quot;</span>
+<span class="nc" id="L686">                    + ex.getClass().getSimpleName() + &quot;: &quot; + ex.getMessage());</span>
+<span class="nc" id="L687">        }</span>
+<span class="nc" id="L688">    }</span>
+
+    private RepairImpactSnapshots buildRepairImpactSnapshots(Config config, MinimalRepairImpact impact) throws IOException {
+<span class="nc" id="L691">        RepairImpactSnapshots snapshots = new RepairImpactSnapshots();</span>
+<span class="nc" id="L692">        snapshots.beforeTestDir = config.repairImpactWorkDir.resolve(&quot;before&quot;).resolve(&quot;src&quot;).resolve(&quot;test&quot;).resolve(&quot;java&quot;);</span>
+<span class="nc" id="L693">        snapshots.afterTestDir = config.repairImpactWorkDir.resolve(&quot;after&quot;).resolve(&quot;src&quot;).resolve(&quot;test&quot;).resolve(&quot;java&quot;);</span>
+<span class="nc" id="L694">        deleteTree(snapshots.beforeTestDir);</span>
+<span class="nc" id="L695">        deleteTree(snapshots.afterTestDir);</span>
+<span class="nc" id="L696">        Files.createDirectories(snapshots.beforeTestDir);</span>
+<span class="nc" id="L697">        Files.createDirectories(snapshots.afterTestDir);</span>
+<span class="nc bnc" id="L698" title="All 2 branches missed.">        if (Files.isDirectory(config.testDir)) {</span>
+<span class="nc" id="L699">            copyTree(config.testDir, snapshots.beforeTestDir);</span>
+<span class="nc" id="L700">            copyTree(config.testDir, snapshots.afterTestDir);</span>
+        }
+
+<span class="nc bnc" id="L703" title="All 2 branches missed.">        if (!Files.isDirectory(config.fixResultDir)) {</span>
+<span class="nc" id="L704">            snapshots.note = &quot;Cannot measure repair impact automatically because fix result directory is missing: &quot;</span>
+<span class="nc" id="L705">                    + config.fixResultDir.toAbsolutePath().normalize();</span>
+<span class="nc" id="L706">            return snapshots;</span>
+        }
+
+<span class="nc" id="L709">        List&lt;Path&gt; fixLogs = findFiles(config.fixResultDir, &quot;FixResult.txt&quot;);</span>
+<span class="nc bnc" id="L710" title="All 2 branches missed.">        for (Path fixLog : fixLogs) {</span>
+<span class="nc" id="L711">            writeRepairSnapshotPair(fixLog, snapshots);</span>
+<span class="nc" id="L712">        }</span>
+<span class="nc" id="L713">        impact.snapshotPairCount = snapshots.snapshotPairCount;</span>
+<span class="nc" id="L714">        impact.snapshotBeforeFileCount = snapshots.beforeFileCount;</span>
+<span class="nc" id="L715">        impact.snapshotAfterFileCount = snapshots.afterFileCount;</span>
+
+<span class="nc bnc" id="L717" title="All 2 branches missed.">        snapshots.available = snapshots.snapshotPairCount &gt; 0;</span>
+<span class="nc bnc" id="L718" title="All 2 branches missed.">        if (!snapshots.available) {</span>
+<span class="nc" id="L719">            snapshots.note = &quot;No paired repair/fallback code blocks were found in &quot;</span>
+<span class="nc" id="L720">                    + config.fixResultDir.toAbsolutePath().normalize()</span>
+                    + &quot;. Expected blocks labelled 修复后代码 followed by 兜底后代码.&quot;;
+        }
+<span class="nc" id="L723">        return snapshots;</span>
+    }
+
+    private void writeRepairSnapshotPair(Path fixLog, RepairImpactSnapshots snapshots) throws IOException {
+<span class="nc" id="L727">        String text = readFile(fixLog);</span>
+<span class="nc" id="L728">        List&lt;CodeBlock&gt; blocks = extractJavaBlocks(text);</span>
+<span class="nc" id="L729">        CodeBlock before = null;</span>
+<span class="nc" id="L730">        int pairIndex = 0;</span>
+<span class="nc bnc" id="L731" title="All 2 branches missed.">        for (CodeBlock block : blocks) {</span>
+<span class="nc bnc" id="L732" title="All 2 branches missed.">            if (block.label.contains(&quot;兜底&quot;)) {</span>
+<span class="nc bnc" id="L733" title="All 2 branches missed.">                if (before != null) {</span>
+<span class="nc" id="L734">                    pairIndex++;</span>
+<span class="nc" id="L735">                    boolean wroteBefore = writeCodeBlockAsTestFile(before, snapshots.beforeTestDir, fixLog, pairIndex);</span>
+<span class="nc" id="L736">                    boolean wroteAfter = writeCodeBlockAsTestFile(block, snapshots.afterTestDir, fixLog, pairIndex);</span>
+<span class="nc bnc" id="L737" title="All 4 branches missed.">                    if (wroteBefore &amp;&amp; wroteAfter) {</span>
+<span class="nc" id="L738">                        snapshots.snapshotPairCount++;</span>
+<span class="nc" id="L739">                        snapshots.beforeFileCount++;</span>
+<span class="nc" id="L740">                        snapshots.afterFileCount++;</span>
+                    }
+                }
+<span class="nc" id="L743">                before = null;</span>
+            } else {
+<span class="nc" id="L745">                before = block;</span>
+            }
+<span class="nc" id="L747">        }</span>
+<span class="nc" id="L748">    }</span>
+
+    private boolean writeCodeBlockAsTestFile(CodeBlock block, Path testRoot, Path fixLog, int pairIndex) throws IOException {
+<span class="nc" id="L751">        String code = stripMarkdownFence(block.code);</span>
+<span class="nc" id="L752">        JavaClassLocation location = parseJavaClassLocation(code);</span>
+<span class="nc bnc" id="L753" title="All 2 branches missed.">        if (!location.available) {</span>
+<span class="nc" id="L754">            return false;</span>
+        }
+<span class="nc" id="L756">        Path packageDir = testRoot;</span>
+<span class="nc bnc" id="L757" title="All 2 branches missed.">        if (!location.packageName.isEmpty()) {</span>
+<span class="nc" id="L758">            packageDir = packageDir.resolve(location.packageName.replace('.', File.separatorChar));</span>
+        }
+<span class="nc" id="L760">        Files.createDirectories(packageDir);</span>
+<span class="nc" id="L761">        Path target = packageDir.resolve(location.className + &quot;.java&quot;);</span>
+<span class="nc" id="L762">        BufferedWriter writer = Files.newBufferedWriter(target, StandardCharsets.UTF_8);</span>
+        try {
+<span class="nc" id="L764">            writer.write(code);</span>
+<span class="nc bnc" id="L765" title="All 2 branches missed.">            if (!code.endsWith(System.lineSeparator())) {</span>
+<span class="nc" id="L766">                writer.write(System.lineSeparator());</span>
+            }
+        } finally {
+<span class="nc" id="L769">            writer.close();</span>
+        }
+<span class="nc" id="L771">        return true;</span>
+    }
+
+    private JavaClassLocation parseJavaClassLocation(String code) {
+<span class="nc" id="L775">        JavaClassLocation location = new JavaClassLocation();</span>
+        try {
+<span class="nc" id="L777">            CompilationUnit unit = StaticJavaParser.parse(code);</span>
+<span class="nc" id="L778">            location.packageName = unit.getPackageDeclaration().map(pd -&gt; pd.getNameAsString()).orElse(&quot;&quot;);</span>
+<span class="nc bnc" id="L779" title="All 2 branches missed.">            if (!unit.getTypes().isEmpty()) {</span>
+<span class="nc" id="L780">                TypeDeclaration&lt;?&gt; type = unit.getType(0);</span>
+<span class="nc" id="L781">                location.className = type.getNameAsString();</span>
+<span class="nc" id="L782">                location.available = true;</span>
+            }
+<span class="nc" id="L784">        } catch (Exception ignored) {</span>
+<span class="nc" id="L785">            Matcher packageMatcher = Pattern.compile(&quot;(?m)^\\s*package\\s+([A-Za-z0-9_.]+)\\s*;&quot;).matcher(code);</span>
+<span class="nc bnc" id="L786" title="All 2 branches missed.">            location.packageName = packageMatcher.find() ? packageMatcher.group(1) : &quot;&quot;;</span>
+<span class="nc" id="L787">            Matcher classMatcher = Pattern.compile(&quot;\\b(?:class|interface|enum)\\s+([A-Za-z0-9_]+)&quot;).matcher(code);</span>
+<span class="nc bnc" id="L788" title="All 2 branches missed.">            if (classMatcher.find()) {</span>
+<span class="nc" id="L789">                location.className = classMatcher.group(1);</span>
+<span class="nc" id="L790">                location.available = true;</span>
+            }
+<span class="nc" id="L792">        }</span>
+<span class="nc" id="L793">        return location;</span>
+    }
+
+    private RepairImpactMeasurement runRepairImpactSnapshot(Config config, Path snapshotTestDir, Path baselineTestDir, String label)
+            throws IOException, InterruptedException {
+<span class="nc" id="L798">        RepairImpactMeasurement measurement = new RepairImpactMeasurement();</span>
+<span class="nc" id="L799">        Path originalTestDir = config.testDir.toAbsolutePath().normalize();</span>
+<span class="nc" id="L800">        Path outputDir = config.repairImpactWorkDir.resolve(label);</span>
+<span class="nc bnc" id="L801" title="All 2 branches missed.">        for (int attempt = 1; attempt &lt;= 6; attempt++) {</span>
+<span class="nc" id="L802">            deleteTree(originalTestDir);</span>
+<span class="nc" id="L803">            copyTree(snapshotTestDir, originalTestDir);</span>
+
+<span class="nc" id="L805">            deleteTree(SUREFIRE_DIR);</span>
+<span class="nc" id="L806">            deleteTree(Paths.get(&quot;target&quot;, &quot;site&quot;, &quot;jacoco&quot;));</span>
+<span class="nc" id="L807">            deleteTree(Paths.get(&quot;target&quot;, &quot;test-classes&quot;));</span>
+<span class="nc" id="L808">            Files.deleteIfExists(Paths.get(&quot;target&quot;, &quot;jacoco.exec&quot;));</span>
+
+<span class="nc" id="L810">            measurement.commandResult = runCommand(config.mavenCommand(),</span>
+<span class="nc" id="L811">                    Arrays.asList(&quot;-fn&quot;, &quot;-Dmaven.test.failure.ignore=true&quot;, &quot;test&quot;, &quot;jacoco:report&quot;),</span>
+<span class="nc" id="L812">                    Math.max(DEFAULT_COMMAND_TIMEOUT_MINUTES, config.repairImpactTimeoutMinutes));</span>
+<span class="nc" id="L813">            measurement.commandLog = outputDir.resolve(&quot;maven-output.log&quot;).toAbsolutePath().normalize();</span>
+<span class="nc" id="L814">            writeLines(measurement.commandLog, measurement.commandResult.output);</span>
+
+<span class="nc" id="L816">            Path surefireCopy = outputDir.resolve(&quot;surefire-reports&quot;);</span>
+<span class="nc" id="L817">            Path jacocoCopy = outputDir.resolve(&quot;jacoco.csv&quot;);</span>
+<span class="nc" id="L818">            deleteTree(surefireCopy);</span>
+<span class="nc bnc" id="L819" title="All 2 branches missed.">            if (Files.isDirectory(SUREFIRE_DIR)) {</span>
+<span class="nc" id="L820">                copyTree(SUREFIRE_DIR, surefireCopy);</span>
+            }
+<span class="nc" id="L822">            Files.deleteIfExists(jacocoCopy);</span>
+<span class="nc bnc" id="L823" title="All 2 branches missed.">            if (Files.isRegularFile(DEFAULT_AFTER_JACOCO_CSV)) {</span>
+<span class="nc" id="L824">                Files.createDirectories(jacocoCopy.getParent());</span>
+<span class="nc" id="L825">                Files.copy(DEFAULT_AFTER_JACOCO_CSV, jacocoCopy, StandardCopyOption.REPLACE_EXISTING);</span>
+            }
+<span class="nc" id="L827">            measurement.surefire = readSurefireSummary(surefireCopy);</span>
+<span class="nc" id="L828">            measurement.coverage = readCoverageSummary(jacocoCopy);</span>
+<span class="nc bnc" id="L829" title="All 4 branches missed.">            if (measurement.surefire.available || measurement.coverage.available) {</span>
+<span class="nc" id="L830">                return measurement;</span>
+            }
+
+<span class="nc" id="L833">            Set&lt;Path&gt; brokenFiles = extractBrokenTestFiles(measurement.commandResult.output, originalTestDir);</span>
+<span class="nc bnc" id="L834" title="All 2 branches missed.">            if (brokenFiles.isEmpty()) {</span>
+<span class="nc" id="L835">                return measurement;</span>
+            }
+<span class="nc bnc" id="L837" title="All 2 branches missed.">            for (Path relative : brokenFiles) {</span>
+<span class="nc" id="L838">                Path baseline = baselineTestDir.resolve(relative);</span>
+<span class="nc" id="L839">                Path snapshot = snapshotTestDir.resolve(relative);</span>
+<span class="nc bnc" id="L840" title="All 2 branches missed.">                if (Files.isRegularFile(baseline)) {</span>
+<span class="nc" id="L841">                    Files.createDirectories(snapshot.getParent());</span>
+<span class="nc" id="L842">                    Files.copy(baseline, snapshot, StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);</span>
+                } else {
+<span class="nc" id="L844">                    Files.deleteIfExists(snapshot);</span>
+                }
+<span class="nc" id="L846">                measurement.fallbackSnapshotFiles.add(relative.toString());</span>
+<span class="nc" id="L847">            }</span>
+        }
+<span class="nc" id="L849">        return measurement;</span>
+    }
+
+    private Set&lt;Path&gt; extractBrokenTestFiles(List&lt;String&gt; output, Path testRoot) {
+<span class="nc" id="L853">        Set&lt;Path&gt; files = new LinkedHashSet&lt;Path&gt;();</span>
+<span class="nc" id="L854">        Pattern pattern = Pattern.compile(&quot;([A-Za-z]:)?[\\\\/][^:\\r\\n]*src[\\\\/]test[\\\\/]java[\\\\/][^:\\r\\n]*\\.java&quot;);</span>
+<span class="nc bnc" id="L855" title="All 2 branches missed.">        for (String line : output) {</span>
+<span class="nc" id="L856">            Matcher matcher = pattern.matcher(line);</span>
+<span class="nc bnc" id="L857" title="All 2 branches missed.">            while (matcher.find()) {</span>
+<span class="nc" id="L858">                Path file = Paths.get(matcher.group()).toAbsolutePath().normalize();</span>
+<span class="nc bnc" id="L859" title="All 2 branches missed.">                if (file.toString().startsWith(testRoot.toString())) {</span>
+<span class="nc" id="L860">                    files.add(testRoot.relativize(file));</span>
+                }
+<span class="nc" id="L862">            }</span>
+<span class="nc" id="L863">        }</span>
+<span class="nc" id="L864">        return files;</span>
+    }
+
+    private String stripMarkdownFence(String code) {
+<span class="nc bnc" id="L868" title="All 2 branches missed.">        String normalized = code == null ? &quot;&quot; : code.trim();</span>
+<span class="nc bnc" id="L869" title="All 2 branches missed.">        while (normalized.startsWith(&quot;```&quot;)) {</span>
+<span class="nc" id="L870">            int newline = normalized.indexOf('\n');</span>
+<span class="nc bnc" id="L871" title="All 2 branches missed.">            if (newline &lt; 0) {</span>
+<span class="nc" id="L872">                return &quot;&quot;;</span>
+            }
+<span class="nc" id="L874">            normalized = normalized.substring(newline + 1).trim();</span>
+<span class="nc" id="L875">        }</span>
+<span class="nc bnc" id="L876" title="All 2 branches missed.">        while (normalized.endsWith(&quot;```&quot;)) {</span>
+<span class="nc" id="L877">            normalized = normalized.substring(0, normalized.length() - 3).trim();</span>
+        }
+<span class="nc" id="L879">        return normalized;</span>
+    }
+
+    private static void appendImpactNote(MinimalRepairImpact impact, String note) {
+<span class="nc bnc" id="L883" title="All 4 branches missed.">        if (note == null || note.trim().isEmpty()) {</span>
+<span class="nc" id="L884">            return;</span>
+        }
+<span class="nc bnc" id="L886" title="All 4 branches missed.">        if (impact.note == null || impact.note.trim().isEmpty()) {</span>
+<span class="nc" id="L887">            impact.note = note;</span>
+        } else {
+<span class="nc" id="L889">            impact.note = impact.note + &quot; &quot; + note;</span>
+        }
+<span class="nc" id="L891">    }</span>
+
+    private SourceMetrics analyzeCodeSnapshot(String code, Path sourceHint) {
+<span class="nc" id="L894">        SourceMetrics metrics = new SourceMetrics();</span>
+<span class="nc" id="L895">        metrics.testFileCount = 1;</span>
+<span class="nc" id="L896">        metrics.nonCommentCodeLines = countNonCommentCodeLines(code);</span>
+        try {
+<span class="nc" id="L898">            CompilationUnit unit = StaticJavaParser.parse(code);</span>
+<span class="nc bnc" id="L899" title="All 2 branches missed.">            for (MethodDeclaration method : unit.findAll(MethodDeclaration.class)) {</span>
+<span class="nc bnc" id="L900" title="All 2 branches missed.">                if (isTestMethod(method)) {</span>
+<span class="nc" id="L901">                    metrics.testMethodCount++;</span>
+                }
+<span class="nc" id="L903">            }</span>
+<span class="nc bnc" id="L904" title="All 2 branches missed.">            for (MethodCallExpr call : unit.findAll(MethodCallExpr.class)) {</span>
+<span class="nc bnc" id="L905" title="All 2 branches missed.">                if (ASSERTION_METHODS.contains(call.getNameAsString())) {</span>
+<span class="nc" id="L906">                    metrics.assertionCount++;</span>
+<span class="nc bnc" id="L907" title="All 2 branches missed.">                    if (isMeaningfulAssertion(call)) {</span>
+<span class="nc" id="L908">                        metrics.meaningfulAssertionCount++;</span>
+                    }
+                }
+<span class="nc" id="L911">            }</span>
+<span class="nc" id="L912">        } catch (Exception ex) {</span>
+<span class="nc" id="L913">            metrics.parseErrorCount = 1;</span>
+<span class="nc" id="L914">            metrics.notes.add(&quot;Cannot parse code block from &quot; + sourceHint + &quot;: &quot; + ex.getMessage());</span>
+<span class="nc" id="L915">            metrics.testMethodCount = countByRegex(code, &quot;@Test\\b&quot;);</span>
+<span class="nc" id="L916">            metrics.assertionCount = countByRegex(code, &quot;\\bassert[A-Za-z0-9_]*\\s*\\(&quot;);</span>
+<span class="nc" id="L917">        }</span>
+<span class="nc" id="L918">        return metrics;</span>
+    }
+
+    private List&lt;CodeBlock&gt; extractJavaBlocks(String text) {
+<span class="nc" id="L922">        List&lt;CodeBlock&gt; blocks = new ArrayList&lt;CodeBlock&gt;();</span>
+<span class="nc" id="L923">        Pattern pattern = Pattern.compile(&quot;(?s)([^\\n]*)\\n```java\\s*\\R(.*?)\\R```&quot;);</span>
+<span class="nc" id="L924">        Matcher matcher = pattern.matcher(text);</span>
+<span class="nc bnc" id="L925" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L926">            CodeBlock block = new CodeBlock();</span>
+<span class="nc bnc" id="L927" title="All 2 branches missed.">            block.label = matcher.group(1) == null ? &quot;&quot; : matcher.group(1).trim();</span>
+<span class="nc" id="L928">            block.code = matcher.group(2);</span>
+<span class="nc" id="L929">            blocks.add(block);</span>
+<span class="nc" id="L930">        }</span>
+<span class="nc" id="L931">        return blocks;</span>
+    }
+
+    private int countCommentedTestMethods(String code) {
+<span class="nc" id="L935">        int count = countByRegex(code, &quot;(?m)^\\s*//\\s*(?:\\[兜底\\]|修复失败[^：:]*[:：])?\\s*@Test\\b&quot;);</span>
+<span class="nc bnc" id="L936" title="All 2 branches missed.">        if (count == 0) {</span>
+<span class="nc" id="L937">            count = countByRegex(code, &quot;(?m)^\\s*//\\s*\\[兜底\\]\\s*(?:public\\s+)?void\\s+\\w+\\s*\\(&quot;);</span>
+        }
+<span class="nc" id="L939">        return count;</span>
+    }
+
+    private int countFallbackCommentedLines(String code) {
+<span class="nc" id="L943">        return countByRegex(code, &quot;(?m)^\\s*//\\s*(?:\\[兜底\\]|修复失败|全类修复失败)&quot;);</span>
+    }
+
+    private int countCommentedAssertions(String code) {
+<span class="nc" id="L947">        return countByRegex(code, &quot;(?m)^\\s*//.*\\bassert[A-Za-z0-9_]*\\s*\\(&quot;);</span>
+    }
+
+    private double readPassRate(Path surefireDir) {
+<span class="nc" id="L951">        SurefireSummary summary = readSurefireSummary(surefireDir);</span>
+<span class="nc bnc" id="L952" title="All 4 branches missed.">        if (!summary.available || summary.tests == 0) {</span>
+<span class="nc" id="L953">            return 0.0;</span>
+        }
+<span class="nc" id="L955">        return ratio(summary.tests - summary.failures - summary.errors, summary.tests);</span>
+    }
+
+    private BenchmarkComparison readBenchmarkComparison(Path dataPath) throws IOException {
+<span class="nc" id="L959">        BenchmarkComparison comparison = BenchmarkComparison.defaultEmpty();</span>
+<span class="nc bnc" id="L960" title="All 2 branches missed.">        comparison.dataFile = dataPath == null ? null : dataPath.toAbsolutePath().normalize();</span>
+<span class="nc bnc" id="L961" title="All 4 branches missed.">        if (dataPath == null || !Files.isRegularFile(dataPath)) {</span>
+<span class="nc" id="L962">            comparison.note = &quot;No local benchmark data file found. Public papers usually do not report the full requested metric set; pass --benchmark-data=CSV to import your experiment table.&quot;;</span>
+<span class="nc" id="L963">            return comparison;</span>
+        }
+<span class="nc" id="L965">        List&lt;String&gt; lines = Files.readAllLines(dataPath, StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L966" title="All 2 branches missed.">        if (lines.isEmpty()) {</span>
+<span class="nc" id="L967">            comparison.note = &quot;Benchmark data file is empty.&quot;;</span>
+<span class="nc" id="L968">            return comparison;</span>
+        }
+<span class="nc" id="L970">        List&lt;String&gt; header = parseDelimitedLine(lines.get(0));</span>
+<span class="nc bnc" id="L971" title="All 2 branches missed.">        for (int i = 1; i &lt; lines.size(); i++) {</span>
+<span class="nc bnc" id="L972" title="All 2 branches missed.">            if (lines.get(i).trim().isEmpty()) {</span>
+<span class="nc" id="L973">                continue;</span>
+            }
+<span class="nc" id="L975">            List&lt;String&gt; cells = parseDelimitedLine(lines.get(i));</span>
+<span class="nc" id="L976">            BenchmarkRecord record = new BenchmarkRecord();</span>
+<span class="nc bnc" id="L977" title="All 4 branches missed.">            for (int c = 0; c &lt; header.size() &amp;&amp; c &lt; cells.size(); c++) {</span>
+<span class="nc" id="L978">                record.values.put(header.get(c).trim(), cells.get(c).trim());</span>
+            }
+<span class="nc bnc" id="L980" title="All 2 branches missed.">            if (!record.values.isEmpty()) {</span>
+<span class="nc" id="L981">                comparison.records.add(record);</span>
+            }
+        }
+<span class="nc" id="L984">        comparison.available = true;</span>
+<span class="nc" id="L985">        comparison.note = &quot;Loaded local benchmark data. Missing cells are preserved as N/A.&quot;;</span>
+<span class="nc" id="L986">        return comparison;</span>
+    }
+
+    private RepairCost calculateRepairCost(SourceMetrics sourceMetrics, SurefireSummary surefire) throws IOException {
+<span class="nc" id="L990">        RepairCost repairCost = new RepairCost();</span>
+<span class="nc" id="L991">        repairCost.generatedTestFiles = sourceMetrics.testFileCount;</span>
+<span class="nc" id="L992">        repairCost.generatedTestMethods = sourceMetrics.testMethodCount;</span>
+<span class="nc" id="L993">        repairCost.generatedTestLines = sourceMetrics.nonCommentCodeLines;</span>
+<span class="nc" id="L994">        repairCost.parseErrorCount = sourceMetrics.parseErrorCount;</span>
+<span class="nc bnc" id="L995" title="All 2 branches missed.">        if (surefire.available) {</span>
+<span class="nc" id="L996">            repairCost.currentFailingTests = surefire.failures + surefire.errors;</span>
+        }
+<span class="nc" id="L998">        repairCost.generationLogSummary = readLatestGenerationLogSummary();</span>
+<span class="nc" id="L999">        return repairCost;</span>
+    }
+
+    private GenerationLogSummary readLatestGenerationLogSummary() throws IOException {
+<span class="nc" id="L1003">        GenerationLogSummary summary = new GenerationLogSummary();</span>
+<span class="nc" id="L1004">        List&lt;Path&gt; logs = new ArrayList&lt;Path&gt;();</span>
+<span class="nc" id="L1005">        File root = new File(&quot;.&quot;);</span>
+<span class="nc" id="L1006">        File[] files = root.listFiles();</span>
+<span class="nc bnc" id="L1007" title="All 2 branches missed.">        if (files == null) {</span>
+<span class="nc" id="L1008">            summary.note = &quot;No root files can be listed.&quot;;</span>
+<span class="nc" id="L1009">            return summary;</span>
+        }
+<span class="nc bnc" id="L1011" title="All 2 branches missed.">        for (File file : files) {</span>
+<span class="nc" id="L1012">            String name = file.getName();</span>
+<span class="nc bnc" id="L1013" title="All 8 branches missed.">            if (file.isFile() &amp;&amp; (name.startsWith(&quot;BatchTest_&quot;) || name.contains(&quot;test&quot;) || name.contains(&quot;log&quot;))) {</span>
+<span class="nc bnc" id="L1014" title="All 4 branches missed.">                if (name.endsWith(&quot;.txt&quot;) || name.endsWith(&quot;.log&quot;)) {</span>
+<span class="nc" id="L1015">                    logs.add(file.toPath());</span>
+                }
+            }
+        }
+<span class="nc bnc" id="L1019" title="All 2 branches missed.">        if (logs.isEmpty()) {</span>
+<span class="nc" id="L1020">            summary.note = &quot;No generation log file was found.&quot;;</span>
+<span class="nc" id="L1021">            return summary;</span>
+        }
+<span class="nc" id="L1023">        Collections.sort(logs, new Comparator&lt;Path&gt;() {</span>
+            public int compare(Path a, Path b) {
+                try {
+<span class="nc" id="L1026">                    return Files.getLastModifiedTime(b).compareTo(Files.getLastModifiedTime(a));</span>
+<span class="nc" id="L1027">                } catch (IOException e) {</span>
+<span class="nc" id="L1028">                    return 0;</span>
+                }
+            }
+        });
+<span class="nc" id="L1032">        summary.available = true;</span>
+<span class="nc" id="L1033">        summary.logFile = logs.get(0).toAbsolutePath().normalize();</span>
+<span class="nc" id="L1034">        List&lt;String&gt; lines = Files.readAllLines(logs.get(0), StandardCharsets.UTF_8);</span>
+<span class="nc bnc" id="L1035" title="All 2 branches missed.">        for (String line : lines) {</span>
+<span class="nc" id="L1036">            String normalized = line.trim();</span>
+<span class="nc bnc" id="L1037" title="All 2 branches missed.">            if (containsAny(normalized, &quot;success&quot;, &quot;SUCCESS&quot;, &quot;chenggong&quot;, &quot;鎴愬姛&quot;, &quot;成功&quot;)) {</span>
+<span class="nc" id="L1038">                summary.successLikeLines++;</span>
+            }
+<span class="nc bnc" id="L1040" title="All 2 branches missed.">            if (containsAny(normalized, &quot;fail&quot;, &quot;FAIL&quot;, &quot;failed&quot;, &quot;澶辫触&quot;, &quot;失败&quot;)) {</span>
+<span class="nc" id="L1041">                summary.failureLikeLines++;</span>
+            }
+<span class="nc bnc" id="L1043" title="All 2 branches missed.">            if (containsAny(normalized, &quot;fix&quot;, &quot;repair&quot;, &quot;淇&quot;, &quot;修复&quot;)) {</span>
+<span class="nc" id="L1044">                Integer firstNumber = firstInteger(normalized);</span>
+<span class="nc bnc" id="L1045" title="All 2 branches missed.">                if (firstNumber != null) {</span>
+<span class="nc" id="L1046">                    summary.repairNumberSum += firstNumber;</span>
+<span class="nc" id="L1047">                    summary.repairNumberLines++;</span>
+                }
+            }
+<span class="nc" id="L1050">        }</span>
+<span class="nc" id="L1051">        return summary;</span>
+    }
+
+    private DefectDetection calculateDefectDetection(EvaluationResult result) {
+<span class="nc" id="L1055">        DefectDetection detection = new DefectDetection();</span>
+<span class="nc bnc" id="L1056" title="All 2 branches missed.">        if (result.mutationSummary.available) {</span>
+<span class="nc" id="L1057">            detection.available = true;</span>
+<span class="nc" id="L1058">            detection.score = result.mutationSummary.mutationScore;</span>
+<span class="nc" id="L1059">            detection.basis = &quot;PIT detected mutants / total mutants&quot;;</span>
+<span class="nc" id="L1060">            return detection;</span>
+        }
+<span class="nc" id="L1062">        detection.available = false;</span>
+<span class="nc" id="L1063">        detection.score = result.sourceMetrics.meaningfulAssertionRatio;</span>
+<span class="nc" id="L1064">        detection.basis = &quot;PIT is unavailable; showing meaningful assertion ratio as a weak proxy.&quot;;</span>
+<span class="nc" id="L1065">        return detection;</span>
+    }
+
+    private void writeReport(Path reportPath, String report) throws IOException {
+<span class="nc" id="L1069">        Path parent = reportPath.toAbsolutePath().normalize().getParent();</span>
+<span class="nc bnc" id="L1070" title="All 4 branches missed.">        if (parent != null &amp;&amp; !Files.isDirectory(parent)) {</span>
+<span class="nc" id="L1071">            Files.createDirectories(parent);</span>
+        }
+<span class="nc" id="L1073">        BufferedWriter writer = Files.newBufferedWriter(reportPath, StandardCharsets.UTF_8);</span>
+        try {
+<span class="nc" id="L1075">            writer.write(report);</span>
+        } finally {
+<span class="nc" id="L1077">            writer.close();</span>
+        }
+<span class="nc" id="L1079">    }</span>
+
+    private static void writeLines(Path file, List&lt;String&gt; lines) throws IOException {
+<span class="nc" id="L1082">        Path parent = file.toAbsolutePath().normalize().getParent();</span>
+<span class="nc bnc" id="L1083" title="All 4 branches missed.">        if (parent != null &amp;&amp; !Files.isDirectory(parent)) {</span>
+<span class="nc" id="L1084">            Files.createDirectories(parent);</span>
+        }
+<span class="nc" id="L1086">        BufferedWriter writer = Files.newBufferedWriter(file, StandardCharsets.UTF_8);</span>
+        try {
+<span class="nc bnc" id="L1088" title="All 2 branches missed.">            for (String line : lines) {</span>
+<span class="nc bnc" id="L1089" title="All 2 branches missed.">                writer.write(line == null ? &quot;&quot; : line);</span>
+<span class="nc" id="L1090">                writer.write(System.lineSeparator());</span>
+<span class="nc" id="L1091">            }</span>
+        } finally {
+<span class="nc" id="L1093">            writer.close();</span>
+        }
+<span class="nc" id="L1095">    }</span>
+
+    private static Document parseXml(Path xml) throws Exception {
+<span class="nc" id="L1098">        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();</span>
+<span class="nc" id="L1099">        factory.setFeature(&quot;http://apache.org/xml/features/disallow-doctype-decl&quot;, true);</span>
+<span class="nc" id="L1100">        factory.setFeature(&quot;http://xml.org/sax/features/external-general-entities&quot;, false);</span>
+<span class="nc" id="L1101">        factory.setFeature(&quot;http://xml.org/sax/features/external-parameter-entities&quot;, false);</span>
+<span class="nc" id="L1102">        DocumentBuilder builder = factory.newDocumentBuilder();</span>
+<span class="nc" id="L1103">        return builder.parse(xml.toFile());</span>
+    }
+
+    private static List&lt;Path&gt; findFiles(Path root, final String suffix) throws IOException {
+<span class="nc" id="L1107">        final List&lt;Path&gt; files = new ArrayList&lt;Path&gt;();</span>
+<span class="nc bnc" id="L1108" title="All 2 branches missed.">        if (!Files.exists(root)) {</span>
+<span class="nc" id="L1109">            return files;</span>
+        }
+<span class="nc" id="L1111">        Files.walkFileTree(root, new SimpleFileVisitor&lt;Path&gt;() {</span>
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) {
+<span class="nc bnc" id="L1114" title="All 2 branches missed.">                if (file.getFileName().toString().endsWith(suffix)) {</span>
+<span class="nc" id="L1115">                    files.add(file);</span>
+                }
+<span class="nc" id="L1117">                return FileVisitResult.CONTINUE;</span>
+            }
+        });
+<span class="nc" id="L1120">        return files;</span>
+    }
+
+    private static void copyTree(final Path source, final Path target) throws IOException {
+<span class="nc bnc" id="L1124" title="All 2 branches missed.">        if (!Files.exists(source)) {</span>
+<span class="nc" id="L1125">            return;</span>
+        }
+<span class="nc" id="L1127">        Files.walkFileTree(source, new SimpleFileVisitor&lt;Path&gt;() {</span>
+            @Override
+            public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
+<span class="nc" id="L1130">                Path relative = source.relativize(dir);</span>
+<span class="nc" id="L1131">                Files.createDirectories(target.resolve(relative));</span>
+<span class="nc" id="L1132">                return FileVisitResult.CONTINUE;</span>
+            }
+
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+<span class="nc" id="L1137">                Path relative = source.relativize(file);</span>
+<span class="nc" id="L1138">                Files.copy(file, target.resolve(relative), StandardCopyOption.REPLACE_EXISTING, StandardCopyOption.COPY_ATTRIBUTES);</span>
+<span class="nc" id="L1139">                return FileVisitResult.CONTINUE;</span>
+            }
+        });
+<span class="nc" id="L1142">    }</span>
+
+    private static void deleteTree(Path root) throws IOException {
+<span class="nc bnc" id="L1145" title="All 4 branches missed.">        if (root == null || !Files.exists(root)) {</span>
+<span class="nc" id="L1146">            return;</span>
+        }
+<span class="nc" id="L1148">        Files.walkFileTree(root, new SimpleFileVisitor&lt;Path&gt;() {</span>
+            @Override
+            public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+<span class="nc" id="L1151">                Files.deleteIfExists(file);</span>
+<span class="nc" id="L1152">                return FileVisitResult.CONTINUE;</span>
+            }
+
+            @Override
+            public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+<span class="nc bnc" id="L1157" title="All 2 branches missed.">                if (exc != null) {</span>
+<span class="nc" id="L1158">                    throw exc;</span>
+                }
+<span class="nc" id="L1160">                Files.deleteIfExists(dir);</span>
+<span class="nc" id="L1161">                return FileVisitResult.CONTINUE;</span>
+            }
+        });
+<span class="nc" id="L1164">    }</span>
+
+    private static String readFile(Path file) throws IOException {
+<span class="nc" id="L1167">        return new String(Files.readAllBytes(file), StandardCharsets.UTF_8);</span>
+    }
+
+    private static int countNonCommentCodeLines(String code) {
+<span class="nc" id="L1171">        String withoutBlock = code.replaceAll(&quot;(?s)/\\*.*?\\*/&quot;, &quot;&quot;);</span>
+<span class="nc" id="L1172">        String[] lines = withoutBlock.split(&quot;\\R&quot;);</span>
+<span class="nc" id="L1173">        int count = 0;</span>
+<span class="nc bnc" id="L1174" title="All 2 branches missed.">        for (String line : lines) {</span>
+<span class="nc" id="L1175">            String trimmed = line.trim();</span>
+<span class="nc bnc" id="L1176" title="All 4 branches missed.">            if (!trimmed.isEmpty() &amp;&amp; !trimmed.startsWith(&quot;//&quot;)) {</span>
+<span class="nc" id="L1177">                count++;</span>
+            }
+        }
+<span class="nc" id="L1180">        return count;</span>
+    }
+
+    private static int countByRegex(String text, String regex) {
+<span class="nc" id="L1184">        Matcher matcher = Pattern.compile(regex).matcher(text);</span>
+<span class="nc" id="L1185">        int count = 0;</span>
+<span class="nc bnc" id="L1186" title="All 2 branches missed.">        while (matcher.find()) {</span>
+<span class="nc" id="L1187">            count++;</span>
+        }
+<span class="nc" id="L1189">        return count;</span>
+    }
+
+    private static List&lt;String&gt; parseCsvLine(String line) {
+<span class="nc" id="L1193">        return parseDelimitedLine(line);</span>
+    }
+
+    private static List&lt;String&gt; parseDelimitedLine(String line) {
+<span class="nc bnc" id="L1197" title="All 2 branches missed.">        char delimiter = line.indexOf('\t') &gt;= 0 ? '\t' : ',';</span>
+<span class="nc" id="L1198">        List&lt;String&gt; cells = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L1199">        StringBuilder cell = new StringBuilder();</span>
+<span class="nc" id="L1200">        boolean quoted = false;</span>
+<span class="nc bnc" id="L1201" title="All 2 branches missed.">        for (int i = 0; i &lt; line.length(); i++) {</span>
+<span class="nc" id="L1202">            char ch = line.charAt(i);</span>
+<span class="nc bnc" id="L1203" title="All 2 branches missed.">            if (ch == '&quot;') {</span>
+<span class="nc bnc" id="L1204" title="All 6 branches missed.">                if (quoted &amp;&amp; i + 1 &lt; line.length() &amp;&amp; line.charAt(i + 1) == '&quot;') {</span>
+<span class="nc" id="L1205">                    cell.append('&quot;');</span>
+<span class="nc" id="L1206">                    i++;</span>
+                } else {
+<span class="nc bnc" id="L1208" title="All 2 branches missed.">                    quoted = !quoted;</span>
+                }
+<span class="nc bnc" id="L1210" title="All 4 branches missed.">            } else if (ch == delimiter &amp;&amp; !quoted) {</span>
+<span class="nc" id="L1211">                cells.add(cell.toString());</span>
+<span class="nc" id="L1212">                cell.setLength(0);</span>
+            } else {
+<span class="nc" id="L1214">                cell.append(ch);</span>
+            }
+        }
+<span class="nc" id="L1217">        cells.add(cell.toString());</span>
+<span class="nc" id="L1218">        return cells;</span>
+    }
+
+    private static long parseLong(String value) {
+<span class="nc bnc" id="L1222" title="All 4 branches missed.">        if (value == null || value.trim().isEmpty()) {</span>
+<span class="nc" id="L1223">            return 0L;</span>
+        }
+        try {
+<span class="nc" id="L1226">            return Long.parseLong(value.trim());</span>
+<span class="nc" id="L1227">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L1228">            return 0L;</span>
+        }
+    }
+
+    private static double ratio(double numerator, double denominator) {
+<span class="nc bnc" id="L1233" title="All 2 branches missed.">        if (denominator &lt;= 0.0) {</span>
+<span class="nc" id="L1234">            return 0.0;</span>
+        }
+<span class="nc" id="L1236">        return numerator / denominator;</span>
+    }
+
+    private static double passRate(SurefireSummary summary) {
+<span class="nc bnc" id="L1240" title="All 6 branches missed.">        if (summary == null || !summary.available || summary.tests == 0) {</span>
+<span class="nc" id="L1241">            return 0.0;</span>
+        }
+<span class="nc" id="L1243">        return ratio(summary.tests - summary.failures - summary.errors, summary.tests);</span>
+    }
+
+    private static boolean hasChild(Element element, String childName) {
+<span class="nc bnc" id="L1247" title="All 2 branches missed.">        return element.getElementsByTagName(childName).getLength() &gt; 0;</span>
+    }
+
+    private static int intAttr(Element element, String name) {
+<span class="nc" id="L1251">        String value = element.getAttribute(name);</span>
+<span class="nc bnc" id="L1252" title="All 4 branches missed.">        if (value == null || value.trim().isEmpty()) {</span>
+<span class="nc" id="L1253">            return 0;</span>
+        }
+        try {
+<span class="nc" id="L1256">            return Integer.parseInt(value.trim());</span>
+<span class="nc" id="L1257">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L1258">            return 0;</span>
+        }
+    }
+
+    private static double doubleAttr(Element element, String name) {
+<span class="nc" id="L1263">        String value = element.getAttribute(name);</span>
+<span class="nc bnc" id="L1264" title="All 4 branches missed.">        if (value == null || value.trim().isEmpty()) {</span>
+<span class="nc" id="L1265">            return 0.0;</span>
+        }
+        try {
+<span class="nc" id="L1268">            return Double.parseDouble(value.trim());</span>
+<span class="nc" id="L1269">        } catch (NumberFormatException ex) {</span>
+<span class="nc" id="L1270">            return 0.0;</span>
+        }
+    }
+
+    private static double safeDivide(double numerator, double denominator) {
+<span class="nc bnc" id="L1275" title="All 2 branches missed.">        if (denominator == 0.0) {</span>
+<span class="nc" id="L1276">            return 0.0;</span>
+        }
+<span class="nc" id="L1278">        return numerator / denominator;</span>
+    }
+
+    private static String pct(double value) {
+<span class="nc" id="L1282">        return new DecimalFormat(&quot;0.00%&quot;).format(value);</span>
+    }
+
+    private static String deltaPct(double value) {
+<span class="nc bnc" id="L1286" title="All 2 branches missed.">        String sign = value &gt;= 0.0 ? &quot;+&quot; : &quot;&quot;;</span>
+<span class="nc" id="L1287">        return sign + pct(value);</span>
+    }
+
+    private static String sanitizeFileName(String name) {
+<span class="nc bnc" id="L1291" title="All 2 branches missed.">        return name == null ? &quot;unknown&quot; : name.replaceAll(&quot;[^A-Za-z0-9_\\-.]&quot;, &quot;_&quot;);</span>
+    }
+
+    private static String two(double value) {
+<span class="nc" id="L1295">        return new DecimalFormat(&quot;0.00&quot;).format(value);</span>
+    }
+
+    private static String millis(long millis) {
+<span class="nc bnc" id="L1299" title="All 2 branches missed.">        if (millis &lt;= 0L) {</span>
+<span class="nc" id="L1300">            return &quot;N/A&quot;;</span>
+        }
+<span class="nc" id="L1302">        BigDecimal seconds = new BigDecimal(millis).divide(new BigDecimal(1000), 2, RoundingMode.HALF_UP);</span>
+<span class="nc" id="L1303">        return seconds.toPlainString() + &quot;s&quot;;</span>
+    }
+
+    private static String join(List&lt;?&gt; values, String delimiter) {
+<span class="nc" id="L1307">        StringBuilder builder = new StringBuilder();</span>
+<span class="nc bnc" id="L1308" title="All 2 branches missed.">        for (int i = 0; i &lt; values.size(); i++) {</span>
+<span class="nc bnc" id="L1309" title="All 2 branches missed.">            if (i &gt; 0) {</span>
+<span class="nc" id="L1310">                builder.append(delimiter);</span>
+            }
+<span class="nc" id="L1312">            builder.append(String.valueOf(values.get(i)));</span>
+        }
+<span class="nc" id="L1314">        return builder.toString();</span>
+    }
+
+    private static boolean containsAny(String text, String... needles) {
+<span class="nc bnc" id="L1318" title="All 2 branches missed.">        for (String needle : needles) {</span>
+<span class="nc bnc" id="L1319" title="All 2 branches missed.">            if (text.contains(needle)) {</span>
+<span class="nc" id="L1320">                return true;</span>
+            }
+        }
+<span class="nc" id="L1323">        return false;</span>
+    }
+
+    private static Integer firstInteger(String text) {
+<span class="nc" id="L1327">        Matcher matcher = Pattern.compile(&quot;(\\d+)&quot;).matcher(text);</span>
+<span class="nc bnc" id="L1328" title="All 2 branches missed.">        if (matcher.find()) {</span>
+<span class="nc" id="L1329">            return Integer.valueOf(matcher.group(1));</span>
+        }
+<span class="nc" id="L1331">        return null;</span>
+    }
+
+    private static boolean isWindows() {
+<span class="nc" id="L1335">        return System.getProperty(&quot;os.name&quot;, &quot;&quot;).toLowerCase(Locale.ROOT).contains(&quot;win&quot;);</span>
+    }
+
+<span class="nc" id="L1338">    static class Config {</span>
+<span class="nc" id="L1339">        Path testDir = DEFAULT_TEST_DIR;</span>
+<span class="nc" id="L1340">        Path sourceDir = DEFAULT_SOURCE_DIR;</span>
+<span class="nc" id="L1341">        Path reportPath = DEFAULT_REPORT;</span>
+<span class="nc" id="L1342">        Path fixResultDir = DEFAULT_FIX_RESULT_DIR;</span>
+<span class="nc" id="L1343">        Path beforeTestDir = Paths.get(&quot;target&quot;, &quot;vali-before-repair&quot;, &quot;src&quot;, &quot;test&quot;, &quot;java&quot;);</span>
+<span class="nc" id="L1344">        Path beforeCoverageCsv = Paths.get(&quot;target&quot;, &quot;vali-before-repair&quot;, &quot;jacoco.csv&quot;);</span>
+<span class="nc" id="L1345">        Path afterCoverageCsv = DEFAULT_AFTER_JACOCO_CSV;</span>
+<span class="nc" id="L1346">        Path beforeSurefireDir = Paths.get(&quot;target&quot;, &quot;vali-before-repair&quot;, &quot;surefire-reports&quot;);</span>
+<span class="nc" id="L1347">        Path benchmarkDataPath = DEFAULT_BENCHMARK_DATA;</span>
+<span class="nc" id="L1348">        Path repairImpactWorkDir = DEFAULT_REPAIR_IMPACT_WORK_DIR;</span>
+        boolean runTests;
+        boolean runPit;
+        boolean measureRepairImpact;
+<span class="nc" id="L1352">        int flakyRuns = 3;</span>
+<span class="nc" id="L1353">        long pitTimeoutMinutes = 60L;</span>
+<span class="nc" id="L1354">        long repairImpactTimeoutMinutes = 30L;</span>
+        String mavenExecutable;
+<span class="nc" id="L1356">        List&lt;String&gt; pitTargetClasses = new ArrayList&lt;String&gt;();</span>
+<span class="nc" id="L1357">        List&lt;String&gt; pitTargetTests = new ArrayList&lt;String&gt;();</span>
+
+        static Config fromArgs(String[] args) throws IOException {
+<span class="nc" id="L1360">            Config config = new Config();</span>
+<span class="nc bnc" id="L1361" title="All 2 branches missed.">            for (String arg : args) {</span>
+<span class="nc bnc" id="L1362" title="All 2 branches missed.">                if (&quot;--run-tests&quot;.equals(arg)) {</span>
+<span class="nc" id="L1363">                    config.runTests = true;</span>
+<span class="nc bnc" id="L1364" title="All 2 branches missed.">                } else if (&quot;--run-pit&quot;.equals(arg)) {</span>
+<span class="nc" id="L1365">                    config.runPit = true;</span>
+<span class="nc bnc" id="L1366" title="All 2 branches missed.">                } else if (&quot;--measure-repair-impact&quot;.equals(arg)) {</span>
+<span class="nc" id="L1367">                    config.measureRepairImpact = true;</span>
+<span class="nc bnc" id="L1368" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--flaky-runs=&quot;)) {</span>
+<span class="nc" id="L1369">                    config.flakyRuns = Integer.parseInt(arg.substring(&quot;--flaky-runs=&quot;.length()));</span>
+<span class="nc bnc" id="L1370" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--test-dir=&quot;)) {</span>
+<span class="nc" id="L1371">                    config.testDir = Paths.get(arg.substring(&quot;--test-dir=&quot;.length()));</span>
+<span class="nc bnc" id="L1372" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--source-dir=&quot;)) {</span>
+<span class="nc" id="L1373">                    config.sourceDir = Paths.get(arg.substring(&quot;--source-dir=&quot;.length()));</span>
+<span class="nc bnc" id="L1374" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--report=&quot;)) {</span>
+<span class="nc" id="L1375">                    config.reportPath = Paths.get(arg.substring(&quot;--report=&quot;.length()));</span>
+<span class="nc bnc" id="L1376" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--fix-result-dir=&quot;)) {</span>
+<span class="nc" id="L1377">                    config.fixResultDir = Paths.get(arg.substring(&quot;--fix-result-dir=&quot;.length()));</span>
+<span class="nc bnc" id="L1378" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--before-test-dir=&quot;)) {</span>
+<span class="nc" id="L1379">                    config.beforeTestDir = Paths.get(arg.substring(&quot;--before-test-dir=&quot;.length()));</span>
+<span class="nc bnc" id="L1380" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--before-coverage-csv=&quot;)) {</span>
+<span class="nc" id="L1381">                    config.beforeCoverageCsv = Paths.get(arg.substring(&quot;--before-coverage-csv=&quot;.length()));</span>
+<span class="nc bnc" id="L1382" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--after-coverage-csv=&quot;)) {</span>
+<span class="nc" id="L1383">                    config.afterCoverageCsv = Paths.get(arg.substring(&quot;--after-coverage-csv=&quot;.length()));</span>
+<span class="nc bnc" id="L1384" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--before-surefire-dir=&quot;)) {</span>
+<span class="nc" id="L1385">                    config.beforeSurefireDir = Paths.get(arg.substring(&quot;--before-surefire-dir=&quot;.length()));</span>
+<span class="nc bnc" id="L1386" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--benchmark-data=&quot;)) {</span>
+<span class="nc" id="L1387">                    config.benchmarkDataPath = Paths.get(arg.substring(&quot;--benchmark-data=&quot;.length()));</span>
+<span class="nc bnc" id="L1388" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--repair-impact-work-dir=&quot;)) {</span>
+<span class="nc" id="L1389">                    config.repairImpactWorkDir = Paths.get(arg.substring(&quot;--repair-impact-work-dir=&quot;.length()));</span>
+<span class="nc bnc" id="L1390" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--mvn=&quot;)) {</span>
+<span class="nc" id="L1391">                    config.mavenExecutable = arg.substring(&quot;--mvn=&quot;.length());</span>
+<span class="nc bnc" id="L1392" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--pit-target-classes=&quot;)) {</span>
+<span class="nc" id="L1393">                    config.pitTargetClasses = splitComma(arg.substring(&quot;--pit-target-classes=&quot;.length()));</span>
+<span class="nc bnc" id="L1394" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--pit-target-tests=&quot;)) {</span>
+<span class="nc" id="L1395">                    config.pitTargetTests = splitComma(arg.substring(&quot;--pit-target-tests=&quot;.length()));</span>
+<span class="nc bnc" id="L1396" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--pit-timeout-minutes=&quot;)) {</span>
+<span class="nc" id="L1397">                    config.pitTimeoutMinutes = Long.parseLong(arg.substring(&quot;--pit-timeout-minutes=&quot;.length()));</span>
+<span class="nc bnc" id="L1398" title="All 2 branches missed.">                } else if (arg.startsWith(&quot;--repair-impact-timeout-minutes=&quot;)) {</span>
+<span class="nc" id="L1399">                    config.repairImpactTimeoutMinutes = Long.parseLong(arg.substring(&quot;--repair-impact-timeout-minutes=&quot;.length()));</span>
+                }
+            }
+<span class="nc bnc" id="L1402" title="All 2 branches missed.">            if (config.pitTargetClasses.isEmpty()) {</span>
+<span class="nc" id="L1403">                config.pitTargetClasses = derivePitTargetClasses(config.testDir);</span>
+            }
+<span class="nc bnc" id="L1405" title="All 2 branches missed.">            if (config.pitTargetTests.isEmpty()) {</span>
+<span class="nc" id="L1406">                config.pitTargetTests.add(&quot;*Test&quot;);</span>
+            }
+<span class="nc" id="L1408">            return config;</span>
+        }
+
+        String mavenCommand() {
+<span class="nc bnc" id="L1412" title="All 4 branches missed.">            if (mavenExecutable != null &amp;&amp; !mavenExecutable.trim().isEmpty()) {</span>
+<span class="nc" id="L1413">                return mavenExecutable;</span>
+            }
+<span class="nc" id="L1415">            String hardcoded = &quot;D:\\TopNew-SpringBoot\\maven\\apache-maven-3.9.1-bin\\apache-maven-3.9.1\\bin\\mvn.cmd&quot;;</span>
+<span class="nc bnc" id="L1416" title="All 4 branches missed.">            if (isWindows() &amp;&amp; Files.exists(Paths.get(hardcoded))) {</span>
+<span class="nc" id="L1417">                return hardcoded;</span>
+            }
+<span class="nc bnc" id="L1419" title="All 2 branches missed.">            return isWindows() ? &quot;mvn.cmd&quot; : &quot;mvn&quot;;</span>
+        }
+
+        private static List&lt;String&gt; splitComma(String value) {
+<span class="nc" id="L1423">            List&lt;String&gt; result = new ArrayList&lt;String&gt;();</span>
+<span class="nc bnc" id="L1424" title="All 2 branches missed.">            for (String item : value.split(&quot;,&quot;)) {</span>
+<span class="nc" id="L1425">                String trimmed = item.trim();</span>
+<span class="nc bnc" id="L1426" title="All 2 branches missed.">                if (!trimmed.isEmpty()) {</span>
+<span class="nc" id="L1427">                    result.add(trimmed);</span>
+                }
+            }
+<span class="nc" id="L1430">            return result;</span>
+        }
+
+        private static List&lt;String&gt; derivePitTargetClasses(Path testDir) throws IOException {
+<span class="nc" id="L1434">            Set&lt;String&gt; packages = new LinkedHashSet&lt;String&gt;();</span>
+<span class="nc bnc" id="L1435" title="All 2 branches missed.">            if (!Files.isDirectory(testDir)) {</span>
+<span class="nc" id="L1436">                return new ArrayList&lt;String&gt;();</span>
+            }
+<span class="nc" id="L1438">            List&lt;Path&gt; files = findFiles(testDir, &quot;Test.java&quot;);</span>
+<span class="nc bnc" id="L1439" title="All 2 branches missed.">            for (Path file : files) {</span>
+                try {
+<span class="nc" id="L1441">                    CompilationUnit unit = StaticJavaParser.parse(file);</span>
+<span class="nc bnc" id="L1442" title="All 2 branches missed.">                    if (unit.getPackageDeclaration().isPresent()) {</span>
+<span class="nc" id="L1443">                        Name name = unit.getPackageDeclaration().get().getName();</span>
+<span class="nc" id="L1444">                        String packageName = name.asString();</span>
+<span class="nc bnc" id="L1445" title="All 2 branches missed.">                        if (!packageName.startsWith(&quot;zju.&quot;)) {</span>
+<span class="nc" id="L1446">                            packages.add(packageName + &quot;.*&quot;);</span>
+                        }
+                    }
+<span class="nc" id="L1449">                } catch (Exception ignored) {</span>
+<span class="nc" id="L1450">                    Path relative = testDir.relativize(file).getParent();</span>
+<span class="nc bnc" id="L1451" title="All 2 branches missed.">                    if (relative != null) {</span>
+<span class="nc" id="L1452">                        String packageName = relative.toString().replace(File.separatorChar, '.');</span>
+<span class="nc bnc" id="L1453" title="All 2 branches missed.">                        if (!packageName.startsWith(&quot;zju.&quot;)) {</span>
+<span class="nc" id="L1454">                            packages.add(packageName + &quot;.*&quot;);</span>
+                        }
+                    }
+<span class="nc" id="L1457">                }</span>
+<span class="nc" id="L1458">            }</span>
+<span class="nc" id="L1459">            return new ArrayList&lt;String&gt;(packages);</span>
+        }
+    }
+
+<span class="nc" id="L1463">    static class EvaluationResult {</span>
+        Config config;
+        Date startedAt;
+        Date finishedAt;
+        SourceMetrics sourceMetrics;
+        SourceMetrics beforeSourceMetrics;
+        SurefireSummary surefireSummaryBeforeRun;
+<span class="nc" id="L1470">        List&lt;TestRunResult&gt; testRuns = new ArrayList&lt;TestRunResult&gt;();</span>
+        FlakySummary flakySummary;
+        MutationSummary mutationSummary;
+        CommandResult pitCommandResult;
+        CoverageSummary coverageBeforeRepair;
+        CoverageSummary coverageAfterRepair;
+        long executionTimeMillis;
+        RepairCost repairCost;
+        MinimalRepairImpact minimalRepairImpact;
+        BenchmarkComparison benchmarkComparison;
+        DefectDetection defectDetection;
+
+        String toReport() {
+<span class="nc" id="L1483">            StringBuilder report = new StringBuilder();</span>
+<span class="nc" id="L1484">            report.append(&quot;NewValiTest0616 validation report&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1485">            report.append(&quot;Generated at: &quot;).append(new SimpleDateFormat(&quot;yyyy-MM-dd HH:mm:ss&quot;).format(finishedAt)).append(System.lineSeparator());</span>
+<span class="nc" id="L1486">            report.append(&quot;Test directory: &quot;).append(config.testDir.toAbsolutePath().normalize()).append(System.lineSeparator());</span>
+<span class="nc" id="L1487">            report.append(&quot;Report file: &quot;).append(config.reportPath.toAbsolutePath().normalize()).append(System.lineSeparator());</span>
+<span class="nc" id="L1488">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1490">            report.append(&quot;[Source quality]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1491">            report.append(&quot;Test files: &quot;).append(sourceMetrics.testFileCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1492">            report.append(&quot;Test methods: &quot;).append(sourceMetrics.testMethodCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1493">            report.append(&quot;Assertions: &quot;).append(sourceMetrics.assertionCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1494">            report.append(&quot;Meaningful assertions: &quot;).append(sourceMetrics.meaningfulAssertionCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1495">            report.append(&quot;Weak assertions: &quot;).append(sourceMetrics.weakAssertionCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1496">            report.append(&quot;Exception assertions: &quot;).append(sourceMetrics.exceptionAssertionCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1497">            report.append(&quot;Assertion density: &quot;).append(two(sourceMetrics.assertionsPerTestMethod)).append(&quot; assertions/test method, &quot;)</span>
+<span class="nc" id="L1498">                    .append(two(sourceMetrics.assertionsPerHundredLines)).append(&quot; assertions/100 code lines&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1499">            report.append(&quot;Meaningful assertion ratio: &quot;).append(pct(sourceMetrics.meaningfulAssertionRatio)).append(System.lineSeparator());</span>
+<span class="nc" id="L1500">            report.append(&quot;Parse errors: &quot;).append(sourceMetrics.parseErrorCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1501">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1503">            report.append(&quot;[Mutation score]&quot;).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1504" title="All 2 branches missed.">            if (mutationSummary.available) {</span>
+<span class="nc" id="L1505">                report.append(&quot;PIT report: &quot;).append(mutationSummary.reportFile).append(System.lineSeparator());</span>
+<span class="nc" id="L1506">                report.append(&quot;Total mutants: &quot;).append(mutationSummary.totalMutants).append(System.lineSeparator());</span>
+<span class="nc" id="L1507">                report.append(&quot;Detected mutants: &quot;).append(mutationSummary.detectedMutants).append(System.lineSeparator());</span>
+<span class="nc" id="L1508">                report.append(&quot;Killed mutants: &quot;).append(mutationSummary.killedMutants).append(System.lineSeparator());</span>
+<span class="nc" id="L1509">                report.append(&quot;Survived mutants: &quot;).append(mutationSummary.survivedMutants).append(System.lineSeparator());</span>
+<span class="nc" id="L1510">                report.append(&quot;No coverage mutants: &quot;).append(mutationSummary.noCoverageMutants).append(System.lineSeparator());</span>
+<span class="nc" id="L1511">                report.append(&quot;Mutation score: &quot;).append(pct(mutationSummary.mutationScore)).append(System.lineSeparator());</span>
+<span class="nc" id="L1512">                report.append(&quot;Kill score: &quot;).append(pct(mutationSummary.killScore)).append(System.lineSeparator());</span>
+            } else {
+<span class="nc" id="L1514">                report.append(&quot;N/A: &quot;).append(mutationSummary.note).append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1516" title="All 2 branches missed.">            if (pitCommandResult != null) {</span>
+<span class="nc" id="L1517">                report.append(&quot;PIT command exit code: &quot;).append(pitCommandResult.exitCode)</span>
+<span class="nc" id="L1518">                        .append(&quot;, time: &quot;).append(millis(pitCommandResult.wallTimeMillis)).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1520">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1522">            report.append(&quot;[Defect detection]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1523">            report.append(&quot;Score: &quot;).append(pct(defectDetection.score)).append(System.lineSeparator());</span>
+<span class="nc" id="L1524">            report.append(&quot;Basis: &quot;).append(defectDetection.basis).append(System.lineSeparator());</span>
+<span class="nc" id="L1525">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1527">            report.append(&quot;[Flaky tests]&quot;).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1528" title="All 2 branches missed.">            if (flakySummary.available) {</span>
+<span class="nc" id="L1529">                report.append(&quot;Runs: &quot;).append(flakySummary.runCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1530">                report.append(&quot;Observed test cases: &quot;).append(flakySummary.observedTestCases).append(System.lineSeparator());</span>
+<span class="nc" id="L1531">                report.append(&quot;Flaky test cases: &quot;).append(flakySummary.flakyTestCases).append(System.lineSeparator());</span>
+<span class="nc" id="L1532">                report.append(&quot;Flaky ratio: &quot;).append(pct(flakySummary.flakyRatio)).append(System.lineSeparator());</span>
+            } else {
+<span class="nc" id="L1534">                report.append(&quot;N/A: &quot;).append(flakySummary.note).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1536">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1538">            report.append(&quot;[Execution time]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1539">            report.append(&quot;Measured execution time: &quot;).append(millis(executionTimeMillis)).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1540" title="All 2 branches missed.">            if (surefireSummaryBeforeRun.available) {</span>
+<span class="nc" id="L1541">                report.append(&quot;Existing Surefire tests: &quot;).append(surefireSummaryBeforeRun.tests)</span>
+<span class="nc" id="L1542">                        .append(&quot;, failures: &quot;).append(surefireSummaryBeforeRun.failures)</span>
+<span class="nc" id="L1543">                        .append(&quot;, errors: &quot;).append(surefireSummaryBeforeRun.errors)</span>
+<span class="nc" id="L1544">                        .append(&quot;, skipped: &quot;).append(surefireSummaryBeforeRun.skipped)</span>
+<span class="nc" id="L1545">                        .append(&quot;, report time: &quot;).append(millis(surefireSummaryBeforeRun.timeMillis))</span>
+<span class="nc" id="L1546">                        .append(System.lineSeparator());</span>
+            } else {
+<span class="nc" id="L1548">                report.append(&quot;Existing Surefire summary: &quot;).append(surefireSummaryBeforeRun.note).append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1550" title="All 2 branches missed.">            for (TestRunResult run : testRuns) {</span>
+<span class="nc" id="L1551">                report.append(&quot;Run &quot;).append(run.index).append(&quot;: exit=&quot;).append(run.commandResult.exitCode)</span>
+<span class="nc" id="L1552">                        .append(&quot;, wall=&quot;).append(millis(run.wallTimeMillis))</span>
+<span class="nc" id="L1553">                        .append(&quot;, tests=&quot;).append(run.surefireSummary.tests)</span>
+<span class="nc" id="L1554">                        .append(&quot;, failures=&quot;).append(run.surefireSummary.failures)</span>
+<span class="nc" id="L1555">                        .append(&quot;, errors=&quot;).append(run.surefireSummary.errors)</span>
+<span class="nc" id="L1556">                        .append(System.lineSeparator());</span>
+<span class="nc" id="L1557">            }</span>
+<span class="nc" id="L1558">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1560">            report.append(&quot;[Repair cost]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1561">            report.append(&quot;Generated test files: &quot;).append(repairCost.generatedTestFiles).append(System.lineSeparator());</span>
+<span class="nc" id="L1562">            report.append(&quot;Generated test methods: &quot;).append(repairCost.generatedTestMethods).append(System.lineSeparator());</span>
+<span class="nc" id="L1563">            report.append(&quot;Generated non-comment lines: &quot;).append(repairCost.generatedTestLines).append(System.lineSeparator());</span>
+<span class="nc" id="L1564">            report.append(&quot;Current failing tests from Surefire: &quot;).append(repairCost.currentFailingTests).append(System.lineSeparator());</span>
+<span class="nc" id="L1565">            report.append(&quot;Test source parse errors: &quot;).append(repairCost.parseErrorCount).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1566" title="All 2 branches missed.">            if (repairCost.generationLogSummary.available) {</span>
+<span class="nc" id="L1567">                report.append(&quot;Latest generation log: &quot;).append(repairCost.generationLogSummary.logFile).append(System.lineSeparator());</span>
+<span class="nc" id="L1568">                report.append(&quot;Log success-like lines: &quot;).append(repairCost.generationLogSummary.successLikeLines).append(System.lineSeparator());</span>
+<span class="nc" id="L1569">                report.append(&quot;Log failure-like lines: &quot;).append(repairCost.generationLogSummary.failureLikeLines).append(System.lineSeparator());</span>
+<span class="nc" id="L1570">                report.append(&quot;Log repair-number lines: &quot;).append(repairCost.generationLogSummary.repairNumberLines).append(System.lineSeparator());</span>
+<span class="nc" id="L1571">                report.append(&quot;Log repair-number sum: &quot;).append(repairCost.generationLogSummary.repairNumberSum).append(System.lineSeparator());</span>
+            } else {
+<span class="nc" id="L1573">                report.append(&quot;Generation log: &quot;).append(repairCost.generationLogSummary.note).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1575">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1577">            report.append(&quot;[Minimal target repair impact]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1578">            report.append(&quot;Fix result files: &quot;).append(minimalRepairImpact.fixResultFileCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1579">            report.append(&quot;Files with fallback/comment strategy: &quot;).append(minimalRepairImpact.fallbackFileCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1580">            report.append(&quot;Commented test methods: &quot;).append(minimalRepairImpact.fallbackMethodsCommented).append(System.lineSeparator());</span>
+<span class="nc" id="L1581">            report.append(&quot;Commented code lines: &quot;).append(minimalRepairImpact.fallbackLinesCommented).append(System.lineSeparator());</span>
+<span class="nc" id="L1582">            report.append(&quot;Commented assertions: &quot;).append(minimalRepairImpact.fallbackAssertionsCommented).append(System.lineSeparator());</span>
+<span class="nc" id="L1583">            report.append(&quot;Deleted test methods estimate: &quot;).append(minimalRepairImpact.fallbackMethodsDeleted).append(System.lineSeparator());</span>
+<span class="nc" id="L1584">            report.append(&quot;Deleted code lines estimate: &quot;).append(minimalRepairImpact.fallbackLinesDeleted).append(System.lineSeparator());</span>
+<span class="nc" id="L1585">            report.append(&quot;Deleted assertions estimate: &quot;).append(minimalRepairImpact.fallbackAssertionsDeleted).append(System.lineSeparator());</span>
+<span class="nc" id="L1586">            report.append(&quot;Total removed/commented methods: &quot;).append(minimalRepairImpact.deletedOrCommentedMethods).append(System.lineSeparator());</span>
+<span class="nc" id="L1587">            report.append(&quot;Total removed/commented lines: &quot;).append(minimalRepairImpact.deletedOrCommentedLines).append(System.lineSeparator());</span>
+<span class="nc" id="L1588">            report.append(&quot;Total removed/commented assertions: &quot;).append(minimalRepairImpact.deletedOrCommentedAssertions).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1589" title="All 2 branches missed.">            if (minimalRepairImpact.autoMeasurementRequested) {</span>
+<span class="nc" id="L1590">                report.append(&quot;Automatic measurement: enabled&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1591">                report.append(&quot;Snapshot pairs measured: &quot;).append(minimalRepairImpact.snapshotPairCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1592">                report.append(&quot;Snapshot before files: &quot;).append(minimalRepairImpact.snapshotBeforeFileCount).append(System.lineSeparator());</span>
+<span class="nc" id="L1593">                report.append(&quot;Snapshot after files: &quot;).append(minimalRepairImpact.snapshotAfterFileCount).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1594" title="All 4 branches missed.">                if (minimalRepairImpact.beforeMeasurement != null &amp;&amp; minimalRepairImpact.beforeMeasurement.commandResult != null) {</span>
+<span class="nc" id="L1595">                    report.append(&quot;Before measurement command exit code: &quot;)</span>
+<span class="nc" id="L1596">                            .append(minimalRepairImpact.beforeMeasurement.commandResult.exitCode)</span>
+<span class="nc" id="L1597">                            .append(&quot;, time: &quot;).append(millis(minimalRepairImpact.beforeMeasurement.commandResult.wallTimeMillis))</span>
+<span class="nc" id="L1598">                            .append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1599" title="All 2 branches missed.">                    if (minimalRepairImpact.beforeMeasurement.surefire.available) {</span>
+<span class="nc" id="L1600">                        report.append(&quot;Before measurement tests: &quot;)</span>
+<span class="nc" id="L1601">                                .append(minimalRepairImpact.beforeMeasurement.surefire.tests)</span>
+<span class="nc" id="L1602">                                .append(&quot;, failures: &quot;).append(minimalRepairImpact.beforeMeasurement.surefire.failures)</span>
+<span class="nc" id="L1603">                                .append(&quot;, errors: &quot;).append(minimalRepairImpact.beforeMeasurement.surefire.errors)</span>
+<span class="nc" id="L1604">                                .append(&quot;, skipped: &quot;).append(minimalRepairImpact.beforeMeasurement.surefire.skipped)</span>
+<span class="nc" id="L1605">                                .append(System.lineSeparator());</span>
+                    }
+<span class="nc bnc" id="L1607" title="All 2 branches missed.">                    if (minimalRepairImpact.beforeMeasurement.commandLog != null) {</span>
+<span class="nc" id="L1608">                        report.append(&quot;Before measurement log: &quot;)</span>
+<span class="nc" id="L1609">                                .append(minimalRepairImpact.beforeMeasurement.commandLog)</span>
+<span class="nc" id="L1610">                                .append(System.lineSeparator());</span>
+                    }
+<span class="nc bnc" id="L1612" title="All 2 branches missed.">                    if (!minimalRepairImpact.beforeMeasurement.fallbackSnapshotFiles.isEmpty()) {</span>
+<span class="nc" id="L1613">                        report.append(&quot;Before snapshot files restored to current version: &quot;)</span>
+<span class="nc" id="L1614">                                .append(minimalRepairImpact.beforeMeasurement.fallbackSnapshotFiles.size())</span>
+<span class="nc" id="L1615">                                .append(System.lineSeparator());</span>
+                    }
+                }
+<span class="nc bnc" id="L1618" title="All 4 branches missed.">                if (minimalRepairImpact.afterMeasurement != null &amp;&amp; minimalRepairImpact.afterMeasurement.commandResult != null) {</span>
+<span class="nc" id="L1619">                    report.append(&quot;After measurement command exit code: &quot;)</span>
+<span class="nc" id="L1620">                            .append(minimalRepairImpact.afterMeasurement.commandResult.exitCode)</span>
+<span class="nc" id="L1621">                            .append(&quot;, time: &quot;).append(millis(minimalRepairImpact.afterMeasurement.commandResult.wallTimeMillis))</span>
+<span class="nc" id="L1622">                            .append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1623" title="All 2 branches missed.">                    if (minimalRepairImpact.afterMeasurement.surefire.available) {</span>
+<span class="nc" id="L1624">                        report.append(&quot;After measurement tests: &quot;)</span>
+<span class="nc" id="L1625">                                .append(minimalRepairImpact.afterMeasurement.surefire.tests)</span>
+<span class="nc" id="L1626">                                .append(&quot;, failures: &quot;).append(minimalRepairImpact.afterMeasurement.surefire.failures)</span>
+<span class="nc" id="L1627">                                .append(&quot;, errors: &quot;).append(minimalRepairImpact.afterMeasurement.surefire.errors)</span>
+<span class="nc" id="L1628">                                .append(&quot;, skipped: &quot;).append(minimalRepairImpact.afterMeasurement.surefire.skipped)</span>
+<span class="nc" id="L1629">                                .append(System.lineSeparator());</span>
+                    }
+<span class="nc bnc" id="L1631" title="All 2 branches missed.">                    if (minimalRepairImpact.afterMeasurement.commandLog != null) {</span>
+<span class="nc" id="L1632">                        report.append(&quot;After measurement log: &quot;)</span>
+<span class="nc" id="L1633">                                .append(minimalRepairImpact.afterMeasurement.commandLog)</span>
+<span class="nc" id="L1634">                                .append(System.lineSeparator());</span>
+                    }
+<span class="nc bnc" id="L1636" title="All 2 branches missed.">                    if (!minimalRepairImpact.afterMeasurement.fallbackSnapshotFiles.isEmpty()) {</span>
+<span class="nc" id="L1637">                        report.append(&quot;After snapshot files restored to current version: &quot;)</span>
+<span class="nc" id="L1638">                                .append(minimalRepairImpact.afterMeasurement.fallbackSnapshotFiles.size())</span>
+<span class="nc" id="L1639">                                .append(System.lineSeparator());</span>
+                    }
+                }
+            } else {
+<span class="nc" id="L1643">                report.append(&quot;Automatic measurement: disabled; use --measure-repair-impact to generate before/after data from fix logs.&quot;).append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1645" title="All 4 branches missed.">            if (minimalRepairImpact.coverageBefore != null &amp;&amp; minimalRepairImpact.coverageBefore.available) {</span>
+<span class="nc" id="L1646">                report.append(&quot;Coverage before repair: line=&quot;).append(pct(minimalRepairImpact.coverageBefore.lineCoverage))</span>
+<span class="nc" id="L1647">                        .append(&quot;, branch=&quot;).append(pct(minimalRepairImpact.coverageBefore.branchCoverage))</span>
+<span class="nc" id="L1648">                        .append(&quot;, method=&quot;).append(pct(minimalRepairImpact.coverageBefore.methodCoverage)).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1649" title="All 2 branches missed.">                if (minimalRepairImpact.beforeCoverageCsv != null) {</span>
+<span class="nc" id="L1650">                    report.append(&quot;Coverage before source: &quot;).append(minimalRepairImpact.beforeCoverageCsv).append(System.lineSeparator());</span>
+                }
+            } else {
+<span class="nc" id="L1653">                report.append(&quot;Coverage before repair: N/A&quot;);</span>
+<span class="nc bnc" id="L1654" title="All 2 branches missed.">                if (minimalRepairImpact.beforeCoverageCsv != null) {</span>
+<span class="nc" id="L1655">                    report.append(&quot; (missing &quot;).append(minimalRepairImpact.beforeCoverageCsv).append(&quot;)&quot;);</span>
+                }
+<span class="nc" id="L1657">                report.append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1659" title="All 4 branches missed.">            if (minimalRepairImpact.coverageAfter != null &amp;&amp; minimalRepairImpact.coverageAfter.available) {</span>
+<span class="nc" id="L1660">                report.append(&quot;Coverage after repair: line=&quot;).append(pct(minimalRepairImpact.coverageAfter.lineCoverage))</span>
+<span class="nc" id="L1661">                        .append(&quot;, branch=&quot;).append(pct(minimalRepairImpact.coverageAfter.branchCoverage))</span>
+<span class="nc" id="L1662">                        .append(&quot;, method=&quot;).append(pct(minimalRepairImpact.coverageAfter.methodCoverage)).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1663" title="All 2 branches missed.">                if (minimalRepairImpact.afterCoverageCsv != null) {</span>
+<span class="nc" id="L1664">                    report.append(&quot;Coverage after source: &quot;).append(minimalRepairImpact.afterCoverageCsv).append(System.lineSeparator());</span>
+                }
+            } else {
+<span class="nc" id="L1667">                report.append(&quot;Coverage after repair: N/A&quot;);</span>
+<span class="nc bnc" id="L1668" title="All 2 branches missed.">                if (minimalRepairImpact.afterCoverageCsv != null) {</span>
+<span class="nc" id="L1669">                    report.append(&quot; (missing &quot;).append(minimalRepairImpact.afterCoverageCsv).append(&quot;)&quot;);</span>
+                }
+<span class="nc" id="L1671">                report.append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1673" title="All 8 branches missed.">            if (minimalRepairImpact.coverageBefore != null &amp;&amp; minimalRepairImpact.coverageBefore.available</span>
+                    &amp;&amp; minimalRepairImpact.coverageAfter != null &amp;&amp; minimalRepairImpact.coverageAfter.available) {
+<span class="nc" id="L1675">                report.append(&quot;Coverage change: line=&quot;)</span>
+<span class="nc" id="L1676">                        .append(pct(minimalRepairImpact.coverageBefore.lineCoverage)).append(&quot; -&gt; &quot;)</span>
+<span class="nc" id="L1677">                        .append(pct(minimalRepairImpact.coverageAfter.lineCoverage)).append(&quot; (&quot;)</span>
+<span class="nc" id="L1678">                        .append(deltaPct(minimalRepairImpact.coverageAfter.lineCoverage - minimalRepairImpact.coverageBefore.lineCoverage)).append(&quot;)&quot;)</span>
+<span class="nc" id="L1679">                        .append(&quot;, branch=&quot;)</span>
+<span class="nc" id="L1680">                        .append(pct(minimalRepairImpact.coverageBefore.branchCoverage)).append(&quot; -&gt; &quot;)</span>
+<span class="nc" id="L1681">                        .append(pct(minimalRepairImpact.coverageAfter.branchCoverage)).append(&quot; (&quot;)</span>
+<span class="nc" id="L1682">                        .append(deltaPct(minimalRepairImpact.coverageAfter.branchCoverage - minimalRepairImpact.coverageBefore.branchCoverage)).append(&quot;)&quot;)</span>
+<span class="nc" id="L1683">                        .append(&quot;, method=&quot;)</span>
+<span class="nc" id="L1684">                        .append(pct(minimalRepairImpact.coverageBefore.methodCoverage)).append(&quot; -&gt; &quot;)</span>
+<span class="nc" id="L1685">                        .append(pct(minimalRepairImpact.coverageAfter.methodCoverage)).append(&quot; (&quot;)</span>
+<span class="nc" id="L1686">                        .append(deltaPct(minimalRepairImpact.coverageAfter.methodCoverage - minimalRepairImpact.coverageBefore.methodCoverage)).append(&quot;)&quot;)</span>
+<span class="nc" id="L1687">                        .append(System.lineSeparator());</span>
+            } else {
+<span class="nc" id="L1689">                report.append(&quot;Coverage change: N/A because before or after coverage data is unavailable.&quot;).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1691">            report.append(&quot;Pass rate before repair: &quot;)</span>
+<span class="nc bnc" id="L1692" title="All 2 branches missed.">                    .append(minimalRepairImpact.hasBeforePassRate ? pct(minimalRepairImpact.passRateBefore) : &quot;N/A&quot;)</span>
+<span class="nc" id="L1693">                    .append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1694" title="All 2 branches missed.">            if (minimalRepairImpact.beforeSurefireDir != null) {</span>
+<span class="nc" id="L1695">                report.append(&quot;Pass rate before source: &quot;).append(minimalRepairImpact.beforeSurefireDir).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1697">            report.append(&quot;Pass rate after repair: &quot;)</span>
+<span class="nc bnc" id="L1698" title="All 2 branches missed.">                    .append(minimalRepairImpact.hasAfterPassRate ? pct(minimalRepairImpact.passRateAfter) : &quot;N/A&quot;)</span>
+<span class="nc" id="L1699">                    .append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1700" title="All 2 branches missed.">            if (minimalRepairImpact.afterSurefireDir != null) {</span>
+<span class="nc" id="L1701">                report.append(&quot;Pass rate after source: &quot;).append(minimalRepairImpact.afterSurefireDir).append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1703" title="All 4 branches missed.">            if (minimalRepairImpact.hasBeforePassRate &amp;&amp; minimalRepairImpact.hasAfterPassRate) {</span>
+<span class="nc" id="L1704">                report.append(&quot;Pass rate change: &quot;)</span>
+<span class="nc" id="L1705">                        .append(pct(minimalRepairImpact.passRateBefore)).append(&quot; -&gt; &quot;)</span>
+<span class="nc" id="L1706">                        .append(pct(minimalRepairImpact.passRateAfter)).append(&quot; (&quot;)</span>
+<span class="nc" id="L1707">                        .append(deltaPct(minimalRepairImpact.passRateAfter - minimalRepairImpact.passRateBefore)).append(&quot;)&quot;)</span>
+<span class="nc" id="L1708">                        .append(System.lineSeparator());</span>
+            } else {
+<span class="nc" id="L1710">                report.append(&quot;Pass rate change: N/A because before or after Surefire data is unavailable.&quot;).append(System.lineSeparator());</span>
+            }
+<span class="nc bnc" id="L1712" title="All 2 branches missed.">            if (minimalRepairImpact.note != null) {</span>
+<span class="nc" id="L1713">                report.append(&quot;Note: &quot;).append(minimalRepairImpact.note).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1715">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1717">            report.append(&quot;[External tool benchmark data]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1718">            report.append(&quot;Expected tools: ChatUniTest[8], BRMiner[28], TestSpark[29], EvoSuite[3], A3Test[10], AthenaTest[30], SymPrompt[31], ChatTester[7], HITS[21]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1719">            report.append(&quot;Expected projects: Commons-Cli[24], Commons-Csv[25], Commons-Lang[26], Gson[27]&quot;).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1720" title="All 2 branches missed.">            if (benchmarkComparison.available) {</span>
+<span class="nc" id="L1721">                report.append(&quot;Benchmark data file: &quot;).append(benchmarkComparison.dataFile).append(System.lineSeparator());</span>
+<span class="nc" id="L1722">                report.append(&quot;Rows loaded: &quot;).append(benchmarkComparison.records.size()).append(System.lineSeparator());</span>
+<span class="nc bnc" id="L1723" title="All 2 branches missed.">                for (BenchmarkRecord record : benchmarkComparison.records) {</span>
+<span class="nc" id="L1724">                    report.append(&quot;  &quot;).append(record.values).append(System.lineSeparator());</span>
+<span class="nc" id="L1725">                }</span>
+            } else {
+<span class="nc" id="L1727">                report.append(&quot;N/A: &quot;).append(benchmarkComparison.note).append(System.lineSeparator());</span>
+            }
+<span class="nc" id="L1729">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1731">            report.append(&quot;[Tool usage]&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1732">            report.append(&quot;PIT mutation score: mvn exec:java \&quot;-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616\&quot; \&quot;-Dexec.args=--run-pit --pit-target-classes=cli.*,csv.*,gson.*,lang3.*\&quot;&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1733">            report.append(&quot;Flaky ratio and execution time: mvn exec:java \&quot;-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616\&quot; \&quot;-Dexec.args=--run-tests --flaky-runs=3\&quot;&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1734">            report.append(&quot;Before/after repair impact: use --measure-repair-impact to build snapshots from src/F logs, or provide --before-test-dir, --before-coverage-csv and --before-surefire-dir when historical snapshots exist.&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1735">            report.append(&quot;External tools comparison: create a CSV/TSV with columns tool,project,mutationScore,assertionDensity,meaningfulAssertions,defectDetection,flakyRatio,executionTime,repairCost,source and pass --benchmark-data=path.&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1736">            report.append(System.lineSeparator());</span>
+
+<span class="nc" id="L1738">            report.append(&quot;Usage hints:&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1739">            report.append(&quot;  mvn exec:java \&quot;-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616\&quot;&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1740">            report.append(&quot;  mvn exec:java \&quot;-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616\&quot; \&quot;-Dexec.args=--run-tests --flaky-runs=3\&quot;&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1741">            report.append(&quot;  mvn exec:java \&quot;-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616\&quot; \&quot;-Dexec.args=--run-pit --pit-target-classes=cli.*,csv.*,gson.*,lang3.*\&quot;&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1742">            report.append(&quot;  mvn exec:java \&quot;-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616\&quot; \&quot;-Dexec.args=--measure-repair-impact\&quot;&quot;).append(System.lineSeparator());</span>
+<span class="nc" id="L1743">            return report.toString();</span>
+        }
+    }
+
+<span class="nc" id="L1747">    static class SourceMetrics {</span>
+        Path testDir;
+        int testFileCount;
+        int testMethodCount;
+        int assertionCount;
+        int meaningfulAssertionCount;
+        int weakAssertionCount;
+        int exceptionAssertionCount;
+        int nonCommentCodeLines;
+        int parseErrorCount;
+        double assertionsPerTestMethod;
+        double meaningfulAssertionsPerTestMethod;
+        double assertionsPerHundredLines;
+        double meaningfulAssertionRatio;
+<span class="nc" id="L1761">        List&lt;FileMetrics&gt; files = new ArrayList&lt;FileMetrics&gt;();</span>
+<span class="nc" id="L1762">        List&lt;String&gt; notes = new ArrayList&lt;String&gt;();</span>
+    }
+
+<span class="nc" id="L1765">    static class FileMetrics {</span>
+        Path path;
+        String packageName;
+        int testMethodCount;
+        int assertionCount;
+        int meaningfulAssertionCount;
+        int weakAssertionCount;
+        int exceptionAssertionCount;
+        int nonCommentCodeLines;
+        String parseError;
+    }
+
+<span class="nc" id="L1777">    static class MutationSummary {</span>
+        boolean available;
+        Path pitDir;
+        Path reportFile;
+        int totalMutants;
+        int detectedMutants;
+        int killedMutants;
+        int survivedMutants;
+        int noCoverageMutants;
+        double mutationScore;
+        double killScore;
+        String note;
+<span class="nc" id="L1789">        Map&lt;String, Integer&gt; otherStatuses = new LinkedHashMap&lt;String, Integer&gt;();</span>
+    }
+
+<span class="nc" id="L1792">    static class CoverageSummary {</span>
+        boolean available;
+        Path csvFile;
+        long instructionMissed;
+        long instructionCovered;
+        long branchMissed;
+        long branchCovered;
+        long lineMissed;
+        long lineCovered;
+        long methodMissed;
+        long methodCovered;
+        double instructionCoverage;
+        double branchCoverage;
+        double lineCoverage;
+        double methodCoverage;
+        String note;
+    }
+
+<span class="nc" id="L1810">    static class MinimalRepairImpact {</span>
+        Path fixResultDir;
+        Path beforeTestDir;
+        Path afterTestDir;
+        int fixResultFileCount;
+        int fallbackFileCount;
+        int fallbackMethodsCommented;
+        int fallbackLinesCommented;
+        int fallbackAssertionsCommented;
+        int fallbackMethodsDeleted;
+        int fallbackLinesDeleted;
+        int fallbackAssertionsDeleted;
+        int deletedOrCommentedMethods;
+        int deletedOrCommentedLines;
+        int deletedOrCommentedAssertions;
+        int beforeMethods;
+        int afterMethods;
+        int beforeLines;
+        int afterLines;
+        int beforeAssertions;
+        int afterAssertions;
+        CoverageSummary coverageBefore;
+        CoverageSummary coverageAfter;
+        Path beforeCoverageCsv;
+        Path afterCoverageCsv;
+        Path beforeSurefireDir;
+        Path afterSurefireDir;
+        boolean hasBeforePassRate;
+        boolean hasAfterPassRate;
+        double passRateBefore;
+        double passRateAfter;
+        boolean autoMeasurementRequested;
+        int snapshotPairCount;
+        int snapshotBeforeFileCount;
+        int snapshotAfterFileCount;
+        RepairImpactMeasurement beforeMeasurement;
+        RepairImpactMeasurement afterMeasurement;
+        String note;
+<span class="nc" id="L1848">        List&lt;FixLogImpact&gt; fixLogImpacts = new ArrayList&lt;FixLogImpact&gt;();</span>
+    }
+
+<span class="nc" id="L1851">    static class FixLogImpact {</span>
+        Path file;
+        boolean hasFallback;
+        int methodsCommented;
+        int linesCommented;
+        int assertionsCommented;
+        int methodsDeleted;
+        int linesDeleted;
+        int assertionsDeleted;
+    }
+
+<span class="nc" id="L1862">    static class CodeBlock {</span>
+        String label;
+        String code;
+    }
+
+<span class="nc" id="L1867">    static class JavaClassLocation {</span>
+        boolean available;
+<span class="nc" id="L1869">        String packageName = &quot;&quot;;</span>
+<span class="nc" id="L1870">        String className = &quot;&quot;;</span>
+    }
+
+<span class="nc" id="L1873">    static class RepairImpactSnapshots {</span>
+        boolean available;
+        Path beforeTestDir;
+        Path afterTestDir;
+        int snapshotPairCount;
+        int beforeFileCount;
+        int afterFileCount;
+        String note;
+    }
+
+<span class="nc" id="L1883">    static class RepairImpactMeasurement {</span>
+        CommandResult commandResult;
+        Path commandLog;
+<span class="nc" id="L1886">        CoverageSummary coverage = new CoverageSummary();</span>
+<span class="nc" id="L1887">        SurefireSummary surefire = new SurefireSummary();</span>
+<span class="nc" id="L1888">        Set&lt;String&gt; fallbackSnapshotFiles = new LinkedHashSet&lt;String&gt;();</span>
+    }
+
+<span class="nc" id="L1891">    static class BenchmarkComparison {</span>
+        boolean available;
+        Path dataFile;
+        String note;
+<span class="nc" id="L1895">        List&lt;BenchmarkRecord&gt; records = new ArrayList&lt;BenchmarkRecord&gt;();</span>
+
+        static BenchmarkComparison defaultEmpty() {
+<span class="nc" id="L1898">            BenchmarkComparison comparison = new BenchmarkComparison();</span>
+<span class="nc" id="L1899">            comparison.available = false;</span>
+<span class="nc" id="L1900">            return comparison;</span>
+        }
+    }
+
+<span class="nc" id="L1904">    static class BenchmarkRecord {</span>
+<span class="nc" id="L1905">        Map&lt;String, String&gt; values = new LinkedHashMap&lt;String, String&gt;();</span>
+    }
+
+<span class="nc" id="L1908">    static class SurefireSummary {</span>
+        boolean available;
+        Path directory;
+        int testSuites;
+        int tests;
+        int testCases;
+        int failures;
+        int errors;
+        int skipped;
+        long timeMillis;
+        String note;
+<span class="nc" id="L1919">        Map&lt;String, TestCaseStatus&gt; testCaseStatuses = new LinkedHashMap&lt;String, TestCaseStatus&gt;();</span>
+    }
+
+<span class="nc" id="L1922">    static class TestCaseStatus {</span>
+        String className;
+        String methodName;
+        boolean failed;
+        boolean skipped;
+        long timeMillis;
+
+        String id() {
+<span class="nc" id="L1930">            return className + &quot;#&quot; + methodName;</span>
+        }
+    }
+
+<span class="nc" id="L1934">    static class TestRunResult {</span>
+        int index;
+        CommandResult commandResult;
+        SurefireSummary surefireSummary;
+        long wallTimeMillis;
+    }
+
+<span class="nc" id="L1941">    static class FlakySummary {</span>
+        boolean available;
+        int runCount;
+        int observedTestCases;
+        int flakyTestCases;
+        double flakyRatio;
+        String note;
+
+        static FlakySummary notMeasured(String note) {
+<span class="nc" id="L1950">            FlakySummary summary = new FlakySummary();</span>
+<span class="nc" id="L1951">            summary.available = false;</span>
+<span class="nc" id="L1952">            summary.note = note;</span>
+<span class="nc" id="L1953">            return summary;</span>
+        }
+    }
+
+<span class="nc" id="L1957">    static class RepairCost {</span>
+        int generatedTestFiles;
+        int generatedTestMethods;
+        int generatedTestLines;
+        int currentFailingTests;
+        int parseErrorCount;
+        GenerationLogSummary generationLogSummary;
+    }
+
+<span class="nc" id="L1966">    static class GenerationLogSummary {</span>
+        boolean available;
+        Path logFile;
+        int successLikeLines;
+        int failureLikeLines;
+        int repairNumberLines;
+        int repairNumberSum;
+        String note;
+    }
+
+<span class="nc" id="L1976">    static class DefectDetection {</span>
+        boolean available;
+        double score;
+        String basis;
+    }
+
+<span class="nc" id="L1982">    static class CommandResult {</span>
+        String command;
+        int exitCode;
+        boolean timedOut;
+        long wallTimeMillis;
+<span class="nc" id="L1987">        List&lt;String&gt; output = new ArrayList&lt;String&gt;();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.8.202204050719</span></div></body></html>

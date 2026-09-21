@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: cli.PosixParserTest
+-------------------------------------------------------------------------------
+Tests run: 19, Failures: 1, Errors: 2, Skipped: 0, Time elapsed: 0.009 s <<< FAILURE! - in cli.PosixParserTest
+testInit  Time elapsed: 0 s  <<< ERROR!
+java.lang.UnsupportedOperationException
+	at cli.PosixParserTest.testInit(PosixParserTest.java:170)
+
+testBurstToken_NonExistingOptionStopAtNonOptionFalse  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <[-abc]> but was: <[-a, -abc]>
+	at cli.PosixParserTest.testBurstToken_NonExistingOptionStopAtNonOptionFalse(PosixParserTest.java:67)
+
+testGobble  Time elapsed: 0 s  <<< ERROR!
+java.lang.UnsupportedOperationException
+	at cli.PosixParserTest.testGobble(PosixParserTest.java:156)
+

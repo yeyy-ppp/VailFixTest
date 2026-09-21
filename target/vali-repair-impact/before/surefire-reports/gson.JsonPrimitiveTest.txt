@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: gson.JsonPrimitiveTest
+-------------------------------------------------------------------------------
+Tests run: 46, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.003 s <<< FAILURE! - in gson.JsonPrimitiveTest
+testHashCodeBigDecimalInteger  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <123> but was: <1079951360>
+	at gson.JsonPrimitiveTest.testHashCodeBigDecimalInteger(JsonPrimitiveTest.java:295)
+
+testGetAsBooleanFromNumber  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at gson.JsonPrimitiveTest.testGetAsBooleanFromNumber(JsonPrimitiveTest.java:60)
+

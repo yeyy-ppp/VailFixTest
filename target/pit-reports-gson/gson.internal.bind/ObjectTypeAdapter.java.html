@@ -1,0 +1,2669 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>ObjectTypeAdapter.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson.internal.bind;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.Gson;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.ToNumberPolicy;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.ToNumberStrategy;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.TypeAdapter;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.TypeAdapterFactory;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.internal.LinkedTreeMap;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.reflect.TypeToken;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.stream.JsonReader;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.stream.JsonToken;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.stream.JsonWriter;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.io.IOException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.ArrayDeque;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.ArrayList;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Deque;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.List;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Map;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public final class ObjectTypeAdapter extends TypeAdapter&#60;Object&#62; {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private static final TypeAdapterFactory DOUBLE_FACTORY = newFactory(ToNumberPolicy.DOUBLE);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final Gson gson;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final ToNumberStrategy toNumberStrategy;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private ObjectTypeAdapter(Gson gson, ToNumberStrategy toNumberStrategy) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.gson = gson;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.toNumberStrategy = toNumberStrategy;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private static TypeAdapterFactory newFactory(ToNumberStrategy toNumberStrategy) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    return new TypeAdapterFactory() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      public &#60;T&#62; TypeAdapter&#60;T&#62; create(Gson gson, TypeToken&#60;T&#62; type) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_31'/>
+31
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_31'>1</a>
+<span>
+
+1. create : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (type.getRawType() == Object.class) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_32'/>
+32
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_32'>1</a>
+<span>
+
+1. create : replaced return value with null for gson/internal/bind/ObjectTypeAdapter$1::create &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>          return (TypeAdapter&#60;T&#62;) new ObjectTypeAdapter(gson, toNumberStrategy);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    };</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static TypeAdapterFactory getFactory(ToNumberStrategy toNumberStrategy) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_39'/>
+39
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_39'>1</a>
+<span>
+
+1. getFactory : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (toNumberStrategy == ToNumberPolicy.DOUBLE) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_40'/>
+40
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_40'>1</a>
+<span>
+
+1. getFactory : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::getFactory &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return DOUBLE_FACTORY;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_42'/>
+42
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_42'>1</a>
+<span>
+
+1. getFactory : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::getFactory &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return newFactory(toNumberStrategy);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private Object tryBeginNesting(JsonReader in, JsonToken peeked) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    switch (peeked) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case BEGIN_ARRAY:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_48'/>
+48
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_48'>1</a>
+<span>
+
+1. tryBeginNesting : removed call to gson/stream/JsonReader::beginArray &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        in.beginArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_49'/>
+49
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_49'>1</a>
+<span>
+
+1. tryBeginNesting : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::tryBeginNesting &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return new ArrayList&#60;&#62;();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case BEGIN_OBJECT:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_51'/>
+51
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_51'>1</a>
+<span>
+
+1. tryBeginNesting : removed call to gson/stream/JsonReader::beginObject &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        in.beginObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_52'/>
+52
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_52'>1</a>
+<span>
+
+1. tryBeginNesting : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::tryBeginNesting &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return new LinkedTreeMap&#60;&#62;();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      default:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_55'/>
+55
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_55'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private Object readTerminal(JsonReader in, JsonToken peeked) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    switch (peeked) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_59'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case STRING:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_60'/>
+60
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_60'>1</a>
+<span>
+
+1. readTerminal : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::readTerminal &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return in.nextString();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_61'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case NUMBER:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_62'/>
+62
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_62'>1</a>
+<span>
+
+1. readTerminal : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::readTerminal &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return toNumberStrategy.readNumber(in);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_63'/>
+63
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_63'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case BOOLEAN:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_64'/>
+64
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_64'>1</a>
+<span>
+
+1. readTerminal : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::readTerminal &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return in.nextBoolean();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_65'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case NULL:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_66'/>
+66
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_66'>1</a>
+<span>
+
+1. readTerminal : removed call to gson/stream/JsonReader::nextNull &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        in.nextNull();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_67'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_68'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      default:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_69'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw new IllegalStateException(&#34;Unexpected token: &#34; + peeked);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_71'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_72'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public Object read(JsonReader in) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_74'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    Object current;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_75'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    JsonToken peeked = in.peek();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_76'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    current = tryBeginNesting(in, peeked);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_77'/>
+77
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_77'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (current == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_78'/>
+78
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_78'>1</a>
+<span>
+
+1. read : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::read &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>      return readTerminal(in, peeked);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_79'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_80'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Deque&#60;Object&#62; stack = new ArrayDeque&#60;&#62;();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_81'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    while (true) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_82'/>
+82
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_82'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      while (in.hasNext()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_83'/>
+83
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_83'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        String name = null;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_84'/>
+84
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_84'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (current instanceof Map) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_85'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          name = in.nextName();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_86'/>
+86
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_86'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_87'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        peeked = in.peek();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_88'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        Object value = tryBeginNesting(in, peeked);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_89'/>
+89
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_89'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        boolean isNesting = value != null;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_90'/>
+90
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_90'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (value == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_91'/>
+91
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_91'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          value = readTerminal(in, peeked);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_92'/>
+92
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_92'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_93'/>
+93
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_93'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (current instanceof List) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_94'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>          @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_95'/>
+95
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_95'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          List&#60;Object&#62; list = (List&#60;Object&#62;) current;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_96'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          list.add(value);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_97'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_98'/>
+98
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_98'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>          @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_99'/>
+99
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_99'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          Map&#60;String, Object&#62; map = (Map&#60;String, Object&#62;) current;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_100'/>
+100
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_100'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          map.put(name, value);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_101'/>
+101
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_101'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_102'/>
+102
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_102'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (isNesting) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_103'/>
+103
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_103'>1</a>
+<span>
+
+1. read : removed call to java/util/Deque::addLast &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>          stack.addLast(current);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_104'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>          current = value;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_105'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_106'/>
+106
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_106'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_107'/>
+107
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_107'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (current instanceof List) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_108'/>
+108
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_108'>1</a>
+<span>
+
+1. read : removed call to gson/stream/JsonReader::endArray &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        in.endArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_109'/>
+109
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_109'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_110'/>
+110
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_110'>1</a>
+<span>
+
+1. read : removed call to gson/stream/JsonReader::endObject &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        in.endObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_111'/>
+111
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_111'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_112'/>
+112
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_112'>1</a>
+<span>
+
+1. read : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (stack.isEmpty()) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_113'/>
+113
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_113'>1</a>
+<span>
+
+1. read : replaced return value with null for gson/internal/bind/ObjectTypeAdapter::read &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return current;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_114'/>
+114
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_114'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      } else {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_115'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        current = stack.removeLast();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_116'/>
+116
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_116'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_117'/>
+117
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_117'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_118'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_119'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_120'/>
+120
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_120'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_121'/>
+121
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_121'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public void write(com.google.gson.stream.JsonWriter out, String value) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_122'/>
+122
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_122'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_123'/>
+123
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_123'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_124'/>
+124
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_124'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_125'/>
+125
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_125'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_126'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public String read(com.google.gson.stream.JsonReader in) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_127'/>
+127
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_127'>1</a>
+<span>
+
+1. read : replaced return value with &#34;&#34; for gson/internal/bind/ObjectTypeAdapter::read &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    return null;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_128'/>
+128
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_128'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_129'/>
+129
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_129'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_130'/>
+130
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_130'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_131'/>
+131
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_131'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public void write(JsonWriter out, Object value) throws IOException {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_132'/>
+132
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_132'>1</a>
+<span>
+
+1. write : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (value == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_133'/>
+133
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_133'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      out.nullValue();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_134'/>
+134
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_134'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      return;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_135'/>
+135
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_135'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_136'/>
+136
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_136'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_137'/>
+137
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_137'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    TypeAdapter&#60;Object&#62; typeAdapter = (TypeAdapter&#60;Object&#62;) gson.getAdapter(value.getClass());</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_138'/>
+138
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_138'>1</a>
+<span>
+
+1. write : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (typeAdapter instanceof ObjectTypeAdapter) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_139'/>
+139
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_139'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      out.beginObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_140'/>
+140
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_140'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      out.endObject();</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_141'/>
+141
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_141'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>      return;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_142'/>
+142
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_142'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_143'/>
+143
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_143'>1</a>
+<span>
+
+1. write : removed call to gson/TypeAdapter::write &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    typeAdapter.write(out, value);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_144'/>
+144
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_144'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@6c200ad5_145'/>
+145
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_145'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_31'>31</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_31'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_NonNestingToken()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_32'>32</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_32'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>create<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_InvalidToken()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter$1::create &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_39'>39</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_39'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getFactory<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testGetFactory_SameInstanceForDouble()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_40'>40</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_40'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getFactory<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_NonNestingToken()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::getFactory &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_42'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getFactory<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_LazilyParsedNumber()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::getFactory &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_48'>48</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_48'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>tryBeginNesting<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginArray()]</span></span> removed call to gson/stream/JsonReader::beginArray &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_49'>49</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_49'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>tryBeginNesting<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginArray()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::tryBeginNesting &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_51'>51</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_51'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>tryBeginNesting<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginObject()]</span></span> removed call to gson/stream/JsonReader::beginObject &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_52'>52</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_52'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>tryBeginNesting<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginObject()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::tryBeginNesting &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_60'>60</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_60'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>readTerminal<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_String()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::readTerminal &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_62'>62</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_62'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>readTerminal<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_LazilyParsedNumber()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::readTerminal &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_64'>64</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_64'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>readTerminal<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_Boolean()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::readTerminal &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_66'>66</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_66'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>readTerminal<br/><b>Killed by : </b>none</span></span> removed call to gson/stream/JsonReader::nextNull &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_77'>77</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_77'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_EdgeCaseNull()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_78'>78</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_78'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::read &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_82'>82</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_82'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_84'>84</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_84'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_89'>89</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_89'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_90'>90</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_90'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_93'>93</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_93'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_102'>102</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_102'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_103'>103</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_103'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> removed call to java/util/Deque::addLast &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_107'>107</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_107'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_108'>108</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_108'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_EmptyStructures()]</span></span> removed call to gson/stream/JsonReader::endArray &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_110'>110</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_110'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetLenient()]</span></span> removed call to gson/stream/JsonReader::endObject &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_112'>112</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_112'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_113'>113</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_113'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()]</span></span> replaced return value with null for gson/internal/bind/ObjectTypeAdapter::read &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_127'>127</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_127'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>read<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for gson/internal/bind/ObjectTypeAdapter::read &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_132'>132</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_132'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>write<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_NullValue()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_138'>138</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_138'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>write<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_SimpleValue()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@6c200ad5_143'>143</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@6c200ad5_143'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>write<br/><b>Killed by : </b>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_SimpleValue()]</span></span> removed call to gson/TypeAdapter::write &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_FlatObject()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedObjects()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_EmptyStructures()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_MixedNesting()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetLenient()] (47 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_SimpleArray()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_EdgeCaseNull()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetStrictness()] (2 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_SimpleValue()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_ComplexStructure()] (1 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_InvalidToken()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_NonNestingToken()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_NullValue()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginArray()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginObject()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_String()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_Boolean()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_LazilyParsedNumber()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_DoubleNumber()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_Null()] (10 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSerializeNulls()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFormattingStyle()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testCopyConstructor()] (9 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testEnableComplexMapKeySerialization()] (3 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetPrettyPrinting()] (5 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testGetFactory_SameInstanceForDouble()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testGetFactory_NewInstanceForDifferentStrategy()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testConstructor()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_NullObject_ReturnsJsonNull()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFieldNamingStrategy()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableJdkUnsafe()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDefaultConstructor()] (0 ms)</li><li>gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest]/[method:create_noAnnotation_returnsNull()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testExcludeFieldsWithModifiers()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:create_WithNonArrayType_ReturnsNull()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFieldNamingPolicy()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableInnerClassSerialization()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetVersion_Valid()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testExcludeFieldsWithoutExposeAnnotation()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:create_NonCollectionType_ReturnsNull()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testConstructorWithPattern()] (0 ms)</li><li>gson.internal.ExcluderTest.[engine:junit-jupiter]/[class:gson.internal.ExcluderTest]/[method:testCreate()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testToStringWithSimpleDateFormat()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testCreateWithDateType()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testRegisterTypeAdapterFactory()] (3 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddSerializationExclusionStrategy()] (2 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetExclusionStrategies()] (2 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testRegisterTypeAdapter_ValidAdapter()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testConstructorWithStyles()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testToStringWithNonSimpleDateFormat()] (2 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testConstructor()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeReturnsSameInstanceWhenAlreadyNullSafe()] (0 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testCreate_AnonymousClass()] (1 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testRegisterTypeHierarchyAdapter()] (7 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testWriteNonNull()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testReadNull()] (0 ms)</li><li>gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest]/[method:create_adapterClassIsInvalid_throwsException()] (2 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonTreeNullValue()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddReflectionAccessFilter()] (9 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:create_WithObjectArrayType_ReturnsAdapter()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:create_WithGenericArrayType_ReturnsAdapter()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonTreeStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonWriterNullValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonTreeNullValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeWriteNonNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonTreePrimitiveValue()] (1 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonWriterValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeReadNonNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonNullValue()] (1 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testWrite()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testRead()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonReaderValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testReadNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeWriteNull()] (4 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeReadNull()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithNullArray_WritesNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonReaderNullValue()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_StringObject_ReturnsJsonPrimitive()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonStringNullValue()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithNullValue_ReturnsNull()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithEmptyArray_ReturnsEmptyArray()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testReadValidDate()] (10 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableHtmlEscaping()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSerializeSpecialFloatingPointValues()] (1 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testGenerateNonExecutableJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithEmptyArray_WritesEmptyArray()] (3 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithPrimitiveArray_WritesCorrectJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithObjectArray_WritesCorrectJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithObjectArray_ReturnsCorrectArray()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testDeserializeToDateWithMultipleFormats()] (12 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:create_CollectionType_ReturnsAdapter()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithPrimitiveArray_ReturnsCorrectArray()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetDateFormat_ValidPattern()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testReadWithParseException()] (11 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testCreate_MapType()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testCreate_NonMapType()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_Null()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testConstructor()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_NullCollection_WritesNull()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_Boolean()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_Null()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_String()] (1 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_InvalidType()] (1 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_EmptyArray_ReturnsEmptyCollection()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_NullInput_ReturnsNull()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_Number()] (4 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_EmptyCollection_WritesEmptyArray()] (3 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_Null()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_NonEmptyCollection_WritesArray()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_CollectionWithNullElement_WritesArray()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_NonEmptyArray_ReturnsCollection()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithoutComplexKeySerialization()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_ArrayWithNullElement_ReturnsCollection()] (2 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ObjectFormat_DuplicateKey()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithComplexKeySerialization_NoComplexKey()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ArrayFormat_DuplicateKey()] (1 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_CustomType_HandlesTypeCorrectly()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ObjectFormat()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ArrayFormat()] (0 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testAdapterWriteAndRead()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithComplexKeySerialization_WithComplexKey()] (1 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_WithContext_AppliesContextRules()] (19 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddTypeAdaptersForDate()] (50 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddDeserializationExclusionStrategy()] (382 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

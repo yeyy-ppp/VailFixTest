@@ -1,0 +1,1597 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>NonNullElementWrapperList.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson.internal;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.AbstractList;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.ArrayList;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Collection;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.List;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Objects;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.RandomAccess;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public class NonNullElementWrapperList&#60;E&#62; extends AbstractList&#60;E&#62; implements RandomAccess {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final ArrayList&#60;E&#62; delegate;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings(&#34;NonApiType&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  public NonNullElementWrapperList(ArrayList&#60;E&#62; delegate) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.delegate = Objects.requireNonNull(delegate);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public E get(int index) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_16'/>
+16
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_16'>1</a>
+<span>
+
+1. get : replaced return value with null for gson/internal/NonNullElementWrapperList::get &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.get(index);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public int size() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_20'/>
+20
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_20'>1</a>
+<span>
+
+1. size : replaced int return with 0 for gson/internal/NonNullElementWrapperList::size &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.size();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private E nonNull(E element) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_23'/>
+23
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_23'>1</a>
+<span>
+
+1. nonNull : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (element == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new NullPointerException(&#34;Element must be non-null&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_26'/>
+26
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_26'>1</a>
+<span>
+
+1. nonNull : replaced return value with null for gson/internal/NonNullElementWrapperList::nonNull &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return element;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public E set(int index, E element) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_30'/>
+30
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_30'>1</a>
+<span>
+
+1. set : replaced return value with null for gson/internal/NonNullElementWrapperList::set &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.set(index, nonNull(element));</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public void add(int index, E element) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_34'/>
+34
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_34'>1</a>
+<span>
+
+1. add : removed call to java/util/ArrayList::add &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    delegate.add(index, nonNull(element));</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public E remove(int index) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_38'/>
+38
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_38'>1</a>
+<span>
+
+1. remove : replaced return value with null for gson/internal/NonNullElementWrapperList::remove &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.remove(index);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public void clear() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_42'/>
+42
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_42'>1</a>
+<span>
+
+1. clear : removed call to java/util/ArrayList::clear &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    delegate.clear();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings(&#34;UngroupedOverloads&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public boolean remove(Object o) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_47'/>
+47
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_47'>2</a>
+<span>
+
+1. remove : replaced boolean return with true for gson/internal/NonNullElementWrapperList::remove &rarr; KILLED<br/>
+
+2. remove : replaced boolean return with false for gson/internal/NonNullElementWrapperList::remove &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.remove(o);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_48'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public boolean removeAll(Collection&#60;?&#62; c) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_51'/>
+51
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_51'>2</a>
+<span>
+
+1. removeAll : replaced boolean return with false for gson/internal/NonNullElementWrapperList::removeAll &rarr; KILLED<br/>
+
+2. removeAll : replaced boolean return with true for gson/internal/NonNullElementWrapperList::removeAll &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.removeAll(c);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public boolean retainAll(Collection&#60;?&#62; c) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_55'/>
+55
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_55'>2</a>
+<span>
+
+1. retainAll : replaced boolean return with false for gson/internal/NonNullElementWrapperList::retainAll &rarr; KILLED<br/>
+
+2. retainAll : replaced boolean return with true for gson/internal/NonNullElementWrapperList::retainAll &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.retainAll(c);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public boolean contains(Object o) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_59'/>
+59
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_59'>2</a>
+<span>
+
+1. contains : replaced boolean return with true for gson/internal/NonNullElementWrapperList::contains &rarr; KILLED<br/>
+
+2. contains : replaced boolean return with false for gson/internal/NonNullElementWrapperList::contains &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.contains(o);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_60'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_61'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_62'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public int indexOf(Object o) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_63'/>
+63
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_63'>1</a>
+<span>
+
+1. indexOf : replaced int return with 0 for gson/internal/NonNullElementWrapperList::indexOf &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.indexOf(o);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_64'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_65'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_66'/>
+66
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_66'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public int lastIndexOf(Object o) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_67'/>
+67
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_67'>1</a>
+<span>
+
+1. lastIndexOf : replaced int return with 0 for gson/internal/NonNullElementWrapperList::lastIndexOf &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.lastIndexOf(o);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_68'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_69'/>
+69
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_69'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public Object[] toArray() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_71'/>
+71
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_71'>1</a>
+<span>
+
+1. toArray : replaced return value with null for gson/internal/NonNullElementWrapperList::toArray &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.toArray();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_72'/>
+72
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_72'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_74'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public &#60;T&#62; T[] toArray(T[] a) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_75'/>
+75
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_75'>1</a>
+<span>
+
+1. toArray : replaced return value with null for gson/internal/NonNullElementWrapperList::toArray &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.toArray(a);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_76'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_77'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_78'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public boolean equals(Object o) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_79'/>
+79
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_79'>2</a>
+<span>
+
+1. equals : replaced boolean return with true for gson/internal/NonNullElementWrapperList::equals &rarr; KILLED<br/>
+
+2. equals : replaced boolean return with false for gson/internal/NonNullElementWrapperList::equals &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.equals(o);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_80'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_81'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_82'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public int hashCode() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_83'/>
+83
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_83'>1</a>
+<span>
+
+1. hashCode : replaced int return with 0 for gson/internal/NonNullElementWrapperList::hashCode &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return delegate.hashCode();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_84'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@559f74f6_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_85'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_16'>16</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_16'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>get<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testConstructorWithNonEmptyDelegate()]</span></span> replaced return value with null for gson/internal/NonNullElementWrapperList::get &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_20'>20</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_20'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>size<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectNullWhenPresent()]</span></span> replaced int return with 0 for gson/internal/NonNullElementWrapperList::size &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_23'>23</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_23'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nonNull<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testAddAtIndexOutOfBounds()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_26'>26</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_26'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nonNull<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testAddAtIndexValidElement()]</span></span> replaced return value with null for gson/internal/NonNullElementWrapperList::nonNull &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_30'>30</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_30'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>set<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testSetValidElement()]</span></span> replaced return value with null for gson/internal/NonNullElementWrapperList::set &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_34'>34</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_34'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>add<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testAddAtIndexOutOfBounds()]</span></span> removed call to java/util/ArrayList::add &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_38'>38</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_38'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>remove<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByIndex()]</span></span> replaced return value with null for gson/internal/NonNullElementWrapperList::remove &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_42'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>clear<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testClear()]</span></span> removed call to java/util/ArrayList::clear &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_47'>47</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_47'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>remove<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectNonExisting()]</span></span> replaced boolean return with true for gson/internal/NonNullElementWrapperList::remove &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>remove<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectNullWhenPresent()]</span></span> replaced boolean return with false for gson/internal/NonNullElementWrapperList::remove &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_51'>51</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_51'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>removeAll<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveAllWithNulls()]</span></span> replaced boolean return with false for gson/internal/NonNullElementWrapperList::removeAll &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>removeAll<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveAllNoChange()]</span></span> replaced boolean return with true for gson/internal/NonNullElementWrapperList::removeAll &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_55'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>retainAll<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRetainAll()]</span></span> replaced boolean return with false for gson/internal/NonNullElementWrapperList::retainAll &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>retainAll<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRetainAllNoChange()]</span></span> replaced boolean return with true for gson/internal/NonNullElementWrapperList::retainAll &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_59'>59</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_59'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>contains<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testContainsNonExisting()]</span></span> replaced boolean return with true for gson/internal/NonNullElementWrapperList::contains &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>contains<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testContainsExisting()]</span></span> replaced boolean return with false for gson/internal/NonNullElementWrapperList::contains &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_63'>63</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_63'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>indexOf<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testIndexOfNullWhenPresent()]</span></span> replaced int return with 0 for gson/internal/NonNullElementWrapperList::indexOf &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_67'>67</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_67'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lastIndexOf<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testLastIndexOf()]</span></span> replaced int return with 0 for gson/internal/NonNullElementWrapperList::lastIndexOf &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_71'>71</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_71'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toArray<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testToArray()]</span></span> replaced return value with null for gson/internal/NonNullElementWrapperList::toArray &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_75'>75</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_75'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toArray<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testToArrayWithLargerTypeArray()]</span></span> replaced return value with null for gson/internal/NonNullElementWrapperList::toArray &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_79'>79</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_79'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>equals<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testEqualsDifferentList()]</span></span> replaced boolean return with true for gson/internal/NonNullElementWrapperList::equals &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>equals<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testEqualsSameList()]</span></span> replaced boolean return with false for gson/internal/NonNullElementWrapperList::equals &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@559f74f6_83'>83</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@559f74f6_83'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>hashCode<br/><b>Killed by : </b>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testHashCode()]</span></span> replaced int return with 0 for gson/internal/NonNullElementWrapperList::hashCode &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectNullWhenPresent()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectNonExisting()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectExisting()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByObjectNullWhenAbsent()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testAddAtIndexOutOfBounds()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testAddAtIndexNullElement()] (1 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testAddAtIndexValidElement()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testSetNullElement()] (1 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testSetValidElement()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testSetIndexOutOfBounds()] (4 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRetainAllNoChange()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRetainAll()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testHashCode()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testToArray()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testEqualsDifferentList()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testEqualsWithNull()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testEqualsSameList()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testClear()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testContainsExisting()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testContainsNonExisting()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testContainsNullWhenPresent()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testToArrayWithLargerTypeArray()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testToArrayWithType()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveAllNoChange()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveAllWithNulls()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveAll()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testSize()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testConstructorWithEmptyDelegate()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testConstructorWithNonEmptyDelegate()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testRemoveByIndex()] (0 ms)</li><li>gson.JsonArrayTest.[engine:junit-jupiter]/[class:gson.JsonArrayTest]/[method:testAsList()] (3 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testIndexOfNullWhenPresent()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testIndexOfExisting()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testIndexOfNonExisting()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testLastIndexOf()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testLastIndexOfNullWhenPresent()] (0 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testLastIndexOfNonExisting()] (1 ms)</li><li>gson.internal.NonNullElementWrapperListTest.[engine:junit-jupiter]/[class:gson.internal.NonNullElementWrapperListTest]/[method:testGetValidIndex()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

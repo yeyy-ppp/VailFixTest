@@ -1,0 +1,5 @@
+﻿"Project","Runs","ObservedTests","FlakyTests","FlakyRatioPercent","AlwaysPass","AlwaysFailOrOther","ExitCodes","ReportDir"
+"Commons-Cli[24]","3","2061","0","0","2057","4","0,0,0","D:\fx\jafx\chatunitest-core\target\flaky-runs-0616"
+"Commons-Csv[25]","3","2061","0","0","2057","4","0,0,0","D:\fx\jafx\chatunitest-core\target\flaky-runs-0616"
+"Commons-Lang[26]","3","2061","0","0","2057","4","0,0,0","D:\fx\jafx\chatunitest-core\target\flaky-runs-0616"
+"Gson[27]","3","2061","0","0","2056","5","1,1,1","D:\fx\jafx\chatunitest-core\target\flaky-runs-0616"

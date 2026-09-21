@@ -1,0 +1,46 @@
+NewValiTest0616 validation report
+Generated at: 2026-06-16 11:06:51
+Test directory: D:\fx\jafx\chatunitest-core\src\test\java
+Report file: D:\fx\jafx\chatunitest-core\target\new-vali-test-0616-report.txt
+
+[Source quality]
+Test files: 158
+Test methods: 2021
+Assertions: 3029
+Meaningful assertions: 2841
+Weak assertions: 188
+Exception assertions: 278
+Assertion density: 1.50 assertions/test method, 18.09 assertions/100 code lines
+Meaningful assertion ratio: 93.79%
+Parse errors: 0
+
+[Mutation score]
+N/A: PIT report directory is absent. Use --run-pit to generate it.
+
+[Defect detection]
+Score: 93.79%
+Basis: PIT is unavailable; showing meaningful assertion ratio as a weak proxy.
+
+[Flaky tests]
+N/A: Use --run-tests --flaky-runs=N to repeat the generated tests.
+
+[Execution time]
+Measured execution time: 6.75s
+Existing Surefire tests: 2061, failures: 0, errors: 0, skipped: 0, report time: 6.75s
+
+[Repair cost]
+Generated test files: 158
+Generated test methods: 2021
+Generated non-comment lines: 16741
+Current failing tests from Surefire: 0
+Test source parse errors: 0
+Latest generation log: D:\fx\jafx\chatunitest-core\BatchTest_0126_1110.txt
+Log success-like lines: 2
+Log failure-like lines: 2
+Log repair-number lines: 0
+Log repair-number sum: 0
+
+Usage hints:
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616"
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--run-tests --flaky-runs=3"
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--run-pit --pit-target-classes=cli.*,csv.*,gson.*,lang3.*"

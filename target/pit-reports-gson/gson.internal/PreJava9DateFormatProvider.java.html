@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>PreJava9DateFormatProvider.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson.internal;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.text.DateFormat;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.text.SimpleDateFormat;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Locale;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public class PreJava9DateFormatProvider {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private PreJava9DateFormatProvider() {}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static DateFormat getUsDateTimeFormat(int dateStyle, int timeStyle) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    String pattern =</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        getDatePartOfDateTimePattern(dateStyle) + &#34; &#34; + getTimePartOfDateTimePattern(timeStyle);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_10'/>
+10
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_10'>1</a>
+<span>
+
+1. getUsDateTimeFormat : replaced return value with null for gson/internal/PreJava9DateFormatProvider::getUsDateTimeFormat &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new SimpleDateFormat(pattern, Locale.US);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private static String getDatePartOfDateTimePattern(int dateStyle) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    switch (dateStyle) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.SHORT:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_15'/>
+15
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_15'>1</a>
+<span>
+
+1. getDatePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;M/d/yy&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.MEDIUM:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_17'/>
+17
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_17'>1</a>
+<span>
+
+1. getDatePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;MMM d, yyyy&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.LONG:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_19'/>
+19
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_19'>1</a>
+<span>
+
+1. getDatePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;MMMM d, yyyy&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.FULL:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_21'/>
+21
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_21'>1</a>
+<span>
+
+1. getDatePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;EEEE, MMMM d, yyyy&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      default:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw new IllegalArgumentException(&#34;Unknown DateFormat style: &#34; + dateStyle);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private static String getTimePartOfDateTimePattern(int timeStyle) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    switch (timeStyle) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.SHORT:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_29'/>
+29
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_29'>1</a>
+<span>
+
+1. getTimePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getTimePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;h:mm a&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.MEDIUM:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_31'/>
+31
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_31'>1</a>
+<span>
+
+1. getTimePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getTimePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;h:mm:ss a&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.FULL:</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      case DateFormat.LONG:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_34'/>
+34
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_34'>1</a>
+<span>
+
+1. getTimePartOfDateTimePattern : replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getTimePartOfDateTimePattern &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;h:mm:ss a z&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      default:</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        throw new IllegalArgumentException(&#34;Unknown DateFormat style: &#34; + timeStyle);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@76d1004a_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_10'>10</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_10'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getUsDateTimeFormat<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetUsDateTimeFormatValidCombinations()]</span></span> replaced return value with null for gson/internal/PreJava9DateFormatProvider::getUsDateTimeFormat &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_15'>15</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_15'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getDatePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetDatePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_17'>17</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_17'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getDatePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetDatePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_19'>19</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_19'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getDatePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetDatePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_21'>21</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_21'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getDatePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetDatePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getDatePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_29'>29</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_29'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getTimePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetTimePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getTimePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_31'>31</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_31'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getTimePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetTimePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getTimePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@76d1004a_34'>34</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@76d1004a_34'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getTimePartOfDateTimePattern<br/><b>Killed by : </b>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetTimePartOfDateTimePattern()]</span></span> replaced return value with &#34;&#34; for gson/internal/PreJava9DateFormatProvider::getTimePartOfDateTimePattern &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetDatePartOfDateTimePattern()] (1 ms)</li><li>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetUsDateTimeFormatValidCombinations()] (3 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testToStringWithNonSimpleDateFormat()] (2 ms)</li><li>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetTimePartOfDateTimePattern()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testCreateWithDateType()] (0 ms)</li><li>gson.internal.PreJava9DateFormatProviderTest.[engine:junit-jupiter]/[class:gson.internal.PreJava9DateFormatProviderTest]/[method:testGetUsDateTimeFormatInvalidTimeStyle()] (2 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testConstructorWithStyles()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testDeserializeToDateWithMultipleFormats()] (12 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

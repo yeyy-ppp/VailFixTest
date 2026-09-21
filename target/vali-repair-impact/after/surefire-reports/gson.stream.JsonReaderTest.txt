@@ -1,0 +1,42 @@
+-------------------------------------------------------------------------------
+Test set: gson.stream.JsonReaderTest
+-------------------------------------------------------------------------------
+Tests run: 35, Failures: 4, Errors: 4, Skipped: 0, Time elapsed: 0.084 s <<< FAILURE! - in gson.stream.JsonReaderTest
+testNextString  Time elapsed: 0 s  <<< ERROR!
+gson.stream.MalformedJsonException: 
+Use JsonReader.setStrictness(Strictness.LENIENT) to accept malformed JSON at line 1 column 10 path $[1]
+See https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json
+	at gson.stream.JsonReaderTest.testNextString(JsonReaderTest.java:141)
+
+testSyntaxError  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at gson.stream.JsonReaderTest.testSyntaxError(JsonReaderTest.java:289)
+
+testIsLiteral{char, boolean}[3]  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <false> but was: <true>
+	at gson.stream.JsonReaderTest.testIsLiteral(JsonReaderTest.java:361)
+
+testIsLiteral{char, boolean}[4]  Time elapsed: 0.001 s  <<< ERROR!
+org.junit.jupiter.api.extension.ParameterResolutionException: Error converting parameter at index 0: Cannot convert null to primitive value of type char
+Caused by: org.junit.jupiter.params.converter.ArgumentConversionException: Cannot convert null to primitive value of type char
+
+testNextNonWhitespace  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <a> but was: <97>
+	at gson.stream.JsonReaderTest.testNextNonWhitespace(JsonReaderTest.java:392)
+
+testSkipTo  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <1> but was: <NUMBER>
+	at gson.stream.JsonReaderTest.testSkipTo(JsonReaderTest.java:345)
+
+testUnexpectedTokenError  Time elapsed: 0 s  <<< ERROR!
+java.lang.IllegalStateException: 
+Expected BEGIN_ARRAY but was NUMBER at line 1 column 4 path $
+See https://github.com/google/gson/blob/main/Troubleshooting.md#unexpected-json-structure
+	at gson.stream.JsonReaderTest.testUnexpectedTokenError(JsonReaderTest.java:297)
+
+testNextName  Time elapsed: 0 s  <<< ERROR!
+gson.stream.MalformedJsonException: 
+Use JsonReader.setStrictness(Strictness.LENIENT) to accept malformed JSON at line 1 column 19 path $.name1
+See https://github.com/google/gson/blob/main/Troubleshooting.md#malformed-json
+	at gson.stream.JsonReaderTest.testNextName(JsonReaderTest.java:129)
+

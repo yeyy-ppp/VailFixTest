@@ -1,0 +1,169 @@
+package gson.internal.bind;
+
+import gson.Gson;
+import gson.TypeAdapter;
+import gson.internal.ConstructorConstructor;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import org.junit.jupiter.api.Test;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import static org.junit.jupiter.api.Assertions.*;
+
+public class CollectionTypeAdapterFactoryTest {
+
+    private TypeAdapter<Collection<String>> createStringCollectionAdapter() {
+        ConstructorConstructor constructor = new ConstructorConstructor(
+                Collections.emptyMap(), 
+                false, 
+                Collections.emptyList()
+        );
+        CollectionTypeAdapterFactory factory = new CollectionTypeAdapterFactory(constructor);
+        Gson gson = new Gson();
+        TypeAdapter<Collection<String>> adapter = factory.create(gson, new TypeToken<Collection<String>>() {});
+        return adapter;
+    }
+
+    @Test
+    void create_NonCollectionType_ReturnsNull() {
+        ConstructorConstructor constructor = new ConstructorConstructor(
+                Collections.emptyMap(), 
+                false, 
+                Collections.emptyList()
+        );
+        CollectionTypeAdapterFactory factory = new CollectionTypeAdapterFactory(constructor);
+        Gson gson = new Gson();
+        
+        TypeAdapter<?> adapter = factory.create(gson, TypeToken.get(String.class));
+        
+        assertNull(adapter);
+    }
+
+    @Test
+    void create_CollectionType_ReturnsAdapter() {
+        ConstructorConstructor constructor = new ConstructorConstructor(
+                Collections.emptyMap(), 
+                false, 
+                Collections.emptyList()
+        );
+        CollectionTypeAdapterFactory factory = new CollectionTypeAdapterFactory(constructor);
+        Gson gson = new Gson();
+        
+        TypeAdapter<Collection<String>> adapter = factory.create(gson, new TypeToken<Collection<String>>() {});
+        
+        assertNotNull(adapter);
+        assertTrue(adapter instanceof CollectionTypeAdapterFactory.Adapter);
+    }
+
+    @Test
+    void read_NullInput_ReturnsNull() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        JsonReader reader = new JsonReader(new StringReader("null"));
+        
+        Collection<String> result = adapter.read(reader);
+        
+        assertNull(result);
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+    @Test
+    void read_EmptyArray_ReturnsEmptyCollection() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        JsonReader reader = new JsonReader(new StringReader("[]"));
+        
+        Collection<String> result = adapter.read(reader);
+        
+        assertNotNull(result);
+        assertTrue(result.isEmpty());
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+    @Test
+    void read_NonEmptyArray_ReturnsCollection() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        JsonReader reader = new JsonReader(new StringReader("[\"a\",\"b\"]"));
+        
+        Collection<String> result = adapter.read(reader);
+        
+        assertNotNull(result);
+        assertEquals(2, result.size());
+        assertEquals(Arrays.asList("a", "b"), result);
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+    @Test
+    void read_ArrayWithNullElement_ReturnsCollection() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        JsonReader reader = new JsonReader(new StringReader("[\"a\",null,\"b\"]"));
+        
+        Collection<String> result = adapter.read(reader);
+        
+        assertNotNull(result);
+        assertEquals(3, result.size());
+        assertEquals(Arrays.asList("a", null, "b"), result);
+        assertEquals(JsonToken.END_DOCUMENT, reader.peek());
+    }
+
+    @Test
+    void write_NullCollection_WritesNull() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter writer = new JsonWriter(stringWriter);
+        
+        adapter.write(writer, null);
+        writer.close();
+        
+        assertEquals("null", stringWriter.toString());
+    }
+
+    @Test
+    void write_EmptyCollection_WritesEmptyArray() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter writer = new JsonWriter(stringWriter);
+        
+        adapter.write(writer, new ArrayList<>());
+        writer.close();
+        
+        assertEquals("[]", stringWriter.toString());
+    }
+
+    @Test
+    void write_NonEmptyCollection_WritesArray() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter writer = new JsonWriter(stringWriter);
+        Collection<String> collection = new ArrayList<>();
+        collection.add("test");
+        collection.add("value");
+        
+        adapter.write(writer, collection);
+        writer.close();
+        
+        assertEquals("[\"test\",\"value\"]", stringWriter.toString());
+    }
+
+    @Test
+    void write_CollectionWithNullElement_WritesArray() throws IOException {
+        TypeAdapter<Collection<String>> adapter = createStringCollectionAdapter();
+        StringWriter stringWriter = new StringWriter();
+        JsonWriter writer = new JsonWriter(stringWriter);
+        Collection<String> collection = new ArrayList<>();
+        collection.add("a");
+        collection.add(null);
+        collection.add("b");
+        
+        adapter.write(writer, collection);
+        writer.close();
+        
+        assertEquals("[\"a\",null,\"b\"]", stringWriter.toString());
+    }
+
+}

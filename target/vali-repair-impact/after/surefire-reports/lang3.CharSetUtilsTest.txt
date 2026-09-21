@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: lang3.CharSetUtilsTest
+-------------------------------------------------------------------------------
+Tests run: 6, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in lang3.CharSetUtilsTest
+testDelete  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <bn> but was: <bnn>
+	at lang3.CharSetUtilsTest.testDelete(CharSetUtilsTest.java:34)
+
+testSqueeze  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <abcd> but was: <aabbccdd>
+	at lang3.CharSetUtilsTest.testSqueeze(CharSetUtilsTest.java:58)
+

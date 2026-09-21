@@ -1,0 +1,178 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1420" height="760" viewBox="0 0 1420 760">
+<rect width="100%" height="100%" fill="white"/>
+<text x="710.0" y="36.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="22" font-weight="700" text-anchor="middle" fill="#222222">Minimal Target Repair Impact - Measured Data</text>
+<text x="710.0" y="62.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="13" font-weight="400" text-anchor="middle" fill="#555555">Measured from generated before/after snapshots; decreases show the observed side effect of deletion/comment repair.</text>
+<rect x="1040.0" y="34.0" width="16.0" height="10.0" fill="#f2a071"/>
+<text x="1064.0" y="44.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">Before</text>
+<rect x="1135.0" y="34.0" width="16.0" height="10.0" fill="#68b7a5"/>
+<text x="1159.0" y="44.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">After / Improved</text>
+<rect x="1285.0" y="34.0" width="16.0" height="10.0" fill="#8fa6d6"/>
+<text x="1309.0" y="44.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">Removed assertions</text>
+<text x="200.0" y="98.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#222222">Test Methods Before vs After</text>
+<text x="45.0" y="142.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">cli</text>
+<rect x="103.0" y="120.0" width="98.7" height="12.0" fill="#f2a071"/>
+<rect x="103.0" y="136.0" width="86.3" height="12.0" fill="#68b7a5"/>
+<text x="206.7" y="130.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">478</text>
+<text x="194.3" y="146.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">418</text>
+<text x="45.0" y="196.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">csv</text>
+<rect x="103.0" y="174.0" width="25.8" height="12.0" fill="#f2a071"/>
+<rect x="103.0" y="190.0" width="25.8" height="12.0" fill="#68b7a5"/>
+<text x="133.8" y="184.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">125</text>
+<text x="133.8" y="200.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">125</text>
+<text x="45.0" y="250.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">lang</text>
+<rect x="103.0" y="228.0" width="106.8" height="12.0" fill="#f2a071"/>
+<rect x="103.0" y="244.0" width="106.6" height="12.0" fill="#68b7a5"/>
+<text x="214.8" y="238.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">517</text>
+<text x="214.6" y="254.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">516</text>
+<text x="45.0" y="304.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">gson</text>
+<rect x="103.0" y="282.0" width="184.2" height="12.0" fill="#f2a071"/>
+<rect x="103.0" y="298.0" width="174.7" height="12.0" fill="#68b7a5"/>
+<text x="292.2" y="292.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">892</text>
+<text x="282.7" y="308.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">846</text>
+<text x="545.0" y="98.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#222222">Assertions Before vs After</text>
+<text x="390.0" y="142.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">cli</text>
+<rect x="448.0" y="120.0" width="100.4" height="12.0" fill="#f2a071"/>
+<rect x="448.0" y="136.0" width="88.6" height="12.0" fill="#68b7a5"/>
+<text x="553.4" y="130.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">740</text>
+<text x="541.6" y="146.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">653</text>
+<text x="390.0" y="196.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">csv</text>
+<rect x="448.0" y="174.0" width="30.7" height="12.0" fill="#f2a071"/>
+<rect x="448.0" y="190.0" width="30.7" height="12.0" fill="#68b7a5"/>
+<text x="483.7" y="184.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">226</text>
+<text x="483.7" y="200.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">226</text>
+<text x="390.0" y="250.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">lang</text>
+<rect x="448.0" y="228.0" width="105.7" height="12.0" fill="#f2a071"/>
+<rect x="448.0" y="244.0" width="105.7" height="12.0" fill="#68b7a5"/>
+<text x="558.7" y="238.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">779</text>
+<text x="558.7" y="254.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">779</text>
+<text x="390.0" y="304.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">gson</text>
+<rect x="448.0" y="282.0" width="185.1" height="12.0" fill="#f2a071"/>
+<rect x="448.0" y="298.0" width="179.1" height="12.0" fill="#68b7a5"/>
+<text x="638.1" y="292.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">1364</text>
+<text x="632.1" y="308.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">1320</text>
+<text x="890.0" y="98.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#222222">Line Coverage Before vs After</text>
+<text x="735.0" y="142.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">cli</text>
+<rect x="793.0" y="120.0" width="143.0" height="12.0" fill="#f2a071"/>
+<rect x="793.0" y="136.0" width="116.2" height="12.0" fill="#68b7a5"/>
+<text x="941.0" y="130.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">75.25%</text>
+<text x="914.2" y="146.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">61.17%</text>
+<text x="735.0" y="196.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">csv</text>
+<rect x="793.0" y="174.0" width="125.9" height="12.0" fill="#f2a071"/>
+<rect x="793.0" y="190.0" width="124.2" height="12.0" fill="#68b7a5"/>
+<text x="923.9" y="184.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">66.26%</text>
+<text x="922.2" y="200.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">65.38%</text>
+<text x="735.0" y="250.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">lang</text>
+<rect x="793.0" y="228.0" width="144.7" height="12.0" fill="#f2a071"/>
+<rect x="793.0" y="244.0" width="143.1" height="12.0" fill="#68b7a5"/>
+<text x="942.7" y="238.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">76.17%</text>
+<text x="941.1" y="254.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">75.32%</text>
+<text x="735.0" y="304.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">gson</text>
+<rect x="793.0" y="282.0" width="164.8" height="12.0" fill="#f2a071"/>
+<rect x="793.0" y="298.0" width="159.8" height="12.0" fill="#68b7a5"/>
+<text x="962.8" y="292.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">86.72%</text>
+<text x="957.8" y="308.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">84.11%</text>
+<text x="1230.0" y="98.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#222222">Pass Rate Before vs After</text>
+<text x="1080.0" y="142.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">cli</text>
+<rect x="1138.0" y="120.0" width="179.3" height="12.0" fill="#f2a071"/>
+<rect x="1138.0" y="136.0" width="176.4" height="12.0" fill="#68b7a5"/>
+<text x="1322.3" y="130.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">99.61%</text>
+<text x="1319.4" y="146.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">97.99%</text>
+<text x="1080.0" y="196.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">csv</text>
+<rect x="1138.0" y="174.0" width="180.0" height="12.0" fill="#f2a071"/>
+<rect x="1138.0" y="190.0" width="174.2" height="12.0" fill="#68b7a5"/>
+<text x="1323.0" y="184.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">100.00%</text>
+<text x="1317.2" y="200.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">96.80%</text>
+<text x="1080.0" y="250.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">lang</text>
+<rect x="1138.0" y="228.0" width="179.0" height="12.0" fill="#f2a071"/>
+<rect x="1138.0" y="244.0" width="178.6" height="12.0" fill="#68b7a5"/>
+<text x="1322.0" y="238.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">99.43%</text>
+<text x="1321.6" y="254.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">99.23%</text>
+<text x="1080.0" y="304.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="700" text-anchor="start" fill="#222222">gson</text>
+<rect x="1138.0" y="282.0" width="177.4" height="12.0" fill="#f2a071"/>
+<rect x="1138.0" y="298.0" width="176.2" height="12.0" fill="#68b7a5"/>
+<text x="1320.4" y="292.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">98.55%</text>
+<text x="1319.2" y="308.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="start" fill="#222222">97.88%</text>
+<text x="370.0" y="398.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#222222">Removed / Commented Scale</text>
+<line x1="178.0" y1="410.0" x2="614.0" y2="410.0" stroke="#e7e7e7" stroke-width="1"/>
+<text x="60.0" y="433.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">cli methods</text>
+<rect x="178.0" y="420.0" width="67.2" height="14.0" fill="#68b7a5"/>
+<text x="251.2" y="432.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">60</text>
+<text x="60.0" y="455.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">cli lines</text>
+<rect x="178.0" y="442.0" width="436.0" height="14.0" fill="#f2a071"/>
+<text x="620.0" y="454.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">389</text>
+<text x="60.0" y="477.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">cli asserts</text>
+<rect x="178.0" y="464.0" width="97.5" height="14.0" fill="#8fa6d6"/>
+<text x="281.5" y="476.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">87</text>
+<text x="60.0" y="499.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">csv methods</text>
+<rect x="178.0" y="486.0" width="0.0" height="14.0" fill="#68b7a5"/>
+<text x="184.0" y="498.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0</text>
+<text x="60.0" y="521.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">csv lines</text>
+<rect x="178.0" y="508.0" width="0.0" height="14.0" fill="#f2a071"/>
+<text x="184.0" y="520.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0</text>
+<text x="60.0" y="543.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">csv asserts</text>
+<rect x="178.0" y="530.0" width="0.0" height="14.0" fill="#8fa6d6"/>
+<text x="184.0" y="542.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0</text>
+<text x="60.0" y="565.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">lang methods</text>
+<rect x="178.0" y="552.0" width="1.1" height="14.0" fill="#68b7a5"/>
+<text x="185.1" y="564.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">1</text>
+<text x="60.0" y="587.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">lang lines</text>
+<rect x="178.0" y="574.0" width="21.3" height="14.0" fill="#f2a071"/>
+<text x="205.3" y="586.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">19</text>
+<text x="60.0" y="609.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">lang asserts</text>
+<rect x="178.0" y="596.0" width="0.0" height="14.0" fill="#8fa6d6"/>
+<text x="184.0" y="608.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0</text>
+<text x="60.0" y="631.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">gson methods</text>
+<rect x="178.0" y="618.0" width="51.6" height="14.0" fill="#68b7a5"/>
+<text x="235.6" y="630.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">46</text>
+<text x="60.0" y="653.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">gson lines</text>
+<rect x="178.0" y="640.0" width="301.5" height="14.0" fill="#f2a071"/>
+<text x="485.5" y="652.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">269</text>
+<text x="60.0" y="675.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">gson asserts</text>
+<rect x="178.0" y="662.0" width="49.3" height="14.0" fill="#8fa6d6"/>
+<text x="233.3" y="674.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">44</text>
+<text x="178.0" y="702.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="middle" fill="#222222">0</text>
+<text x="614.0" y="702.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="middle" fill="#222222">389</text>
+<line x1="178.0" y1="688.0" x2="614.0" y2="688.0" stroke="#222222" stroke-width="1"/>
+<text x="1050.0" y="398.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="15" font-weight="700" text-anchor="middle" fill="#222222">Coverage and Pass Rate Change</text>
+<line x1="868.0" y1="410.0" x2="1284.0" y2="410.0" stroke="#e7e7e7" stroke-width="1"/>
+<text x="750.0" y="433.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">cli branch</text>
+<rect x="868.0" y="420.0" width="257.0" height="14.0" fill="#f2a071"/>
+<text x="1131.0" y="432.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">8.70%</text>
+<text x="750.0" y="455.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">cli line</text>
+<rect x="868.0" y="442.0" width="416.0" height="14.0" fill="#f2a071"/>
+<text x="1290.0" y="454.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">14.08%</text>
+<text x="750.0" y="477.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">cli pass</text>
+<rect x="868.0" y="464.0" width="47.9" height="14.0" fill="#f2a071"/>
+<text x="921.9" y="476.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">1.62%</text>
+<text x="750.0" y="499.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">csv branch</text>
+<rect x="868.0" y="486.0" width="15.7" height="14.0" fill="#f2a071"/>
+<text x="889.7" y="498.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0.53%</text>
+<text x="750.0" y="521.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">csv line</text>
+<rect x="868.0" y="508.0" width="26.0" height="14.0" fill="#f2a071"/>
+<text x="900.0" y="520.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0.88%</text>
+<text x="750.0" y="543.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">csv pass</text>
+<rect x="868.0" y="530.0" width="94.5" height="14.0" fill="#f2a071"/>
+<text x="968.5" y="542.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">3.20%</text>
+<text x="750.0" y="565.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">lang branch</text>
+<rect x="868.0" y="552.0" width="23.9" height="14.0" fill="#f2a071"/>
+<text x="897.9" y="564.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0.81%</text>
+<text x="750.0" y="587.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">lang line</text>
+<rect x="868.0" y="574.0" width="25.1" height="14.0" fill="#f2a071"/>
+<text x="899.1" y="586.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0.85%</text>
+<text x="750.0" y="609.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">lang pass</text>
+<rect x="868.0" y="596.0" width="5.9" height="14.0" fill="#f2a071"/>
+<text x="879.9" y="608.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0.20%</text>
+<text x="750.0" y="631.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">gson branch</text>
+<rect x="868.0" y="618.0" width="317.0" height="14.0" fill="#f2a071"/>
+<text x="1191.0" y="630.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">10.73%</text>
+<text x="750.0" y="653.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">gson line</text>
+<rect x="868.0" y="640.0" width="77.1" height="14.0" fill="#f2a071"/>
+<text x="951.1" y="652.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">2.61%</text>
+<text x="750.0" y="675.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="12" font-weight="400" text-anchor="start" fill="#222222">gson pass</text>
+<rect x="868.0" y="662.0" width="19.8" height="14.0" fill="#f2a071"/>
+<text x="893.8" y="674.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="11" font-weight="400" text-anchor="start" fill="#222222">0.67%</text>
+<text x="868.0" y="702.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="middle" fill="#222222">0</text>
+<text x="1284.0" y="702.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="10" font-weight="400" text-anchor="middle" fill="#222222">14</text>
+<line x1="868.0" y1="688.0" x2="1284.0" y2="688.0" stroke="#222222" stroke-width="1"/>
+<text x="710.0" y="735.0" font-family="Arial, Microsoft YaHei, sans-serif" font-size="16" font-weight="700" text-anchor="middle" fill="#222222">Fig. Repair impact of minimal target repair on Commons-Cli, Commons-Csv, Commons-Lang and Gson</text>
+</svg>

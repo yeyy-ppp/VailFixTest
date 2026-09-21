@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: gson.JsonStreamParserTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in gson.JsonStreamParserTest
+testHasNextWithMalformedJsonThrowsJsonSyntaxException  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected gson.JsonSyntaxException to be thrown, but nothing was thrown.
+	at gson.JsonStreamParserTest.testHasNextWithMalformedJsonThrowsJsonSyntaxException(JsonStreamParserTest.java:53)
+

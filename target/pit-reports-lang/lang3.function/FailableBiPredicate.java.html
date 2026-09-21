@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>FailableBiPredicate.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package lang3.function;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Objects;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>@FunctionalInterface</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public interface FailableBiPredicate&#60;T, U, E extends Throwable&#62; {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;rawtypes&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_6'/>
+6
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_6'>1</a>
+<span>
+
+1. lambda$static$0 : replaced boolean return with true for lang3/function/FailableBiPredicate::lambda$static$0 &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    FailableBiPredicate FALSE = (t, u) -&#62; false;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;rawtypes&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_8'/>
+8
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_8'>1</a>
+<span>
+
+1. lambda$static$1 : replaced boolean return with false for lang3/function/FailableBiPredicate::lambda$static$1 &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    FailableBiPredicate TRUE = (t, u) -&#62; true;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @SuppressWarnings(&#34;unchecked&#34;)</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    default FailableBiPredicate&#60;T, U, E&#62; and(final FailableBiPredicate&#60;? super T, ? super U, E&#62; other) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        Objects.requireNonNull(other);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_12'/>
+12
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_12'>4</a>
+<span>
+
+1. lambda$and$2 : negated conditional &rarr; KILLED<br/>
+
+2. lambda$and$2 : replaced boolean return with true for lang3/function/FailableBiPredicate::lambda$and$2 &rarr; KILLED<br/>
+
+3. and : replaced return value with null for lang3/function/FailableBiPredicate::and &rarr; KILLED<br/>
+
+4. lambda$and$2 : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return (final T t, final U u) -&#62; test(t, u) &#38;&#38; other.test(t, u);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    default FailableBiPredicate&#60;T, U, E&#62; or(final FailableBiPredicate&#60;? super T, ? super U, E&#62; other) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        Objects.requireNonNull(other);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_16'/>
+16
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_16'>4</a>
+<span>
+
+1. or : replaced return value with null for lang3/function/FailableBiPredicate::or &rarr; KILLED<br/>
+
+2. lambda$or$3 : replaced boolean return with true for lang3/function/FailableBiPredicate::lambda$or$3 &rarr; KILLED<br/>
+
+3. lambda$or$3 : negated conditional &rarr; KILLED<br/>
+
+4. lambda$or$3 : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return (final T t, final U u) -&#62; test(t, u) || other.test(t, u);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    boolean test(T object1, U object2) throws E;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27636d72_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27636d72_6'>6</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_6'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lambda$static$0<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testFalseConstant()]</span></span> replaced boolean return with true for lang3/function/FailableBiPredicate::lambda$static$0 &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27636d72_8'>8</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_8'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lambda$static$1<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testTrueConstant()]</span></span> replaced boolean return with false for lang3/function/FailableBiPredicate::lambda$static$1 &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27636d72_12'>12</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_12'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lambda$and$2<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndBothTrue()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>lambda$and$2<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndFirstTrueSecondFalse()]</span></span> replaced boolean return with true for lang3/function/FailableBiPredicate::lambda$and$2 &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>and<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndFirstTrueSecondFalse()]</span></span> replaced return value with null for lang3/function/FailableBiPredicate::and &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>lambda$and$2<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndFirstTrueSecondFalse()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27636d72_16'>16</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27636d72_16'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>or<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrBothFalse()]</span></span> replaced return value with null for lang3/function/FailableBiPredicate::or &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>lambda$or$3<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrBothFalse()]</span></span> replaced boolean return with true for lang3/function/FailableBiPredicate::lambda$or$3 &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>lambda$or$3<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrBothFalse()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>lambda$or$3<br/><b>Killed by : </b>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrBothFalse()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndFirstTrueSecondFalse()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndBothTrue()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndFirstFalseSecondTrue()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testAndBothFalse()] (1 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrBothFalse()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrFirstTrueSecondFalse()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrBothTrue()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testOrFirstFalseSecondTrue()] (1 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testFalseConstant()] (0 ms)</li><li>lang3.function.FailableBiPredicateTest.[engine:junit-jupiter]/[class:lang3.function.FailableBiPredicateTest]/[method:testTrueConstant()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

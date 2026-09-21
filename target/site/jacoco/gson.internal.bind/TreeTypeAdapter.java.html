@@ -71,8 +71,8 @@ public final class TreeTypeAdapter&lt;T&gt; extends SerializationDelegatingTypeA
   @Override
   public void write(JsonWriter out, T value) throws IOException {
 <span class="fc bfc" id="L73" title="All 2 branches covered.">    if (serializer == null) {</span>
-<span class="fc" id="L74">      delegate().write(out, value);</span>
-<span class="fc" id="L75">      return;</span>
+<span class="nc" id="L74">      delegate().write(out, value);</span>
+<span class="nc" id="L75">      return;</span>
     }
 <span class="fc bfc" id="L77" title="All 4 branches covered.">    if (nullSafe &amp;&amp; value == null) {</span>
 <span class="fc" id="L78">      out.nullValue();</span>

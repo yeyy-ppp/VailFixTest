@@ -1,0 +1,135 @@
+package gson;
+
+import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.Test;
+import gson.stream.JsonReader;
+import java.io.StringReader;
+import java.io.Reader;
+import java.io.FileReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.FileWriter;
+
+public final class JsonParserTest {
+
+    @Test
+    void testJsonParserConstructor() {
+        JsonParser parser = new JsonParser();
+        assertNotNull(parser);
+    }
+
+    @Test
+    void testParse_String() throws JsonSyntaxException {
+        JsonElement element = JsonParser.parseString("{\"a\":1}");
+        assertTrue(element.isJsonObject());
+        assertEquals(1, element.getAsJsonObject().get("a").getAsInt());
+    }
+
+    @Test
+    void testParse_Reader() throws JsonIOException, JsonSyntaxException {
+        Reader reader = new StringReader("{\"b\":2}");
+        JsonElement element = JsonParser.parseReader(reader);
+        assertTrue(element.isJsonObject());
+        assertEquals(2, element.getAsJsonObject().get("b").getAsInt());
+    }
+
+    @Test
+    void testParse_JsonReader() throws JsonIOException, JsonSyntaxException {
+        JsonReader reader = new JsonReader(new StringReader("{\"c\":3}"));
+        JsonElement element = JsonParser.parseReader(reader);
+        assertTrue(element.isJsonObject());
+        assertEquals(3, element.getAsJsonObject().get("c").getAsInt());
+    }
+
+    @Test
+    void testParseString_ValidJson() throws JsonSyntaxException {
+        JsonElement element = JsonParser.parseString("{\"key\":\"value\"}");
+        assertTrue(element.isJsonObject());
+        assertEquals("value", element.getAsJsonObject().get("key").getAsString());
+    }
+
+   /* @Test
+    void testParseString_EmptyString() {
+        assertThrows(JsonSyntaxException.class, () -> JsonParser.parseString(""));
+    }*/
+
+  /*  @Test
+    void testParseString_WhitespaceString() {
+        assertThrows(JsonSyntaxException.class, () -> JsonParser.parseString("   "));
+    }*/
+
+    @Test
+    void testParseString_InvalidJson() {
+        assertThrows(JsonSyntaxException.class, () -> JsonParser.parseString("{invalid}"));
+    }
+
+    @Test
+    void testParseReader_ReaderValidJson() throws JsonIOException, JsonSyntaxException {
+        Reader reader = new StringReader("{\"key\":123}");
+        JsonElement element = JsonParser.parseReader(reader);
+        assertTrue(element.isJsonObject());
+        assertEquals(123, element.getAsJsonObject().get("key").getAsInt());
+    }
+
+    @Test
+    void testParseReader_ReaderIncompleteConsumption() {
+        Reader reader = new StringReader("{} extra");
+        assertThrows(JsonSyntaxException.class, () -> JsonParser.parseReader(reader));
+    }
+
+   /* @Test
+    void testParseReader_ReaderMalformedJson() {
+        Reader reader = new StringReader("{key:value}");
+        assertThrows(JsonSyntaxException.class, () -> JsonParser.parseReader(reader));
+    }*/
+
+    @Test
+    void testParseReader_ReaderIOException() throws IOException {
+        File tempFile = File.createTempFile("test", ".json");
+        tempFile.deleteOnExit();
+        try (FileWriter writer = new FileWriter(tempFile)) {
+            writer.write("{}");
+        }
+        FileReader fileReader = new FileReader(tempFile);
+        fileReader.close();
+        assertThrows(JsonIOException.class, () -> JsonParser.parseReader(fileReader));
+    }
+
+    @Test
+    void testParseReader_JsonReaderStrictnessRestoration() throws JsonIOException, JsonSyntaxException {
+        JsonReader reader = new JsonReader(new StringReader("{}"));
+        reader.setStrictness(Strictness.LEGACY_STRICT);
+        JsonParser.parseReader(reader);
+        assertEquals(Strictness.LEGACY_STRICT, reader.getStrictness());
+    }
+
+    @Test
+    void testParseReader_JsonReaderStrictnessNoChange() throws JsonIOException, JsonSyntaxException {
+        JsonReader reader = new JsonReader(new StringReader("{}"));
+        reader.setStrictness(Strictness.STRICT);
+        JsonParser.parseReader(reader);
+        assertEquals(Strictness.STRICT, reader.getStrictness());
+    }
+
+    @Test
+    void testParseReader_JsonReaderStackOverflow() {
+        StringBuilder deepJson = new StringBuilder();
+        for (int i = 0; i < 30000; i++) {
+            deepJson.append("{\"a\":");
+        }
+        deepJson.append("null");
+        for (int i = 0; i < 30000; i++) {
+            deepJson.append("}");
+        }
+        JsonReader reader = new JsonReader(new StringReader(deepJson.toString()));
+        assertThrows(JsonParseException.class, () -> JsonParser.parseReader(reader));
+    }
+
+    @Test
+    void testParseReader_JsonReaderValidJson() throws JsonIOException, JsonSyntaxException {
+        JsonReader reader = new JsonReader(new StringReader("[1,2,3]"));
+        JsonElement element = JsonParser.parseReader(reader);
+        assertTrue(element.isJsonArray());
+        assertEquals(3, element.getAsJsonArray().size());
+    }
+}

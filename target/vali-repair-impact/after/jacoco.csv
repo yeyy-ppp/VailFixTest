@@ -1,0 +1,676 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+chatunitest-core,lang3.mutable,MutableInt,0,209,0,4,0,59,0,32,0,30
+chatunitest-core,lang3.mutable,Mutable,0,3,0,0,0,1,0,1,0,1
+chatunitest-core,zju.cst.aces.util.symprompt,PathConstraintExtractor.PathConstraintVisitor,84,0,4,0,13,0,6,0,4,0
+chatunitest-core,zju.cst.aces.util.symprompt,PathConstraintExtractor,207,0,18,0,43,0,15,0,6,0
+chatunitest-core,gson.reflect,TypeToken,528,215,78,22,105,48,53,19,8,14
+chatunitest-core,csv,CSVParser.Builder,8,49,1,1,2,10,2,5,1,5
+chatunitest-core,csv,DuplicateHeaderMode,0,21,0,0,0,4,0,1,0,1
+chatunitest-core,csv,CSVParser.CSVRecordIterator,16,63,5,9,4,16,6,6,1,4
+chatunitest-core,csv,CSVFormat.Builder,96,302,11,9,25,88,18,29,9,28
+chatunitest-core,csv,CSVPrinter,40,364,15,34,8,105,15,32,1,21
+chatunitest-core,csv,QuoteMode,0,33,0,0,0,6,0,1,0,1
+chatunitest-core,csv,CSVRecord,3,271,2,30,1,46,3,37,1,23
+chatunitest-core,csv,CSVFormat.Predefined,98,0,0,0,17,0,3,0,3,0
+chatunitest-core,csv,CSVParser.Headers,0,9,0,0,0,4,0,1,0,1
+chatunitest-core,csv,Constants,0,7,0,0,0,2,0,1,0,1
+chatunitest-core,csv,Lexer,275,511,62,84,60,115,46,54,1,23
+chatunitest-core,csv,CSVException,0,6,0,0,0,2,0,1,0,1
+chatunitest-core,csv,Token,0,42,0,0,0,9,0,3,0,3
+chatunitest-core,csv,ExtendedBufferedReader,80,325,28,42,17,71,22,29,0,16
+chatunitest-core,csv,CSVParser,156,460,40,46,27,103,34,42,3,28
+chatunitest-core,csv,CSVFormat,1540,770,255,80,268,223,215,66,59,53
+chatunitest-core,csv,Token.Type,0,33,0,0,0,6,0,1,0,1
+chatunitest-core,slicing.arcs,Arc,222,0,32,0,43,0,41,0,25,0
+chatunitest-core,lang3.concurrent,AbstractFutureProxy,0,35,0,0,0,9,0,7,0,7
+chatunitest-core,lang3.concurrent,UncheckedFutureImpl,18,24,0,0,6,8,0,3,0,3
+chatunitest-core,lang3.concurrent,BasicThreadFactory.Builder,0,35,0,0,0,13,0,4,0,4
+chatunitest-core,lang3.concurrent,UncheckedTimeoutException,0,4,0,0,0,2,0,1,0,1
+chatunitest-core,lang3.concurrent,FutureTasks,0,9,0,0,0,3,0,1,0,1
+chatunitest-core,lang3.concurrent,BasicThreadFactory,68,37,9,1,17,10,11,3,6,3
+chatunitest-core,lang3.concurrent,UncheckedFuture,0,16,0,0,0,3,0,3,0,3
+chatunitest-core,lang3.concurrent,UncheckedExecutionException,0,4,0,0,0,2,0,1,0,1
+chatunitest-core,slicing.nodes.exceptionsensitive,ExceptionExitNode,57,0,6,0,8,0,8,0,5,0
+chatunitest-core,slicing.nodes.exceptionsensitive,NormalExitNode,8,0,0,0,3,0,2,0,2,0
+chatunitest-core,slicing.nodes.exceptionsensitive,ExceptionReturnNode,129,0,12,0,21,0,14,0,8,0
+chatunitest-core,slicing.nodes.exceptionsensitive,ExitNode,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,slicing.nodes.exceptionsensitive,ReturnNode,24,0,0,0,6,0,3,0,3,0
+chatunitest-core,slicing.nodes.exceptionsensitive,NormalReturnNode,50,0,6,0,14,0,8,0,5,0
+chatunitest-core,slicing.graphs.pdg,PDG,50,0,0,0,14,0,7,0,7,0
+chatunitest-core,slicing.graphs.pdg,ControlDependencyBuilder,198,0,34,0,44,0,23,0,6,0
+chatunitest-core,slicing.graphs.pdg,PDG.Builder,284,0,38,0,51,0,29,0,10,0
+chatunitest-core,lang3,RuntimeEnvironment,0,115,0,8,0,20,0,12,0,8
+chatunitest-core,lang3,NumberRange,0,6,0,0,0,2,0,1,0,1
+chatunitest-core,lang3,CharRange,102,145,31,15,19,25,24,14,4,11
+chatunitest-core,lang3,SystemUtils,0,53,0,2,0,22,0,8,0,7
+chatunitest-core,lang3,Conversion,644,2071,214,212,146,313,185,102,4,40
+chatunitest-core,lang3,CachedRandomBits,16,114,5,9,2,23,5,5,0,3
+chatunitest-core,lang3,Range.ComparableComparator,0,14,0,0,0,3,0,2,0,2
+chatunitest-core,lang3,SystemProperties,8,91,1,7,4,23,2,24,1,21
+chatunitest-core,lang3,CharSet,0,286,1,27,0,55,1,23,0,10
+chatunitest-core,lang3,CharSetUtils,44,176,11,27,11,45,8,19,1,7
+chatunitest-core,lang3,LongRange,0,35,0,0,0,6,0,5,0,5
+chatunitest-core,lang3,RandomUtils,10,307,1,27,3,59,2,44,1,31
+chatunitest-core,lang3,ArrayFill,0,83,4,20,0,31,4,18,0,10
+chatunitest-core,lang3,AppendableJoiner,32,167,3,13,6,32,5,16,2,11
+chatunitest-core,lang3,SerializationException,0,16,0,0,0,8,0,4,0,4
+chatunitest-core,lang3,Range,58,365,19,55,13,71,20,44,1,26
+chatunitest-core,lang3,ClassPathUtils,70,16,0,0,14,2,5,2,5,2
+chatunitest-core,lang3,ClassLoaderUtils,4,44,1,5,1,9,1,9,0,7
+chatunitest-core,lang3,AppendableJoiner.Builder,0,36,0,0,0,11,0,6,0,6
+chatunitest-core,lang3,CharRange.CharacterIterator,130,0,18,0,30,0,14,0,5,0
+chatunitest-core,lang3,Charsets,23,0,6,0,4,0,7,0,4,0
+chatunitest-core,lang3,RandomStringUtils,130,788,19,85,18,111,24,74,7,39
+chatunitest-core,lang3,ArraySorter,36,22,15,3,18,11,15,4,6,4
+chatunitest-core,zju.cst.aces.prompt.template,PromptTemplate.new TypeToken() {...},3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.prompt.template,PromptTemplate,2915,0,252,0,554,0,151,0,25,0
+chatunitest-core,slicing.nodes,ValueConnection,76,0,10,0,16,0,7,0,2,0
+chatunitest-core,slicing.nodes,VariableAction.Definition,98,0,12,0,22,0,14,0,8,0
+chatunitest-core,slicing.nodes,SyntheticNode,11,0,0,0,4,0,2,0,2,0
+chatunitest-core,slicing.nodes,ObjectTreeConnection,225,0,36,0,46,0,24,0,6,0
+chatunitest-core,slicing.nodes,VariableAction.Usage,29,0,0,0,5,0,3,0,3,0
+chatunitest-core,slicing.nodes,VariableAction.DeclarationType,115,0,24,0,31,0,15,0,3,0
+chatunitest-core,slicing.nodes,VariableAction.CallMarker,84,0,10,0,10,0,11,0,6,0
+chatunitest-core,slicing.nodes,VariableVisitor.new VoidVisitorAdapter() {...},289,0,22,0,55,0,15,0,4,0
+chatunitest-core,slicing.nodes,VariableAction,646,0,102,0,134,0,101,0,50,0
+chatunitest-core,slicing.nodes,ObjectTree,1454,0,176,0,250,0,162,0,74,0
+chatunitest-core,slicing.nodes,ObjectTree.new Iterator() {...},58,0,10,0,11,0,8,0,3,0
+chatunitest-core,slicing.nodes,ObjectTree.new Iterator() {...},21,0,0,0,4,0,3,0,3,0
+chatunitest-core,slicing.nodes,ObjectTree.new Iterator() {...},67,0,6,0,15,0,6,0,3,0
+chatunitest-core,slicing.nodes,ObjectTree.new Iterator() {...},65,0,6,0,16,0,6,0,3,0
+chatunitest-core,slicing.nodes,GraphNode,455,0,42,0,88,0,49,0,28,0
+chatunitest-core,slicing.nodes,VariableAction.Movable,299,0,20,0,56,0,38,0,28,0
+chatunitest-core,slicing.nodes,IdHelper,21,0,0,0,6,0,4,0,4,0
+chatunitest-core,slicing.nodes,VariableVisitor.Action,129,0,30,0,24,0,25,0,9,0
+chatunitest-core,slicing.nodes,VariableAction.Declaration,29,0,0,0,5,0,3,0,3,0
+chatunitest-core,slicing.nodes,VariableVisitor,1672,0,174,0,342,0,131,0,44,0
+chatunitest-core,zju.cst.aces.util,CodeExtractor,758,0,114,0,164,0,73,0,16,0
+chatunitest-core,zju.cst.aces.util,TokenCounter,15,0,0,0,6,0,2,0,2,0
+chatunitest-core,zju.cst.aces.util,AskGPT,196,0,8,0,38,0,7,0,3,0
+chatunitest-core,zju.cst.aces.util,TestProcessor,365,0,32,0,73,0,33,0,17,0
+chatunitest-core,zju.cst.aces.util,Counter,636,0,54,0,123,0,44,0,17,0
+chatunitest-core,zju.cst.aces.util,TestClassMerger,276,0,12,0,56,0,15,0,9,0
+chatunitest-core,zju.cst.aces.util,ClassNameProcessor,306,0,22,0,53,0,21,0,10,0
+chatunitest-core,zju.cst.aces.util,JsonResponseProcessor.JsonData,6,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.util,TestCompiler,660,0,34,0,137,0,28,0,11,0
+chatunitest-core,zju.cst.aces.util,TestCompiler.new SimpleJavaFileObject() {...},13,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.util,TestCompiler.DetailedTestExecutionListener,24,0,0,0,4,0,2,0,2,0
+chatunitest-core,zju.cst.aces.util,JsonResponseProcessor,279,0,22,0,67,0,18,0,7,0
+chatunitest-core,zju.cst.aces.util,LogFormatter,13,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.util,JsonResponseProcessor.JsonData.Step,39,0,0,0,8,0,5,0,5,0
+chatunitest-core,zju.cst.aces.util.hits,processNameForHITS,183,0,12,0,27,0,8,0,2,0
+chatunitest-core,slicing.utils,NodeNotFoundException,48,0,0,0,12,0,4,0,4,0
+chatunitest-core,slicing.utils,CustomEqualityHashSet.new Iterator() {...},33,0,2,0,7,0,5,0,4,0
+chatunitest-core,slicing.utils,Logger,78,0,2,0,21,0,12,0,11,0
+chatunitest-core,slicing.utils,CustomEqualityHashSet,182,0,18,0,47,0,20,0,11,0
+chatunitest-core,slicing.utils,Utils,111,0,18,0,23,0,14,0,5,0
+chatunitest-core,slicing.utils,StaticConfig,6,0,0,0,3,0,2,0,2,0
+chatunitest-core,slicing.utils,NodeHashSet,20,0,0,0,8,0,5,0,5,0
+chatunitest-core,slicing.utils,ASTUtils,645,0,122,0,131,0,93,0,32,0
+chatunitest-core,slicing.utils,StaticTypeSolver,39,0,2,0,14,0,7,0,6,0
+chatunitest-core,cli,GnuParser,0,144,0,22,0,31,0,13,0,2
+chatunitest-core,cli,CommandLine,457,235,50,28,84,54,85,27,55,18
+chatunitest-core,cli,DeprecatedAttributes,0,84,0,8,0,21,0,12,0,8
+chatunitest-core,cli,HelpFormatter,1137,0,134,0,259,0,117,0,50,0
+chatunitest-core,cli,Option,202,410,33,43,39,107,40,52,16,38
+chatunitest-core,cli,Util,0,83,0,24,0,19,0,17,0,5
+chatunitest-core,cli,DefaultParser.Builder,0,38,0,0,0,11,0,6,0,6
+chatunitest-core,cli,Parser,133,263,39,37,38,70,29,22,1,12
+chatunitest-core,cli,HelpFormatter.Builder,59,0,2,0,14,0,9,0,8,0
+chatunitest-core,cli,AlreadySelectedException,0,41,0,0,0,12,0,5,0,5
+chatunitest-core,cli,UnrecognizedOptionException,0,15,0,0,0,6,0,3,0,3
+chatunitest-core,cli,CommandLine.Builder,5,55,2,2,1,16,3,7,1,7
+chatunitest-core,cli,BasicParser,0,5,0,0,0,3,0,2,0,2
+chatunitest-core,cli,PatternOptionBuilder,0,199,0,44,0,63,0,34,0,8
+chatunitest-core,cli,Options,8,328,1,25,1,68,1,31,0,19
+chatunitest-core,cli,Option.Builder,34,105,5,7,11,33,7,21,4,18
+chatunitest-core,cli,MissingOptionException,0,56,0,6,0,15,0,7,0,4
+chatunitest-core,cli,ParseException,0,25,0,4,0,9,0,5,0,3
+chatunitest-core,cli,AmbiguousOptionException,0,61,0,4,0,16,0,5,0,3
+chatunitest-core,cli,Converter,7,46,0,2,1,10,1,6,1,5
+chatunitest-core,cli,TypeHandler,29,172,0,2,6,39,6,14,6,13
+chatunitest-core,cli,OptionGroup,0,136,0,16,0,37,0,18,0,10
+chatunitest-core,cli,DeprecatedAttributes.Builder,0,29,0,0,0,9,0,5,0,5
+chatunitest-core,cli,DefaultParser,570,464,131,63,113,111,86,42,5,26
+chatunitest-core,cli,MissingArgumentException,0,22,0,0,0,6,0,3,0,3
+chatunitest-core,cli,OptionValidator,3,137,0,24,1,24,1,17,1,5
+chatunitest-core,cli,OptionBuilder,4,145,0,4,1,62,1,22,1,20
+chatunitest-core,cli,HelpFormatter.OptionComparator,6,0,0,0,1,0,1,0,1,0
+chatunitest-core,cli,PosixParser,48,285,11,43,9,60,10,24,0,7
+chatunitest-core,lang3.reflect,MemberUtils.Executable,38,0,0,0,12,0,6,0,6,0
+chatunitest-core,zju.cst.aces.api.phase.solution,CHATTESTER,4,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.phase.solution,MUTAP,4,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.phase.solution,HITS,22,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.api.phase.solution,TESTPILOT,4,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.phase.solution,TESTSPARK,4,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.phase.solution,COVERUP,283,0,12,0,48,0,9,0,3,0
+chatunitest-core,zju.cst.aces.api.phase.solution,SYMPROMPT,26,0,0,0,7,0,3,0,3,0
+chatunitest-core,zju.cst.aces.api.phase.solution,HITS.HITSTestGenerationTask,528,0,40,0,105,0,25,0,5,0
+chatunitest-core,zju.cst.aces.api.phase.solution,TELPA,537,0,42,0,113,0,30,0,9,0
+chatunitest-core,zju.cst.aces.coverage,CodeCoverageAnalyzer.MemoryClassLoader,66,0,10,0,14,0,9,0,4,0
+chatunitest-core,zju.cst.aces.coverage,CodeCoverageAnalyzer.JavaSourceFromString,25,0,0,0,4,0,2,0,2,0
+chatunitest-core,zju.cst.aces.coverage,CodeCoverageAnalyzer,931,0,44,0,146,0,36,0,14,0
+chatunitest-core,slicing.arcs.pdg,ControlDependencyArc,21,0,2,0,6,0,5,0,4,0
+chatunitest-core,slicing.arcs.pdg,TotalDefinitionDependenceArc,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.arcs.pdg,ConditionalControlDependencyArc,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.arcs.pdg,FlowDependencyArc,13,0,0,0,6,0,3,0,3,0
+chatunitest-core,slicing.arcs.pdg,DataDependencyArc,122,0,18,0,14,0,18,0,9,0
+chatunitest-core,slicing.arcs.pdg,ConditionalControlDependencyArc.CC1,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.arcs.pdg,ConditionalControlDependencyArc.CC2,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.arcs.pdg,ObjectFlowDependencyArc,5,0,0,0,3,0,2,0,2,0
+chatunitest-core,slicing.arcs.pdg,StructuralArc,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.phase.step,Preparation,31,0,0,0,8,0,3,0,3,0
+chatunitest-core,zju.cst.aces.api.phase.step,TestGeneration,675,0,44,0,135,0,30,0,8,0
+chatunitest-core,zju.cst.aces.api.phase.step,PromptGeneration,183,0,2,0,24,0,3,0,2,0
+chatunitest-core,zju.cst.aces.api.phase.step,Repair,14,0,0,0,5,0,2,0,2,0
+chatunitest-core,zju.cst.aces.api.phase.step,Validation,38,0,4,0,13,0,5,0,3,0
+chatunitest-core,lang3.function,Suppliers,0,17,0,2,0,5,0,6,0,5
+chatunitest-core,lang3.function,FailableFunction,0,26,0,0,0,6,0,8,0,8
+chatunitest-core,lang3.function,FailableIntFunction,0,7,0,0,0,2,0,3,0,3
+chatunitest-core,lang3.function,FailableConsumer,0,23,0,0,0,7,0,4,0,4
+chatunitest-core,lang3.function,FailableBiPredicate,0,51,0,8,0,6,0,11,0,7
+chatunitest-core,lang3.function,Failable,65,199,2,8,15,39,12,42,10,39
+chatunitest-core,lang3.function,FailableSupplier,0,7,0,0,0,2,0,3,0,3
+chatunitest-core,lang3.function,FailableBiConsumer,0,22,0,0,0,7,0,5,0,5
+chatunitest-core,lang3.function,FailableBiFunction,0,21,0,0,0,4,0,5,0,5
+chatunitest-core,lang3.function,FailablePredicate,0,47,0,8,0,6,0,11,0,7
+chatunitest-core,zju.cst.aces.api.impl,PromptConstructorImpl,110,0,6,0,28,0,11,0,8,0
+chatunitest-core,zju.cst.aces.api.impl,ChatGenerator,44,0,2,0,11,0,7,0,6,0
+chatunitest-core,zju.cst.aces.api.impl,Parser,101,0,4,0,23,0,5,0,3,0
+chatunitest-core,zju.cst.aces.api.impl,ProjectImpl,79,0,2,0,18,0,12,0,11,0
+chatunitest-core,zju.cst.aces.api.impl,LoggerImpl,47,0,0,0,16,0,5,0,5,0
+chatunitest-core,zju.cst.aces.api.impl,RepairImpl,239,0,12,0,41,0,10,0,4,0
+chatunitest-core,zju.cst.aces.api.impl,RunnerImpl,71,0,3,0,20,0,6,0,4,0
+chatunitest-core,zju.cst.aces.api.impl,ValidatorImpl,91,0,2,0,22,0,8,0,7,0
+chatunitest-core,lang3.builder,Reflection,16,0,0,0,4,0,2,0,2,0
+chatunitest-core,lang3.builder,AbstractSupplier,0,5,0,0,0,3,0,2,0,2
+chatunitest-core,zju.cst.aces.api.impl.obfuscator,Obfuscator,1224,0,100,0,247,0,91,0,41,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator,Obfuscator.new TypeToken() {...},6,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator,Obfuscator.ObfuscatorVisitor,32,0,0,0,7,0,3,0,3,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator,Obfuscator.DeobfuscatorVisitor,102,0,2,0,22,0,8,0,7,0
+chatunitest-core,zju.cst.aces.prompt,PromptGenerator,454,0,38,0,88,0,40,0,15,0
+chatunitest-core,zju.cst.aces.prompt,TOT,4,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.prompt,COT,4,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.prompt,PromptFile,154,0,0,0,23,0,4,0,4,0
+chatunitest-core,zju.cst.aces.api,Task.Granularity,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api,Task,838,0,48,0,149,0,32,0,8,0
+chatunitest-core,zju.cst.aces.api,Task.new Thread() {...},14,0,0,0,3,0,2,0,2,0
+chatunitest-core,zju.cst.aces.api,Task.new Callable() {...},115,0,2,0,12,0,3,0,2,0
+chatunitest-core,gson.internal.sql,SqlDateTypeAdapter.new TypeAdapterFactory() {...},5,9,1,1,1,3,1,2,0,2
+chatunitest-core,gson.internal.sql,SqlTimeTypeAdapter.new TypeAdapterFactory() {...},5,9,1,1,1,3,1,2,0,2
+chatunitest-core,gson.internal.sql,SqlTypesSupport,15,45,1,1,8,14,1,1,0,1
+chatunitest-core,gson.internal.sql,SqlTimestampTypeAdapter,31,5,2,0,9,1,6,1,5,1
+chatunitest-core,gson.internal.sql,SqlTimestampTypeAdapter.new TypeAdapterFactory() {...},10,9,1,1,2,3,1,2,0,2
+chatunitest-core,gson.internal.sql,SqlDateTypeAdapter,92,5,4,0,24,1,7,1,5,1
+chatunitest-core,gson.internal.sql,SqlTimeTypeAdapter,92,5,4,0,24,1,7,1,5,1
+chatunitest-core,gson.internal.sql,SqlTypesSupport.new DefaultDateTypeAdapter.DateType() {...},6,4,0,0,1,1,1,1,1,1
+chatunitest-core,gson.internal.sql,SqlTypesSupport.new DefaultDateTypeAdapter.DateType() {...},6,4,0,0,1,1,1,1,1,1
+chatunitest-core,zju.cst.aces.parser,ProjectParser,1087,0,92,0,225,0,81,0,31,0
+chatunitest-core,zju.cst.aces.parser,ClassParser,3098,0,252,0,617,0,218,0,92,0
+chatunitest-core,zju.cst.aces.parser,LengthComparator,15,0,0,0,4,0,2,0,2,0
+chatunitest-core,zju.cst.aces.graph,Graph,31,0,0,0,10,0,5,0,5,0
+chatunitest-core,zju.cst.aces.graph,Edge,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.graph,GraphHelper,161,0,24,0,39,0,16,0,4,0
+chatunitest-core,zju.cst.aces.graph,Node,9,0,0,0,4,0,2,0,2,0
+chatunitest-core,slicing.nodes.oo,PolyMemberNode,18,0,0,0,5,0,3,0,3,0
+chatunitest-core,slicing.nodes.oo,MemberNode,53,0,0,0,13,0,6,0,6,0
+chatunitest-core,gson.internal.reflect,ReflectionHelper.RecordNotSupportedHelper,21,0,0,0,5,0,5,0,5,0
+chatunitest-core,gson.internal.reflect,ReflectionHelper,67,248,6,22,16,47,10,20,5,11
+chatunitest-core,gson.internal.reflect,ReflectionHelper.RecordSupportedHelper,93,44,4,0,19,8,5,2,3,2
+chatunitest-core,gson.internal,ReflectionAccessFilterHelper,0,84,3,19,0,18,3,15,0,7
+chatunitest-core,gson.internal,ReflectionAccessFilterHelper.AccessChecker,5,25,2,2,2,9,2,1,0,1
+chatunitest-core,gson.internal,LinkedTreeMap.EntrySet.new LinkedTreeMap.LinkedTreeMapIterator() {...},0,11,0,0,0,2,0,2,0,2
+chatunitest-core,gson.internal,JsonReaderInternalAccess,0,3,0,0,0,1,0,1,0,1
+chatunitest-core,gson.internal,Streams.AppendableWriter,0,80,2,2,0,22,2,8,0,8
+chatunitest-core,gson.internal,UnsafeAllocator.new UnsafeAllocator() {...},17,0,0,0,2,0,2,0,2,0
+chatunitest-core,gson.internal,UnsafeAllocator.new UnsafeAllocator() {...},23,0,0,0,3,0,2,0,2,0
+chatunitest-core,gson.internal,UnsafeAllocator.new UnsafeAllocator() {...},28,0,0,0,3,0,2,0,2,0
+chatunitest-core,gson.internal,UnsafeAllocator.new UnsafeAllocator() {...},0,23,0,0,0,3,0,2,0,2
+chatunitest-core,gson.internal,Excluder.new TypeAdapter() {...},64,0,6,0,16,0,9,0,6,0
+chatunitest-core,gson.internal,ConstructorConstructor,252,300,31,51,50,85,27,31,3,14
+chatunitest-core,gson.internal,LinkedTreeMap.KeySet.new LinkedTreeMap.LinkedTreeMapIterator() {...},0,12,0,0,0,2,0,2,0,2
+chatunitest-core,gson.internal,ConstructorConstructor.ThrowingObjectConstructor,0,12,0,0,0,4,0,2,0,2
+chatunitest-core,gson.internal,LazilyParsedNumber,5,71,0,4,1,23,1,12,1,10
+chatunitest-core,gson.internal,LinkedTreeMap.KeySet,5,28,1,1,2,5,2,5,1,5
+chatunitest-core,gson.internal,LinkedTreeMap,103,711,34,104,15,186,32,61,2,22
+chatunitest-core,gson.internal,NonNullElementWrapperList,0,99,0,2,0,24,0,19,0,18
+chatunitest-core,gson.internal,JavaVersion,3,88,1,13,1,25,2,12,1,6
+chatunitest-core,gson.internal,LinkedTreeMap.LinkedTreeMapIterator,0,83,0,8,0,19,0,8,0,4
+chatunitest-core,gson.internal,LinkedTreeMap.new Comparator() {...},4,3,0,0,1,1,1,1,1,1
+chatunitest-core,gson.internal,UnsafeAllocator,77,54,0,2,16,12,0,5,0,4
+chatunitest-core,gson.internal,GsonTypes.GenericArrayTypeImpl,23,17,4,0,2,6,4,3,2,3
+chatunitest-core,gson.internal,Primitives,47,89,18,40,10,12,10,23,1,3
+chatunitest-core,gson.internal,Excluder,93,268,33,41,21,63,24,28,0,15
+chatunitest-core,gson.internal,LinkedTreeMap.Node,94,71,23,3,19,22,17,6,4,6
+chatunitest-core,gson.internal,NumberLimits,0,57,0,4,0,10,0,5,0,3
+chatunitest-core,gson.internal,ConstructorConstructor.InstanceCreatorConstructor,0,15,0,0,0,5,0,2,0,2
+chatunitest-core,gson.internal,GsonTypes,178,710,46,116,46,164,35,69,0,23
+chatunitest-core,gson.internal,ReflectionAccessFilterHelper.AccessChecker.new ReflectionAccessFilterHelper.AccessChecker() {...},7,20,0,0,2,2,0,2,0,2
+chatunitest-core,gson.internal,ReflectionAccessFilterHelper.AccessChecker.new ReflectionAccessFilterHelper.AccessChecker() {...},6,0,0,0,2,0,2,0,2,0
+chatunitest-core,gson.internal,GsonTypes.ParameterizedTypeImpl,31,137,7,11,4,26,6,11,1,7
+chatunitest-core,gson.internal,Streams.AppendableWriter.CurrentWrite,0,42,1,1,0,10,1,6,0,6
+chatunitest-core,gson.internal,TroubleshootingGuide,0,9,0,0,0,1,0,1,0,1
+chatunitest-core,gson.internal,Streams,11,50,1,3,3,16,1,5,0,4
+chatunitest-core,gson.internal,LinkedTreeMap.EntrySet,39,15,8,0,10,3,7,3,3,3
+chatunitest-core,gson.internal,PreJava9DateFormatProvider,0,61,0,9,0,14,0,10,0,3
+chatunitest-core,gson.internal,GsonTypes.WildcardTypeImpl,75,78,13,7,10,16,11,5,3,3
+chatunitest-core,slicing.graphs.oo,DynamicTypeResolver,349,0,36,0,71,0,41,0,23,0
+chatunitest-core,gson.stream,MalformedJsonException,0,13,0,0,0,6,0,3,0,3
+chatunitest-core,gson.stream,JsonToken,0,63,0,0,0,11,0,1,0,1
+chatunitest-core,gson.stream,JsonWriter,171,710,48,88,30,191,42,68,0,40
+chatunitest-core,gson.stream,JsonReader,980,2093,209,306,217,503,167,161,2,44
+chatunitest-core,gson.stream,JsonReader.new JsonReaderInternalAccess() {...},12,32,3,7,4,11,3,4,0,2
+chatunitest-core,zju.cst.aces.util.telpa,JavaParserUtil,1240,0,106,0,239,0,89,0,36,0
+chatunitest-core,zju.cst.aces.util.testpilot,SnippetAnalyzer,159,0,12,0,35,0,15,0,9,0
+chatunitest-core,zju.cst.aces.util.testpilot,JavadocCodeExampleCheck,19,0,0,0,5,0,2,0,2,0
+chatunitest-core,zju.cst.aces.util.testpilot,JavaFootprint,223,0,0,0,9,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,TestCore,3556,0,232,0,678,0,155,0,39,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3,10318,0,1164,0,1840,0,673,0,86,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.TestCaseStatus,16,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4,11758,0,1282,0,2118,0,738,0,92,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5,14170,0,1572,0,2592,0,898,0,107,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616,4449,0,470,0,825,0,306,0,71,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo.CodeSpot,15,0,0,0,6,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.ErrorSeverity,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo.ValidationFailure,33,0,0,0,12,0,6,0,6,0
+chatunitest-core,zju.cst.aces.runner,AnalyzeResultStorage,511,0,44,0,94,0,30,0,8,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.BenchmarkRecord,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestClassRunner.TestListener,60,0,6,0,12,0,8,0,4,0
+chatunitest-core,zju.cst.aces.runner,GuideFixHealer,197,0,14,0,43,0,13,0,6,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.ErrorSeverity,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.ExtendedValidationResult,124,0,20,0,27,0,21,0,11,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.MinimalRepairImpact,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestClassRunner.TestStatus,21,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ChatUniTestMain,4,0,0,0,2,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.Config,526,0,70,0,93,0,40,0,5,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.FlakySummary,15,0,0,0,5,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.SurefireSummary,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestCoreDemo2,3208,0,198,0,609,0,134,0,35,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo.FixMode,21,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo.ValidationItem,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,ReportBasedTestRunner.SliceInfo,14,0,0,0,5,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.ErrorInfo,48,0,0,0,15,0,13,0,13,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.MethodInfo,31,0,0,0,9,0,9,0,9,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.ErrorInfo,48,0,0,0,15,0,13,0,13,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode.ErrorRecord,24,0,0,0,9,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.ErrorInfo,60,0,0,0,18,0,15,0,15,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.ApiResponse,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode.TrackedError,12,0,0,0,5,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.RunResult,53,0,0,0,17,0,11,0,11,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.FileMetrics,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.JavaClassLocation,9,0,0,0,3,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestCoreDemo2.ApiResponse,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.new SimpleFileVisitor() {...},17,0,2,0,7,0,4,0,3,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.FixScope,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.new SimpleFileVisitor() {...},48,0,0,0,7,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.new SimpleFileVisitor() {...},23,0,2,0,4,0,3,0,2,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.new Comparator() {...},19,0,0,0,4,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,Timer,91,0,2,0,15,0,4,0,3,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.new Comparator() {...},19,0,0,0,4,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,ReportBasedTestRunner.MethodComplexityInfo,37,0,2,0,4,0,4,0,3,0
+chatunitest-core,zju.cst.aces.runner,Cleaning,2757,0,276,0,526,0,188,0,50,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.FixLogImpact,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo,2239,0,231,0,434,0,152,0,36,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.RepairImpactMeasurement,18,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestCore.ApiResponse,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo.new TypeToken() {...},6,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.ExtendedValidationResult,167,0,26,0,35,0,26,0,13,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.CompileResult,43,0,0,0,14,0,9,0,9,0
+chatunitest-core,zju.cst.aces.runner,TestClassRunner.JavaSourceFromString,25,0,0,0,4,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,CoverageAnalyzer,388,0,4,0,58,0,10,0,8,0
+chatunitest-core,zju.cst.aces.runner,TestClassRunner,655,0,26,0,114,0,29,0,16,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.GenerationLogSummary,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode.FixMode,21,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.CompileResult,43,0,0,0,14,0,9,0,9,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.ApiResponse,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.MethodInfo,31,0,0,0,9,0,9,0,9,0
+chatunitest-core,zju.cst.aces.runner,ChatUnitestCore,609,0,44,0,118,0,36,0,14,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.EvaluationResult,1566,0,76,0,216,0,40,0,2,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.DefectDetection,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ReportBasedTestRunner,984,0,56,0,179,0,51,0,23,0
+chatunitest-core,zju.cst.aces.runner,ValiFixAgentDemo.ValidationStandard,52,0,0,0,11,0,4,0,4,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.MutationSummary,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.FixScope,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode.ErrorType,69,0,0,0,5,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.MethodInfo,31,0,0,0,9,0,9,0,9,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.BenchmarkComparison,17,0,0,0,5,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,Cleaning.MethodInfo,54,0,0,0,3,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode,2316,0,230,0,404,0,158,0,43,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.AnalysisInfo,134,0,12,0,33,0,19,0,13,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode.CodeSpot,9,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.ErrorSeverity,27,0,0,0,5,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestClassRunner.TestResult,32,0,0,0,10,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.SourceMetrics,13,0,0,0,3,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.RepairImpactSnapshots,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,TestClassCompiler,411,0,16,0,91,0,12,0,4,0
+chatunitest-core,zju.cst.aces.runner,AnalyzeResultStorage.ClassDependencyInfo,14,0,0,0,6,0,4,0,4,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.TestRunResult,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.CodeBlock,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.AnalysisInfo,134,0,12,0,33,0,19,0,13,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.RepairCost,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.CommandResult,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.FixScope,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo3.AnalysisInfo,134,0,12,0,33,0,19,0,13,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo5.ApiResponse,15,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.runner,FixTestCode.SpotError,207,0,68,0,39,0,39,0,4,0
+chatunitest-core,zju.cst.aces.runner,ValiFixTextCoreDemo4.ExtendedValidationResult,124,0,20,0,27,0,21,0,11,0
+chatunitest-core,zju.cst.aces.runner,NewValiTest0616.CoverageSummary,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,zju.cst.aces.runner,ReportBasedTestRunner.ClassComplexityInfo,99,0,8,0,16,0,17,0,13,0
+chatunitest-core,zju.cst.aces.runner,CoverageEvaluator,621,0,38,0,107,0,26,0,7,0
+chatunitest-core,slicing.arcs.cfg,ControlFlowArc.NonExecutable,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.arcs.cfg,ControlFlowArc,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.graphs.sdg,SDG.Builder,174,0,6,0,42,0,17,0,14,0
+chatunitest-core,slicing.graphs.sdg,InterproceduralActionFinder,412,0,44,0,69,0,43,0,21,0
+chatunitest-core,slicing.graphs.sdg,InterproceduralUsageFinder,316,0,44,0,62,0,35,0,13,0
+chatunitest-core,slicing.graphs.sdg,OutNodeVariableVisitor,58,0,0,0,26,0,18,0,18,0
+chatunitest-core,slicing.graphs.sdg,SDG,146,0,8,0,33,0,17,0,13,0
+chatunitest-core,slicing.graphs.sdg,SummaryArcAnalyzer,215,0,14,0,37,0,21,0,14,0
+chatunitest-core,slicing.graphs.sdg,InterproceduralActionFinder.ParameterFieldSorter,69,0,16,0,13,0,10,0,2,0
+chatunitest-core,slicing.graphs.sdg,CallConnector,284,0,4,0,61,0,20,0,18,0
+chatunitest-core,slicing.graphs.sdg,InterproceduralActionFinder.StoredAction,47,0,8,0,12,0,7,0,3,0
+chatunitest-core,slicing.graphs.sdg,SDG.Builder.new VoidVisitorAdapter() {...},108,0,18,0,23,0,12,0,3,0
+chatunitest-core,slicing.graphs.sdg,InterproceduralDefinitionFinder,369,0,34,0,66,0,31,0,14,0
+chatunitest-core,slicing.graphs.sdg,AbstractSummaryArcAnalyzer,237,0,22,0,46,0,19,0,8,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ExceptionSensitiveCallConnector,373,0,38,0,75,0,38,0,19,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ExceptionSourceSearcher,60,0,2,0,20,0,8,0,7,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESPDG.Builder,20,0,0,0,6,0,2,0,2,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ConditionalControlDependencyBuilder,342,0,50,0,70,0,38,0,13,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESPDG,33,0,0,0,9,0,5,0,5,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESCFG.ExceptionSource,118,0,8,0,18,0,10,0,6,0
+chatunitest-core,slicing.graphs.exceptionsensitive,AllenSDG,8,0,0,0,2,0,2,0,2,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ExceptionSourceSearcher.FoundException,11,0,0,0,5,0,2,0,2,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESCFG.Builder,971,0,54,0,202,0,58,0,31,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESSDG.Builder,35,0,2,0,6,0,6,0,5,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESCFG,31,0,0,0,8,0,4,0,4,0
+chatunitest-core,slicing.graphs.exceptionsensitive,ESSDG,22,0,0,0,5,0,4,0,4,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator.util,SymbolAnalyzer,353,0,38,0,63,0,29,0,10,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator.util,ASMParser,204,0,8,0,41,0,12,0,8,0
+chatunitest-core,slicing.arcs.sdg,SummaryArc,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.arcs.sdg,InterproceduralArc,3,0,0,0,2,0,1,0,1,0
+chatunitest-core,slicing.arcs.sdg,ParameterInOutArc.ObjectFlow,5,0,0,0,2,0,2,0,2,0
+chatunitest-core,slicing.arcs.sdg,CallArc,7,0,0,0,3,0,3,0,3,0
+chatunitest-core,slicing.arcs.sdg,ReturnArc,7,0,0,0,3,0,3,0,3,0
+chatunitest-core,slicing.arcs.sdg,ParameterInOutArc,78,0,22,0,13,0,15,0,4,0
+chatunitest-core,zju.cst.aces.api.phase,PhaseImpl.PhaseType,45,0,0,0,8,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.phase,PhaseImpl,121,0,8,0,29,0,19,0,12,0
+chatunitest-core,slicing.graphs.cfg,CFG,345,0,40,0,56,0,40,0,20,0
+chatunitest-core,slicing.graphs.cfg,CFGBuilder,945,0,46,0,191,0,59,0,36,0
+chatunitest-core,gson.internal.bind.util,ISO8601Utils,54,670,22,69,6,143,21,34,0,9
+chatunitest-core,lang3.stream,LangCollectors.SimpleCollector,0,33,0,0,0,12,0,6,0,6
+chatunitest-core,lang3.stream,LangCollectors,0,53,0,0,0,5,0,7,0,7
+chatunitest-core,lang3.stream,IntStreams,0,18,0,2,0,5,0,5,0,4
+chatunitest-core,help,TextHelpAppendable,920,0,86,0,187,0,68,0,25,0
+chatunitest-core,help,OptionFormatter,364,0,30,0,64,0,33,0,18,0
+chatunitest-core,help,OptionFormatter.Builder,189,0,0,0,43,0,14,0,14,0
+chatunitest-core,help,Util,137,0,32,0,27,0,24,0,8,0
+chatunitest-core,help,FilterHelpAppendable,29,0,0,0,9,0,4,0,4,0
+chatunitest-core,help,HelpFormatter,159,0,10,0,35,0,8,0,3,0
+chatunitest-core,help,HelpAppendable,13,0,0,0,4,0,2,0,2,0
+chatunitest-core,help,TableDefinition.new TableDefinition() {...},27,0,0,0,5,0,5,0,5,0
+chatunitest-core,help,TextStyle,222,0,20,0,47,0,21,0,11,0
+chatunitest-core,help,TextStyle.Builder,88,0,0,0,29,0,14,0,14,0
+chatunitest-core,help,HelpFormatter.Builder,16,0,0,0,6,0,3,0,3,0
+chatunitest-core,help,TableDefinition,8,0,0,0,1,0,1,0,1,0
+chatunitest-core,help,AbstractHelpFormatter.Builder,64,0,4,0,21,0,12,0,10,0
+chatunitest-core,help,TextStyle.Alignment,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,help,AbstractHelpFormatter,333,0,26,0,75,0,37,0,24,0
+chatunitest-core,slicing.slicing,MultiVariableCriterion,252,0,24,0,51,0,27,0,15,0
+chatunitest-core,slicing.slicing,BranchLineSlicingCriterion,193,0,12,0,37,0,17,0,11,0
+chatunitest-core,slicing.slicing,FileLineSlicingCriterion,85,0,10,0,15,0,9,0,4,0
+chatunitest-core,slicing.slicing,Slice,205,0,18,0,39,0,20,0,11,0
+chatunitest-core,slicing.slicing,JSysDGSlicingAlgorithm,52,0,16,0,9,0,11,0,3,0
+chatunitest-core,slicing.slicing,OriginalJSysDGSlicingAlgorithm,25,0,10,0,4,0,7,0,2,0
+chatunitest-core,slicing.slicing,ExceptionSensitiveSlicingAlgorithm,363,0,48,0,63,0,38,0,14,0
+chatunitest-core,slicing.slicing,PseudoPredicateSlicingAlgorithm,79,0,18,0,13,0,16,0,7,0
+chatunitest-core,slicing.slicing,ClassFileLineCriterion,63,0,4,0,12,0,7,0,5,0
+chatunitest-core,slicing.slicing,ClassicSlicingAlgorithm,113,0,10,0,30,0,12,0,7,0
+chatunitest-core,slicing.slicing,AllenSlicingAlgorithm,22,0,8,0,5,0,6,0,2,0
+chatunitest-core,slicing.slicing,SlicePruneVisitor,402,0,60,0,74,0,55,0,25,0
+chatunitest-core,slicing.slicing,LineNumberCriterion,213,0,20,0,40,0,21,0,11,0
+chatunitest-core,slicing.nodes.io,FormalIONode,58,0,2,0,10,0,7,0,6,0
+chatunitest-core,slicing.nodes.io,MethodExitNode,8,0,0,0,2,0,1,0,1,0
+chatunitest-core,slicing.nodes.io,CallNode.Return,59,0,6,0,14,0,8,0,5,0
+chatunitest-core,slicing.nodes.io,ActualIONode,119,0,16,0,15,0,16,0,8,0
+chatunitest-core,slicing.nodes.io,OutputNode,31,0,4,0,7,0,4,0,2,0
+chatunitest-core,slicing.nodes.io,CallNode,84,0,6,0,15,0,9,0,6,0
+chatunitest-core,slicing.nodes.io,IONode,72,0,10,0,10,0,11,0,6,0
+chatunitest-core,zju.cst.aces.api.config,Config.ConfigBuilder,1311,0,54,0,322,0,88,0,61,0
+chatunitest-core,zju.cst.aces.api.config,Config,385,0,4,0,47,0,6,0,4,0
+chatunitest-core,zju.cst.aces.api.config,ModelConfig,27,0,0,0,8,0,1,0,1,0
+chatunitest-core,zju.cst.aces.api.config,Model,89,0,4,0,20,0,7,0,5,0
+chatunitest-core,zju.cst.aces.api.config,ModelConfig.Builder,57,0,0,0,20,0,8,0,8,0
+chatunitest-core,codeing,Add,0,98,0,24,0,18,0,17,0,5
+chatunitest-core,codeing,AddExample,0,7,0,0,0,2,0,2,0,2
+chatunitest-core,codeing,Calculator,0,15,0,0,0,4,0,4,0,4
+chatunitest-core,codeing,Example,0,7,0,0,0,2,0,2,0,2
+chatunitest-core,codeing,Fix,0,22,0,2,0,4,0,5,0,4
+chatunitest-core,slicing.graphs,ExpressionObjectTreeFinder,383,0,56,0,77,0,45,0,17,0
+chatunitest-core,slicing.graphs,ClassGraph.new VoidVisitorAdapter() {...},100,0,6,0,21,0,10,0,7,0
+chatunitest-core,slicing.graphs,ClassGraph.new VoidVisitorAdapter() {...},187,0,6,0,30,0,10,0,7,0
+chatunitest-core,slicing.graphs,ClassGraph.Vertex,81,0,12,0,15,0,11,0,5,0
+chatunitest-core,slicing.graphs,CallGraph.new VoidVisitorAdapter() {...},32,0,0,0,7,0,3,0,3,0
+chatunitest-core,slicing.graphs,CallGraph.new VoidVisitorAdapter() {...},407,0,34,0,82,0,36,0,19,0
+chatunitest-core,slicing.graphs,CallGraph.Edge,79,0,8,0,15,0,11,0,7,0
+chatunitest-core,slicing.graphs,ClassGraph.ClassArc.Extends,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.graphs,ClassGraph.ClassArc.Implements,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.graphs,CallGraph,220,0,8,0,48,0,21,0,17,0
+chatunitest-core,slicing.graphs,BackwardDataFlowAnalysis,129,0,8,0,25,0,9,0,5,0
+chatunitest-core,slicing.graphs,ExpressionObjectTreeFinder.new VoidVisitorAdapter() {...},489,0,44,0,93,0,51,0,29,0
+chatunitest-core,slicing.graphs,GraphNodeContentVisitor,177,0,0,0,51,0,35,0,35,0
+chatunitest-core,slicing.graphs,ClassGraph.ClassArc.Member,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.graphs,ClassGraph,1022,0,92,0,205,0,103,0,57,0
+chatunitest-core,slicing.graphs,GraphWithRootNode,89,0,12,0,20,0,14,0,8,0
+chatunitest-core,slicing.graphs,Graph,98,0,8,0,21,0,11,0,7,0
+chatunitest-core,slicing.graphs,CallGraph.Vertex,94,0,18,0,16,0,16,0,7,0
+chatunitest-core,slicing.graphs,ClassGraph.ClassArc,3,0,0,0,1,0,1,0,1,0
+chatunitest-core,slicing.graphs.jsysdg,OriginalJSysPDG,32,0,0,0,9,0,7,0,7,0
+chatunitest-core,slicing.graphs.jsysdg,JSysDG.Builder,317,0,34,0,59,0,29,0,12,0
+chatunitest-core,slicing.graphs.jsysdg,SummaryArcAnalyzer,193,0,24,0,35,0,24,0,12,0
+chatunitest-core,slicing.graphs.jsysdg,JSysCFG.Builder,329,0,28,0,77,0,34,0,20,0
+chatunitest-core,slicing.graphs.jsysdg,OriginalJSysPDG.Builder,157,0,20,0,31,0,20,0,10,0
+chatunitest-core,slicing.graphs.jsysdg,JSysPDG.Builder,561,0,84,0,104,0,66,0,24,0
+chatunitest-core,slicing.graphs.jsysdg,JSysCFG.Builder.new ModifierVisitor() {...},18,0,0,0,3,0,2,0,2,0
+chatunitest-core,slicing.graphs.jsysdg,JSysDG.Builder.new ModifierVisitor() {...},49,0,6,0,7,0,6,0,3,0
+chatunitest-core,slicing.graphs.jsysdg,JSysDG,13,0,0,0,3,0,3,0,3,0
+chatunitest-core,slicing.graphs.jsysdg,JSysCallConnector,220,0,30,0,38,0,26,0,11,0
+chatunitest-core,slicing.graphs.jsysdg,OriginalJSysDG,13,0,0,0,3,0,3,0,3,0
+chatunitest-core,slicing.graphs.jsysdg,JSysCFG,419,0,60,0,75,0,50,0,20,0
+chatunitest-core,slicing.graphs.jsysdg,OriginalJSysDG.Builder,22,0,2,0,3,0,4,0,3,0
+chatunitest-core,slicing.graphs.jsysdg,JSysPDG,211,0,14,0,35,0,20,0,13,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator.frame,Symbol,40,0,6,0,11,0,5,0,2,0
+chatunitest-core,zju.cst.aces.api.impl.obfuscator.frame,SymbolFrame,688,0,62,0,91,0,62,0,31,0
+chatunitest-core,zju.cst.aces.util.chattester,TesterCompiler,247,0,14,0,41,0,13,0,6,0
+chatunitest-core,zju.cst.aces.util.chattester,TesterValidator,55,0,2,0,12,0,7,0,6,0
+chatunitest-core,zju.cst.aces.util.chattester,TesterCompiler.new SimpleJavaFileObject() {...},13,0,0,0,2,0,2,0,2,0
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},41,3,2,0,12,1,5,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},41,3,2,0,12,1,5,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},22,3,2,0,8,1,5,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},27,3,4,0,11,1,6,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},25,11,3,1,10,3,5,2,3,2
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},7,24,1,3,3,9,3,4,2,3
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},50,3,6,0,12,1,7,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},15,3,0,0,5,1,4,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},77,6,6,0,19,1,7,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},78,3,6,0,21,1,7,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapterFactory() {...},0,37,0,2,0,3,0,4,0,3
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapterFactory() {...},19,0,2,0,2,0,3,0,2,0
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},78,3,16,0,23,1,12,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},46,3,4,0,12,1,6,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},27,3,4,0,9,1,6,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},76,4,0,0,16,1,4,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},34,3,0,0,9,1,4,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},27,3,4,0,8,1,6,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},27,3,4,0,8,1,6,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},41,3,6,0,11,1,7,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},35,3,6,0,9,1,7,1,4,1
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.FieldReflectionAdapter,3,18,0,0,2,7,2,4,2,4
+chatunitest-core,gson.internal.bind,JsonTreeWriter,66,322,18,38,14,74,15,34,0,21
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapterFactory() {...},3,49,2,2,0,6,2,3,0,3
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapterFactory() {...},0,52,0,4,0,6,0,5,0,3
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapterFactory() {...},6,37,1,1,1,5,1,3,0,3
+chatunitest-core,gson.internal.bind,TreeTypeAdapter.SingleTypeFactory,15,82,8,10,1,17,6,5,0,2
+chatunitest-core,gson.internal.bind,JsonAdapterAnnotationTypeAdapterFactory.DummyTypeAdapterFactory,5,0,0,0,1,0,1,0,1,0
+chatunitest-core,gson.internal.bind,ArrayTypeAdapter,3,117,0,12,2,32,2,10,2,4
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters,84,139,2,0,21,13,6,3,5,3
+chatunitest-core,gson.internal.bind,DefaultDateTypeAdapter.DateType,0,36,0,0,0,7,0,5,0,5
+chatunitest-core,gson.internal.bind,JsonTreeWriter.new Writer() {...},12,3,0,0,3,1,3,1,3,1
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.new ReflectiveTypeAdapterFactory.BoundField() {...},100,71,13,7,19,15,10,4,1,3
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.new TypeAdapter() {...},9,10,0,0,5,3,4,2,4,2
+chatunitest-core,gson.internal.bind,TreeTypeAdapter,15,145,2,16,5,32,4,16,2,9
+chatunitest-core,gson.internal.bind,SerializationDelegatingTypeAdapter,0,3,0,0,0,1,0,1,0,1
+chatunitest-core,gson.internal.bind,DefaultDateTypeAdapter.DateType.new DefaultDateTypeAdapter.DateType() {...},0,6,0,0,0,2,0,2,0,2
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.RecordAdapter,223,0,8,0,46,0,12,0,8,0
+chatunitest-core,gson.internal.bind,CollectionTypeAdapterFactory.Adapter,3,69,0,8,2,24,2,7,2,3
+chatunitest-core,gson.internal.bind,EnumTypeAdapter,197,5,16,0,39,1,14,1,6,1
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory,216,319,38,38,39,78,33,13,2,6
+chatunitest-core,gson.internal.bind,MapTypeAdapterFactory.Adapter,31,295,4,36,5,77,6,20,2,4
+chatunitest-core,gson.internal.bind,JsonElementTypeAdapter,20,263,3,43,4,66,5,27,2,5
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.FieldsData,0,16,0,0,0,5,0,2,0,2
+chatunitest-core,gson.internal.bind,CollectionTypeAdapterFactory,0,50,0,2,0,14,0,3,0,2
+chatunitest-core,gson.internal.bind,TypeAdapters.FloatAdapter,44,6,8,0,15,3,8,1,4,1
+chatunitest-core,gson.internal.bind,NumberTypeAdapter,3,67,0,5,2,19,2,9,2,6
+chatunitest-core,gson.internal.bind,EnumTypeAdapter.new TypeAdapterFactory() {...},17,12,5,1,4,4,3,2,0,2
+chatunitest-core,gson.internal.bind,JsonTreeReader.new Reader() {...},8,3,0,0,2,1,2,1,2,1
+chatunitest-core,gson.internal.bind,DefaultDateTypeAdapter.new TypeAdapterFactory() {...},0,19,0,2,0,5,0,4,0,3
+chatunitest-core,gson.internal.bind,ArrayTypeAdapter.new TypeAdapterFactory() {...},0,36,1,5,0,10,1,4,0,2
+chatunitest-core,gson.internal.bind,JsonTreeReader,243,641,49,66,31,150,39,49,0,29
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},34,3,0,0,7,1,4,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.33.new TypeAdapter() {...},59,0,4,0,12,0,7,0,5,0
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},61,3,8,0,17,1,8,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},17,20,2,2,7,6,4,3,2,3
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},22,3,0,0,7,1,4,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},11,18,0,0,4,3,3,2,3,2
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},118,3,15,0,32,1,12,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},25,8,4,0,9,3,5,2,3,2
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},25,3,4,0,8,1,6,1,4,1
+chatunitest-core,gson.internal.bind,TypeAdapters.new TypeAdapter() {...},61,3,8,0,17,1,8,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},38,4,0,0,4,1,4,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapter() {...},91,0,5,0,26,0,8,0,5,0
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapter() {...},91,0,5,0,26,0,8,0,5,0
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},28,4,0,0,4,1,4,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapter() {...},91,0,5,0,25,0,8,0,5,0
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},48,4,0,0,9,1,4,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},38,4,0,0,5,1,4,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapterFactory() {...},90,13,29,1,29,4,15,2,0,2
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapter() {...},124,0,8,0,35,0,10,0,5,0
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapter() {...},99,3,11,0,31,1,10,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},28,4,0,0,4,1,4,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},18,4,0,0,4,1,4,1,4,1
+chatunitest-core,gson.internal.bind,NumberTypeAdapter.new TypeAdapterFactory() {...},0,15,0,2,0,2,0,3,0,2
+chatunitest-core,gson.internal.bind,ObjectTypeAdapter,10,193,1,31,5,59,3,25,2,8
+chatunitest-core,gson.internal.bind,JsonAdapterAnnotationTypeAdapterFactory,96,144,21,15,22,37,14,12,0,8
+chatunitest-core,gson.internal.bind,TypeAdapters,56,322,6,0,12,92,7,8,4,8
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},25,4,0,0,4,1,4,1,4,1
+chatunitest-core,gson.internal.bind,JavaTimeTypeAdapters.new TypeAdapters.IntegerFieldsTypeAdapter() {...},25,4,0,0,4,1,4,1,4,1
+chatunitest-core,gson.internal.bind,DefaultDateTypeAdapter,23,205,4,10,4,45,6,10,2,7
+chatunitest-core,gson.internal.bind,TypeAdapterRuntimeTypeWrapper,30,59,7,9,13,18,7,8,3,4
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.BoundField,0,13,0,0,0,5,0,1,0,1
+chatunitest-core,gson.internal.bind,ObjectTypeAdapter.new TypeAdapterFactory() {...},0,20,0,2,0,4,0,3,0,2
+chatunitest-core,gson.internal.bind,TreeTypeAdapter.GsonContextImpl,20,6,0,0,3,1,3,1,3,1
+chatunitest-core,gson.internal.bind,TypeAdapters.IntegerFieldsTypeAdapter,84,7,10,0,24,3,7,1,2,1
+chatunitest-core,gson.internal.bind,ReflectiveTypeAdapterFactory.Adapter,25,72,3,7,11,24,3,5,0,3
+chatunitest-core,gson.internal.bind,TypeAdapters.DoubleAdapter,21,19,4,2,9,8,6,2,3,2
+chatunitest-core,gson.internal.bind,MapTypeAdapterFactory,2,86,2,4,1,21,2,4,0,3
+chatunitest-core,cli.help,HelpAppendable,0,13,0,0,0,4,0,2,0,2
+chatunitest-core,cli.help,AbstractHelpFormatter,21,312,5,21,4,71,5,32,1,23
+chatunitest-core,cli.help,AbstractHelpFormatter.Builder,0,64,0,4,0,21,0,12,0,10
+chatunitest-core,cli.help,OptionFormatter,84,280,11,19,16,48,10,23,3,15
+chatunitest-core,cli.help,OptionFormatter.Builder,8,181,0,0,2,41,1,13,1,13
+chatunitest-core,cli.help,TextStyle.Builder,0,88,0,0,0,29,0,14,0,14
+chatunitest-core,cli.help,Util,39,98,7,25,5,22,7,17,1,7
+chatunitest-core,cli.help,HelpFormatter,65,94,7,3,12,23,5,3,0,3
+chatunitest-core,cli.help,TextHelpAppendable,133,787,23,63,22,165,20,48,3,22
+chatunitest-core,cli.help,FilterHelpAppendable,0,29,0,0,0,9,0,4,0,4
+chatunitest-core,cli.help,TextStyle,3,219,2,18,0,47,2,19,0,11
+chatunitest-core,cli.help,TableDefinition,0,8,0,0,0,1,0,1,0,1
+chatunitest-core,cli.help,TableDefinition.new TableDefinition() {...},0,27,0,0,0,5,0,5,0,5
+chatunitest-core,cli.help,TextStyle.Alignment,0,21,0,0,0,4,0,1,0,1
+chatunitest-core,cli.help,HelpFormatter.Builder,5,11,0,0,2,4,1,2,1,2
+chatunitest-core,zju.cst.aces.dto,PromptInfo,260,0,8,0,55,0,12,0,8,0
+chatunitest-core,zju.cst.aces.dto,TestSkeleton,166,0,2,0,30,0,10,0,9,0
+chatunitest-core,zju.cst.aces.dto,ExampleUsage,90,0,6,0,20,0,8,0,5,0
+chatunitest-core,zju.cst.aces.dto,MethodExampleMap,72,0,0,0,14,0,7,0,7,0
+chatunitest-core,zju.cst.aces.dto,OCM.OCC,84,0,14,0,14,0,10,0,3,0
+chatunitest-core,zju.cst.aces.dto,TestMessage.ErrorType,21,0,0,0,4,0,1,0,1,0
+chatunitest-core,zju.cst.aces.dto,OCM.LengthComparator,41,0,6,0,11,0,5,0,2,0
+chatunitest-core,zju.cst.aces.dto,MethodInfo,33,0,0,0,12,0,1,0,1,0
+chatunitest-core,zju.cst.aces.dto,ClassInfo,187,0,6,0,51,0,7,0,4,0
+chatunitest-core,zju.cst.aces.dto,RoundRecord,13,0,0,0,6,0,3,0,3,0
+chatunitest-core,zju.cst.aces.dto,OCM,42,0,0,0,8,0,4,0,4,0
+chatunitest-core,zju.cst.aces.dto,ChatMessage,21,0,0,0,3,0,3,0,3,0
+chatunitest-core,zju.cst.aces.dto,MethodExampleMap.LengthComparator,41,0,6,0,11,0,5,0,2,0
+chatunitest-core,zju.cst.aces.dto,ChatResponse,59,0,14,0,10,0,9,0,2,0
+chatunitest-core,zju.cst.aces.dto,MethodExampleMap.MEC,84,0,14,0,14,0,10,0,3,0
+chatunitest-core,zju.cst.aces.dto,ValidationRecord,17,0,0,0,7,0,5,0,5,0
+chatunitest-core,zju.cst.aces.dto,ChatMessage.Role,24,0,0,0,4,0,1,0,1,0
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},7,6,0,0,1,1,1,1,1,1
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},7,6,0,0,1,1,1,1,1,1
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},7,6,0,0,1,1,1,1,1,1
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},7,6,0,0,1,1,1,1,1,1
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},0,9,0,0,0,2,0,2,0,2
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},4,6,0,0,1,1,1,1,1,1
+chatunitest-core,gson,FieldNamingPolicy.new FieldNamingPolicy() {...},6,6,0,0,1,1,1,1,1,1
+chatunitest-core,gson,Gson,177,918,17,55,37,241,19,55,2,36
+chatunitest-core,gson,JsonParseException,0,13,0,0,0,6,0,3,0,3
+chatunitest-core,gson,FieldNamingStrategy,0,2,0,0,0,1,0,1,0,1
+chatunitest-core,gson,JsonNull,0,16,0,0,0,6,0,5,0,5
+chatunitest-core,gson,JsonParser,36,49,2,4,8,13,5,5,3,4
+chatunitest-core,gson,JsonArray,16,248,3,21,2,52,3,42,0,33
+chatunitest-core,gson,TypeAdapter,18,73,0,2,6,19,0,9,0,8
+chatunitest-core,gson,FieldNamingPolicy,0,138,0,14,0,26,0,10,0,3
+chatunitest-core,gson,FieldAttributes,36,12,2,0,7,4,8,2,7,2
+chatunitest-core,gson,ToNumberPolicy.new ToNumberPolicy() {...},36,42,2,6,5,10,2,5,0,3
+chatunitest-core,gson,ToNumberPolicy.new ToNumberPolicy() {...},0,12,0,0,0,2,0,2,0,2
+chatunitest-core,gson,ToNumberPolicy.new ToNumberPolicy() {...},19,12,0,0,3,3,0,2,0,2
+chatunitest-core,gson,ToNumberPolicy.new ToNumberPolicy() {...},0,10,0,0,0,2,0,2,0,2
+chatunitest-core,gson,FormattingStyle,0,89,0,4,0,19,0,10,0,8
+chatunitest-core,gson,Strictness,0,21,0,0,0,4,0,1,0,1
+chatunitest-core,gson,ReflectionAccessFilter.new ReflectionAccessFilter() {...},0,12,0,2,0,5,0,4,0,3
+chatunitest-core,gson,ReflectionAccessFilter.new ReflectionAccessFilter() {...},0,12,0,2,0,5,0,4,0,3
+chatunitest-core,gson,ReflectionAccessFilter.new ReflectionAccessFilter() {...},0,12,0,2,0,5,0,4,0,3
+chatunitest-core,gson,ReflectionAccessFilter.new ReflectionAccessFilter() {...},0,12,0,2,0,5,0,4,0,3
+chatunitest-core,gson,JsonPrimitive,174,235,53,33,27,54,39,27,0,23
+chatunitest-core,gson,JsonObject,0,171,0,18,0,30,0,29,0,20
+chatunitest-core,gson,ReflectionAccessFilter.FilterResult,0,27,0,0,0,5,0,1,0,1
+chatunitest-core,gson,ReflectionAccessFilter,0,17,0,0,0,4,0,1,0,1
+chatunitest-core,gson,JsonIOException,0,13,0,0,0,6,0,3,0,3
+chatunitest-core,gson,Gson.FutureTypeAdapter,34,13,3,1,11,5,8,2,6,2
+chatunitest-core,gson,GsonBuilder,105,725,25,33,26,150,25,39,4,31
+chatunitest-core,gson,JsonStreamParser,13,62,0,4,4,15,0,7,0,5
+chatunitest-core,gson,JsonSyntaxException,0,13,0,0,0,6,0,3,0,3
+chatunitest-core,gson,ToNumberPolicy,0,27,0,0,0,5,0,1,0,1
+chatunitest-core,gson,JsonElement,6,190,0,8,2,34,0,26,0,22
+chatunitest-core,gson,LongSerializationPolicy,0,15,0,0,0,3,0,1,0,1
+chatunitest-core,gson,TypeAdapter.NullSafeTypeAdapter,3,43,0,4,2,10,2,6,2,4
+chatunitest-core,gson,LongSerializationPolicy.new LongSerializationPolicy() {...},0,18,0,2,0,5,0,4,0,3
+chatunitest-core,gson,LongSerializationPolicy.new LongSerializationPolicy() {...},0,17,0,2,0,5,0,4,0,3
+chatunitest-core,slicing.graphs.augmented,PSDG.Builder,22,0,2,0,3,0,4,0,3,0
+chatunitest-core,slicing.graphs.augmented,PPDG,15,0,0,0,5,0,3,0,3,0
+chatunitest-core,slicing.graphs.augmented,ASDG.Builder,26,0,2,0,4,0,5,0,4,0
+chatunitest-core,slicing.graphs.augmented,ACFGBuilder,307,0,20,0,72,0,22,0,12,0
+chatunitest-core,slicing.graphs.augmented,PPControlDependencyBuilder,62,0,10,0,14,0,7,0,2,0
+chatunitest-core,slicing.graphs.augmented,APDG,10,0,0,0,4,0,2,0,2,0
+chatunitest-core,slicing.graphs.augmented,ASDG,8,0,0,0,2,0,2,0,2,0
+chatunitest-core,slicing.graphs.augmented,ACFG,42,0,6,0,6,0,8,0,5,0
+chatunitest-core,slicing.graphs.augmented,PSDG,55,0,6,0,9,0,7,0,4,0
+chatunitest-core,slicing.graphs.augmented,PPDG.Builder,63,0,2,0,19,0,6,0,5,0
+chatunitest-core,lang3.exception,UncheckedInterruptedException,0,4,0,0,0,2,0,1,0,1
+chatunitest-core,lang3.exception,UncheckedException,0,4,0,0,0,2,0,1,0,1
+chatunitest-core,lang3.exception,CloneFailedException,0,5,0,0,0,2,0,1,0,1
+chatunitest-core,zju.cst.aces.runner.solution_runner,AbstractRunner,2067,0,126,0,376,0,99,0,36,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,ChatTesterRunner,991,0,80,0,182,0,45,0,5,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,MUTAPRunner,125,0,10,0,29,0,8,0,3,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,ClassRunner.new Callable() {...},111,0,4,0,10,0,4,0,2,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,ClassRunner.new Thread() {...},14,0,0,0,3,0,2,0,2,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,MethodRunner,183,0,20,0,44,0,14,0,4,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,HITSRunner,161,0,18,0,39,0,11,0,2,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,ClassRunner,275,0,18,0,47,0,14,0,4,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,ValidationError,21,0,0,0,8,0,4,0,4,0
+chatunitest-core,zju.cst.aces.runner.solution_runner,ChatTesterRunner.CompilerError,38,0,0,0,2,0,2,0,2,0
+chatunitest-core,lang3.concurrent.locks,LockingVisitors.ReentrantLockVisitor,4,18,0,0,0,5,2,3,2,3
+chatunitest-core,lang3.concurrent.locks,LockingVisitors.LockVisitor.LVBuilder,6,31,0,0,1,10,1,5,1,5
+chatunitest-core,lang3.concurrent.locks,LockingVisitors,0,15,0,0,0,4,0,3,0,3
+chatunitest-core,lang3.concurrent.locks,LockingVisitors.ReadWriteLockVisitor,0,24,0,0,0,5,0,3,0,3
+chatunitest-core,lang3.concurrent.locks,LockingVisitors.LockVisitor,0,60,0,0,0,14,0,4,0,4
+chatunitest-core,lang3.concurrent.locks,LockingVisitors.ReadWriteLockVisitor.Builder,0,30,0,0,0,6,0,3,0,3
+chatunitest-core,lang3.concurrent.locks,LockingVisitors.ReentrantLockVisitor.Builder,4,24,0,0,0,6,2,3,2,3

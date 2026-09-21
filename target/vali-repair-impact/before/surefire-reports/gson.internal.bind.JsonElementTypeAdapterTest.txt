@@ -1,0 +1,8 @@
+-------------------------------------------------------------------------------
+Test set: gson.internal.bind.JsonElementTypeAdapterTest
+-------------------------------------------------------------------------------
+Tests run: 18, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.007 s <<< FAILURE! - in gson.internal.bind.JsonElementTypeAdapterTest
+testReadTerminal  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at gson.internal.bind.JsonElementTypeAdapterTest.testReadTerminal(JsonElementTypeAdapterTest.java:254)
+

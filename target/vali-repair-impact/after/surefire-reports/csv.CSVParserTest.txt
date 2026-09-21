@@ -1,0 +1,20 @@
+-------------------------------------------------------------------------------
+Test set: csv.CSVParserTest
+-------------------------------------------------------------------------------
+Tests run: 22, Failures: 4, Errors: 0, Skipped: 0, Time elapsed: 0.51 s <<< FAILURE! - in csv.CSVParserTest
+testNextRecordWithComments  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at csv.CSVParserTest.testNextRecordWithComments(CSVParserTest.java:73)
+
+testTrailingComment  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <true> but was: <false>
+	at csv.CSVParserTest.testTrailingComment(CSVParserTest.java:163)
+
+testDeprecatedConstructor2  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <1> but was: <0>
+	at csv.CSVParserTest.testDeprecatedConstructor2(CSVParserTest.java:181)
+
+testStrictQuoteMode  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <null> but was: <NULL>
+	at csv.CSVParserTest.testStrictQuoteMode(CSVParserTest.java:116)
+

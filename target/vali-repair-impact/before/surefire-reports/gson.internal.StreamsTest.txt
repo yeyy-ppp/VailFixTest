@@ -1,0 +1,18 @@
+-------------------------------------------------------------------------------
+Test set: gson.internal.StreamsTest
+-------------------------------------------------------------------------------
+Tests run: 19, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0 s <<< FAILURE! - in gson.internal.StreamsTest
+testStreamsConstructor  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Unexpected exception type thrown, expected: <java.lang.UnsupportedOperationException> but was: <java.lang.reflect.InvocationTargetException>
+	at gson.internal.StreamsTest.testStreamsConstructor(StreamsTest.java:27)
+Caused by: java.lang.reflect.InvocationTargetException
+	at gson.internal.StreamsTest.lambda$testStreamsConstructor$0(StreamsTest.java:27)
+	at gson.internal.StreamsTest.testStreamsConstructor(StreamsTest.java:27)
+Caused by: java.lang.UnsupportedOperationException
+	at gson.internal.StreamsTest.lambda$testStreamsConstructor$0(StreamsTest.java:27)
+	at gson.internal.StreamsTest.testStreamsConstructor(StreamsTest.java:27)
+
+testAppendableWriterCloseCloseable  Time elapsed: 0 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Expected java.io.IOException to be thrown, but nothing was thrown.
+	at gson.internal.StreamsTest.testAppendableWriterCloseCloseable(StreamsTest.java:99)
+

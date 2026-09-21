@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: gson.internal.bind.TreeTypeAdapterTest
+-------------------------------------------------------------------------------
+Tests run: 14, Failures: 0, Errors: 1, Skipped: 0, Time elapsed: 0.046 s <<< FAILURE! - in gson.internal.bind.TreeTypeAdapterTest
+testWriteWithDelegateAdapter  Time elapsed: 0.032 s  <<< ERROR!
+gson.JsonIOException: 
+Failed making field 'java.io.File#path' accessible; either increase its visibility or write a custom TypeAdapter for its declaring type.
+See https://github.com/google/gson/blob/main/Troubleshooting.md#reflection-inaccessible
+	at gson.internal.bind.TreeTypeAdapterTest.testWriteWithDelegateAdapter(TreeTypeAdapterTest.java:84)
+Caused by: java.lang.reflect.InaccessibleObjectException: Unable to make field private final java.lang.String java.io.File.path accessible: module java.base does not "opens java.io" to unnamed module @2f0a87b3
+	at gson.internal.bind.TreeTypeAdapterTest.testWriteWithDelegateAdapter(TreeTypeAdapterTest.java:84)
+

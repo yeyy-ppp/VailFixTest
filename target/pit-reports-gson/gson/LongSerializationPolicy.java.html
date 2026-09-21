@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>LongSerializationPolicy.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.internal.bind.TypeAdapters;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>public enum LongSerializationPolicy {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  DEFAULT() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public JsonElement serialize(Long value) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_7'/>
+7
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_7'>1</a>
+<span>
+
+1. serialize : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (value == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_8'/>
+8
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_8'>1</a>
+<span>
+
+1. serialize : replaced return value with null for gson/LongSerializationPolicy$1::serialize &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return JsonNull.INSTANCE;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_10'/>
+10
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_10'>1</a>
+<span>
+
+1. serialize : replaced return value with null for gson/LongSerializationPolicy$1::serialize &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new JsonPrimitive(value);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    TypeAdapter&#60;Number&#62; typeAdapter() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_14'/>
+14
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_14'>1</a>
+<span>
+
+1. typeAdapter : replaced return value with null for gson/LongSerializationPolicy$1::typeAdapter &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return TypeAdapters.LONG;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  },</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  STRING() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public JsonElement serialize(Long value) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_20'/>
+20
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_20'>1</a>
+<span>
+
+1. serialize : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      if (value == null) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_21'/>
+21
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_21'>1</a>
+<span>
+
+1. serialize : replaced return value with null for gson/LongSerializationPolicy$2::serialize &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return JsonNull.INSTANCE;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>      }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_23'/>
+23
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_23'>1</a>
+<span>
+
+1. serialize : replaced return value with null for gson/LongSerializationPolicy$2::serialize &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return new JsonPrimitive(value.toString());</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    TypeAdapter&#60;Number&#62; typeAdapter() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_27'/>
+27
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_27'>1</a>
+<span>
+
+1. typeAdapter : replaced return value with null for gson/LongSerializationPolicy$2::typeAdapter &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>      return TypeAdapters.LONG_AS_STRING;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  };</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public abstract JsonElement serialize(Long value);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  abstract TypeAdapter&#60;Number&#62; typeAdapter();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@4acf1274_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_7'>7</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_7'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>serialize<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeDefault_WhenNull_ReturnsJsonNull()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_8'>8</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_8'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>serialize<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeDefault_WhenNull_ReturnsJsonNull()]</span></span> replaced return value with null for gson/LongSerializationPolicy$1::serialize &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_10'>10</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_10'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>serialize<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeDefault_WhenNonNull_ReturnsJsonPrimitive()]</span></span> replaced return value with null for gson/LongSerializationPolicy$1::serialize &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_14'>14</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_14'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>typeAdapter<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:typeAdapterDefault_ReturnsLongTypeAdapter()]</span></span> replaced return value with null for gson/LongSerializationPolicy$1::typeAdapter &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_20'>20</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_20'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>serialize<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeString_WhenNull_ReturnsJsonNull()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_21'>21</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_21'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>serialize<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeString_WhenNull_ReturnsJsonNull()]</span></span> replaced return value with null for gson/LongSerializationPolicy$2::serialize &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_23'>23</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_23'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>serialize<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeString_WhenNonNull_ReturnsStringPrimitive()]</span></span> replaced return value with null for gson/LongSerializationPolicy$2::serialize &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@4acf1274_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@4acf1274_27'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>typeAdapter<br/><b>Killed by : </b>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:typeAdapterString_ReturnsLongAsStringTypeAdapter()]</span></span> replaced return value with null for gson/LongSerializationPolicy$2::typeAdapter &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeString_WhenNull_ReturnsJsonNull()] (0 ms)</li><li>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeDefault_WhenNonNull_ReturnsJsonPrimitive()] (0 ms)</li><li>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeString_WhenNonNull_ReturnsStringPrimitive()] (0 ms)</li><li>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:serializeDefault_WhenNull_ReturnsJsonNull()] (0 ms)</li><li>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:typeAdapterString_ReturnsLongAsStringTypeAdapter()] (0 ms)</li><li>gson.LongSerializationPolicyTest.[engine:junit-jupiter]/[class:gson.LongSerializationPolicyTest]/[method:typeAdapterDefault_ReturnsLongTypeAdapter()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_NullObject_ReturnsJsonNull()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testConstructor()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFieldNamingStrategy()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableJdkUnsafe()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDefaultConstructor()] (0 ms)</li><li>gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest]/[method:create_noAnnotation_returnsNull()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testExcludeFieldsWithModifiers()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:create_WithNonArrayType_ReturnsNull()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFieldNamingPolicy()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableInnerClassSerialization()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetVersion_Valid()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testExcludeFieldsWithoutExposeAnnotation()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:create_NonCollectionType_ReturnsNull()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testConstructorWithPattern()] (0 ms)</li><li>gson.internal.ExcluderTest.[engine:junit-jupiter]/[class:gson.internal.ExcluderTest]/[method:testCreate()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_NonNestingToken()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testToStringWithSimpleDateFormat()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_InvalidToken()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testCreateWithDateType()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testRegisterTypeAdapterFactory()] (3 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddSerializationExclusionStrategy()] (2 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetExclusionStrategies()] (2 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testRegisterTypeAdapter_ValidAdapter()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_NullValue()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testConstructorWithStyles()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testToStringWithNonSimpleDateFormat()] (2 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testConstructor()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeReturnsSameInstanceWhenAlreadyNullSafe()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginArray()] (0 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testCreate_AnonymousClass()] (1 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testRegisterTypeHierarchyAdapter()] (7 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testWriteNonNull()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testTryBeginNesting_BeginObject()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_String()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_Boolean()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testReadNull()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_EdgeCaseNull()] (0 ms)</li><li>gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonAdapterAnnotationTypeAdapterFactoryTest]/[method:create_adapterClassIsInvalid_throwsException()] (2 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonTreeNullValue()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddReflectionAccessFilter()] (9 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:create_WithObjectArrayType_ReturnsAdapter()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:create_WithGenericArrayType_ReturnsAdapter()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonTreeStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonWriterNullValue()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_DoubleNumber()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonTreeNullValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_LazilyParsedNumber()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeWriteNonNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonTreePrimitiveValue()] (1 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonWriterValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeReadNonNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonNullValue()] (1 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testWrite()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testRead()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonReaderValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testReadNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeWriteNull()] (4 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeReadNull()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithNullArray_WritesNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonReaderNullValue()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_StringObject_ReturnsJsonPrimitive()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_SimpleValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testFromJsonStringNullValue()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedArrays()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_SimpleArray()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithNullValue_ReturnsNull()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithEmptyArray_ReturnsEmptyArray()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_FlatObject()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testReadTerminal_Null()] (10 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testReadValidDate()] (10 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableHtmlEscaping()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSerializeSpecialFloatingPointValues()] (1 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testGenerateNonExecutableJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithEmptyArray_WritesEmptyArray()] (3 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithPrimitiveArray_WritesCorrectJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithObjectArray_WritesCorrectJson()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_NestedObjects()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithObjectArray_ReturnsCorrectArray()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_EmptyStructures()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetStrictness()] (2 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testDeserializeToDateWithMultipleFormats()] (12 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testRead_MixedNesting()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:create_CollectionType_ReturnsAdapter()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:read_WithPrimitiveArray_ReturnsCorrectArray()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetDateFormat_ValidPattern()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testReadWithParseException()] (11 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testCreate_MapType()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testCreate_NonMapType()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_Null()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testConstructor()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_NullCollection_WritesNull()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_Boolean()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_Null()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_String()] (1 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_InvalidType()] (1 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_EmptyArray_ReturnsEmptyCollection()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_NullInput_ReturnsNull()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testKeyToString_Number()] (4 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_EmptyCollection_WritesEmptyArray()] (3 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_Null()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_NonEmptyCollection_WritesArray()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_CollectionWithNullElement_WritesArray()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_NonEmptyArray_ReturnsCollection()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithoutComplexKeySerialization()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:read_ArrayWithNullElement_ReturnsCollection()] (2 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSerializeNulls()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ObjectFormat_DuplicateKey()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithComplexKeySerialization_NoComplexKey()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ArrayFormat_DuplicateKey()] (1 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_CustomType_HandlesTypeCorrectly()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ObjectFormat()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ArrayFormat()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_ComplexStructure()] (1 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testAdapterWriteAndRead()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFormattingStyle()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testEnableComplexMapKeySerialization()] (3 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testCopyConstructor()] (9 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetPrettyPrinting()] (5 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithComplexKeySerialization_WithComplexKey()] (1 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_WithContext_AppliesContextRules()] (19 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddTypeAdaptersForDate()] (50 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetLenient()] (47 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddDeserializationExclusionStrategy()] (382 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

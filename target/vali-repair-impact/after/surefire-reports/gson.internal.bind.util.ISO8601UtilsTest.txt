@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: gson.internal.bind.util.ISO8601UtilsTest
+-------------------------------------------------------------------------------
+Tests run: 27, Failures: 2, Errors: 0, Skipped: 0, Time elapsed: 0.027 s <<< FAILURE! - in gson.internal.bind.util.ISO8601UtilsTest
+testParseDateOnly  Time elapsed: 0.012 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <Sun Jan 01 08:00:00 CST 2023> but was: <Sun Jan 01 00:00:00 CST 2023>
+	at gson.internal.bind.util.ISO8601UtilsTest.testParseDateOnly(ISO8601UtilsTest.java:66)
+
+testParseFullFormat  Time elapsed: 0.003 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <Sun Jan 01 08:00:15 CST 2023> but was: <Sun Jan 01 08:30:15 CST 2023>
+	at gson.internal.bind.util.ISO8601UtilsTest.testParseFullFormat(ISO8601UtilsTest.java:49)
+

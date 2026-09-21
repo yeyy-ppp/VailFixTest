@@ -1,0 +1,12 @@
+-------------------------------------------------------------------------------
+Test set: gson.internal.JavaVersionTest
+-------------------------------------------------------------------------------
+Tests run: 5, Failures: 0, Errors: 2, Skipped: 0, Time elapsed: 0.001 s <<< FAILURE! - in gson.internal.JavaVersionTest
+testIsJava9OrLater  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchFieldException: modifiers
+	at gson.internal.JavaVersionTest.testIsJava9OrLater(JavaVersionTest.java:83)
+
+testGetMajorJavaVersion  Time elapsed: 0 s  <<< ERROR!
+java.lang.NoSuchFieldException: modifiers
+	at gson.internal.JavaVersionTest.testGetMajorJavaVersion(JavaVersionTest.java:62)
+

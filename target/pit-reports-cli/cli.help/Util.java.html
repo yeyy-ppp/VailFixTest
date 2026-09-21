@@ -1,0 +1,1227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>Util.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package cli.help;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Arrays;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public final class Util {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private static final int NOT_FOUND = -1;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static &#60;T extends CharSequence&#62; T defaultValue(final T str, final T defaultValue) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_7'/>
+7
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_7'>2</a>
+<span>
+
+1. defaultValue : negated conditional &rarr; KILLED<br/>
+
+2. defaultValue : replaced return value with null for cli/help/Util::defaultValue &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return isEmpty(str) ? defaultValue : str;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static int indexOfNonWhitespace(final CharSequence text, final int startPos) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_10'/>
+10
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_10'>1</a>
+<span>
+
+1. indexOfNonWhitespace : negated conditional &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        if (isEmpty(text)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_11'/>
+11
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_11'>1</a>
+<span>
+
+1. indexOfNonWhitespace : replaced int return with 0 for cli/help/Util::indexOfNonWhitespace &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>            return NOT_FOUND;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        int idx = startPos;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_14'/>
+14
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_14'>3</a>
+<span>
+
+1. indexOfNonWhitespace : negated conditional &rarr; SURVIVED<br/>
+
+2. indexOfNonWhitespace : changed conditional boundary &rarr; KILLED<br/>
+
+3. indexOfNonWhitespace : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        while (idx &#60; text.length() &#38;&#38; isWhitespace(text.charAt(idx))) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            idx++;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_17'/>
+17
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_17'>3</a>
+<span>
+
+1. indexOfNonWhitespace : changed conditional boundary &rarr; SURVIVED<br/>
+
+2. indexOfNonWhitespace : negated conditional &rarr; SURVIVED<br/>
+
+3. indexOfNonWhitespace : replaced int return with 0 for cli/help/Util::indexOfNonWhitespace &rarr; TIMED_OUT<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return idx &#60; text.length() ? idx : NOT_FOUND;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static boolean isEmpty(final CharSequence str) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_20'/>
+20
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_20'>3</a>
+<span>
+
+1. isEmpty : negated conditional &rarr; KILLED<br/>
+
+2. isEmpty : replaced boolean return with true for cli/help/Util::isEmpty &rarr; KILLED<br/>
+
+3. isEmpty : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return str == null || str.length() == 0;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static boolean isWhitespace(final char c) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_23'/>
+23
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_23'>3</a>
+<span>
+
+1. isWhitespace : negated conditional &rarr; KILLED<br/>
+
+2. isWhitespace : negated conditional &rarr; KILLED<br/>
+
+3. isWhitespace : replaced boolean return with true for cli/help/Util::isWhitespace &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return Character.isWhitespace(c) || Character.PARAGRAPH_SEPARATOR == c;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static String ltrim(final String s) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        final int pos = indexOfNonWhitespace(s, 0);</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_27'/>
+27
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_27'>2</a>
+<span>
+
+1. ltrim : replaced return value with &#34;&#34; for cli/help/Util::ltrim &rarr; NO_COVERAGE<br/>
+
+2. ltrim : negated conditional &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>        return pos == NOT_FOUND ? &#34;&#34; : s.substring(pos);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static String repeat(final int len, final char fillChar) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_30'/>
+30
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_30'>2</a>
+<span>
+
+1. repeat : changed conditional boundary &rarr; KILLED<br/>
+
+2. repeat : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (len &#60; 0) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>            throw new IllegalArgumentException(&#34;Length cannot be negative: &#34; + len);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_33'/>
+33
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_33'>1</a>
+<span>
+
+1. repeat : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (len == 0) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            return &#34;&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_35'/>
+35
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_35'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        // &#38450;&#27490;&#36229;&#22823;&#25968;&#32452;&#23548;&#33268; OutOfMemoryError</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_37'/>
+37
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_37'>2</a>
+<span>
+
+1. repeat : changed conditional boundary &rarr; SURVIVED<br/>
+
+2. repeat : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        if (len &#62; 100000) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>            throw new IllegalArgumentException(&#34;Length too large (max 100000): &#34; + len);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        final char[] padding = new char[len];</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_41'/>
+41
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_41'>1</a>
+<span>
+
+1. repeat : removed call to java/util/Arrays::fill &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Arrays.fill(padding, fillChar);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_42'/>
+42
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_42'>1</a>
+<span>
+
+1. repeat : replaced return value with &#34;&#34; for cli/help/Util::repeat &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return new String(padding);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static String repeatSpace(final int len) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_45'/>
+45
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_45'>1</a>
+<span>
+
+1. repeatSpace : replaced return value with &#34;&#34; for cli/help/Util::repeatSpace &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return repeat(len, &#39; &#39;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_47'/>
+47
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_47'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static String rtrim(final String s) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_48'/>
+48
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_48'>1</a>
+<span>
+
+1. rtrim : negated conditional &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        if (isEmpty(s)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_49'/>
+49
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_49'>1</a>
+<span>
+
+1. rtrim : replaced return value with &#34;&#34; for cli/help/Util::rtrim &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>            return s;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_51'/>
+51
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_51'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        int pos = s.length();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_52'/>
+52
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_52'>4</a>
+<span>
+
+1. rtrim : negated conditional &rarr; SURVIVED<br/>
+
+2. rtrim : changed conditional boundary &rarr; SURVIVED<br/>
+
+3. rtrim : negated conditional &rarr; KILLED<br/>
+
+4. rtrim : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        while (pos &#62; 0 &#38;&#38; isWhitespace(s.charAt(pos - 1))) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>            --pos;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_55'/>
+55
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_55'>1</a>
+<span>
+
+1. rtrim : replaced return value with &#34;&#34; for cli/help/Util::rtrim &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return s.substring(0, pos);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    private Util() {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_59'/>
+59
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_59'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_7'>7</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_7'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>defaultValue<br/><b>Killed by : </b>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testToArgName()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>defaultValue<br/><b>Killed by : </b>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testToArgName()]</span></span> replaced return value with null for cli/help/Util::defaultValue &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_10'>10</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_10'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_11'>11</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_11'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>none</span></span> replaced int return with 0 for cli/help/Util::indexOfNonWhitespace &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_14'>14</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_14'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testMakeColumnQueue_SingleLine()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testMakeColumnQueue_SingleLine()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_17'>17</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_17'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='TIMED_OUT'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>indexOfNonWhitespace<br/><b>Killed by : </b>none</span></span> replaced int return with 0 for cli/help/Util::indexOfNonWhitespace &rarr; TIMED_OUT</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_20'>20</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_20'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testToArgName()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testToArgName()]</span></span> replaced boolean return with true for cli/help/Util::isEmpty &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>isEmpty<br/><b>Killed by : </b>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testToArgName()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_23'>23</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_23'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isWhitespace<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testIndexOfWrap_NoBreakOrSpace()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>isWhitespace<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testIndexOfWrap_NoBreakOrSpace()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>isWhitespace<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testIndexOfWrap_NoBreakOrSpace()]</span></span> replaced boolean return with true for cli/help/Util::isWhitespace &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_27'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>ltrim<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for cli/help/Util::ltrim &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>ltrim<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_30'>30</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_30'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testWriteColumnQueues()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_33'>33</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_33'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_37'>37</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_37'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_41'>41</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_41'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()]</span></span> removed call to java/util/Arrays::fill &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_42'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>repeat<br/><b>Killed by : </b>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()]</span></span> replaced return value with &#34;&#34; for cli/help/Util::repeat &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_45'>45</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_45'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>repeatSpace<br/><b>Killed by : </b>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()]</span></span> replaced return value with &#34;&#34; for cli/help/Util::repeatSpace &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_48'>48</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_48'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_49'>49</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_49'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>none</span></span> replaced return value with &#34;&#34; for cli/help/Util::rtrim &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_52'>52</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_52'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendTitle()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendParagraph()]</span></span> Replaced integer subtraction with addition &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@7d3f7e4b_55'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>rtrim<br/><b>Killed by : </b>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendParagraph()]</span></span> replaced return value with &#34;&#34; for cli/help/Util::rtrim &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testMakeColumnQueue_MultiLine()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testIndexOfWrap_NoBreakOrSpace()] (1 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testIndexOfWrap_FindsWhitespace()] (1 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendParagraph()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendTitle()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendList_Unordered()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testPrintWrapped_DefaultStyle()] (2 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendList_Ordered()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendHeader_Level1()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpAutoUsage()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpWithOptions()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpNoAutoUsage()] (12 ms)</li><li>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadRightAlignment()] (0 ms)</li><li>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadCenterAlignment()] (0 ms)</li><li>cli.help.TextStyleTest.[engine:junit-jupiter]/[class:cli.help.TextStyleTest]/[method:testPadLeftAlignment()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testWriteColumnQueues()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testMakeColumnQueue_SingleLine()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testMakeColumnQueues()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintOptionsIterable()] (1 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintOptionsOptions()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testToArgName()] (0 ms)</li><li>cli.help.TextHelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.TextHelpAppendableTest]/[method:testAppendHeader_InvalidLevel()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testBuilderSetOptionGroupSeparatorNull()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testBuilderSetOptionGroupSeparator()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testAbstractHelpFormatterConstructor()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testGetSetSyntaxPrefix()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpCmdLineSyntaxEmpty()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testGetHelpAppendable()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testGetOptionFormatBuilder()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testSortIterableNull()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testGetSerializer()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testSortOptionsNull()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testGetComparator()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToSyntaxOptionsIterableEmpty()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToArgName()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testGetOpt()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetLongOptPrefix()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetOptPrefix()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToSyntaxOptionsOptionGroupEmpty()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetOptionalDelimiters()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testGetLongOpt()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testToOptional()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetSyntaxFormatFunction()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testGetDescription()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetDefaultArgName()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetArgumentNameDelimiters()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testGetArgName()] (0 ms)</li><li>cli.help.OptionFormatterBuilderTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterBuilderTest]/[method:testSetOptSeparator()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testGetBothOpt()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testSortIterable()] (0 ms)</li><li>cli.help.OptionFormatterTest.[engine:junit-jupiter]/[class:cli.help.OptionFormatterTest]/[method:testToSyntaxOptionWithParam()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testGetOptionFormatter()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testSortOptions()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToSyntaxOptionsOptionGroupSingle()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToSyntaxOptionsOptionGroupMultiple()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToSyntaxOptionsOptions()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testToSyntaxOptionsWithLookup()] (33 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

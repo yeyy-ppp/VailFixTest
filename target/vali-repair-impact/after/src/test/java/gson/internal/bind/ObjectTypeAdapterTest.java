@@ -1,0 +1,271 @@
+package gson.internal.bind;
+
+import gson.Gson;
+import gson.ToNumberPolicy;
+import gson.ToNumberStrategy;
+import gson.TypeAdapter;
+import gson.TypeAdapterFactory;
+import gson.internal.LinkedTreeMap;
+import gson.reflect.TypeToken;
+import gson.stream.JsonReader;
+import gson.stream.JsonToken;
+import gson.stream.JsonWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
+class ObjectTypeAdapterTest {
+
+    private ObjectTypeAdapter createAdapter(ToNumberStrategy strategy) throws Exception {
+        Gson gson = new Gson();
+        TypeAdapterFactory factory = ObjectTypeAdapter.getFactory(strategy);
+        TypeAdapter<Object> adapter = factory.create(gson, TypeToken.get(Object.class));
+        return (ObjectTypeAdapter) adapter;
+    }
+
+    @Test
+    void testConstructor() throws Exception {
+        Constructor<ObjectTypeAdapter> constructor = ObjectTypeAdapter.class.getDeclaredConstructor(Gson.class, ToNumberStrategy.class);
+        constructor.setAccessible(true);
+        ObjectTypeAdapter adapter = constructor.newInstance(new Gson(), ToNumberPolicy.DOUBLE);
+        assertNotNull(adapter);
+    }
+
+    @Test
+    void testNewFactory() throws Exception {
+        Method method = ObjectTypeAdapter.class.getDeclaredMethod("newFactory", ToNumberStrategy.class);
+        method.setAccessible(true);
+        TypeAdapterFactory factory = (TypeAdapterFactory) method.invoke(null, ToNumberPolicy.DOUBLE);
+        assertNotNull(factory);
+        TypeAdapterFactory factory2 = (TypeAdapterFactory) method.invoke(null, ToNumberPolicy.LAZILY_PARSED_NUMBER);
+        assertNotSame(factory, factory2);
+    }
+
+    @Test
+    void testGetFactory_SameInstanceForDouble() throws Exception {
+        TypeAdapterFactory factory1 = ObjectTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapterFactory factory2 = ObjectTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        assertSame(factory1, factory2);
+    }
+
+    @Test
+    void testGetFactory_NewInstanceForDifferentStrategy() throws Exception {
+        TypeAdapterFactory factory1 = ObjectTypeAdapter.getFactory(ToNumberPolicy.DOUBLE);
+        TypeAdapterFactory factory2 = ObjectTypeAdapter.getFactory(ToNumberPolicy.LAZILY_PARSED_NUMBER);
+        assertNotSame(factory1, factory2);
+    }
+
+    @Test
+    void testTryBeginNesting_BeginArray() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("[]"));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "tryBeginNesting", reader, JsonToken.BEGIN_ARRAY);
+        assertTrue(result instanceof ArrayList);
+        assertEquals(JsonToken.END_ARRAY, reader.peek());
+    }
+
+    @Test
+    void testTryBeginNesting_BeginObject() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("{}"));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "tryBeginNesting", reader, JsonToken.BEGIN_OBJECT);
+        assertTrue(result instanceof LinkedTreeMap);
+        assertEquals(JsonToken.END_OBJECT, reader.peek());
+    }
+
+    @Test
+    void testTryBeginNesting_NonNestingToken() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader(""));
+        Object result = invokePrivateMethod(adapter, "tryBeginNesting", reader, JsonToken.STRING);
+        assertNull(result);
+    }
+
+    @Test
+    void testReadTerminal_String() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("\"test\""));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "readTerminal", reader, JsonToken.STRING);
+        assertEquals("test", result);
+    }
+
+    @Test
+    void testReadTerminal_DoubleNumber() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "readTerminal", reader, JsonToken.NUMBER);
+        assertEquals(123.45, (Double) result, 0.001);
+    }
+
+    @Test
+    void testReadTerminal_LazilyParsedNumber() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.LAZILY_PARSED_NUMBER);
+        JsonReader reader = new JsonReader(new StringReader("123.45"));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "readTerminal", reader, JsonToken.NUMBER);
+        assertEquals("123.45", result.toString());
+    }
+
+    @Test
+    void testReadTerminal_Boolean() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("true"));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "readTerminal", reader, JsonToken.BOOLEAN);
+        assertEquals(true, result);
+    }
+
+    @Test
+    void testReadTerminal_Null() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("null"));
+        reader.peek();
+        Object result = invokePrivateMethod(adapter, "readTerminal", reader, JsonToken.NULL);
+        assertNull(result);
+    }
+
+    @Test
+    void testReadTerminal_InvalidToken() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader(""));
+        Exception exception = assertThrows(Exception.class, () ->
+            invokePrivateMethod(adapter, "readTerminal", reader, JsonToken.NAME)
+        );
+        assertTrue(exception instanceof java.lang.reflect.InvocationTargetException);
+        assertTrue(exception.getCause() instanceof IllegalStateException);
+    }
+
+    @Test
+    void testRead_FlatObject() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("{\"key\":\"value\"}"));
+        Object result = adapter.read(reader);
+        assertTrue(result instanceof Map);
+        Map<?, ?> map = (Map<?, ?>) result;
+        assertEquals("value", map.get("key"));
+    }
+
+    @Test
+    void testRead_NestedObjects() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("{\"nested\":{\"inner\":42}}"));
+        Object result = adapter.read(reader);
+        Map<?, ?> outer = (Map<?, ?>) result;
+        Map<?, ?> nested = (Map<?, ?>) outer.get("nested");
+        assertEquals(42.0, nested.get("inner"));
+    }
+
+    @Test
+    void testRead_SimpleArray() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("[\"a\",123]"));
+        Object result = adapter.read(reader);
+        assertTrue(result instanceof List);
+        List<?> list = (List<?>) result;
+        assertEquals("a", list.get(0));
+        assertEquals(123.0, list.get(1));
+    }
+
+    @Test
+    void testRead_NestedArrays() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("[[1,2],[3,4]]"));
+        Object result = adapter.read(reader);
+        assertTrue(result instanceof List);
+        List<?> outer = (List<?>) result;
+        List<?> firstInner = (List<?>) outer.get(0);
+        assertEquals(1.0, firstInner.get(0));
+        assertEquals(2.0, firstInner.get(1));
+    }
+
+    @Test
+    void testRead_MixedNesting() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("{\"arr\":[1,2]}"));
+        Object result = adapter.read(reader);
+        Map<?, ?> map = (Map<?, ?>) result;
+        List<?> list = (List<?>) map.get("arr");
+        assertEquals(1.0, list.get(0));
+        assertEquals(2.0, list.get(1));
+    }
+
+    @Test
+    void testRead_EmptyStructures() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("{\"emptyArr\":[],\"emptyObj\":{}}"));
+        Object result = adapter.read(reader);
+        Map<?, ?> map = (Map<?, ?>) result;
+        assertTrue(map.get("emptyArr") instanceof List);
+        assertTrue(map.get("emptyObj") instanceof Map);
+    }
+
+    @Test
+    void testRead_EdgeCaseNull() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        JsonReader reader = new JsonReader(new StringReader("null"));
+        Object result = adapter.read(reader);
+        assertNull(result);
+    }
+
+    @Test
+    void testWrite_SimpleValue() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        StringWriter writer = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(writer);
+        adapter.write(jsonWriter, "test");
+        jsonWriter.close();
+        assertEquals("\"test\"", writer.toString());
+    }
+
+    @Test
+    void testWrite_NullValue() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        StringWriter writer = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(writer);
+        adapter.write(jsonWriter, null);
+        jsonWriter.close();
+        assertEquals("null", writer.toString());
+    }
+
+    @Test
+    void testWrite_ComplexStructure() throws Exception {
+        ObjectTypeAdapter adapter = createAdapter(ToNumberPolicy.DOUBLE);
+        Map<String, Object> map = new LinkedHashMap<>();
+        map.put("number", 123);
+        map.put("bool", true);
+        List<Object> list = new ArrayList<>();
+        list.add("a");
+        list.add(456);
+        map.put("list", list);
+
+        StringWriter writer = new StringWriter();
+        JsonWriter jsonWriter = new JsonWriter(writer);
+        adapter.write(jsonWriter, map);
+        jsonWriter.close();
+
+        String expected = "{\"number\":123,\"bool\":true,\"list\":[\"a\",456]}";
+        assertEquals(expected, writer.toString());
+    }
+
+    private Object invokePrivateMethod(Object instance, String methodName, Object... args) throws Exception {
+        Class<?>[] paramTypes = new Class[args.length];
+        for (int i = 0; i < args.length; i++) {
+            paramTypes[i] = args[i].getClass();
+        }
+        Method method = instance.getClass().getDeclaredMethod(methodName, paramTypes);
+        method.setAccessible(true);
+        return method.invoke(instance, args);
+    }
+}

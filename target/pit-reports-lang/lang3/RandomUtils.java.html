@@ -1,0 +1,3093 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>RandomUtils.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package lang3;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.security.NoSuchAlgorithmException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.security.SecureRandom;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Random;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.concurrent.ThreadLocalRandom;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.function.Supplier;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import lang3.exception.UncheckedException;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import org.apache.commons.lang3.Validate;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public class RandomUtils {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    private static final RandomUtils INSECURE = new RandomUtils(ThreadLocalRandom::current);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    private static final RandomUtils SECURE = new RandomUtils(SecureRandom::new);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_13'/>
+13
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_13'>1</a>
+<span>
+
+1. lambda$static$0 : replaced return value with null for lang3/RandomUtils::lambda$static$0 &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    private static final Supplier&#60;Random&#62; SECURE_STRONG_SUPPLIER = () -&#62; RandomUtils.SECURE_RANDOM_STRONG.get();</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    private static final RandomUtils SECURE_STRONG = new RandomUtils(SECURE_STRONG_SUPPLIER);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    private static final ThreadLocal&#60;SecureRandom&#62; SECURE_RANDOM_STRONG = ThreadLocal.withInitial(() -&#62; {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        try {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_17'/>
+17
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_17'>1</a>
+<span>
+
+1. lambda$static$1 : replaced return value with null for lang3/RandomUtils::lambda$static$1 &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return SecureRandom.getInstanceStrong();</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>        } catch (final NoSuchAlgorithmException e) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>            throw new UncheckedException(e);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    });</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static RandomUtils insecure() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_23'/>
+23
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_23'>1</a>
+<span>
+
+1. insecure : replaced return value with null for lang3/RandomUtils::insecure &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return INSECURE;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_26'/>
+26
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_26'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static boolean nextBoolean() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_27'/>
+27
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_27'>2</a>
+<span>
+
+1. nextBoolean : replaced boolean return with true for lang3/RandomUtils::nextBoolean &rarr; SURVIVED<br/>
+
+2. nextBoolean : replaced boolean return with false for lang3/RandomUtils::nextBoolean &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return secure().randomBoolean();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static byte[] nextBytes(final int count) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_31'/>
+31
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_31'>1</a>
+<span>
+
+1. nextBytes : replaced return value with null for lang3/RandomUtils::nextBytes &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return secure().randomBytes(count);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static double nextDouble() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_35'/>
+35
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_35'>1</a>
+<span>
+
+1. nextDouble : replaced double return with 0.0d for lang3/RandomUtils::nextDouble &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return secure().randomDouble();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_38'/>
+38
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_38'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static double nextDouble(final double startInclusive, final double endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_39'/>
+39
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_39'>1</a>
+<span>
+
+1. nextDouble : replaced double return with 0.0d for lang3/RandomUtils::nextDouble &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return secure().randomDouble(startInclusive, endExclusive);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_41'/>
+41
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_41'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_42'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static float nextFloat() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_43'/>
+43
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_43'>1</a>
+<span>
+
+1. nextFloat : replaced float return with 0.0f for lang3/RandomUtils::nextFloat &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return secure().randomFloat();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_46'/>
+46
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_46'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static float nextFloat(final float startInclusive, final float endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_47'/>
+47
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_47'>1</a>
+<span>
+
+1. nextFloat : replaced float return with 0.0f for lang3/RandomUtils::nextFloat &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return secure().randomFloat(startInclusive, endExclusive);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_48'/>
+48
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_48'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_49'/>
+49
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_49'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_50'/>
+50
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_50'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static int nextInt() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_51'/>
+51
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_51'>1</a>
+<span>
+
+1. nextInt : replaced int return with 0 for lang3/RandomUtils::nextInt &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return secure().randomInt();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_52'/>
+52
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_52'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_53'/>
+53
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_53'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_54'/>
+54
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_54'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static int nextInt(final int startInclusive, final int endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_55'/>
+55
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_55'>1</a>
+<span>
+
+1. nextInt : replaced int return with 0 for lang3/RandomUtils::nextInt &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return secure().randomInt(startInclusive, endExclusive);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_56'/>
+56
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_56'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_57'/>
+57
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_57'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_58'/>
+58
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_58'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static long nextLong() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_59'/>
+59
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_59'>1</a>
+<span>
+
+1. nextLong : replaced long return with 0 for lang3/RandomUtils::nextLong &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return secure().randomLong();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_60'/>
+60
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_60'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_61'/>
+61
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_61'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_62'/>
+62
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_62'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static long nextLong(final long startInclusive, final long endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_63'/>
+63
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_63'>1</a>
+<span>
+
+1. nextLong : replaced long return with 0 for lang3/RandomUtils::nextLong &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return secure().randomLong(startInclusive, endExclusive);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_64'/>
+64
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_64'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_65'/>
+65
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_65'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static RandomUtils secure() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_66'/>
+66
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_66'>1</a>
+<span>
+
+1. secure : replaced return value with null for lang3/RandomUtils::secure &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return SECURE;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_67'/>
+67
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_67'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_68'/>
+68
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_68'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    static SecureRandom secureRandom() {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_69'/>
+69
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_69'>1</a>
+<span>
+
+1. secureRandom : replaced return value with null for lang3/RandomUtils::secureRandom &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>        return SECURE_RANDOM_STRONG.get();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_70'/>
+70
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_70'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_71'/>
+71
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_71'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public static RandomUtils secureStrong() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_72'/>
+72
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_72'>1</a>
+<span>
+
+1. secureStrong : replaced return value with null for lang3/RandomUtils::secureStrong &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return SECURE_STRONG;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_73'/>
+73
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_73'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_74'/>
+74
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_74'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private final Supplier&#60;Random&#62; random;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_75'/>
+75
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_75'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Deprecated</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_76'/>
+76
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_76'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public RandomUtils() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_77'/>
+77
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_77'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        this(SECURE_STRONG_SUPPLIER);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_78'/>
+78
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_78'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_79'/>
+79
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_79'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    private RandomUtils(final Supplier&#60;Random&#62; random) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_80'/>
+80
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_80'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        this.random = random;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_81'/>
+81
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_81'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_82'/>
+82
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_82'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    Random random() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_83'/>
+83
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_83'>1</a>
+<span>
+
+1. random : replaced return value with null for lang3/RandomUtils::random &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return random.get();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_84'/>
+84
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_84'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_85'/>
+85
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_85'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public boolean randomBoolean() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_86'/>
+86
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_86'>2</a>
+<span>
+
+1. randomBoolean : replaced boolean return with true for lang3/RandomUtils::randomBoolean &rarr; SURVIVED<br/>
+
+2. randomBoolean : replaced boolean return with false for lang3/RandomUtils::randomBoolean &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return random().nextBoolean();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_87'/>
+87
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_87'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_88'/>
+88
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_88'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public byte[] randomBytes(final int count) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_89'/>
+89
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_89'>3</a>
+<span>
+
+1. randomBytes : negated conditional &rarr; KILLED<br/>
+
+2. randomBytes : changed conditional boundary &rarr; KILLED<br/>
+
+3. randomBytes : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Validate.isTrue(count &#62;= 0, &#34;Count cannot be negative.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_90'/>
+90
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_90'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>        final byte[] result = new byte[count];</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_91'/>
+91
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_91'>1</a>
+<span>
+
+1. randomBytes : removed call to java/util/Random::nextBytes &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        random().nextBytes(result);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_92'/>
+92
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_92'>1</a>
+<span>
+
+1. randomBytes : replaced return value with null for lang3/RandomUtils::randomBytes &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return result;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_93'/>
+93
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_93'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_94'/>
+94
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_94'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public double randomDouble() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_95'/>
+95
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_95'>1</a>
+<span>
+
+1. randomDouble : replaced double return with 0.0d for lang3/RandomUtils::randomDouble &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return randomDouble(0, Double.MAX_VALUE);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_96'/>
+96
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_96'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_97'/>
+97
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_97'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public double randomDouble(final double startInclusive, final double endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_98'/>
+98
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_98'>3</a>
+<span>
+
+1. randomDouble : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+2. randomDouble : changed conditional boundary &rarr; KILLED<br/>
+
+3. randomDouble : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Validate.isTrue(endExclusive &#62;= startInclusive, &#34;Start value must be smaller or equal to end value.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_99'/>
+99
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_99'>3</a>
+<span>
+
+1. randomDouble : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+2. randomDouble : changed conditional boundary &rarr; KILLED<br/>
+
+3. randomDouble : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Validate.isTrue(startInclusive &#62;= 0, &#34;Both range values must be non-negative.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_100'/>
+100
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_100'>1</a>
+<span>
+
+1. randomDouble : negated conditional &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        if (startInclusive == endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_101'/>
+101
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_101'>1</a>
+<span>
+
+1. randomDouble : replaced double return with 0.0d for lang3/RandomUtils::randomDouble &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return startInclusive;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_102'/>
+102
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_102'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_103'/>
+103
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_103'>4</a>
+<span>
+
+1. randomDouble : Replaced double subtraction with addition &rarr; SURVIVED<br/>
+
+2. randomDouble : replaced double return with 0.0d for lang3/RandomUtils::randomDouble &rarr; KILLED<br/>
+
+3. randomDouble : Replaced double addition with subtraction &rarr; KILLED<br/>
+
+4. randomDouble : Replaced double multiplication with division &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return startInclusive + (endExclusive - startInclusive) * random().nextDouble();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_104'/>
+104
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_104'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_105'/>
+105
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_105'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public float randomFloat() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_106'/>
+106
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_106'>1</a>
+<span>
+
+1. randomFloat : replaced float return with 0.0f for lang3/RandomUtils::randomFloat &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return randomFloat(0, Float.MAX_VALUE);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_107'/>
+107
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_107'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_108'/>
+108
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_108'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public float randomFloat(final float startInclusive, final float endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_109'/>
+109
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_109'>3</a>
+<span>
+
+1. randomFloat : changed conditional boundary &rarr; KILLED<br/>
+
+2. randomFloat : negated conditional &rarr; KILLED<br/>
+
+3. randomFloat : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Validate.isTrue(endExclusive &#62;= startInclusive, &#34;Start value must be smaller or equal to end value.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_110'/>
+110
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_110'>3</a>
+<span>
+
+1. randomFloat : changed conditional boundary &rarr; KILLED<br/>
+
+2. randomFloat : negated conditional &rarr; KILLED<br/>
+
+3. randomFloat : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Validate.isTrue(startInclusive &#62;= 0, &#34;Both range values must be non-negative.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_111'/>
+111
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_111'>1</a>
+<span>
+
+1. randomFloat : negated conditional &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        if (startInclusive == endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_112'/>
+112
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_112'>1</a>
+<span>
+
+1. randomFloat : replaced float return with 0.0f for lang3/RandomUtils::randomFloat &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return startInclusive;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_113'/>
+113
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_113'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_114'/>
+114
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_114'>4</a>
+<span>
+
+1. randomFloat : Replaced float multiplication with division &rarr; KILLED<br/>
+
+2. randomFloat : Replaced float subtraction with addition &rarr; KILLED<br/>
+
+3. randomFloat : replaced float return with 0.0f for lang3/RandomUtils::randomFloat &rarr; KILLED<br/>
+
+4. randomFloat : Replaced float addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return startInclusive + (endExclusive - startInclusive) * random().nextFloat();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_115'/>
+115
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_115'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_116'/>
+116
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_116'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public int randomInt() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_117'/>
+117
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_117'>1</a>
+<span>
+
+1. randomInt : replaced int return with 0 for lang3/RandomUtils::randomInt &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return randomInt(0, Integer.MAX_VALUE);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_118'/>
+118
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_118'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_119'/>
+119
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_119'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public int randomInt(final int startInclusive, final int endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_120'/>
+120
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_120'>3</a>
+<span>
+
+1. randomInt : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; SURVIVED<br/>
+
+2. randomInt : negated conditional &rarr; KILLED<br/>
+
+3. randomInt : changed conditional boundary &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        Validate.isTrue(endExclusive &#62;= startInclusive, &#34;Start value must be smaller or equal to end value.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_121'/>
+121
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_121'>3</a>
+<span>
+
+1. randomInt : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+2. randomInt : changed conditional boundary &rarr; KILLED<br/>
+
+3. randomInt : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        Validate.isTrue(startInclusive &#62;= 0, &#34;Both range values must be non-negative.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_122'/>
+122
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_122'>1</a>
+<span>
+
+1. randomInt : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (startInclusive == endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_123'/>
+123
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_123'>1</a>
+<span>
+
+1. randomInt : replaced int return with 0 for lang3/RandomUtils::randomInt &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return startInclusive;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_124'/>
+124
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_124'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_125'/>
+125
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_125'>3</a>
+<span>
+
+1. randomInt : Replaced integer subtraction with addition &rarr; KILLED<br/>
+
+2. randomInt : replaced int return with 0 for lang3/RandomUtils::randomInt &rarr; KILLED<br/>
+
+3. randomInt : Replaced integer addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return startInclusive + random().nextInt(endExclusive - startInclusive);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_126'/>
+126
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_126'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_127'/>
+127
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_127'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public long randomLong() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_128'/>
+128
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_128'>1</a>
+<span>
+
+1. randomLong : replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return randomLong(Long.MAX_VALUE);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_129'/>
+129
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_129'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_130'/>
+130
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_130'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    private long randomLong(final long n) {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_131'/>
+131
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_131'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        long bits;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_132'/>
+132
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_132'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        long val;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_133'/>
+133
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_133'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        do {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_134'/>
+134
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_134'>1</a>
+<span>
+
+1. randomLong : Replaced Unsigned Shift Right with Shift Left &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>            bits = random().nextLong() &#62;&#62;&#62; 1;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_135'/>
+135
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_135'>1</a>
+<span>
+
+1. randomLong : Replaced long modulus with multiplication &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            val = bits % n;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_136'/>
+136
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_136'>5</a>
+<span>
+
+1. randomLong : changed conditional boundary &rarr; SURVIVED<br/>
+
+2. randomLong : Replaced long subtraction with addition &rarr; SURVIVED<br/>
+
+3. randomLong : Replaced long addition with subtraction &rarr; TIMED_OUT<br/>
+
+4. randomLong : negated conditional &rarr; TIMED_OUT<br/>
+
+5. randomLong : Replaced long subtraction with addition &rarr; TIMED_OUT<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        } while (bits - val + n - 1 &#60; 0);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_137'/>
+137
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_137'>1</a>
+<span>
+
+1. randomLong : replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; SURVIVED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        return val;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_138'/>
+138
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_138'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_139'/>
+139
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_139'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public long randomLong(final long startInclusive, final long endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_140'/>
+140
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_140'>3</a>
+<span>
+
+1. randomLong : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+2. randomLong : changed conditional boundary &rarr; KILLED<br/>
+
+3. randomLong : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>       Validate.isTrue(endExclusive &#62;= startInclusive, &#34;Start value must be smaller or equal to end value.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_141'/>
+141
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_141'>3</a>
+<span>
+
+1. randomLong : changed conditional boundary &rarr; SURVIVED<br/>
+
+2. randomLong : removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED<br/>
+
+3. randomLong : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='survived'>        Validate.isTrue(startInclusive &#62;= 0, &#34;Both range values must be non-negative.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_142'/>
+142
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_142'>1</a>
+<span>
+
+1. randomLong : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        if (startInclusive == endExclusive) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_143'/>
+143
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_143'>1</a>
+<span>
+
+1. randomLong : replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>            return startInclusive;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_144'/>
+144
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_144'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_145'/>
+145
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_145'>3</a>
+<span>
+
+1. randomLong : Replaced long subtraction with addition &rarr; KILLED<br/>
+
+2. randomLong : replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; KILLED<br/>
+
+3. randomLong : Replaced long addition with subtraction &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return startInclusive + randomLong(endExclusive - startInclusive);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_146'/>
+146
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_146'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_147'/>
+147
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_147'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_148'/>
+148
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_148'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    public String toString() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_149'/>
+149
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_149'>1</a>
+<span>
+
+1. toString : replaced return value with &#34;&#34; for lang3/RandomUtils::toString &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return &#34;RandomUtils [random=&#34; + random() + &#34;]&#34;;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_150'/>
+150
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_150'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@3bea06d0_151'/>
+151
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_151'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_13'>13</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_13'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lambda$static$0<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testSecureStrong()]</span></span> replaced return value with null for lang3/RandomUtils::lambda$static$0 &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_17'>17</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_17'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>lambda$static$1<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testConstructorNoArg()]</span></span> replaced return value with null for lang3/RandomUtils::lambda$static$1 &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_23'>23</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_23'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>insecure<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testInsecure()]</span></span> replaced return value with null for lang3/RandomUtils::insecure &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_27'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextBoolean<br/><b>Killed by : </b>none</span></span> replaced boolean return with true for lang3/RandomUtils::nextBoolean &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>nextBoolean<br/><b>Killed by : </b>none</span></span> replaced boolean return with false for lang3/RandomUtils::nextBoolean &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_31'>31</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_31'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextBytes<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextBytes()]</span></span> replaced return value with null for lang3/RandomUtils::nextBytes &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_35'>35</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_35'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextDouble<br/><b>Killed by : </b>none</span></span> replaced double return with 0.0d for lang3/RandomUtils::nextDouble &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_39'>39</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_39'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextDoubleRange()]</span></span> replaced double return with 0.0d for lang3/RandomUtils::nextDouble &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_43'>43</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_43'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextFloat<br/><b>Killed by : </b>none</span></span> replaced float return with 0.0f for lang3/RandomUtils::nextFloat &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_47'>47</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_47'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloatRange()]</span></span> replaced float return with 0.0f for lang3/RandomUtils::nextFloat &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_51'>51</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_51'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextInt<br/><b>Killed by : </b>none</span></span> replaced int return with 0 for lang3/RandomUtils::nextInt &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_55'>55</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_55'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextIntRange()]</span></span> replaced int return with 0 for lang3/RandomUtils::nextInt &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_59'>59</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_59'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextLong<br/><b>Killed by : </b>none</span></span> replaced long return with 0 for lang3/RandomUtils::nextLong &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_63'>63</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_63'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>nextLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextLongRange()]</span></span> replaced long return with 0 for lang3/RandomUtils::nextLong &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_66'>66</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_66'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>secure<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLong()]</span></span> replaced return value with null for lang3/RandomUtils::secure &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_69'>69</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_69'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>secureRandom<br/><b>Killed by : </b>none</span></span> replaced return value with null for lang3/RandomUtils::secureRandom &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_72'>72</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_72'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>secureStrong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testSecureStrong()]</span></span> replaced return value with null for lang3/RandomUtils::secureStrong &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_83'>83</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_83'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>random<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLong()]</span></span> replaced return value with null for lang3/RandomUtils::random &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_86'>86</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_86'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomBoolean<br/><b>Killed by : </b>none</span></span> replaced boolean return with true for lang3/RandomUtils::randomBoolean &rarr; SURVIVED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomBoolean<br/><b>Killed by : </b>none</span></span> replaced boolean return with false for lang3/RandomUtils::randomBoolean &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_89'>89</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_89'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomBytes<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesPositive()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomBytes<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesZero()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomBytes<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesNegative()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_91'>91</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_91'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomBytes<br/><b>Killed by : </b>none</span></span> removed call to java/util/Random::nextBytes &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_92'>92</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_92'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomBytes<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesPositive()]</span></span> replaced return value with null for lang3/RandomUtils::randomBytes &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_95'>95</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_95'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>none</span></span> replaced double return with 0.0d for lang3/RandomUtils::randomDouble &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_98'>98</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_98'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleInvalidRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeEqual()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleInvalidRange()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_99'>99</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_99'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleNegativeRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextDouble()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_100'>100</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_100'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_101'>101</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_101'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeEqual()]</span></span> replaced double return with 0.0d for lang3/RandomUtils::randomDouble &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_103'>103</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_103'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeNormal()]</span></span> replaced double return with 0.0d for lang3/RandomUtils::randomDouble &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeNormal()]</span></span> Replaced double addition with subtraction &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>none</span></span> Replaced double subtraction with addition &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>randomDouble<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeNormal()]</span></span> Replaced double multiplication with division &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_106'>106</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_106'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>none</span></span> replaced float return with 0.0f for lang3/RandomUtils::randomFloat &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_109'>109</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_109'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatRangeEqual()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatInvalidRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_110'>110</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_110'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloat()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatNegativeRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_111'>111</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_111'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_112'>112</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_112'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatRangeEqual()]</span></span> replaced float return with 0.0f for lang3/RandomUtils::randomFloat &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_114'>114</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_114'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloatRange()]</span></span> Replaced float multiplication with division &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloatRange()]</span></span> Replaced float subtraction with addition &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloatRange()]</span></span> replaced float return with 0.0f for lang3/RandomUtils::randomFloat &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>randomFloat<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloatRange()]</span></span> Replaced float addition with subtraction &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_117'>117</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_117'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>none</span></span> replaced int return with 0 for lang3/RandomUtils::randomInt &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_120'>120</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_120'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>none</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeEqual()]</span></span> changed conditional boundary &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_121'>121</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_121'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntNegativeRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomInt()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_122'>122</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_122'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_123'>123</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_123'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeEqual()]</span></span> replaced int return with 0 for lang3/RandomUtils::randomInt &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_125'>125</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_125'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextIntRange()]</span></span> Replaced integer subtraction with addition &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextIntRange()]</span></span> replaced int return with 0 for lang3/RandomUtils::randomInt &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomInt<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextIntRange()]</span></span> Replaced integer addition with subtraction &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_128'>128</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_128'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_134'>134</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_134'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> Replaced Unsigned Shift Right with Shift Left &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_135'>135</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_135'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextLongRange()]</span></span> Replaced long modulus with multiplication &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_136'>136</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_136'/> 
+
+<p class='TIMED_OUT'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> Replaced long addition with subtraction &rarr; TIMED_OUT</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</p> <p class='TIMED_OUT'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; TIMED_OUT</p> <p class='TIMED_OUT'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> Replaced long subtraction with addition &rarr; TIMED_OUT</p> <p class='SURVIVED'><span class='pop'>5.<span><b>5</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> Replaced long subtraction with addition &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_137'>137</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_137'/> 
+
+<p class='SURVIVED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; SURVIVED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_140'>140</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_140'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongInvalidRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongRangeEqual()]</span></span> changed conditional boundary &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongInvalidRange()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_141'>141</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_141'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongNegativeRange()]</span></span> removed call to org/apache/commons/lang3/Validate::isTrue &rarr; KILLED</p> <p class='SURVIVED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>none</span></span> changed conditional boundary &rarr; SURVIVED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongNegativeRange()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_142'>142</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_142'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongRangeEqual()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_143'>143</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_143'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongRangeEqual()]</span></span> replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_145'>145</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_145'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextLongRange()]</span></span> Replaced long subtraction with addition &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextLongRange()]</span></span> replaced long return with 0 for lang3/RandomUtils::randomLong &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>randomLong<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongRangeNormal()]</span></span> Replaced long addition with subtraction &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@3bea06d0_149'>149</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@3bea06d0_149'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>toString<br/><b>Killed by : </b>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testToString()]</span></span> replaced return value with &#34;&#34; for lang3/RandomUtils::toString &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testToString()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLong()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextLong()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextLongRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongRangeNormal()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloatRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextFloat()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloat()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatRangeNormal()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongRangeEqual()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextBytes()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntNegativeRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeEqual()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextIntRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomInt()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntInvalidRange()] (1 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextInt()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomIntRangeNormal()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomAlphanumeric_IntRange()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomAscii_IntRange()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomGraph_IntRange()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomPrint_IntRange()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomNumeric_IntRange()] (2 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomAlphabetic_IntRange()] (4 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testConstructorNoArg()] (44 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleInvalidRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeEqual()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleNegativeRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDoubleRangeNormal()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextDouble()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextDoubleRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomDouble()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesPositive()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesZero()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBytesNegative()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongNegativeRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomLongInvalidRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatRangeEqual()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatNegativeRange()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testSecureStrong()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testNextBoolean()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomFloatInvalidRange()] (27 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testSecure()] (0 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testRandomBoolean()] (0 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_CountZero_ReturnsEmptyString()] (0 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_NegativeCount_ThrowsException()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_EmptyCharsArray_ThrowsException()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testToString_ReturnsValidRepresentation()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_CharRangeNegativeValues_ThrowsException()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_RangeWithDigitsAndNoDigits_ThrowsException()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_RangeWithLettersAndNoLetters_ThrowsException()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_CharRangeEndLessThanStart_ThrowsException()] (3 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomPrint_IntCount()] (0 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_WithCharsArray_ReturnsCharsFromArray()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_WithString_ReturnsFromChars()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNextGraph_ValidCount_ReturnsGraphChars()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNextAlphanumeric_ValidCount_ReturnsAlnum()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNextPrint_ValidCount_ReturnsPrintable()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomAlphanumeric_IntCount()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomGraph_IntCount()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNextAscii_ValidCount_ReturnsAsciiChars()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomAscii_IntCount()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNextAlphabetic_ValidCount_ReturnsLetters()] (0 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_WithNumbersOnly_ReturnsNumeric()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNextNumeric_ValidCount_ReturnsDigits()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_WithLettersOnly_ReturnsAlphabetic()] (1 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomNumeric_IntCount()] (2 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testNext_ValidCount_ReturnsCorrectLength()] (4 ms)</li><li>lang3.RandomStringUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomStringUtilsTest]/[method:testRandomAlphabetic_IntCount()] (5 ms)</li><li>lang3.RandomUtilsTest.[engine:junit-jupiter]/[class:lang3.RandomUtilsTest]/[method:testInsecure()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

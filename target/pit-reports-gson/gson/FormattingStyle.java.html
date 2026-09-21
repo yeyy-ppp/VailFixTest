@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>FormattingStyle.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import gson.stream.JsonWriter;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.Objects;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public class FormattingStyle {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final String newline;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final String indent;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  private final boolean spaceAfterSeparators;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  public static final FormattingStyle COMPACT = new FormattingStyle(&#34;&#34;, &#34;&#34;, false);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  public static final FormattingStyle PRETTY = new FormattingStyle(&#34;\n&#34;, &#34;  &#34;, true);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private FormattingStyle(String newline, String indent, boolean spaceAfterSeparators) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Objects.requireNonNull(newline, &#34;newline == null&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    Objects.requireNonNull(indent, &#34;indent == null&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    if (!newline.matches(&#34;[\r\n]*&#34;)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new IllegalArgumentException(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>          &#34;Only combinations of \\n and \\r are allowed in newline.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    if (!indent.matches(&#34;[ \t]*&#34;)) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>      throw new IllegalArgumentException(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>          &#34;Only combinations of spaces and tabs are allowed in indent.&#34;);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.newline = newline;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_22'/>
+22
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_22'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.indent = indent;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>    this.spaceAfterSeparators = spaceAfterSeparators;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public FormattingStyle withNewline(String newline) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_26'/>
+26
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_26'>1</a>
+<span>
+
+1. withNewline : replaced return value with null for gson/FormattingStyle::withNewline &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new FormattingStyle(newline, this.indent, this.spaceAfterSeparators);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public FormattingStyle withIndent(String indent) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_29'/>
+29
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_29'>1</a>
+<span>
+
+1. withIndent : replaced return value with null for gson/FormattingStyle::withIndent &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new FormattingStyle(this.newline, indent, this.spaceAfterSeparators);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public FormattingStyle withSpaceAfterSeparators(boolean spaceAfterSeparators) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_32'/>
+32
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_32'>1</a>
+<span>
+
+1. withSpaceAfterSeparators : replaced return value with null for gson/FormattingStyle::withSpaceAfterSeparators &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return new FormattingStyle(this.newline, this.indent, spaceAfterSeparators);</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public String getNewline() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_35'/>
+35
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_35'>1</a>
+<span>
+
+1. getNewline : replaced return value with &#34;&#34; for gson/FormattingStyle::getNewline &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return this.newline;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_36'/>
+36
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_36'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_37'/>
+37
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_37'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public String getIndent() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_38'/>
+38
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_38'>1</a>
+<span>
+
+1. getIndent : replaced return value with &#34;&#34; for gson/FormattingStyle::getIndent &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return this.indent;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_39'/>
+39
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_39'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_40'/>
+40
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_40'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public boolean usesSpaceAfterSeparators() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_41'/>
+41
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_41'>2</a>
+<span>
+
+1. usesSpaceAfterSeparators : replaced boolean return with true for gson/FormattingStyle::usesSpaceAfterSeparators &rarr; KILLED<br/>
+
+2. usesSpaceAfterSeparators : replaced boolean return with false for gson/FormattingStyle::usesSpaceAfterSeparators &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return this.spaceAfterSeparators;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_42'/>
+42
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_42'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@27f363bc_43'/>
+43
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_43'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27f363bc_26'>26</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_26'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>withNewline<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withNewlineAndIndent_valid_createsInstance()]</span></span> replaced return value with null for gson/FormattingStyle::withNewline &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27f363bc_29'>29</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_29'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>withIndent<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withIndent_validValue_returnsNewInstance()]</span></span> replaced return value with null for gson/FormattingStyle::withIndent &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27f363bc_32'>32</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_32'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>withSpaceAfterSeparators<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withSpaceAfterSeparators_returnsNewInstance()]</span></span> replaced return value with null for gson/FormattingStyle::withSpaceAfterSeparators &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27f363bc_35'>35</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_35'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getNewline<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:getNewline_returnsCorrectValue()]</span></span> replaced return value with &#34;&#34; for gson/FormattingStyle::getNewline &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27f363bc_38'>38</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_38'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>getIndent<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:getIndent_returnsCorrectValue()]</span></span> replaced return value with &#34;&#34; for gson/FormattingStyle::getIndent &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@27f363bc_41'>41</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@27f363bc_41'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>usesSpaceAfterSeparators<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:usesSpaceAfterSeparators_returnsCorrectValue()]</span></span> replaced boolean return with true for gson/FormattingStyle::usesSpaceAfterSeparators &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>usesSpaceAfterSeparators<br/><b>Killed by : </b>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:usesSpaceAfterSeparators_returnsCorrectValue()]</span></span> replaced boolean return with false for gson/FormattingStyle::usesSpaceAfterSeparators &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withNewlineAndIndent_valid_createsInstance()] (0 ms)</li><li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withNewline_validValue_returnsNewInstance()] (2 ms)</li><li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:getNewline_returnsCorrectValue()] (0 ms)</li><li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withIndent_validValue_returnsNewInstance()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testConstructor()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testCloseWithEmptyStack()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testNameWithoutObjectThrows()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testFlushDoesNothing()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testSetFormattingStyle()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testSetLenient()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testSetHtmlSafe()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testSetStrictness()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testPeek()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testSetSerializeNulls()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testPush()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testConstructor()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testOpenScope()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testBeginObject()] (0 ms)</li><li>gson.internal.StreamsTest.[engine:junit-jupiter]/[class:gson.internal.StreamsTest]/[method:testWriteValid()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testEndArray()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testReplaceTop()] (1 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testString()] (1 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testCloseWithNonEmptyStackThrows()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testCloseScope()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testEndObject()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testSetIndent()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testBeginArray()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueLong()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testFlush()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testJsonValueThrows()] (3 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testToStringOnJsonNull()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testNullValue()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueNumber()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testJsonValue()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueDouble()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testClose()] (1 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueFloat()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testValueFloatNonLenientThrows()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testValueDoubleNonLenientThrows()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueBooleanObj()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testEndArrayWithPendingNameThrows()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testEndObjectWithPendingNameThrows()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testNumericValues()] (0 ms)</li><li>gson.internal.bind.NumberTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.NumberTypeAdapterTest]/[method:testWrite_Null()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testValueLong()] (0 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteBoolean()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueBoolean()] (1 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testBeginEndArray()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testBeforeValue()] (0 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteNumber()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testValueString()] (0 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteString()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testBeforeName()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testValueBoolean()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testValueString()] (0 ms)</li><li>gson.internal.bind.NumberTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.NumberTypeAdapterTest]/[method:testWrite_Integer()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testName()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testNewline()] (0 ms)</li><li>gson.stream.JsonWriterTest.[engine:junit-jupiter]/[class:gson.stream.JsonWriterTest]/[method:testWriteDeferredName()] (0 ms)</li><li>gson.internal.bind.NumberTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.NumberTypeAdapterTest]/[method:testWrite_Double()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testPutInObjectWithNullValueWithoutSerializeNulls()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testGetAsJsonObjectOnNonObject()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testToStringOnJsonPrimitive()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testPutInObjectWithNullValueAndSerializeNulls()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testGetWithNonEmptyStackThrows()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testBeginEndObject()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testNullValue()] (0 ms)</li><li>gson.internal.bind.JsonTreeWriterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonTreeWriterTest]/[method:testValueNumber()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testGetAsJsonPrimitiveOnNonPrimitive()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testGetAsJsonNullOnNonNull()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testToStringOnJsonArray()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testGetAsJsonArrayOnNonArray()] (1 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteArray()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_NullValue()] (0 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testCreate_AnonymousClass()] (1 ms)</li><li>gson.internal.bind.DefaultDateTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.DefaultDateTypeAdapterTest]/[method:testWriteNonNull()] (0 ms)</li><li>gson.JsonElementTest.[engine:junit-jupiter]/[class:gson.JsonElementTest]/[method:testToStringOnJsonObject()] (2 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonTreeStringValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonWriterNullValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonTreeNullValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testWriteNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeWriteNonNull()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonWriterValue()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonNullValue()] (1 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteObject()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testWrite()] (0 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testNullSafeWriteNull()] (4 ms)</li><li>gson.TypeAdapterTest.[engine:junit-jupiter]/[class:gson.TypeAdapterTest]/[method:testToJsonStringValue()] (0 ms)</li><li>gson.internal.bind.JsonElementTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.JsonElementTypeAdapterTest]/[method:testWriteNestedStructures()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithNullArray_WritesNull()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_StringObject_ReturnsJsonPrimitive()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_SimpleValue()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testDisableHtmlEscaping()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSerializeSpecialFloatingPointValues()] (1 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testGenerateNonExecutableJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithEmptyArray_WritesEmptyArray()] (3 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithPrimitiveArray_WritesCorrectJson()] (0 ms)</li><li>gson.internal.bind.ArrayTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ArrayTypeAdapterTest]/[method:write_WithObjectArray_WritesCorrectJson()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetDateFormat_ValidPattern()] (1 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_NullCollection_WritesNull()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_Null()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_EmptyCollection_WritesEmptyArray()] (3 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_NonEmptyCollection_WritesArray()] (0 ms)</li><li>gson.internal.bind.CollectionTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.CollectionTypeAdapterFactoryTest]/[method:write_CollectionWithNullElement_WritesArray()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithoutComplexKeySerialization()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSerializeNulls()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithComplexKeySerialization_NoComplexKey()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_CustomType_HandlesTypeCorrectly()] (0 ms)</li><li>gson.internal.bind.ObjectTypeAdapterTest.[engine:junit-jupiter]/[class:gson.internal.bind.ObjectTypeAdapterTest]/[method:testWrite_ComplexStructure()] (1 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testAdapterWriteAndRead()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetFormattingStyle()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testEnableComplexMapKeySerialization()] (3 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testCopyConstructor()] (9 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetPrettyPrinting()] (5 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testWrite_WithComplexKeySerialization_WithComplexKey()] (1 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_WithContext_AppliesContextRules()] (19 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testAddTypeAdaptersForDate()] (50 ms)</li><li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:usesSpaceAfterSeparators_returnsCorrectValue()] (0 ms)</li><li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:withSpaceAfterSeparators_returnsNewInstance()] (3 ms)</li><li>gson.FormattingStyleTest.[engine:junit-jupiter]/[class:gson.FormattingStyleTest]/[method:getIndent_returnsCorrectValue()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

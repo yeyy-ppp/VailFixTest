@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>TableDefinition.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package cli.help;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.util.List;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''></span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public interface TableDefinition {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    static TableDefinition from(</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            final String caption,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            final List&#60;TextStyle&#62; columnStyle,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_9'/>
+9
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_9'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            final List&#60;String&#62; headers,</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            final Iterable&#60;List&#60;String&#62;&#62; rows) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_11'/>
+11
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_11'>1</a>
+<span>
+
+1. from : replaced return value with null for cli/help/TableDefinition::from &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>        return new TableDefinition() {</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            public String caption() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_14'/>
+14
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_14'>1</a>
+<span>
+
+1. caption : replaced return value with &#34;&#34; for cli/help/TableDefinition$1::caption &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                return caption;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            public List&#60;TextStyle&#62; columnTextStyles() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_18'/>
+18
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_18'>1</a>
+<span>
+
+1. columnTextStyles : replaced return value with Collections.emptyList for cli/help/TableDefinition$1::columnTextStyles &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                return columnStyle;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_21'/>
+21
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_21'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            public List&#60;String&#62; headers() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_22'/>
+22
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_22'>1</a>
+<span>
+
+1. headers : replaced return value with Collections.emptyList for cli/help/TableDefinition$1::headers &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                return headers;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_23'/>
+23
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_23'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_24'/>
+24
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_24'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            @Override</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_25'/>
+25
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_25'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            public Iterable&#60;List&#60;String&#62;&#62; rows() {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_26'/>
+26
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_26'>1</a>
+<span>
+
+1. rows : replaced return value with Collections.emptyList for cli/help/TableDefinition$1::rows &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>                return rows;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_27'/>
+27
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_27'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>            }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_28'/>
+28
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_28'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        };</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_29'/>
+29
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_29'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_30'/>
+30
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_30'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    String caption();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    List&#60;TextStyle&#62; columnTextStyles();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    List&#60;String&#62; headers();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>    Iterable&#60;List&#60;String&#62;&#62; rows();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@56ed024b_34'/>
+34
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_34'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@56ed024b_11'>11</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_11'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>from<br/><b>Killed by : </b>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullHeaders()]</span></span> replaced return value with null for cli/help/TableDefinition::from &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@56ed024b_14'>14</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_14'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>caption<br/><b>Killed by : </b>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullHeaders()]</span></span> replaced return value with &#34;&#34; for cli/help/TableDefinition$1::caption &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@56ed024b_18'>18</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_18'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>columnTextStyles<br/><b>Killed by : </b>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullHeaders()]</span></span> replaced return value with Collections.emptyList for cli/help/TableDefinition$1::columnTextStyles &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@56ed024b_22'>22</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_22'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>headers<br/><b>Killed by : </b>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullHeaders()]</span></span> replaced return value with Collections.emptyList for cli/help/TableDefinition$1::headers &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@56ed024b_26'>26</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@56ed024b_26'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>rows<br/><b>Killed by : </b>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullHeaders()]</span></span> replaced return value with Collections.emptyList for cli/help/TableDefinition$1::rows &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullHeaders()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullRows()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithEmptyRows()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithMultipleRows()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithEmptyTextStyles()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithEmptyCaption()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullCaption()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithMultipleTextStyles()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNullTextStyles()] (0 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithNormalParameters()] (1 ms)</li><li>cli.help.TableDefinitionTest.[engine:junit-jupiter]/[class:cli.help.TableDefinitionTest]/[method:testFromWithEmptyHeaders()] (1 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintOptionsIterable()] (1 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintOptionsOptions()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpAutoUsage()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpWithOptions()] (0 ms)</li><li>cli.help.AbstractHelpFormatterTest.[engine:junit-jupiter]/[class:cli.help.AbstractHelpFormatterTest]/[method:testPrintHelpNoAutoUsage()] (12 ms)</li><li>cli.help.HelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.HelpAppendableTest]/[method:testAppendTableEmpty()] (0 ms)</li><li>cli.help.HelpAppendableTest.[engine:junit-jupiter]/[class:cli.help.HelpAppendableTest]/[method:testAppendTable()] (0 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

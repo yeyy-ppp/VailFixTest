@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>TroubleshootingGuide.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson.internal;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public class TroubleshootingGuide {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class=''>  private TroubleshootingGuide() {}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static String createUrl(String id) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_5'/>
+5
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_5'>1</a>
+<span>
+
+1. createUrl : replaced return value with &#34;&#34; for gson/internal/TroubleshootingGuide::createUrl &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return &#34;https://github.com/google/gson/blob/main/Troubleshooting.md#&#34; + id;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_6'/>
+6
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_6'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@48305902_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@48305902_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@48305902_5'>5</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@48305902_5'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>createUrl<br/><b>Killed by : </b>gson.internal.TroubleshootingGuideTest.[engine:junit-jupiter]/[class:gson.internal.TroubleshootingGuideTest]/[method:createUrl_withEmptyId()]</span></span> replaced return value with &#34;&#34; for gson/internal/TroubleshootingGuide::createUrl &rarr; KILLED</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.internal.TroubleshootingGuideTest.[engine:junit-jupiter]/[class:gson.internal.TroubleshootingGuideTest]/[method:createUrl_withEmptyId()] (0 ms)</li><li>gson.internal.TroubleshootingGuideTest.[engine:junit-jupiter]/[class:gson.internal.TroubleshootingGuideTest]/[method:createUrl_withNullId()] (0 ms)</li><li>gson.internal.TroubleshootingGuideTest.[engine:junit-jupiter]/[class:gson.internal.TroubleshootingGuideTest]/[method:createUrl_withSpecialCharacters()] (0 ms)</li><li>gson.internal.TroubleshootingGuideTest.[engine:junit-jupiter]/[class:gson.internal.TroubleshootingGuideTest]/[method:createUrl_withNormalId()] (0 ms)</li><li>gson.internal.ConstructorConstructorTest.[engine:junit-jupiter]/[class:gson.internal.ConstructorConstructorTest]/[method:testCheckInstantiable_AbstractClass()] (0 ms)</li><li>gson.ToNumberPolicyTest.[engine:junit-jupiter]/[class:gson.ToNumberPolicyTest]/[method:testLONG_OR_DOUBLE_readNumber_invalid()] (0 ms)</li><li>gson.ToNumberPolicyTest.[engine:junit-jupiter]/[class:gson.ToNumberPolicyTest]/[method:testLONG_OR_DOUBLE_readNumber_infinityStrict()] (0 ms)</li><li>gson.ToNumberPolicyTest.[engine:junit-jupiter]/[class:gson.ToNumberPolicyTest]/[method:testBIG_DECIMAL_readNumber_invalid()] (0 ms)</li><li>gson.ToNumberPolicyTest.[engine:junit-jupiter]/[class:gson.ToNumberPolicyTest]/[method:testDOUBLE_readNumber_invalid()] (0 ms)</li><li>gson.stream.JsonReaderTest.[engine:junit-jupiter]/[class:gson.stream.JsonReaderTest]/[method:testSyntaxError()] (1 ms)</li><li>gson.internal.JsonReaderInternalAccessTest.[engine:junit-jupiter]/[class:gson.internal.JsonReaderInternalAccessTest]/[method:testPromoteNameToValue_NotInNameState()] (0 ms)</li><li>gson.internal.UnsafeAllocatorTest.[engine:junit-jupiter]/[class:gson.internal.UnsafeAllocatorTest]/[method:testNewInstance_AbstractClass()] (8 ms)</li><li>gson.internal.JsonReaderInternalAccessTest.[engine:junit-jupiter]/[class:gson.internal.JsonReaderInternalAccessTest]/[method:testPromoteNameToValue_EmptyObject()] (0 ms)</li><li>gson.ToNumberStrategyTest.[engine:junit-jupiter]/[class:gson.ToNumberStrategyTest]/[method:testReadNumber_invalidNumberFormat()] (2 ms)</li><li>gson.internal.JsonReaderInternalAccessTest.[engine:junit-jupiter]/[class:gson.internal.JsonReaderInternalAccessTest]/[method:testPromoteNameToValue_EndOfDocument()] (0 ms)</li><li>gson.stream.JsonReaderTest.[engine:junit-jupiter]/[class:gson.stream.JsonReaderTest]/[method:testNextString()] (0 ms)</li><li>gson.stream.JsonReaderTest.[engine:junit-jupiter]/[class:gson.stream.JsonReaderTest]/[method:testUnexpectedTokenError()] (0 ms)</li><li>gson.JsonParserTest.[engine:junit-jupiter]/[class:gson.JsonParserTest]/[method:testParseReader_ReaderIncompleteConsumption()] (0 ms)</li><li>gson.JsonParserTest.[engine:junit-jupiter]/[class:gson.JsonParserTest]/[method:testParseString_InvalidJson()] (1 ms)</li><li>gson.internal.StreamsTest.[engine:junit-jupiter]/[class:gson.internal.StreamsTest]/[method:testParseNumberFormatException()] (2 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetStrictness()] (2 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ObjectFormat_DuplicateKey()] (0 ms)</li><li>gson.internal.bind.MapTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.MapTypeAdapterFactoryTest]/[method:testRead_ArrayFormat_DuplicateKey()] (1 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

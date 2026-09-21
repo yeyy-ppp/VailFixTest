@@ -1,0 +1,1101 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html;charset=GBK">
+    <link rel="stylesheet" type="text/css" href="../style.css">
+</head>
+<body>
+
+
+<h1>Primitives.java</h1>
+
+<table class="src">
+
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_1'/>
+1
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_1'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>package gson.internal;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_2'/>
+2
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_2'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>import java.lang.reflect.Type;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_3'/>
+3
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_3'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>public final class Primitives {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_4'/>
+4
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_4'></a>
+<span>
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class=''>  private Primitives() {}</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_5'/>
+5
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_5'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static boolean isPrimitive(Type type) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_6'/>
+6
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_6'>3</a>
+<span>
+
+1. isPrimitive : negated conditional &rarr; KILLED<br/>
+
+2. isPrimitive : replaced boolean return with true for gson/internal/Primitives::isPrimitive &rarr; KILLED<br/>
+
+3. isPrimitive : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return type instanceof Class&#60;?&#62; &#38;&#38; ((Class&#60;?&#62;) type).isPrimitive();</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_7'/>
+7
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_7'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_8'/>
+8
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_8'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static boolean isWrapperType(Type type) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_9'/>
+9
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_9'>10</a>
+<span>
+
+1. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+2. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+3. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+4. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+5. isWrapperType : replaced boolean return with true for gson/internal/Primitives::isWrapperType &rarr; KILLED<br/>
+
+6. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+7. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+8. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+9. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+10. isWrapperType : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return type == Integer.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_10'/>
+10
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_10'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Float.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_11'/>
+11
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_11'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Byte.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_12'/>
+12
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_12'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Double.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_13'/>
+13
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_13'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Long.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_14'/>
+14
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_14'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Character.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_15'/>
+15
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_15'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Boolean.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_16'/>
+16
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_16'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Short.class</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_17'/>
+17
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_17'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>        || type == Void.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_18'/>
+18
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_18'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_19'/>
+19
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_19'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings({&#34;unchecked&#34;, &#34;MissingBraces&#34;})</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_20'/>
+20
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_20'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static &#60;T&#62; Class&#60;T&#62; wrap(Class&#60;T&#62; type) {</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_21'/>
+21
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_21'>2</a>
+<span>
+
+1. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+2. wrap : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == int.class) return (Class&#60;T&#62;) Integer.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_22'/>
+22
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_22'>2</a>
+<span>
+
+1. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+2. wrap : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == float.class) return (Class&#60;T&#62;) Float.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_23'/>
+23
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_23'>2</a>
+<span>
+
+1. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+2. wrap : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == byte.class) return (Class&#60;T&#62;) Byte.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_24'/>
+24
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_24'>2</a>
+<span>
+
+1. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+2. wrap : negated conditional &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == double.class) return (Class&#60;T&#62;) Double.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_25'/>
+25
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_25'>2</a>
+<span>
+
+1. wrap : negated conditional &rarr; KILLED<br/>
+
+2. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == long.class) return (Class&#60;T&#62;) Long.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_26'/>
+26
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_26'>2</a>
+<span>
+
+1. wrap : negated conditional &rarr; KILLED<br/>
+
+2. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == char.class) return (Class&#60;T&#62;) Character.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_27'/>
+27
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_27'>2</a>
+<span>
+
+1. wrap : negated conditional &rarr; KILLED<br/>
+
+2. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == boolean.class) return (Class&#60;T&#62;) Boolean.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_28'/>
+28
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_28'>2</a>
+<span>
+
+1. wrap : negated conditional &rarr; KILLED<br/>
+
+2. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == short.class) return (Class&#60;T&#62;) Short.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_29'/>
+29
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_29'>2</a>
+<span>
+
+1. wrap : negated conditional &rarr; KILLED<br/>
+
+2. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    if (type == void.class) return (Class&#60;T&#62;) Void.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='covered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_30'/>
+30
+</td>
+<td class='killed'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_30'>1</a>
+<span>
+
+1. wrap : replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED<br/>
+
+</span>
+</span>
+</td>
+<td class='covered'><pre><span  class='killed'>    return type;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_31'/>
+31
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_31'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_32'/>
+32
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_32'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  @SuppressWarnings({&#34;unchecked&#34;, &#34;MissingBraces&#34;})</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_33'/>
+33
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_33'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  public static &#60;T&#62; Class&#60;T&#62; unwrap(Class&#60;T&#62; type) {</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_34'/>
+34
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_34'>2</a>
+<span>
+
+1. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+2. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Integer.class) return (Class&#60;T&#62;) int.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_35'/>
+35
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_35'>2</a>
+<span>
+
+1. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+2. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Float.class) return (Class&#60;T&#62;) float.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_36'/>
+36
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_36'>2</a>
+<span>
+
+1. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+2. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Byte.class) return (Class&#60;T&#62;) byte.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_37'/>
+37
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_37'>2</a>
+<span>
+
+1. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+2. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Double.class) return (Class&#60;T&#62;) double.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_38'/>
+38
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_38'>2</a>
+<span>
+
+1. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+2. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Long.class) return (Class&#60;T&#62;) long.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_39'/>
+39
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_39'>2</a>
+<span>
+
+1. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+2. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Character.class) return (Class&#60;T&#62;) char.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_40'/>
+40
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_40'>2</a>
+<span>
+
+1. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+2. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Boolean.class) return (Class&#60;T&#62;) boolean.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_41'/>
+41
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_41'>2</a>
+<span>
+
+1. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+2. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Short.class) return (Class&#60;T&#62;) short.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_42'/>
+42
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_42'>2</a>
+<span>
+
+1. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+2. unwrap : negated conditional &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    if (type == Void.class) return (Class&#60;T&#62;) void.class;</span></pre></td></tr>
+
+
+<tr>
+<td class='uncovered'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_43'/>
+43
+</td>
+<td class='survived'>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_43'>1</a>
+<span>
+
+1. unwrap : replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE<br/>
+
+</span>
+</span>
+</td>
+<td class='uncovered'><pre><span  class='survived'>    return type;</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_44'/>
+44
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_44'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>  }</span></pre></td></tr>
+
+
+<tr>
+<td class='na'>
+<a name='org.pitest.mutationtest.report.html.SourceFile@51033788_45'/>
+45
+</td>
+<td class=''>
+<span class='pop'>
+<a href='#grouporg.pitest.mutationtest.report.html.SourceFile@51033788_45'></a>
+<span>
+</span>
+</span>
+</td>
+<td class=''><pre><span  class=''>}</span></pre></td></tr>
+
+
+
+<tr><td></td><td></td><td><h2>Mutations</h2></td></tr>
+
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_6'>6</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_6'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isPrimitive<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsPrimitiveWithNonPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>isPrimitive<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsPrimitiveWithNonPrimitiveTypes()]</span></span> replaced boolean return with true for gson/internal/Primitives::isPrimitive &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>isPrimitive<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsPrimitiveWithNonPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_9'>9</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_9'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>3.<span><b>3</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>4.<span><b>4</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>5.<span><b>5</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> replaced boolean return with true for gson/internal/Primitives::isWrapperType &rarr; KILLED</p> <p class='KILLED'><span class='pop'>6.<span><b>6</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>7.<span><b>7</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>8.<span><b>8</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>9.<span><b>9</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>10.<span><b>10</b><br/><b>Location : </b>isWrapperType<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_21'>21</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_21'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_22'>22</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_22'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_23'>23</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_23'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_24'>24</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_24'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_25'>25</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_25'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_26'>26</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_26'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_27'>27</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_27'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_28'>28</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_28'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_29'>29</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_29'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> negated conditional &rarr; KILLED</p> <p class='KILLED'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_30'>30</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_30'/> 
+
+<p class='KILLED'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>wrap<br/><b>Killed by : </b>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetLenient()]</span></span> replaced return value with null for gson/internal/Primitives::wrap &rarr; KILLED</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_34'>34</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_34'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_35'>35</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_35'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_36'>36</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_36'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_37'>37</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_37'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_38'>38</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_38'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_39'>39</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_39'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_40'>40</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_40'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_41'>41</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_41'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_42'>42</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_42'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> <p class='NO_COVERAGE'><span class='pop'>2.<span><b>2</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> negated conditional &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+<tr>
+<td><a href='#org.pitest.mutationtest.report.html.SourceFile@51033788_43'>43</a></td> 
+<td></td>
+<td>
+
+<a name='grouporg.pitest.mutationtest.report.html.SourceFile@51033788_43'/> 
+
+<p class='NO_COVERAGE'><span class='pop'>1.<span><b>1</b><br/><b>Location : </b>unwrap<br/><b>Killed by : </b>none</span></span> replaced return value with null for gson/internal/Primitives::unwrap &rarr; NO_COVERAGE</p> 
+</td>
+</tr>
+
+</table>
+
+
+<h2>Active mutators</h2>
+<ul>
+
+<li class='mutator'>CONDITIONALS_BOUNDARY</li>
+
+<li class='mutator'>EMPTY_RETURNS</li>
+
+<li class='mutator'>FALSE_RETURNS</li>
+
+<li class='mutator'>INCREMENTS</li>
+
+<li class='mutator'>INVERT_NEGS</li>
+
+<li class='mutator'>MATH</li>
+
+<li class='mutator'>NEGATE_CONDITIONALS</li>
+
+<li class='mutator'>NULL_RETURNS</li>
+
+<li class='mutator'>PRIMITIVE_RETURNS</li>
+
+<li class='mutator'>TRUE_RETURNS</li>
+
+<li class='mutator'>VOID_METHOD_CALLS</li>
+
+</ul>
+
+<h2>Tests examined</h2>
+<ul>
+<li>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithNonWrapperTypes()] (0 ms)</li><li>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsWrapperTypeWithWrapperTypes()] (0 ms)</li><li>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testWrapPrimitiveTypes()] (0 ms)</li><li>gson.GsonBuilderTest.[engine:junit-jupiter]/[class:gson.GsonBuilderTest]/[method:testSetLenient()] (47 ms)</li><li>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsPrimitiveWithNonPrimitiveTypes()] (0 ms)</li><li>gson.internal.PrimitivesTest.[engine:junit-jupiter]/[class:gson.internal.PrimitivesTest]/[method:testIsPrimitiveWithPrimitiveTypes()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_CustomType_HandlesTypeCorrectly()] (0 ms)</li><li>gson.internal.bind.ReflectiveTypeAdapterFactoryTest.[engine:junit-jupiter]/[class:gson.internal.bind.ReflectiveTypeAdapterFactoryTest]/[method:testAdapterWriteAndRead()] (0 ms)</li><li>gson.JsonSerializerTest.[engine:junit-jupiter]/[class:gson.JsonSerializerTest]/[method:serialize_WithContext_AppliesContextRules()] (19 ms)</li>
+</ul>
+
+<br/>
+
+Report generated by <a href='https://pitest.org'>PIT</a> 1.15.2
+
+</body>
+</html>

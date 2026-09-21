@@ -1,0 +1,93 @@
+NewValiTest0616 validation report
+Generated at: 2026-06-24 18:41:32
+Test directory: D:\fx\jafx\chatunitest-core\src\test\java
+Report file: D:\fx\jafx\chatunitest-core\target\new-vali-test-0616-report.txt
+
+[Source quality]
+Test files: 158
+Test methods: 2021
+Assertions: 3029
+Meaningful assertions: 2841
+Weak assertions: 188
+Exception assertions: 278
+Assertion density: 1.50 assertions/test method, 18.09 assertions/100 code lines
+Meaningful assertion ratio: 93.79%
+Parse errors: 0
+
+[Mutation score]
+N/A: No mutations.xml file was found under PIT reports.
+
+[Defect detection]
+Score: 93.79%
+Basis: PIT is unavailable; showing meaningful assertion ratio as a weak proxy.
+
+[Flaky tests]
+N/A: Use --run-tests --flaky-runs=N to repeat the generated tests.
+
+[Execution time]
+Measured execution time: N/A
+Existing Surefire summary: Surefire report directory is absent.
+
+[Repair cost]
+Generated test files: 158
+Generated test methods: 2021
+Generated non-comment lines: 16741
+Current failing tests from Surefire: 0
+Test source parse errors: 0
+Latest generation log: D:\fx\jafx\chatunitest-core\BatchTest_0126_1110.txt
+Log success-like lines: 2
+Log failure-like lines: 2
+Log repair-number lines: 0
+Log repair-number sum: 0
+
+[Minimal target repair impact]
+Fix result files: 79
+Files with fallback/comment strategy: 48
+Commented test methods: 3
+Commented code lines: 26
+Commented assertions: 7
+Deleted test methods estimate: 249
+Deleted code lines estimate: 1838
+Deleted assertions estimate: 379
+Total removed/commented methods: 252
+Total removed/commented lines: 1864
+Total removed/commented assertions: 386
+Automatic measurement: enabled
+Snapshot pairs measured: 54
+Snapshot before files: 54
+Snapshot after files: 54
+Before measurement command exit code: 0, time: 70.54s
+Before measurement tests: 2108, failures: 15, errors: 3, skipped: 0
+Before measurement log: D:\fx\jafx\chatunitest-core\target\vali-repair-impact\before\maven-output.log
+Before snapshot files restored to current version: 31
+After measurement command exit code: 0, time: 64.23s
+After measurement tests: 2002, failures: 24, errors: 11, skipped: 0
+After measurement log: D:\fx\jafx\chatunitest-core\target\vali-repair-impact\after\maven-output.log
+After snapshot files restored to current version: 12
+Coverage before repair: line=22.16%, branch=19.27%, method=33.36%
+Coverage before source: D:\fx\jafx\chatunitest-core\target\vali-repair-impact\before\jacoco.csv
+Coverage after repair: line=21.38%, branch=18.54%, method=32.31%
+Coverage after source: D:\fx\jafx\chatunitest-core\target\vali-repair-impact\after\jacoco.csv
+Coverage change: line=22.16% -> 21.38% (-0.79%), branch=19.27% -> 18.54% (-0.73%), method=33.36% -> 32.31% (-1.05%)
+Pass rate before repair: 99.15%
+Pass rate before source: D:\fx\jafx\chatunitest-core\target\vali-repair-impact\before\surefire-reports
+Pass rate after repair: 98.25%
+Pass rate after source: D:\fx\jafx\chatunitest-core\target\vali-repair-impact\after\surefire-reports
+Pass rate change: 99.15% -> 98.25% (-0.89%)
+
+[External tool benchmark data]
+Expected tools: ChatUniTest[8], BRMiner[28], TestSpark[29], EvoSuite[3], A3Test[10], AthenaTest[30], SymPrompt[31], ChatTester[7], HITS[21]
+Expected projects: Commons-Cli[24], Commons-Csv[25], Commons-Lang[26], Gson[27]
+N/A: No local benchmark data file found. Public papers usually do not report the full requested metric set; pass --benchmark-data=CSV to import your experiment table.
+
+[Tool usage]
+PIT mutation score: mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--run-pit --pit-target-classes=cli.*,csv.*,gson.*,lang3.*"
+Flaky ratio and execution time: mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--run-tests --flaky-runs=3"
+Before/after repair impact: use --measure-repair-impact to build snapshots from src/F logs, or provide --before-test-dir, --before-coverage-csv and --before-surefire-dir when historical snapshots exist.
+External tools comparison: create a CSV/TSV with columns tool,project,mutationScore,assertionDensity,meaningfulAssertions,defectDetection,flakyRatio,executionTime,repairCost,source and pass --benchmark-data=path.
+
+Usage hints:
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616"
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--run-tests --flaky-runs=3"
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--run-pit --pit-target-classes=cli.*,csv.*,gson.*,lang3.*"
+  mvn exec:java "-Dexec.mainClass=zju.cst.aces.runner.NewValiTest0616" "-Dexec.args=--measure-repair-impact"

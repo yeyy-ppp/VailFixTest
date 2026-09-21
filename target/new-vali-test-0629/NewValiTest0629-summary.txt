@@ -1,0 +1,49 @@
+NewValiTest0629 summary
+Started at: 2026-06-29 18:02:58
+Finished at: 2026-06-29 18:02:58
+Output root: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629
+Data root: D:\2025_7_8\TestProModify\data0629
+Logs directory: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\logs
+Test code directory: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\test-code
+Coverage directory: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\coverage-reports
+
+[Commons-codec]
+Package: codec
+Dataset directory: D:\2025_7_8\TestProModify\data0629\codec
+Source directory: D:\fx\jafx\chatunitest-core\src\main\java\codec
+Status: SUCCESS - check only; dataset directory is available
+Main log: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\logs\Commons-codec\Commons-codec_ValiFixTest_0629_180258.txt
+Log files: 3
+Generated test files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\test-code\Commons-codec
+Coverage files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\coverage-reports\Commons-codec
+
+[JDom2]
+Package: jdom2
+Dataset directory: D:\2025_7_8\TestProModify\data0629\jdom2
+Source directory: D:\fx\jafx\chatunitest-core\src\main\java\jdom2
+Status: SUCCESS - check only; dataset directory is available
+Main log: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\logs\JDom2\JDom2_ValiFixTest_0629_180258.txt
+Log files: 3
+Generated test files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\test-code\JDom2
+Coverage files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\coverage-reports\JDom2
+
+[Datafaker]
+Package: datafaker
+Dataset directory: D:\2025_7_8\TestProModify\data0629\datafaker
+Source directory: D:\fx\jafx\chatunitest-core\src\main\java\datafaker
+Status: SUCCESS - check only; dataset directory is available
+Main log: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\logs\Datafaker\Datafaker_ValiFixTest_0629_180258.txt
+Log files: 3
+Generated test files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\test-code\Datafaker
+Coverage files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\coverage-reports\Datafaker
+
+[Chart]
+Package: chart
+Dataset directory: D:\2025_7_8\TestProModify\data0629\chart
+Source directory: D:\fx\jafx\chatunitest-core\src\main\java\chart
+Status: SUCCESS - check only; dataset directory is available
+Main log: D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\logs\Chart\Chart_ValiFixTest_0629_180258.txt
+Log files: 3
+Generated test files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\test-code\Chart
+Coverage files copied: 0 -> D:\fx\jafx\chatunitest-core\target\new-vali-test-0629\coverage-reports\Chart
+

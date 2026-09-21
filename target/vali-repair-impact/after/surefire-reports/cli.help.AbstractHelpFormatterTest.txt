@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: cli.help.AbstractHelpFormatterTest
+-------------------------------------------------------------------------------
+Tests run: 36, Failures: 2, Errors: 1, Skipped: 0, Time elapsed: 0.057 s <<< FAILURE! - in cli.help.AbstractHelpFormatterTest
+testGetOptionGroupSeparator  Time elapsed: 0.002 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <> but was: < | >
+	at cli.help.AbstractHelpFormatterTest.testGetOptionGroupSeparator(AbstractHelpFormatterTest.java:124)
+
+testSetSyntaxPrefixNull  Time elapsed: 0.001 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: expected: <> but was: <null>
+	at cli.help.AbstractHelpFormatterTest.testSetSyntaxPrefixNull(AbstractHelpFormatterTest.java:144)
+
+testPrintOptionsTableDefinition  Time elapsed: 0.001 s  <<< ERROR!
+java.lang.NullPointerException: Cannot invoke "cli.help.TableDefinition.columnTextStyles()" because "table" is null
+	at cli.help.AbstractHelpFormatterTest.testPrintOptionsTableDefinition(AbstractHelpFormatterTest.java:281)
+

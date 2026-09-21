@@ -15,12 +15,12 @@ public class PosixParser extends Parser {
 <span class="fc bfc" id="L15" title="All 2 branches covered.">        for (int i = 1; i &lt; token.length(); i++) {</span>
 <span class="fc" id="L16">            final String ch = String.valueOf(token.charAt(i));</span>
 <span class="fc bfc" id="L17" title="All 2 branches covered.">            if (!options.hasOption(ch)) {</span>
-<span class="pc bpc" id="L18" title="1 of 2 branches missed.">                if (stopAtNonOption) {</span>
+<span class="fc bfc" id="L18" title="All 2 branches covered.">                if (stopAtNonOption) {</span>
 <span class="fc" id="L19">                    processNonOptionToken(token.substring(i), true);</span>
                 } else {
-<span class="nc" id="L21">                    tokens.add(token);</span>
+<span class="fc" id="L21">                    tokens.add(token);</span>
                 }
-<span class="nc" id="L23">                break;</span>
+<span class="fc" id="L23">                break;</span>
             }
 <span class="fc" id="L25">            tokens.add(&quot;-&quot; + ch);</span>
 <span class="fc" id="L26">            currentOption = options.getOption(ch);</span>

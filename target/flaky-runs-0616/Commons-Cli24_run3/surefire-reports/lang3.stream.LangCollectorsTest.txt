@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: lang3.stream.LangCollectorsTest
+-------------------------------------------------------------------------------
+Tests run: 9, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0 s - in lang3.stream.LangCollectorsTest
